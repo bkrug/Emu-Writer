@@ -5,7 +5,7 @@
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
 * source file.
-LINLST DATA 20
+LINLST DATA 16
        DATA LIN1A,LIN1B,LIN1C,LIN1D
        DATA LIN1E
        DATA LIN2
@@ -13,8 +13,7 @@ LINLST DATA 20
        DATA LIN3E,LIN3F
        DATA LIN4
        DATA LIN5
-       DATA LIN6A,LIN6B,LIN6C,LIN6D
-       DATA LIN6E,LIN6F
+       DATA LIN6A,LIN6B
        
 * bold, italic, underline, super, sub
 FMTLST DATA 15,0
@@ -58,14 +57,14 @@ FMTLST DATA 15,0
        
 MGNLST DATA 6,0,0
 * Indented
-       DATA 0,0,>000A
-       DATA 5,0,>0000
+       DATA 0,>0A0A,>000A
+       DATA 5,>0A0A,>0000
 * Hanging Indent
-       DATA 6,0,>00F6
-       DATA 12,0,>0000
+       DATA 6,>0A0A,>00F6
+       DATA 12,>0A0A,>0000
 * Center
-       DATA 13,>0080,0
-       DATA 14,>0000,0
+       DATA 13,>0A8A,0
+       DATA 14,>0A0A,0
        
 * 2nd byte is irrelevant
 TABLST DATA 1,0
@@ -124,16 +123,7 @@ LIN6A  BYTE LIN6B-LIN6A+1
        BYTE 9
        TEXT 'Population'
        BYTE 13,10
-LIN6B  BYTE LIN6C-LIN6B+1
-       TEXT '—'
-       BYTE 9
-       TEXT 'World'
-       BYTE 9
-       TEXT '—'
-       BYTE 9
-       TEXT '7,550,262,101'
-       BYTE 13,10
-LIN6C  BYTE LIN6D-LIN6C+1
+LIN6B  BYTE LIN7-LIN6B+1
        TEXT '1'
        BYTE 9
        TEXT 'China'
@@ -142,35 +132,11 @@ LIN6C  BYTE LIN6D-LIN6C+1
        BYTE 9
        TEXT '1,409,517,397'
        BYTE 13,10
-LIN6D  BYTE LIN6E-LIN6D+1
-       TEXT '2'
-       BYTE 9
-       TEXT 'India'
-       BYTE 9
-       TEXT 'Southern Asia'
-       BYTE 9
-       TEXT '1,339,180,127'
-       BYTE 13,10
-LIN6E  BYTE LIN6F-LIN6E+1
-       TEXT '3'
-       BYTE 9
-       TEXT 'United States'
-       BYTE 9
-       TEXT 'Northern America'
-       BYTE 9
-       TEXT '324,459,463'
-       BYTE 13,10
-LIN6F  BYTE LIN7-LIN6F+1
-       TEXT '4'
-       BYTE 9
-       TEXT 'Indonesia'
-       BYTE 9
-       TEXT 'South-Eastern Asia'
-       BYTE 9
-       TEXT '263,991,379'
-       BYTE 13,10
 LIN7
 
+* Users will see inverse images of
+* letters to represent changes in
+* formatting.
 * >C2   Highlighted B
 * >C9   Highlighted I
 * >D5   Highlighted U
@@ -178,3 +144,73 @@ LIN7
 * >AD   Highlighted -
 * >E2   Highlighted b
 * >E5   Highlighted e
+
+* Expected Display Lines
+DSP1A  TEXT '     In physics, mass–energy equivalence states that '
+CUR1A  TEXT 'XXXXX                                                '
+DSP1B  TEXT 'anything having mass has an equivalent amount of energy and '
+CUR1B  TEXT '                                                     '
+DSP1C  TEXT 'vice versa, with these fundamental quantities directly '
+CUR1C  TEXT '                                                       '
+DSP1D  TEXT 'relating to one another by Albert Einstein's famous '
+CUR1D  TEXT '                                                    '
+DSP1E  TEXT 'formula:'
+       BYTE >AB,>E2
+       TEXT '1'
+	   BYTE >AB,>E5
+	   TEXT ' '
+CUR1E  TEXT '         X  X '   
+DSP2   TEXT 'E=mc'
+       BYTE >AB,>E2
+       TEXT '2'
+       BYTE >AB,>E5
+       TEXT '   H'
+       BYTE >AD,>E2
+	   TEXT '2'
+       BYTE >AD,>E5
+	   TEXT 'O '
+CUR2   TEXT '     X  X     X  X  '
+* This paragraph has a hanging indent.
+* Word "Similiarly" is bold and
+* "having" is italic.
+* "corresponding" is underlined.
+* "c2" is italic with "2" superscript.
+DSP3A  TEXT 'This formula states that the equivalent energy (E) can be '
+CUR3A  TEXT '                                                          '
+DSP3B  TEXT '     calculated as the mass (m) multiplied by the speed of '
+CUR3B  TEXT 'XXXXX                                                      '
+DSP3C  TEXT '     light (c = about 3*108 m/s) squared. '
+       BYTE >C2,>E2
+       TEXT 'Similarly,'
+       BYTE >C2,>E5
+	   TEXT ' '
+CUR3C  TEXT 'XXXXX                                      X           X '
+DSP3D  TEXT '     anything '
+       BYTE >C9,>E2
+       TEXT 'having'
+	   BYTE >C9,>E5
+	   TEXT ' energy exhibits a '
+	   BYTE >D5,>E2
+	   TEXT 'corresponding'
+	   BYTE >D5,>E5
+	   TEXT ' mass m '
+CUR3D  TEXT 'XXXXX          X       X                    X              X        '
+DSP3E  TEXT '     given by its energy E divided by the speed of light '
+CUR3E  TEXT 'XXXXX                                                    '
+DSP3F  TEXT 'squared '
+       BYTE >C9,>E2
+       TEXT 'c'
+	   BYTE >AB,>E2
+	   TEXT '2'
+	   BYTE >C9,>E5,>AB,>E5
+	   TEXT '. '
+CUR3F  TEXT '         X  X  X X  '
+DSP4   TEXT ' '
+CUR4   TEXT ' '
+DSP5   TEXT '      Countries and areas ranked by population in 2017 '
+CUR5   TEXT 'XXXXXX                                                 '
+DSP6A  TEXT 'Rank    Country          UN region             Population '
+CUR6A  TEXT '     XXX        XXXXXXXXX          XXXXXXXXXXXX
+LIN6B  TEXT '1       China            Eastern Asia          1,409,517,397 '
+CUR6B  TEXT '  XXXXXX      XXXXXXXXXXX             XXXXXXXXX
+LIN7
