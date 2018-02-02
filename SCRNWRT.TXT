@@ -44,8 +44,10 @@ SCRNWS BSS  >20
 *    The fifth byte is the top/bottom
 *    margin. The sixth byte is the
 *    first line indent.
-* (Need to store 
-*  center/justify/unjustify somewhere)
+*    The third byte's first bit is
+*    set if the paragraph is justified.
+*    The fourth byte's first bit is
+*    set if the paragraph is centered.
 
 *
 * GETLIN

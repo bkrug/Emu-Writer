@@ -1,89 +1,175 @@
        DEF  RUNTST
-	   DEF  LINLST,FMTLST,MGNLST
+       DEF  LINLST,FMTLST,MGNLST
        REF  MAKETX,PRINTL,OPENF,CLOSEF
 
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
 * source file.
-LINLST DATA 
+LINLST DATA 20
        DATA LIN1A,LIN1B,LIN1C,LIN1D
-	   DATA LIN2
-	   DATA LIN3A,LIN3B,LIN3C,LIN3D
-	   DATA LIN3E
-	   DATA LIN4
-	   DATA LIN5
-	   DATA LIN6A,LIN6B,LIN6C,LIN6D
-	   DATA LIN6E,LIN6F
-FMTLST
-MGNLST
+       DATA LIN1E
+       DATA LIN2
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN3E,LIN3F
+       DATA LIN4
+       DATA LIN5
+       DATA LIN6A,LIN6B,LIN6C,LIN6D
+       DATA LIN6E,LIN6F
+       
+* bold, italic, underline, super, sub
+FMTLST DATA 15,0
+* Superscript
+       DATA 4,
+       BYTE 8,>10
+       DATA 4,
+       BYTE 9,>00
+* Superscript
+       DATA 5,
+       BYTE 4,>10
+       DATA 5,
+       BYTE 5,>00
+* Subscript
+       DATA 5,
+       BYTE 9,>08
+       DATA 5,
+       BYTE 9,>00
+* Bold
+       DATA 8
+       BYTE 37,>80
+       DATA 8
+       BYTE 46,>00
+* Italic
+       DATA 9
+       BYTE 9,>40
+       DATA 9
+       BYTE 15,>00
+* Underline
+       DATA 9
+       BYTE 34,>20
+       DATA 9
+       BYTE 47,>00
+* Italic, then superscript
+       DATA 11
+       BYTE 8,>20
+       DATA 11
+       BYTE 9,>30
+       DATA 11
+       BYTE 10,>00
+       
+MGNLST DATA 6,0,0
+* Indented
+       DATA 0,0,>000A
+       DATA 5,0,>0000
+* Hanging Indent
+       DATA 6,0,>00F6
+       DATA 12,0,>0000
+* Center
+       DATA 13,>0080,0
+       DATA 14,>0000,0
+       
+* 2nd byte is irrelevant
+TABLST DATA 1,0
+       DATA 14,TAB1
+       
+TAB1   BYTE 3
+       BYTE 16
+       BYTE 50
+       BYTE 94
 
-
-* This paragraph is indented in the first line.
-LIN1A  TEXT 'In physics, mass–energy equivalence states that anything having '
-LIN1B  TEXT 'mass has an equivalent amount of energy and vice versa, with these '
-LIN1C  TEXT 'fundamental quantities directly relating to one another by Albert '
-LIN1D  TEXT 'Einstein's famous formula:1'
+* This paragraph is indented in the
+* first line.
+LIN1A  BYTE 48
+       TEXT 'In physics, mass–energy equivalence states that '
+LIN1B  BYTE 60
+       TEXT 'anything having mass has an equivalent amount of energy and '
+LIN1C  BYTE 55
+       TEXT 'vice versa, with these fundamental quantities directly '
+LIN1D  BYTE 52
+       TEXT 'relating to one another by Albert Einstein's famous '
+LIN1E  BYTE 11
+       TEXT 'formula:1'
        BYTE 13,10
-LIN2   TEXT 'E=mc2   H2O'
+LIN2   BYTE 13
+       TEXT 'E=mc2   H2O'
        BYTE 13,10
-* This paragraph has a hanging indent
-LIN3A  TEXT 'This formula states that the equivalent energy (E) can be calculated as '
-LIN3B  TEXT 'the mass (m) multiplied by the speed of light (c = about 3*108 '
-LIN3C  TEXT 'm/s) squared. Similarly, anything having energy exhibits a '
-LIN3D  TEXT 'corresponding mass m given by its energy E divided by the speed '
-LIN3E  TEXT 'of light squared c2.'
+* This paragraph has a hanging indent.
+* Word "Similiarly" is bold and
+* "having" is italic.
+* "corresponding" is underlined.
+* "c2" is italic with "2" superscript.
+LIN3A  BYTE 58
+       TEXT 'This formula states that the equivalent energy (E) can be '
+LIN3B  BYTE 54
+       TEXT 'calculated as the mass (m) multiplied by the speed of '
+LIN3C  BYTE 48
+       TEXT 'light (c = about 3*108 m/s) squared. Similarly, '
+LIN3D  BYTE 55
+       TEXT 'anything having energy exhibits a corresponding mass m '
+LIN3E  BYTE 52
+       TEXT 'given by its energy E divided by the speed of light '
+LIN3F  BYTE 13
+       TEXT 'squared c2.'
        BYTE 13,10
-LIN4   BYTE 13,10
-LIN5   TEXT 'Countries and areas ranked by population in 2017'
+LIN4   BYTE 2
        BYTE 13,10
-LIN6A  TEXT 'Rank'
-       BYTE 6
-       TEXT 'Country or area'
-       BYTE 6
-       TEXT 'UN statistical region'
-       BYTE 6
-       TEXT 'Population (2017)'
+LIN5   BYTE 50
+       TEXT 'Countries and areas ranked by population in 2017'
        BYTE 13,10
-LIN6B  TEXT '—'
-       BYTE 6
-       TEXT 'World'
-       BYTE 6
+LIN6A  BYTE LIN6B-LIN6A+1
+       TEXT 'Rank'
+       BYTE 9
+       TEXT 'Country'
+       BYTE 9
+       TEXT 'UN region'
+       BYTE 9
+       TEXT 'Population'
+       BYTE 13,10
+LIN6B  BYTE LIN6C-LIN6B+1
        TEXT '—'
-       BYTE 6
+       BYTE 9
+       TEXT 'World'
+       BYTE 9
+       TEXT '—'
+       BYTE 9
        TEXT '7,550,262,101'
        BYTE 13,10
-LIN6C  TEXT '1'
-       BYTE 6
+LIN6C  BYTE LIN6D-LIN6C+1
+       TEXT '1'
+       BYTE 9
        TEXT 'China'
-       BYTE 6
+       BYTE 9
        TEXT 'Eastern Asia'
-       BYTE 6
+       BYTE 9
        TEXT '1,409,517,397'
        BYTE 13,10
-LIN6D  TEXT '2'
-       BYTE 6
+LIN6D  BYTE LIN6E-LIN6D+1
+       TEXT '2'
+       BYTE 9
        TEXT 'India'
-       BYTE 6
+       BYTE 9
        TEXT 'Southern Asia'
-       BYTE 6
+       BYTE 9
        TEXT '1,339,180,127'
        BYTE 13,10
-LIN6E  TEXT '3'
-       BYTE 6
+LIN6E  BYTE LIN6F-LIN6E+1
+       TEXT '3'
+       BYTE 9
        TEXT 'United States'
-       BYTE 6
+       BYTE 9
        TEXT 'Northern America'
-       BYTE 6
+       BYTE 9
        TEXT '324,459,463'
        BYTE 13,10
-LIN6F  TEXT '4'
-       BYTE 6
+LIN6F  BYTE LIN7-LIN6F+1
+       TEXT '4'
+       BYTE 9
        TEXT 'Indonesia'
-       BYTE 6
+       BYTE 9
        TEXT 'South-Eastern Asia'
-       BYTE 6
+       BYTE 9
        TEXT '263,991,379'
        BYTE 13,10
+LIN7
 
 * >C2   Highlighted B
 * >C9   Highlighted I
