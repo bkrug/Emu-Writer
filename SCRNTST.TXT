@@ -1,0 +1,94 @@
+       DEF  RUNTST
+	   DEF  LINLST,FMTLST,MGNLST
+       REF  MAKETX,PRINTL,OPENF,CLOSEF
+
+* We define LINLST,FMTLST,MGNLST here as
+* mocks. They would be defined in a 
+* source file.
+LINLST DATA 
+       DATA LIN1A,LIN1B,LIN1C,LIN1D
+	   DATA LIN2
+	   DATA LIN3A,LIN3B,LIN3C,LIN3D
+	   DATA LIN3E
+	   DATA LIN4
+	   DATA LIN5
+	   DATA LIN6A,LIN6B,LIN6C,LIN6D
+	   DATA LIN6E,LIN6F
+FMTLST
+MGNLST
+
+
+* This paragraph is indented in the first line.
+LIN1A  TEXT 'In physics, mass–energy equivalence states that anything having '
+LIN1B  TEXT 'mass has an equivalent amount of energy and vice versa, with these '
+LIN1C  TEXT 'fundamental quantities directly relating to one another by Albert '
+LIN1D  TEXT 'Einstein's famous formula:1'
+       BYTE 13,10
+LIN2   TEXT 'E=mc2   H2O'
+       BYTE 13,10
+* This paragraph has a hanging indent
+LIN3A  TEXT 'This formula states that the equivalent energy (E) can be calculated as '
+LIN3B  TEXT 'the mass (m) multiplied by the speed of light (c = about 3*108 '
+LIN3C  TEXT 'm/s) squared. Similarly, anything having energy exhibits a '
+LIN3D  TEXT 'corresponding mass m given by its energy E divided by the speed '
+LIN3E  TEXT 'of light squared c2.'
+       BYTE 13,10
+LIN4   BYTE 13,10
+LIN5   TEXT 'Countries and areas ranked by population in 2017'
+       BYTE 13,10
+LIN6A  TEXT 'Rank'
+       BYTE 6
+       TEXT 'Country or area'
+       BYTE 6
+       TEXT 'UN statistical region'
+       BYTE 6
+       TEXT 'Population (2017)'
+       BYTE 13,10
+LIN6B  TEXT '—'
+       BYTE 6
+       TEXT 'World'
+       BYTE 6
+       TEXT '—'
+       BYTE 6
+       TEXT '7,550,262,101'
+       BYTE 13,10
+LIN6C  TEXT '1'
+       BYTE 6
+       TEXT 'China'
+       BYTE 6
+       TEXT 'Eastern Asia'
+       BYTE 6
+       TEXT '1,409,517,397'
+       BYTE 13,10
+LIN6D  TEXT '2'
+       BYTE 6
+       TEXT 'India'
+       BYTE 6
+       TEXT 'Southern Asia'
+       BYTE 6
+       TEXT '1,339,180,127'
+       BYTE 13,10
+LIN6E  TEXT '3'
+       BYTE 6
+       TEXT 'United States'
+       BYTE 6
+       TEXT 'Northern America'
+       BYTE 6
+       TEXT '324,459,463'
+       BYTE 13,10
+LIN6F  TEXT '4'
+       BYTE 6
+       TEXT 'Indonesia'
+       BYTE 6
+       TEXT 'South-Eastern Asia'
+       BYTE 6
+       TEXT '263,991,379'
+       BYTE 13,10
+
+* >C2   Highlighted B
+* >C9   Highlighted I
+* >D5   Highlighted U
+* >AB   Highlighted +
+* >AD   Highlighted -
+* >E2   Highlighted b
+* >E5   Highlighted e

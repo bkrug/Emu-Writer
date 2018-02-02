@@ -4,6 +4,16 @@
 SCRNWS BSS  >20
 
 * General Concepts:
+*
+* Character Position - position of a 
+*    character within a string
+* Display Position - position that a
+*    a character should occupy on screen
+*    Tabs and indents changes this.
+*    Format changes occupy a display
+*    position even though they do not
+*    occupy a character position.
+*
 * LINLST - an array of addresses of
 *    all the lines in the document.
 *    The first entry is a word of 
@@ -34,6 +44,8 @@ SCRNWS BSS  >20
 *    The fifth byte is the top/bottom
 *    margin. The sixth byte is the
 *    first line indent.
+* (Need to store 
+*  center/justify/unjustify somewhere)
 
 *
 * GETLIN
@@ -43,6 +55,10 @@ SCRNWS BSS  >20
 * and create a version displayable on 
 * screen.
 *
+* Input:
 * R0 - line index
-* R1 - address to write display line to
+* Output:
+* R1 - address of created line
+* R2 - length of created line
 GETLIN DATA SCRNWS,GETLIN+4
+       RTWP
