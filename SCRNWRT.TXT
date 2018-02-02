@@ -1,0 +1,48 @@
+       DEF  GETLIN
+	   REF  LINLST,FMTLST,MGNLST
+
+SCRNWS BSS  >20
+
+* General Concepts:
+* LINLST - an array of addresses of
+*    all the lines in the document.
+*    The first entry is a word of 
+*    memory containing the total number
+*    of lines. Every other entry is a
+*    word representing the the address
+*    of a string comprising one line.
+* FMTLST - an array of data describing
+*    the character formats of text in
+*    the document. Each entry is four
+*    words long. The first word is the
+*    index of the line in LINLST. The
+*    third byte is the index of the 
+*    character in the line. The fourth
+*    byte describes bold, italic, 
+*    underline, superscript, subscript,
+*    and characters per inch.
+* MGNLST - an array of data descrbing
+*    margins at various points in the
+*    document. SCRNWRT only cares about
+*    the indent of first line and 
+*    hanging indent. All margins are
+*    unsigned accept first line indent.
+*    Each entry is 6 bytes long. The
+*    first word is a line index. The
+*    third byte is the left margin. The
+*    fourth byte is the right margin.
+*    The fifth byte is the top/bottom
+*    margin. The sixth byte is the
+*    first line indent.
+
+*
+* GETLIN
+* Get a Line of text to display.
+*
+* Look at a line in the writer's memory
+* and create a version displayable on 
+* screen.
+*
+* R0 - line index
+* R1 - address to write display line to
+GETLIN DATA SCRNWS,GETLIN+4
