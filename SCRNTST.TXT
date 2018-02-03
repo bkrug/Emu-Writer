@@ -319,6 +319,84 @@ STARTM TEXT 'Testing'
 ENDM   TEXT 'Done'
 ENDME  EVEN
 
+*
+* Test results
+* Input:
+* R0 - Actual generated string
+* R1 - Actual generated cursor string
+* R2 - Actual length
+* R3 - Expected generated string
+* R4 - Expected generated cursor string
+* R5 - Expected length
+MNWS   BSS  >20
+MNTEST DATA MNWS,MNTEST+4
+* Compare string length
+       C    @4(13),@10(13)
+       JNE  MF1
+* Compare display strings
+	   MOV  @6(13),R8
+	   MOV  *R13,R9
+	   MOV  @10(13),R10
+	   BL   @STREQU
+	   MOV  R8,R8
+	   JNE  MF2
+* Compare cursor strings
+	   MOV  @8(13),R8
+	   MOV  @2(13),R9
+	   MOV  @10(13),R10
+	   BL   @STREQU
+	   MOV  R8,R8
+	   JNE  MF3
+	   RTWP
+* Length failed
+MF1    MOV  @10(13),R0
+       LI   R1,MFMSG1+>31
+	   BLWP @MAKETX
+       MOV  @4(13),R0
+       LI   R1,MFMSG2-4
+       BLWP @MAKETX
+	   LI   R0,MFMSG1
+	   LI   R1,MFMSG2-MFMSG1
+	   BLWP @PRINTL
+       JMP  MF2A
+* Display strings failed.
+* SZC command ensures a length
+* no greater than >FF.
+MF2    LI   R0,MFMSG2
+	   LI   R1,MFMSG3-MFMSG2
+	   BLWP @PRINTL
+MF2A   MOV  @6(13),R0
+	   MOV  @10(13),R1
+	   SZC  @MXLGTH,R1
+	   BLWP @PRINTL
+	   MOV  *R13,R0
+	   MOV  @4(13),R1
+	   SZC  @MXLGTH,R1
+	   BLWP @PRINTL
+	   RTWP
+* Cursor strings failed.
+* SZC command ensures a length
+* no greater than >FF.
+MF3    LI   R0,MFMSG2
+	   LI   R1,MFMSG3-MFMSG2
+	   BLWP @PRINTL
+	   MOV  @8(13),R0
+	   MOV  @10(13),R1
+	   SZC  @MXLGTH,R1
+	   BLWP @PRINTL
+	   MOV  @2(13),R0
+	   MOV  @4(13),R1
+	   SZC  @MXLGTH,R1
+	   BLWP @PRINTL
+	   RTWP
+MXLGTH DATA >FF00
+MFMSG1 TEXT 'Test failed:                    '
+       TEXT 'Expected Length: ....           '
+	   TEXT 'Actual Length:   ....'
+MFMSG2 TEXT 'Test failed: Strings do not match. '
+       TEXT 'Expected and Actual.'
+MFMSG3 EVEN
+
 * Compare strings
 * Input:
 * R8 - Expected string
@@ -345,35 +423,9 @@ TST1A  LI   R0,0
 * R0 Contains result string
 * R1 Contains cursor string
 * R2 Contains length
-       CI   R2,DSP1B-DSP1A
-	   JNE  FT1A1
-*
-	   LI   R8,DSP1A
-       MOV  R0,R9
-	   MOV  R2,R10
-	   BL   @STREQU
-	   MOV  R8,R8
-	   JNE  FT1A2
-       RT
-FT1A1  MOV  R2,R0
-       LI   R1,FM1A2-4
-       BLWP @MAKETX
-	   LI   R0,FM1A1
-	   LI   R1,FM1A2-FM1A1
-	   BLWP @PRINTL
+       LI   R3,DSP1A
+	   LI   R4,CUR1A
+	   LI   R5,CUR1A-DSP1A
+	   BLWP @MNTEST
 	   RT
-FT1A2  MOV  R0,R9
-       LI   R0,FM1A2
-       LI   R1,FM1A3-FM1A2
-	   BLWP @PRINTL
-	   LI   R0,DSP1A
-	   MOV  R2,R1
-	   BLWP @PRINTL
-	   MOV  R9,R0
-	   BLWP @PRINTL	   
-FM1A1  TEXT 'TST1A failed: Actual Length: ....'
-FM1A2  TEXT 'TST1A failed: Strings do not match. '
-       TEXT 'Expected and Actual.'
-FM1A3	   
-       EVEN
        END
