@@ -5,78 +5,6 @@
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
 * source file.
-LINLST DATA 20
-       DATA LIN1A,LIN1B,LIN1C,LIN1D
-       DATA LIN1E
-       DATA LIN2
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN3E,LIN3F
-       DATA LIN4
-       DATA LIN5A,LIN5B,LIN5C,LIN5D
-	   DATA LIN5E,LIN5F
-	   DATA LIN6
-       
-* bold, italic, underline, super, sub
-FMTLST DATA 17,0
-* Superscript
-       DATA 4,
-       BYTE 8,>10
-       DATA 4,
-       BYTE 9,>00
-* Superscript
-       DATA 5,
-       BYTE 4,>10
-       DATA 5,
-       BYTE 5,>00
-* Subscript
-       DATA 5,
-       BYTE 9,>08
-       DATA 5,
-       BYTE 9,>00
-* Bold
-       DATA 8
-       BYTE 37,>80
-       DATA 8
-       BYTE 46,>00
-* Italic
-       DATA 9
-       BYTE 9,>40
-       DATA 9
-       BYTE 15,>00
-* Underline
-       DATA 9
-       BYTE 34,>20
-       DATA 9
-       BYTE 47,>00
-* Italic, then superscript
-       DATA 11
-       BYTE 8,>20
-       DATA 11
-       BYTE 9,>30
-       DATA 11
-       BYTE 10,>00
-* 5 CPI
-       DATA 14
-	   BYTE 6,>07
-* 15 CPI
-       DATA 15
-	   BYTE 7,>02
-       
-MGNLST DATA 5,0,0
-* Indented half-inch,
-* Half-inch left/right margin
-       DATA 0,>0A0A,>000A
-* End Indented,
-* Top+Bottom margin 2in.
-       DATA 5,>0A0A,>2800
-* Hanging Indent half-inch
-* Justified
-       DATA 6,>8A0A,>00F6
-* Indented 7/10 inch
-* 1-inch left/right margins
-       DATA 12,>9414,>000E
-* Centered
-       DATA 19,>1494,>000E
        
 * This paragraph is indented in the
 * first line.
@@ -130,22 +58,116 @@ LIN5F  BYTE LIN6-LIN5F
 LIN6   BYTE LIN7-LIN6
        TEXT 'Regiment Formed'
 	   BYTE 13,10
-LIN7
+LIN7   BYTE LIN8-LIN7
+       TEXT 'Another line of text'
+	   BYTE 13,10
+LIN8   
+
+LINLST DATA 20
+       DATA LIN1A,LIN1B,LIN1C,LIN1D
+       DATA LIN1E
+       DATA LIN2
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN3E,LIN3F
+       DATA LIN4
+       DATA LIN5A,LIN5B,LIN5C,LIN5D
+	   DATA LIN5E,LIN5F
+	   DATA LIN6
+	   DATA LIN7
+       
+* bold, italic, underline, super, sub
+FMTLST DATA 17,0
+* Superscript
+       DATA 4,
+       BYTE 8,>10
+       DATA 4,
+       BYTE 9,>00
+* Superscript
+       DATA 5,
+       BYTE 4,>10
+       DATA 5,
+       BYTE 5,>00
+* Subscript
+       DATA 5,
+       BYTE 9,>08
+       DATA 5,
+       BYTE 9,>00
+* Bold
+       DATA 8
+       BYTE 37,>80
+       DATA 8
+       BYTE 46,>00
+* Italic
+       DATA 9
+       BYTE 9,>40
+       DATA 9
+       BYTE 15,>00
+* Underline
+       DATA 9
+       BYTE 34,>20
+       DATA 9
+       BYTE 47,>00
+* Italic, then superscript
+       DATA 11
+       BYTE 8,>20
+       DATA 11
+       BYTE 9,>30
+       DATA 11
+       BYTE 10,>00
+* 5 CPI
+       DATA 14
+	   BYTE 6,>07
+* 15 CPI
+       DATA 15
+	   BYTE 7,>02
+       
+MGNLST DATA 6,0,0
+* Default is >1414,>2800
+*
+* Indented half-inch,
+* Half-inch left/right margin
+       DATA 0,>0A0A,>280A
+* End Indented,
+* Top+Bottom margin 2.1 in.
+       DATA 5,>0A0A,>2A00
+* Hanging Indent half-inch
+* Justified
+       DATA 6,>8A0A,>2AF6
+* Indented 7/10 inch
+* 1-inch left/right margins
+       DATA 12,>9414,>2A0E
+* Centered
+       DATA 19,>1494,>2A0E
+* Non-Justified
+       DATA 20,>1414,>2A0E
 
 * Users will see inverse images of
 * letters to represent changes in
 * formatting.
-* >C2   Highlighted B
-* >C9   Highlighted I
-* >D5   Highlighted U
-* >AB   Highlighted +
-* >AD   Highlighted -
-* >E2   Highlighted b
-* >E5   Highlighted e
+* >B0   Inverted 0
+* >B1   Inverted 1
+* >B2   Inverted 2
+* >B5   Inverted 5
+* >B6   Inverted 6
+* >B7   Inverted 7
+* >C2   Inverted B
+* >C3   Inverted C
+* >C9   Inverted I
+* >CA   Inverted J
+* >CC   Inverted L
+* >CD   Inverted M
+* >CE   Inverted N
+* >D2   Inverted R
+* >D5   Inverted U
+* >AB   Inverted +
+* >AD   Inverted -
+* >E2   Inverted b
+* >E5   Inverted e
 
 * Expected Display Lines
-DSP1A  TEXT '     In physics, mass–energy equivalence states that '
-CUR1A  TEXT 'XXXXX                                                '
+DSP1A  BYTE >CC,>CD,>D2,>CD
+       TEXT '     In physics, mass–energy equivalence states that '
+CUR1A  TEXT ' X XXXXXX                                                '
 DSP1B  TEXT 'anything having mass has an equivalent amount of energy and '
 CUR1B  TEXT '                                                     '
 DSP1C  TEXT 'vice versa, with these fundamental quantities directly '
@@ -158,7 +180,8 @@ DSP1E  TEXT 'formula:'
 	   BYTE >AB,>E5
 	   TEXT ' '
 CUR1E  TEXT '         X  X '   
-DSP2   TEXT 'E=mc'
+DSP2   BYTE >C2,>CD
+       TEXT 'E=mc'
        BYTE >AB,>E2
        TEXT '2'
        BYTE >AB,>E5
@@ -167,14 +190,15 @@ DSP2   TEXT 'E=mc'
 	   TEXT '2'
        BYTE >AD,>E5
 	   TEXT 'O '
-CUR2   TEXT '     X  X     X  X  '
+CUR2   TEXT ' X     X  X     X  X  '
 * This paragraph has a hanging indent.
 * Word "Similiarly" is bold and
 * "having" is italic.
 * "corresponding" is underlined.
 * "c2" is italic with "2" superscript.
-DSP3A  TEXT 'This formula states that the equivalent energy (E) can be '
-CUR3A  TEXT '                                                          '
+DSP3A  BYTE >CA,>D5
+       TEXT 'This formula states that the equivalent energy (E) can be '
+CUR3A  TEXT ' X                                                          '
 DSP3B  TEXT '     calculated as the mass (m) multiplied by the speed of '
 CUR3B  TEXT 'XXXXX                                                      '
 DSP3C  TEXT '     light (c = about 3*108 m/s) squared. '
@@ -203,21 +227,30 @@ DSP3F  TEXT 'squared '
 	   BYTE >C9,>E5,>AB,>E5
 	   TEXT '. '
 CUR3F  TEXT '         X  X  X X  '
-DSP4   TEXT ' '
-CUR4   TEXT ' '
+DSP4   BYTE >CC,>CD,>D2,>CD
+       TEXT ' '
+CUR4   TEXT ' X X '
 DSP5A  TEXT '       The American Legion was a British provincial militia '
 CUR5A  TEXT 'XXXXXXX                                                     '
-DSP5B  TEXT 'unit raised for Loyalist service late in the American '
-CUR5B  TEXT '                                                      '
-DSP5C  TEXT 'Revolutionary War by Benedict Arnold, the former Continental '
-CUR5C  TEXT '                                                             '
+DSP5B  TEXT 'unit r'
+       BYTE >C3,>B5
+       TEXT 'aised for Loyalist service late in the American '
+CUR5B  TEXT '       X                                                '
+DSP5C  TEXT 'Revolut'
+       BYTE >C3,>B1,>B5
+       TEXT 'ionary War by Benedict Arnold, the former Continental '
+CUR5C  TEXT '         XX                                                     '
 DSP5D  TEXT 'Army general who had crossed over from the Patriots to the '
 CUR5D  TEXT '                                                           '
 DSP5E  TEXT 'British. The unit was composed primarily of deserters from '
 CUR5E  TEXT '                                                           '
 DSP5F  TEXT 'the Continental Army. '
 CUR5F  TEXT '                      '
-DSP6   TEXT 'Regiment Formed '
-CUR6   TEXT '                '
-DSP7
+DSP6   BYTE >C3,>CE
+       TEXT 'Regiment Formed '
+CUR6   TEXT ' X                '
+DSP7   BYTE >CE,>CA
+       TEXT '       Another line of text '
+CUR7   TEXT ' XXXXXXXX                     '
+DSP8
        END
