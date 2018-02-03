@@ -5,18 +5,19 @@
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
 * source file.
-LINLST DATA 16
+LINLST DATA 20
        DATA LIN1A,LIN1B,LIN1C,LIN1D
        DATA LIN1E
        DATA LIN2
        DATA LIN3A,LIN3B,LIN3C,LIN3D
        DATA LIN3E,LIN3F
        DATA LIN4
-       DATA LIN5
-       DATA LIN6A,LIN6B
+       DATA LIN5A,LIN5B,LIN5C,LIN5D
+	   DATA LIN5E,LIN5F
+	   DATA LIN6
        
 * bold, italic, underline, super, sub
-FMTLST DATA 15,0
+FMTLST DATA 17,0
 * Superscript
        DATA 4,
        BYTE 8,>10
@@ -54,27 +55,29 @@ FMTLST DATA 15,0
        BYTE 9,>30
        DATA 11
        BYTE 10,>00
+* 5 CPI
+       DATA 14
+	   BYTE 6,>07
+* 15 CPI
+       DATA 15
+	   BYTE 7,>02
        
-MGNLST DATA 6,0,0
-* Indented
+MGNLST DATA 5,0,0
+* Indented half-inch,
+* Half-inch left/right margin
        DATA 0,>0A0A,>000A
-       DATA 5,>0A0A,>0000
-* Hanging Indent
-       DATA 6,>0A0A,>00F6
-       DATA 12,>0A0A,>0000
-* Center
-       DATA 13,>0A8A,0
-       DATA 14,>0A0A,0
+* End Indented,
+* Top+Bottom margin 2in.
+       DATA 5,>0A0A,>2800
+* Hanging Indent half-inch
+* Justified
+       DATA 6,>8A0A,>00F6
+* Indented 7/10 inch
+* 1-inch left/right margins
+       DATA 12,>9414,>000E
+* Centered
+       DATA 19,>1494,>000E
        
-* 2nd byte is irrelevant
-TABLST DATA 1,0
-       DATA 14,TAB1
-       
-TAB1   BYTE 3
-       BYTE 16
-       BYTE 50
-       BYTE 94
-
 * This paragraph is indented in the
 * first line.
 LIN1A  BYTE 48
@@ -111,27 +114,22 @@ LIN3F  BYTE 13
        BYTE 13,10
 LIN4   BYTE 2
        BYTE 13,10
-LIN5   BYTE 50
-       TEXT 'Countries and areas ranked by population in 2017'
+LIN5A  BYTE LIN5B-LIN5A
+       TEXT 'The American Legion was a British provincial militia '
+LIN5B  BYTE LIN5C-LIN5B
+       TEXT 'unit raised for Loyalist service late in the American '
+LIN5C  BYTE LIN5D-LIN5C
+       TEXT 'Revolutionary War by Benedict Arnold, the former Continental '
+LIN5D  BYTE LIN5E-LIN5D
+       TEXT 'Army general who had crossed over from the Patriots to the '
+LIN5E  BYTE LIN5F-LIN5E
+       TEXT 'British. The unit was composed primarily of deserters from '
+LIN5F  BYTE LIN6-LIN5F
+       TEXT 'the Continental Army.'
        BYTE 13,10
-LIN6A  BYTE LIN6B-LIN6A+1
-       TEXT 'Rank'
-       BYTE 9
-       TEXT 'Country'
-       BYTE 9
-       TEXT 'UN region'
-       BYTE 9
-       TEXT 'Population'
-       BYTE 13,10
-LIN6B  BYTE LIN7-LIN6B+1
-       TEXT '1'
-       BYTE 9
-       TEXT 'China'
-       BYTE 9
-       TEXT 'Eastern Asia'
-       BYTE 9
-       TEXT '1,409,517,397'
-       BYTE 13,10
+LIN6   BYTE LIN7-LIN6
+       TEXT 'Regiment Formed'
+	   BYTE 13,10
 LIN7
 
 * Users will see inverse images of
@@ -207,10 +205,19 @@ DSP3F  TEXT 'squared '
 CUR3F  TEXT '         X  X  X X  '
 DSP4   TEXT ' '
 CUR4   TEXT ' '
-DSP5   TEXT '      Countries and areas ranked by population in 2017 '
-CUR5   TEXT 'XXXXXX                                                 '
-DSP6A  TEXT 'Rank    Country          UN region             Population '
-CUR6A  TEXT '     XXX        XXXXXXXXX          XXXXXXXXXXXX
-LIN6B  TEXT '1       China            Eastern Asia          1,409,517,397 '
-CUR6B  TEXT '  XXXXXX      XXXXXXXXXXX             XXXXXXXXX
-LIN7
+DSP5A  TEXT '       The American Legion was a British provincial militia '
+CUR5A  TEXT 'XXXXXXX                                                     '
+DSP5B  TEXT 'unit raised for Loyalist service late in the American '
+CUR5B  TEXT '                                                      '
+DSP5C  TEXT 'Revolutionary War by Benedict Arnold, the former Continental '
+CUR5C  TEXT '                                                             '
+DSP5D  TEXT 'Army general who had crossed over from the Patriots to the '
+CUR5D  TEXT '                                                           '
+DSP5E  TEXT 'British. The unit was composed primarily of deserters from '
+CUR5E  TEXT '                                                           '
+DSP5F  TEXT 'the Continental Army. '
+CUR5F  TEXT '                      '
+DSP6   TEXT 'Regiment Formed '
+CUR6   TEXT '                '
+DSP7
+       END
