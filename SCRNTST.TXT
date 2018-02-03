@@ -330,29 +330,33 @@ ENDME  EVEN
 * R5 - Expected length
 MNWS   BSS  >20
 MNTEST DATA MNWS,MNTEST+4
+       MOV  @4(13),R2
+	   MOV  @6(13),R3
+	   MOV  @8(13),R4
+	   MOV  @10(13),R5
 * Compare string length
-       C    @4(13),@10(13)
+       C    R2,R5
        JNE  MF1
 * Compare display strings
-	   MOV  @6(13),R8
+	   MOV  R3,R8
 	   MOV  *R13,R9
-	   MOV  @10(13),R10
+	   MOV  R5,R10
 	   BL   @STREQU
 	   MOV  R8,R8
 	   JNE  MF2
 * Compare cursor strings
-	   MOV  @8(13),R8
+	   MOV  R4,R8
 	   MOV  @2(13),R9
-	   MOV  @10(13),R10
+	   MOV  R5,R10
 	   BL   @STREQU
 	   MOV  R8,R8
 	   JNE  MF3
 	   RTWP
 * Length failed
-MF1    MOV  @10(13),R0
+MF1    MOV  R5,R0
        LI   R1,MFMSG1+>31
 	   BLWP @MAKETX
-       MOV  @4(13),R0
+       MOV  R2,R0
        LI   R1,MFMSG2-4
        BLWP @MAKETX
 	   LI   R0,MFMSG1
@@ -365,12 +369,12 @@ MF1    MOV  @10(13),R0
 MF2    LI   R0,MFMSG2
 	   LI   R1,MFMSG3-MFMSG2
 	   BLWP @PRINTL
-MF2A   MOV  @6(13),R0
-	   MOV  @10(13),R1
+MF2A   MOV  R3,R0
+	   MOV  R5,R1
 	   SZC  @MXLGTH,R1
 	   BLWP @PRINTL
 	   MOV  *R13,R0
-	   MOV  @4(13),R1
+	   MOV  R2,R1
 	   SZC  @MXLGTH,R1
 	   BLWP @PRINTL
 	   RTWP
