@@ -9,13 +9,17 @@
 * This paragraph is indented in the
 * first line.
 LIN1A  BYTE 48
-       TEXT 'In physics, mass–energy equivalence states that '
+       TEXT 'In physics, mass–energy equivalence states '
+	   TEXT 'that '
 LIN1B  BYTE 60
-       TEXT 'anything having mass has an equivalent amount of energy and '
+       TEXT 'anything having mass has an equivalent amount '
+	   TEXT 'of energy and '
 LIN1C  BYTE 55
-       TEXT 'vice versa, with these fundamental quantities directly '
+       TEXT 'vice versa, with these fundamental quantities '
+	   TEXT 'directly '
 LIN1D  BYTE 52
-       TEXT 'relating to one another by Albert Einstein's famous '
+       TEXT 'relating to one another by Albert Einstein,s '
+	   TEXT 'famous '
 LIN1E  BYTE 11
        TEXT 'formula:1'
        BYTE 13,10
@@ -28,30 +32,40 @@ LIN2   BYTE 13
 * "corresponding" is underlined.
 * "c2" is italic with "2" superscript.
 LIN3A  BYTE 58
-       TEXT 'This formula states that the equivalent energy (E) can be '
+       TEXT 'This formula states that the equivalent '
+	   TEXT 'energy (E) can be '
 LIN3B  BYTE 54
-       TEXT 'calculated as the mass (m) multiplied by the speed of '
+       TEXT 'calculated as the mass (m) multiplied by the '
+	   TEXT 'speed of '
 LIN3C  BYTE 48
-       TEXT 'light (c = about 3*108 m/s) squared. Similarly, '
+       TEXT 'light (c = about 3*108 m/s) squared. '
+	   TEXT 'Similarly, '
 LIN3D  BYTE 55
-       TEXT 'anything having energy exhibits a corresponding mass m '
+       TEXT 'anything having energy exhibits a '
+	   TEXT 'corresponding mass m '
 LIN3E  BYTE 52
-       TEXT 'given by its energy E divided by the speed of light '
+       TEXT 'given by its energy E divided by the speed '
+	   TEXT 'of light '
 LIN3F  BYTE 13
        TEXT 'squared c2.'
        BYTE 13,10
 LIN4   BYTE 2
        BYTE 13,10
 LIN5A  BYTE LIN5B-LIN5A
-       TEXT 'The American Legion was a British provincial militia '
+       TEXT 'The American Legion was a British provincial '
+	   TEXT 'militia '
 LIN5B  BYTE LIN5C-LIN5B
-       TEXT 'unit raised for Loyalist service late in the American '
+       TEXT 'unit raised for Loyalist service late in the '
+	   TEXT 'American '
 LIN5C  BYTE LIN5D-LIN5C
-       TEXT 'Revolutionary War by Benedict Arnold, the former Continental '
+       TEXT 'Revolutionary War by Benedict Arnold, the '
+	   TEXT 'former Continental '
 LIN5D  BYTE LIN5E-LIN5D
-       TEXT 'Army general who had crossed over from the Patriots to the '
+       TEXT 'Army general who had crossed over from the '
+	   TEXT 'Patriots to the '
 LIN5E  BYTE LIN5F-LIN5E
-       TEXT 'British. The unit was composed primarily of deserters from '
+       TEXT 'British. The unit was composed primarily of '
+	   TEXT 'deserters from '
 LIN5F  BYTE LIN6-LIN5F
        TEXT 'the Continental Army.'
        BYTE 13,10
@@ -63,7 +77,7 @@ LIN7   BYTE LIN8-LIN7
 	   BYTE 13,10
 LIN8   
 
-LINLST DATA 20
+LINLST DATA 21
        DATA LIN1A,LIN1B,LIN1C,LIN1D
        DATA LIN1E
        DATA LIN2
@@ -78,19 +92,19 @@ LINLST DATA 20
 * bold, italic, underline, super, sub
 FMTLST DATA 17,0
 * Superscript
-       DATA 4,
+       DATA 4
        BYTE 8,>10
-       DATA 4,
+       DATA 4
        BYTE 9,>00
 * Superscript
-       DATA 5,
+       DATA 5
        BYTE 4,>10
-       DATA 5,
+       DATA 5
        BYTE 5,>00
 * Subscript
-       DATA 5,
+       DATA 5
        BYTE 9,>08
-       DATA 5,
+       DATA 5
        BYTE 9,>00
 * Bold
        DATA 8
@@ -166,14 +180,22 @@ MGNLST DATA 6,0,0
 
 * Expected Display Lines
 DSP1A  BYTE >CC,>CD,>D2,>CD
-       TEXT '     In physics, mass–energy equivalence states that '
-CUR1A  TEXT ' X XXXXXX                                                '
-DSP1B  TEXT 'anything having mass has an equivalent amount of energy and '
-CUR1B  TEXT '                                                     '
-DSP1C  TEXT 'vice versa, with these fundamental quantities directly '
-CUR1C  TEXT '                                                       '
-DSP1D  TEXT 'relating to one another by Albert Einstein's famous '
-CUR1D  TEXT '                                                    '
+       TEXT '     In physics, mass–energy equivalence '
+	   TEXT 'states that '
+CUR1A  TEXT ' X XXXXXX                                '
+       TEXT '                '
+DSP1B  TEXT 'anything having mass has an equivalent amount '
+       TEXT 'of energy and '
+CUR1B  TEXT '                                              '
+       TEXT '       '
+DSP1C  TEXT 'vice versa, with these fundamental quantities '
+       TEXT 'directly '
+CUR1C  TEXT '                                              '
+       TEXT '         '
+DSP1D  TEXT 'relating to one another by Albert Einstein,s '
+       TEXT 'famous '
+CUR1D  TEXT '                                             '
+       TEXT '       '
 DSP1E  TEXT 'formula:'
        BYTE >AB,>E2
        TEXT '1'
@@ -197,16 +219,21 @@ CUR2   TEXT ' X     X  X     X  X  '
 * "corresponding" is underlined.
 * "c2" is italic with "2" superscript.
 DSP3A  BYTE >CA,>D5
-       TEXT 'This formula states that the equivalent energy (E) can be '
-CUR3A  TEXT ' X                                                          '
-DSP3B  TEXT '     calculated as the mass (m) multiplied by the speed of '
-CUR3B  TEXT 'XXXXX                                                      '
+       TEXT 'This formula states that the equivalent '
+	   TEXT 'energy (E) can be '
+CUR3A  TEXT ' X                                      '
+       TEXT '                    '
+DSP3B  TEXT '     calculated as the mass (m) multiplied by '
+       TEXT 'the speed of '
+CUR3B  TEXT 'XXXXX                                         '
+       TEXT '             '
 DSP3C  TEXT '     light (c = about 3*108 m/s) squared. '
        BYTE >C2,>E2
        TEXT 'Similarly,'
        BYTE >C2,>E5
 	   TEXT ' '
-CUR3C  TEXT 'XXXXX                                      X           X '
+CUR3C  TEXT 'XXXXX                                      X'
+       TEXT '           X '
 DSP3D  TEXT '     anything '
        BYTE >C9,>E2
        TEXT 'having'
@@ -216,9 +243,12 @@ DSP3D  TEXT '     anything '
 	   TEXT 'corresponding'
 	   BYTE >D5,>E5
 	   TEXT ' mass m '
-CUR3D  TEXT 'XXXXX          X       X                    X              X        '
-DSP3E  TEXT '     given by its energy E divided by the speed of light '
-CUR3E  TEXT 'XXXXX                                                    '
+CUR3D  TEXT 'XXXXX          X       X                    X'
+       TEXT '              X        '
+DSP3E  TEXT '     given by its energy E divided by the '
+       TEXT 'speed of light '
+CUR3E  TEXT 'XXXXX                                     '
+       TEXT '               '
 DSP3F  TEXT 'squared '
        BYTE >C9,>E2
        TEXT 'c'
@@ -230,20 +260,30 @@ CUR3F  TEXT '         X  X  X X  '
 DSP4   BYTE >CC,>CD,>D2,>CD
        TEXT ' '
 CUR4   TEXT ' X X '
-DSP5A  TEXT '       The American Legion was a British provincial militia '
-CUR5A  TEXT 'XXXXXXX                                                     '
+DSP5A  TEXT '       The American Legion was a British '
+       TEXT 'provincial militia '
+CUR5A  TEXT 'XXXXXXX                                  '
+       TEXT '                   '
 DSP5B  TEXT 'unit r'
        BYTE >C3,>B5
-       TEXT 'aised for Loyalist service late in the American '
-CUR5B  TEXT '       X                                                '
+       TEXT 'aised for Loyalist service late in the '
+	   TEXT 'American '
+CUR5B  TEXT '       X                               '
+       TEXT '                 '
 DSP5C  TEXT 'Revolut'
        BYTE >C3,>B1,>B5
-       TEXT 'ionary War by Benedict Arnold, the former Continental '
-CUR5C  TEXT '         XX                                                     '
-DSP5D  TEXT 'Army general who had crossed over from the Patriots to the '
-CUR5D  TEXT '                                                           '
-DSP5E  TEXT 'British. The unit was composed primarily of deserters from '
-CUR5E  TEXT '                                                           '
+       TEXT 'ionary War by Benedict Arnold, the former '
+	   TEXT 'Continental '
+CUR5C  TEXT '         XX                               '
+       TEXT '                      '
+DSP5D  TEXT 'Army general who had crossed over from the '
+       TEXT 'Patriots to the '
+CUR5D  TEXT '                                           '
+       TEXT '                '
+DSP5E  TEXT 'British. The unit was composed primarily of '
+       TEXT 'deserters from '
+CUR5E  TEXT '                                            '
+       TEXT '               '
 DSP5F  TEXT 'the Continental Army. '
 CUR5F  TEXT '                      '
 DSP6   BYTE >C3,>CE
