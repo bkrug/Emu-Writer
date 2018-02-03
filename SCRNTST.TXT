@@ -1,5 +1,6 @@
        DEF  RUNTST
        DEF  LINLST,FMTLST,MGNLST
+       REF  GETLIN
        REF  MAKETX,PRINTL,OPENF,CLOSEF
 
 * We define LINLST,FMTLST,MGNLST here as
@@ -10,16 +11,16 @@
 * first line.
 LIN1A  BYTE 48
        TEXT 'In physics, mass–energy equivalence states '
-	   TEXT 'that '
+       TEXT 'that '
 LIN1B  BYTE 60
        TEXT 'anything having mass has an equivalent amount '
-	   TEXT 'of energy and '
+       TEXT 'of energy and '
 LIN1C  BYTE 55
        TEXT 'vice versa, with these fundamental quantities '
-	   TEXT 'directly '
+       TEXT 'directly '
 LIN1D  BYTE 52
        TEXT 'relating to one another by Albert Einstein,s '
-	   TEXT 'famous '
+       TEXT 'famous '
 LIN1E  BYTE 11
        TEXT 'formula:1'
        BYTE 13,10
@@ -33,19 +34,19 @@ LIN2   BYTE 13
 * "c2" is italic with "2" superscript.
 LIN3A  BYTE 58
        TEXT 'This formula states that the equivalent '
-	   TEXT 'energy (E) can be '
+       TEXT 'energy (E) can be '
 LIN3B  BYTE 54
        TEXT 'calculated as the mass (m) multiplied by the '
-	   TEXT 'speed of '
+       TEXT 'speed of '
 LIN3C  BYTE 48
        TEXT 'light (c = about 3*108 m/s) squared. '
-	   TEXT 'Similarly, '
+       TEXT 'Similarly, '
 LIN3D  BYTE 55
        TEXT 'anything having energy exhibits a '
-	   TEXT 'corresponding mass m '
+       TEXT 'corresponding mass m '
 LIN3E  BYTE 52
        TEXT 'given by its energy E divided by the speed '
-	   TEXT 'of light '
+       TEXT 'of light '
 LIN3F  BYTE 13
        TEXT 'squared c2.'
        BYTE 13,10
@@ -53,28 +54,28 @@ LIN4   BYTE 2
        BYTE 13,10
 LIN5A  BYTE LIN5B-LIN5A
        TEXT 'The American Legion was a British provincial '
-	   TEXT 'militia '
+       TEXT 'militia '
 LIN5B  BYTE LIN5C-LIN5B
        TEXT 'unit raised for Loyalist service late in the '
-	   TEXT 'American '
+       TEXT 'American '
 LIN5C  BYTE LIN5D-LIN5C
        TEXT 'Revolutionary War by Benedict Arnold, the '
-	   TEXT 'former Continental '
+       TEXT 'former Continental '
 LIN5D  BYTE LIN5E-LIN5D
        TEXT 'Army general who had crossed over from the '
-	   TEXT 'Patriots to the '
+       TEXT 'Patriots to the '
 LIN5E  BYTE LIN5F-LIN5E
        TEXT 'British. The unit was composed primarily of '
-	   TEXT 'deserters from '
+       TEXT 'deserters from '
 LIN5F  BYTE LIN6-LIN5F
        TEXT 'the Continental Army.'
        BYTE 13,10
 LIN6   BYTE LIN7-LIN6
        TEXT 'Regiment Formed'
-	   BYTE 13,10
+       BYTE 13,10
 LIN7   BYTE LIN8-LIN7
        TEXT 'Another line of text'
-	   BYTE 13,10
+       BYTE 13,10
 LIN8   
 
 LINLST DATA 21
@@ -85,9 +86,9 @@ LINLST DATA 21
        DATA LIN3E,LIN3F
        DATA LIN4
        DATA LIN5A,LIN5B,LIN5C,LIN5D
-	   DATA LIN5E,LIN5F
-	   DATA LIN6
-	   DATA LIN7
+       DATA LIN5E,LIN5F
+       DATA LIN6
+       DATA LIN7
        
 * bold, italic, underline, super, sub
 FMTLST DATA 17,0
@@ -130,10 +131,10 @@ FMTLST DATA 17,0
        BYTE 10,>00
 * 5 CPI
        DATA 14
-	   BYTE 6,>07
+       BYTE 6,>07
 * 15 CPI
        DATA 15
-	   BYTE 7,>02
+       BYTE 7,>02
        
 MGNLST DATA 6,0,0
 * Default is >1414,>2800
@@ -181,7 +182,7 @@ MGNLST DATA 6,0,0
 * Expected Display Lines
 DSP1A  BYTE >CC,>CD,>D2,>CD
        TEXT '     In physics, mass–energy equivalence '
-	   TEXT 'states that '
+       TEXT 'states that '
 CUR1A  TEXT ' X XXXXXX                                '
        TEXT '                '
 DSP1B  TEXT 'anything having mass has an equivalent amount '
@@ -199,8 +200,8 @@ CUR1D  TEXT '                                             '
 DSP1E  TEXT 'formula:'
        BYTE >AB,>E2
        TEXT '1'
-	   BYTE >AB,>E5
-	   TEXT ' '
+       BYTE >AB,>E5
+       TEXT ' '
 CUR1E  TEXT '         X  X '   
 DSP2   BYTE >C2,>CD
        TEXT 'E=mc'
@@ -209,9 +210,9 @@ DSP2   BYTE >C2,>CD
        BYTE >AB,>E5
        TEXT '   H'
        BYTE >AD,>E2
-	   TEXT '2'
+       TEXT '2'
        BYTE >AD,>E5
-	   TEXT 'O '
+       TEXT 'O '
 CUR2   TEXT ' X     X  X     X  X  '
 * This paragraph has a hanging indent.
 * Word "Similiarly" is bold and
@@ -220,7 +221,7 @@ CUR2   TEXT ' X     X  X     X  X  '
 * "c2" is italic with "2" superscript.
 DSP3A  BYTE >CA,>D5
        TEXT 'This formula states that the equivalent '
-	   TEXT 'energy (E) can be '
+       TEXT 'energy (E) can be '
 CUR3A  TEXT ' X                                      '
        TEXT '                    '
 DSP3B  TEXT '     calculated as the mass (m) multiplied by '
@@ -231,18 +232,18 @@ DSP3C  TEXT '     light (c = about 3*108 m/s) squared. '
        BYTE >C2,>E2
        TEXT 'Similarly,'
        BYTE >C2,>E5
-	   TEXT ' '
+       TEXT ' '
 CUR3C  TEXT 'XXXXX                                      X'
        TEXT '           X '
 DSP3D  TEXT '     anything '
        BYTE >C9,>E2
        TEXT 'having'
-	   BYTE >C9,>E5
-	   TEXT ' energy exhibits a '
-	   BYTE >D5,>E2
-	   TEXT 'corresponding'
-	   BYTE >D5,>E5
-	   TEXT ' mass m '
+       BYTE >C9,>E5
+       TEXT ' energy exhibits a '
+       BYTE >D5,>E2
+       TEXT 'corresponding'
+       BYTE >D5,>E5
+       TEXT ' mass m '
 CUR3D  TEXT 'XXXXX          X       X                    X'
        TEXT '              X        '
 DSP3E  TEXT '     given by its energy E divided by the '
@@ -252,10 +253,10 @@ CUR3E  TEXT 'XXXXX                                     '
 DSP3F  TEXT 'squared '
        BYTE >C9,>E2
        TEXT 'c'
-	   BYTE >AB,>E2
-	   TEXT '2'
-	   BYTE >C9,>E5,>AB,>E5
-	   TEXT '. '
+       BYTE >AB,>E2
+       TEXT '2'
+       BYTE >C9,>E5,>AB,>E5
+       TEXT '. '
 CUR3F  TEXT '         X  X  X X  '
 DSP4   BYTE >CC,>CD,>D2,>CD
        TEXT ' '
@@ -267,13 +268,13 @@ CUR5A  TEXT 'XXXXXXX                                  '
 DSP5B  TEXT 'unit r'
        BYTE >C3,>B5
        TEXT 'aised for Loyalist service late in the '
-	   TEXT 'American '
+       TEXT 'American '
 CUR5B  TEXT '       X                               '
        TEXT '                 '
 DSP5C  TEXT 'Revolut'
        BYTE >C3,>B1,>B5
        TEXT 'ionary War by Benedict Arnold, the former '
-	   TEXT 'Continental '
+       TEXT 'Continental '
 CUR5C  TEXT '         XX                               '
        TEXT '                      '
 DSP5D  TEXT 'Army general who had crossed over from the '
@@ -293,4 +294,86 @@ DSP7   BYTE >CE,>CA
        TEXT '       Another line of text '
 CUR7   TEXT ' XXXXXXXX                     '
 DSP8
+
+* Run all tests
+RUNTST BLWP @OPENF
+       BL   @WRTST
+       BL   @TST1A
+       BL   @WREND
+       BLWP @CLOSEF
+LOOP   JMP  LOOP
+
+* Write something
+WRTST  LI   R0,STARTM
+       LI   R1,ENDM-STARTM
+       BLWP @PRINTL
+       RT
+ 
+* Finished testing
+WREND  LI   R0,ENDM
+       LI   R1,ENDME-ENDM
+       BLWP @PRINTL
+       RT
+
+STARTM TEXT 'Testing'
+ENDM   TEXT 'Done'
+ENDME  EVEN
+
+* Compare strings
+* Input:
+* R8 - Expected string
+* R9 - Actual string
+* R10 - Expected Length
+* Output:
+* R8 - 0 if match >FFFF if not.
+STREQU CB   *R8+,*R9+
+	   JNE  STREF
+       DEC  R10
+       JNE  STREQU
+* Match
+       CLR  R8
+       RT       
+* No Match
+STREF  SETO R8
+	   RT
+
+* Test LIN1A (at index 0)
+* Compare results to DSP1A and CUR1A
+TST1A  LI   R0,0
+       LI   R2,>FFFF
+       BLWP @GETLIN
+* R0 Contains result string
+* R1 Contains cursor string
+* R2 Contains length
+       CI   R2,DSP1B-DSP1A
+	   JNE  FT1A1
+*
+	   LI   R8,DSP1A
+       MOV  R0,R9
+	   MOV  R2,R10
+	   BL   @STREQU
+	   MOV  R8,R8
+	   JNE  FT1A2
+       RT
+FT1A1  MOV  R2,R0
+       LI   R1,FM1A2-4
+       BLWP @MAKETX
+	   LI   R0,FM1A1
+	   LI   R1,FM1A2-FM1A1
+	   BLWP @PRINTL
+	   RT
+FT1A2  MOV  R0,R9
+       LI   R0,FM1A2
+       LI   R1,FM1A3-FM1A2
+	   BLWP @PRINTL
+	   LI   R0,DSP1A
+	   MOV  R2,R1
+	   BLWP @PRINTL
+	   MOV  R9,R0
+	   BLWP @PRINTL	   
+FM1A1  TEXT 'TST1A failed: Actual Length: ....'
+FM1A2  TEXT 'TST1A failed: Strings do not match. '
+       TEXT 'Expected and Actual.'
+FM1A3	   
+       EVEN
        END

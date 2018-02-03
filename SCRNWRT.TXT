@@ -1,5 +1,5 @@
        DEF  GETLIN
-	   REF  LINLST,FMTLST,MGNLST
+       REF  LINLST,FMTLST,MGNLST
 
 SCRNWS BSS  >20
 
@@ -61,6 +61,8 @@ SCRNWS BSS  >20
 * R0 - line index
 * Output:
 * R1 - address of created line
-* R2 - length of created line
+* R2 - address of cursor description
+* R3 - length of created line
 GETLIN DATA SCRNWS,GETLIN+4
        RTWP
+       END
