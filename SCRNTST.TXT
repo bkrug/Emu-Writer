@@ -2,6 +2,7 @@
        DEF  LINLST,FMTLST,MGNLST
        REF  GETLIN
        REF  MAKETX,PRINTL,OPENF,CLOSEF
+	   REF  VMBW,VMBR
 
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
@@ -183,8 +184,8 @@ MGNLST DATA 6,0,0
 DSP1A  BYTE >CC,>CD,>D2,>CD
        TEXT '     In physics, mass–energy equivalence '
        TEXT 'states that '
-CUR1A  TEXT ' X XXXXXX                                '
-       TEXT '                '
+CUR1A  TEXT ' X XXXXXX                                    '
+       TEXT '            '
 DSP1B  TEXT 'anything having mass has an equivalent amount '
        TEXT 'of energy and '
 CUR1B  TEXT '                                              '
@@ -297,11 +298,35 @@ DSP8
 
 * Run all tests
 RUNTST BLWP @OPENF
+       BL   @CHRSET
        BL   @WRTST
        BL   @TST1A
        BL   @WREND
        BLWP @CLOSEF
 LOOP   JMP  LOOP
+
+* Create inverted version of the 
+* characters
+INVCLR DATA >0101,>0101,>0101,>0101
+       DATA >0101,>0101,>0101,>0101
+CHRSET
+* Set colors
+       LI   R0,>390
+	   LI   R1,INVCLR
+	   LI   R2,>10
+	   BLWP @VMBW
+* Copy character codes
+       LI   R3,>800
+	   LI   R4,>C00
+CHRST1 MOV  R3,R0
+	   BLWP @VMBR
+	   MOV  R4,R0
+	   BLWP @VMBW
+	   A    R2,R3
+	   A    R2,R4
+	   CI   R4,>1000
+	   JL   CHRST1
+	   RT
 
 * Write something
 WRTST  LI   R0,STARTM
@@ -384,12 +409,12 @@ MF2A   MOV  R3,R0
 MF3    LI   R0,MFMSG2
 	   LI   R1,MFMSG3-MFMSG2
 	   BLWP @PRINTL
-	   MOV  @8(13),R0
-	   MOV  @10(13),R1
+	   MOV  R4,R0
+	   MOV  R5,R1
 	   SZC  @MXLGTH,R1
 	   BLWP @PRINTL
 	   MOV  @2(13),R0
-	   MOV  @4(13),R1
+	   MOV  R2,R1
 	   SZC  @MXLGTH,R1
 	   BLWP @PRINTL
 	   RTWP
