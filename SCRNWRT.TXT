@@ -60,9 +60,23 @@ SCRNWS BSS  >20
 * Input:
 * R0 - line index
 * Output:
-* R1 - address of created line
-* R2 - address of cursor description
-* R3 - length of created line
+* R0 - address of created line
+* R1 - address of cursor description
+* R2 - length of created line
 GETLIN DATA SCRNWS,GETLIN+4
+       MOV  *R13,R0
+	   MOVB *R0+,R2
+	   SRL  R2,8
+	   MOV  R2,R4
+	   LI   R3,DSPSTR
+GTLN1  MOVB *R0+,*R3+
+	   DEC  R4
+	   JNE  GTLN1
+	   LI   R0,DSPSTR
+	   MOV  R0,*R13
+	   CLR  @2(13)
+	   MOV  R2,@4(13)
        RTWP
+
+DSPSTR BSS  >100
        END

@@ -11,7 +11,7 @@
 * This paragraph is indented in the
 * first line.
 LIN1A  BYTE 48
-       TEXT 'In physics, mass–energy equivalence states '
+       TEXT 'In physics, mass energy equivalence states '
        TEXT 'that '
 LIN1B  BYTE 60
        TEXT 'anything having mass has an equivalent amount '
@@ -77,7 +77,7 @@ LIN6   BYTE LIN7-LIN6
 LIN7   BYTE LIN8-LIN7
        TEXT 'Another line of text'
        BYTE 13,10
-LIN8   
+LIN8   EVEN
 
 LINLST DATA 21
        DATA LIN1A,LIN1B,LIN1C,LIN1D
@@ -182,7 +182,7 @@ MGNLST DATA 6,0,0
 
 * Expected Display Lines
 DSP1A  BYTE >CC,>CD,>D2,>CD
-       TEXT '     In physics, mass–energy equivalence '
+       TEXT '     In physics, mass energy equivalence '
        TEXT 'states that '
 CUR1A  TEXT ' X XXXXXX                                    '
        TEXT '            '
@@ -446,8 +446,7 @@ STREF  SETO R8
 
 * Test LIN1A (at index 0)
 * Compare results to DSP1A and CUR1A
-TST1A  LI   R0,0
-       LI   R2,>FFFF
+TST1A  LI   R0,LIN1A
        BLWP @GETLIN
 * R0 Contains result string
 * R1 Contains cursor string
