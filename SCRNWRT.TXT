@@ -65,11 +65,20 @@ SCRNWS BSS  >20
 * R2 - length of created line
 GETLIN DATA SCRNWS,GETLIN+4
        MOV  *R13,R0
-	   MOVB *R0+,R2
+* Convert Line Index to string address
+       LI   R1,LINLST
+	   INCT R1
+	   A    R0,R1
+	   A    R0,R1
+* R1 now points to a location in LINLST
+* that contains the string address	   
+	   MOV  *R1,R1
+* R1 now contains the string address
+	   MOVB *R1+,R2
 	   SRL  R2,8
 	   MOV  R2,R4
 	   LI   R3,DSPSTR
-GTLN1  MOVB *R0+,*R3+
+GTLN1  MOVB *R1+,*R3+
 	   DEC  R4
 	   JNE  GTLN1
 	   LI   R0,DSPSTR

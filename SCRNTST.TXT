@@ -446,7 +446,7 @@ STREF  SETO R8
 
 * Test LIN1A (at index 0)
 * Compare results to DSP1A and CUR1A
-TST1A  LI   R0,LIN1A
+TST1A  LI   R0,0
        BLWP @GETLIN
 * R0 Contains result string
 * R1 Contains cursor string
