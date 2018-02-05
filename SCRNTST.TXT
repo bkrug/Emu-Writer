@@ -345,6 +345,66 @@ RPLXSP MOV  R11,R12
        LI   R0,CUR1A
 	   LI   R1,DSP1B-CUR1A
 	   BL   @RPLX2
+       LI   R0,CUR1B
+	   LI   R1,DSP1C-CUR1B
+	   BL   @RPLX2
+       LI   R0,CUR1C
+	   LI   R1,DSP1D-CUR1C
+	   BL   @RPLX2
+       LI   R0,CUR1D
+	   LI   R1,DSP1E-CUR1D
+	   BL   @RPLX2
+       LI   R0,CUR1E
+	   LI   R1,DSP2-CUR1E
+	   BL   @RPLX2
+       LI   R0,CUR2
+	   LI   R1,DSP3A-CUR2
+	   BL   @RPLX2
+       LI   R0,CUR3A
+	   LI   R1,DSP3B-CUR3A
+	   BL   @RPLX2
+       LI   R0,CUR3B
+	   LI   R1,DSP3C-CUR3B
+	   BL   @RPLX2
+       LI   R0,CUR3C
+	   LI   R1,DSP3D-CUR3C
+	   BL   @RPLX2
+       LI   R0,CUR3D
+	   LI   R1,DSP3E-CUR3D
+	   BL   @RPLX2
+       LI   R0,CUR3E
+	   LI   R1,DSP3F-CUR3E
+	   BL   @RPLX2
+       LI   R0,CUR3F
+	   LI   R1,DSP4-CUR3F
+	   BL   @RPLX2
+       LI   R0,CUR4
+	   LI   R1,DSP5A-CUR4
+	   BL   @RPLX2
+       LI   R0,CUR5A
+	   LI   R1,DSP5B-CUR5A
+	   BL   @RPLX2
+       LI   R0,CUR5B
+	   LI   R1,DSP5C-CUR5B
+	   BL   @RPLX2
+       LI   R0,CUR5C
+	   LI   R1,DSP5D-CUR5C
+	   BL   @RPLX2
+       LI   R0,CUR5D
+	   LI   R1,DSP5E-CUR5D
+	   BL   @RPLX2
+       LI   R0,CUR5E
+	   LI   R1,DSP5F-CUR5E
+	   BL   @RPLX2
+       LI   R0,CUR5F
+	   LI   R1,DSP6-CUR5F
+	   BL   @RPLX2
+       LI   R0,CUR6
+	   LI   R1,DSP7-CUR6
+	   BL   @RPLX2
+       LI   R0,CUR7
+	   LI   R1,DSP8-CUR7
+	   BL   @RPLX2
        MOV  R12,R11
 	   RT
 	   
