@@ -77,15 +77,190 @@ GETLIN DATA SCRNWS,GETLIN+4
 	   MOVB *R1+,R2
 	   SRL  R2,8
 	   MOV  R2,R4
+* R2 and R4 now contain string length
 	   LI   R3,DSPSTR
+	   BL   @MGNWRT
+       BL   @DOINDT
+* Copy the string now
 GTLN1  MOVB *R1+,*R3+
 	   DEC  R4
 	   JNE  GTLN1
+* Setup output parameters	   
 	   LI   R0,DSPSTR
 	   MOV  R0,*R13
 	   CLR  @2(13)
-	   MOV  R2,@4(13)
+	   S    R0,R3
+	   MOV  R3,@4(13)
        RTWP
+
+LF     BYTE 10
+CR     BYTE 13
+SPACE  BYTE >20
+* Character code for inverted symbols
+INVPL  BYTE >AB
+INVMN  BYTE >AD
+INV0   BYTE >B0
+INV1   BYTE >B1
+INV2   BYTE >B2
+INV5   BYTE >B5
+INV6   BYTE >B6
+INV7   BYTE >B7
+INVB   BYTE >C2
+INVC   BYTE >C3
+INVI   BYTE >C9
+INVJ   BYTE >CA
+INVL   BYTE >CC
+INVM   BYTE >CD
+INVN   BYTE >CE
+INVR   BYTE >D2
+INVU   BYTE >D5
+INVLB  BYTE >E2
+INVLE  BYTE >E5
+
+* If margin settings have changed,
+* display notification of changes
+MGNWRT LI   R6,MGNLST
+       MOV  *R6,R5
+MGNW1  AI   R6,6
+	   C    *R6,R0
+	   JHE  MGNW2
+	   DEC  R5
+	   JNE  MGNW1
+* R5 will look at previous margin entry.
+* R6 will look at next margin entry.
+MGNW2  MOV  R6,R5
+       AI   R5,>FFFA
+	   CI   R5,MGNLST
+	   JH   MGNW3
+	   LI   R5,DFTMGN-2
+* Is there a margin entry for the
+* current line of text?
+MGNW3  C    *R6,R0
+	   JEQ  MGNW3A
+* No, so store old indent and return
+	   AI   R5,5
+	   MOVB *R5,R7
+	   SRA  R7,8
+	   MOV  R7,@INDENT
+	   RT
+* Yes, look for changes from previous
+* margin entry.
+MGNW3A INCT R5
+       INCT R6
+* See if justification changed.
+	   MOV  *R5,R7
+	   MOV  *R6,R8
+	   SZC  @CLRMGN,R7
+	   SZC  @CLRMGN,R8
+	   C    R7,R8
+	   JEQ  MGNW6
+* If newly left justified
+	   MOV  R8,R8
+	   JNE  MGNW4
+	   MOVB @INVL,*R3+
+	   MOVB @INVJ,*R3+
+	   JMP  MGNW6
+* If newly justified
+MGNW4  CI   R8,>8000
+	   JNE  MGNW5
+	   MOVB @INVJ,*R3+
+	   MOVB @INVU,*R3+
+	   JMP  MGNW6
+* If newly centered
+MGNW5  CI   R8,>0080
+	   JNE  MGNW6
+	   MOVB @INVC,*R3+
+	   MOVB @INVN,*R3+
+* See if left margin changed
+MGNW6  MOVB *R5+,R7
+       MOVB *R6+,R8
+	   SZC  @CLRJ,R7
+	   SZC  @CLRJ,R8
+	   C    R7,R8
+	   JEQ  MGNW7
+	   MOVB @INVL,*R3+
+	   MOVB @INVM,*R3+
+* See if right margin changed
+MGNW7  MOVB *R5+,R7
+       MOVB *R6+,R8
+	   SZC  @CLRJ,R7
+	   SZC  @CLRJ,R8
+	   C    R7,R8
+	   JEQ  MGNW8
+	   MOVB @INVR,*R3+
+	   MOVB @INVM,*R3+
+* See if top/bottom margin changed
+MGNW8  MOVB *R5+,R7
+       MOVB *R6+,R8
+	   C    R7,R8
+	   JEQ  MGNW9
+	   MOVB @INVB,*R3+
+	   MOVB @INVM,*R3+
+* Store indent
+MGNW9  INC  R5
+       MOVB *R6+,R8
+	   SRA  R8,8
+	   MOV  R8,@INDENT
+	   RT
+	   
+* Indent if nessecary
+DOINDT 
+* Find out if this is the begining of a
+* paragraph.
+       MOV  R0,R5
+* If index is zero, then yes.
+       JEQ  DOIND4
+       DEC  R5
+* Convert Line Index to string address
+       LI   R6,LINLST
+	   INCT R6
+	   A    R5,R6
+	   A    R5,R6
+* Did previous line end in Carrg Return?
+       MOVB *R6,R5
+	   SRL  R5,8
+* If previous liine is empty, then no.
+	   MOV  R5,R5
+	   JEQ  DOIND3
+	   A    R5,R6
+* Check last byte of string.
+	   CB   *R6,@CR
+	   JEQ  DOIND4
+* Check last two bytes of string.
+	   CB   *R6,@LF
+	   JNE  DOIND3
+	   DEC  R6
+       CB   *R6,@CR
+	   JEQ  DOIND4
+* No, not begining of paragraph.
+DOIND3 SETO R5
+       JMP  DOIND5
+* Yes, begining of paragraph.
+DOIND4 CLR  R5
+DOIND5 MOV  @INDENT,R6
+       JLT  DOIND8
+* First line indent
+* Return if not begining of paragraph
+       MOV  R5,R5
+	   JNE  DOIND7
+* For now, assume 10 CPI
+* Return if indent is 0 chars.
+DOIN5A SRL  R6,2
+	   JEQ  DOIND7
+DOIND6 MOVB @SPACE,*R3+
+       DEC  R6
+	   JNE  DOIND6
+DOIND7 RT
+* Later line indent
+* Return if beginning of paragraph
+DOIND8 MOV  R5,R5
+       JEQ  DOIND7
+       JMP  DOIN5A
+
+DFTMGN DATA >1414,>2800
+CLRMGN DATA >7F7F
+CLRJ   DATA >80FF
+INDENT BSS  >2
 
 DSPSTR BSS  >100
        END
