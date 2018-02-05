@@ -245,7 +245,7 @@ DOIND5 MOV  @INDENT,R6
 	   JNE  DOIND7
 * For now, assume 10 CPI
 * Return if indent is 0 chars.
-DOIN5A SRL  R6,2
+DOIN5A SRL  R6,1
 	   JEQ  DOIND7
 DOIND6 MOVB @SPACE,*R3+
        DEC  R6
