@@ -299,6 +299,7 @@ DSP8
 * Run all tests
 RUNTST BLWP @OPENF
        BL   @CHRSET
+	   BL   @RPLXSP
        BL   @WRTST
        BL   @TST1A
        BL   @WREND
@@ -309,6 +310,8 @@ LOOP   JMP  LOOP
 * characters
 INVCLR DATA >0101,>0101,>0101,>0101
        DATA >0101,>0101,>0101,>0101
+HEX0   DATA >0020,>5255,>5555,>5522
+HEXF   DATA >0070,>4744,>6446,>4444
 CHRSET
 * Set colors
        LI   R0,>390
@@ -326,6 +329,36 @@ CHRST1 MOV  R3,R0
 	   A    R2,R4
 	   CI   R4,>1000
 	   JL   CHRST1
+* Define >00 and >FF
+       LI   R0,>800
+	   LI   R1,HEX0
+	   LI   R2,8
+	   BLWP @VMBW
+	   LI   R0,>0FF8
+	   LI   R1,HEXF
+	   LI   R2,8
+	   BLWP @VMBW
+	   RT
+
+* Replace X with >FF and space with >00	   
+RPLXSP MOV  R11,R12
+       LI   R0,CUR1A
+	   LI   R1,DSP1B-CUR1A
+	   BL   @RPLX2
+       MOV  R12,R11
+	   RT
+	   
+BYTEX  TEXT 'X'
+BYTESP TEXT ' '
+BYTE0  BYTE >00
+BYTEFF BYTE >FF
+RPLX2  CB   *R0,@BYTEX
+       JEQ  RPLX3
+       MOVB @BYTE0,*R0+
+	   JMP  RPLX4
+RPLX3  MOVB @BYTEFF,*R0+
+RPLX4  DEC  R1
+       JNE  RPLX2
 	   RT
 
 * Write something
