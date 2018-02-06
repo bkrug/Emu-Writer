@@ -516,7 +516,7 @@ MFMSG1 TEXT 'Test failed:                    '
        TEXT 'Expected Length: ....           '
 	   TEXT 'Actual Length:   ....'
 MFMSG2 TEXT 'Test failed: Strings do not match. '
-       TEXT 'Expected and Actual.'
+       TEXT 'Expected and Actual:'
 MFMSG3 EVEN
 
 * Compare strings

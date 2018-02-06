@@ -79,16 +79,19 @@ GETLIN DATA SCRNWS,GETLIN+4
 	   MOV  R2,R4
 * R2 and R4 now contain string length
 	   LI   R3,DSPSTR
+	   LI   R10,CURSTR
 	   BL   @MGNWRT
        BL   @DOINDT
 * Copy the string now
 GTLN1  MOVB *R1+,*R3+
+	   MOVB @ALWCUR,*R10+
 	   DEC  R4
 	   JNE  GTLN1
 * Setup output parameters	   
 	   LI   R0,DSPSTR
 	   MOV  R0,*R13
-	   CLR  @2(13)
+	   LI   R1,CURSTR
+	   MOV  R1,@2(13)
 	   S    R0,R3
 	   MOV  R3,@4(13)
        RTWP
@@ -116,6 +119,11 @@ INVR   BYTE >D2
 INVU   BYTE >D5
 INVLB  BYTE >E2
 INVLE  BYTE >E5
+
+* Allow Cursor
+ALWCUR BYTE >00
+* Prohibit Cursor
+PBTCUR BYTE >FF
 
 * If margin settings have changed,
 * display notification of changes
@@ -159,18 +167,24 @@ MGNW3A INCT R5
 	   JNE  MGNW4
 	   MOVB @INVL,*R3+
 	   MOVB @INVJ,*R3+
+	   MOVB @ALWCUR,*R10+
+	   MOVB @PBTCUR,*R10+
 	   JMP  MGNW6
 * If newly justified
 MGNW4  CI   R8,>8000
 	   JNE  MGNW5
 	   MOVB @INVJ,*R3+
 	   MOVB @INVU,*R3+
+	   MOVB @ALWCUR,*R10+
+	   MOVB @PBTCUR,*R10+
 	   JMP  MGNW6
 * If newly centered
 MGNW5  CI   R8,>0080
 	   JNE  MGNW6
 	   MOVB @INVC,*R3+
 	   MOVB @INVN,*R3+
+	   MOVB @ALWCUR,*R10+
+	   MOVB @PBTCUR,*R10+
 * See if left margin changed
 MGNW6  MOVB *R5+,R7
        MOVB *R6+,R8
@@ -180,6 +194,8 @@ MGNW6  MOVB *R5+,R7
 	   JEQ  MGNW7
 	   MOVB @INVL,*R3+
 	   MOVB @INVM,*R3+
+	   MOVB @ALWCUR,*R10+
+	   MOVB @PBTCUR,*R10+
 * See if right margin changed
 MGNW7  MOVB *R5+,R7
        MOVB *R6+,R8
@@ -189,6 +205,8 @@ MGNW7  MOVB *R5+,R7
 	   JEQ  MGNW8
 	   MOVB @INVR,*R3+
 	   MOVB @INVM,*R3+
+	   MOVB @ALWCUR,*R10+
+	   MOVB @PBTCUR,*R10+
 * See if top/bottom margin changed
 MGNW8  MOVB *R5+,R7
        MOVB *R6+,R8
@@ -196,6 +214,8 @@ MGNW8  MOVB *R5+,R7
 	   JEQ  MGNW9
 	   MOVB @INVB,*R3+
 	   MOVB @INVM,*R3+
+	   MOVB @ALWCUR,*R10+
+	   MOVB @PBTCUR,*R10+
 * Store indent
 MGNW9  INC  R5
        MOVB *R6+,R8
@@ -248,6 +268,7 @@ DOIND5 MOV  @INDENT,R6
 DOIN5A SRL  R6,1
 	   JEQ  DOIND7
 DOIND6 MOVB @SPACE,*R3+
+	   MOVB @PBTCUR,*R10+
        DEC  R6
 	   JNE  DOIND6
 DOIND7 RT
@@ -257,10 +278,20 @@ DOIND8 MOV  R5,R5
        JEQ  DOIND7
        JMP  DOIN5A
 
+* Default Margin settings
 DFTMGN DATA >1414,>2800
+* Used in SZC to extract justification
 CLRMGN DATA >7F7F
+* Used in SZC to extract left or right
+* margin
 CLRJ   DATA >80FF
+* Current margin
 INDENT BSS  >2
 
+* The string of text that will be 
+* displayed.
 DSPSTR BSS  >100
+* The string of text representing the
+* areas where a cursor may go.
+CURSTR BSS  >100
        END
