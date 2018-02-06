@@ -2,7 +2,7 @@
        DEF  LINLST,FMTLST,MGNLST
        REF  GETLIN
        REF  MAKETX,PRINTL,OPENF,CLOSEF
-	   REF  VMBW,VMBR
+       REF  VMBW,VMBR
 
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
@@ -189,7 +189,7 @@ CUR1A  TEXT ' X XXXXXX                                    '
 DSP1B  TEXT 'anything having mass has an equivalent amount '
        TEXT 'of energy and '
 CUR1B  TEXT '                                              '
-       TEXT '       '
+       TEXT '              '
 DSP1C  TEXT 'vice versa, with these fundamental quantities '
        TEXT 'directly '
 CUR1C  TEXT '                                              '
@@ -299,9 +299,13 @@ DSP8
 * Run all tests
 RUNTST BLWP @OPENF
        BL   @CHRSET
-	   BL   @RPLXSP
+       BL   @RPLXSP
        BL   @WRTST
        BL   @TST1A
+       BL   @TST1B
+       BL   @TST1C
+       BL   @TST1D
+       BL   @TST1E
        BL   @WREND
        BLWP @CLOSEF
 LOOP   JMP  LOOP
@@ -315,99 +319,99 @@ HEXF   DATA >0070,>4744,>6446,>4444
 CHRSET
 * Set colors
        LI   R0,>390
-	   LI   R1,INVCLR
-	   LI   R2,>10
-	   BLWP @VMBW
+       LI   R1,INVCLR
+       LI   R2,>10
+       BLWP @VMBW
 * Copy character codes
        LI   R3,>800
-	   LI   R4,>C00
+       LI   R4,>C00
 CHRST1 MOV  R3,R0
-	   BLWP @VMBR
-	   MOV  R4,R0
-	   BLWP @VMBW
-	   A    R2,R3
-	   A    R2,R4
-	   CI   R4,>1000
-	   JL   CHRST1
+       BLWP @VMBR
+       MOV  R4,R0
+       BLWP @VMBW
+       A    R2,R3
+       A    R2,R4
+       CI   R4,>1000
+       JL   CHRST1
 * Define >00 and >FF
        LI   R0,>800
-	   LI   R1,HEX0
-	   LI   R2,8
-	   BLWP @VMBW
-	   LI   R0,>0FF8
-	   LI   R1,HEXF
-	   LI   R2,8
-	   BLWP @VMBW
-	   RT
+       LI   R1,HEX0
+       LI   R2,8
+       BLWP @VMBW
+       LI   R0,>0FF8
+       LI   R1,HEXF
+       LI   R2,8
+       BLWP @VMBW
+       RT
 
-* Replace X with >FF and space with >00	   
+* Replace X with >FF and space with >00       
 RPLXSP MOV  R11,R12
        LI   R0,CUR1A
-	   LI   R1,DSP1B-CUR1A
-	   BL   @RPLX2
+       LI   R1,DSP1B-CUR1A
+       BL   @RPLX2
        LI   R0,CUR1B
-	   LI   R1,DSP1C-CUR1B
-	   BL   @RPLX2
+       LI   R1,DSP1C-CUR1B
+       BL   @RPLX2
        LI   R0,CUR1C
-	   LI   R1,DSP1D-CUR1C
-	   BL   @RPLX2
+       LI   R1,DSP1D-CUR1C
+       BL   @RPLX2
        LI   R0,CUR1D
-	   LI   R1,DSP1E-CUR1D
-	   BL   @RPLX2
+       LI   R1,DSP1E-CUR1D
+       BL   @RPLX2
        LI   R0,CUR1E
-	   LI   R1,DSP2-CUR1E
-	   BL   @RPLX2
+       LI   R1,DSP2-CUR1E
+       BL   @RPLX2
        LI   R0,CUR2
-	   LI   R1,DSP3A-CUR2
-	   BL   @RPLX2
+       LI   R1,DSP3A-CUR2
+       BL   @RPLX2
        LI   R0,CUR3A
-	   LI   R1,DSP3B-CUR3A
-	   BL   @RPLX2
+       LI   R1,DSP3B-CUR3A
+       BL   @RPLX2
        LI   R0,CUR3B
-	   LI   R1,DSP3C-CUR3B
-	   BL   @RPLX2
+       LI   R1,DSP3C-CUR3B
+       BL   @RPLX2
        LI   R0,CUR3C
-	   LI   R1,DSP3D-CUR3C
-	   BL   @RPLX2
+       LI   R1,DSP3D-CUR3C
+       BL   @RPLX2
        LI   R0,CUR3D
-	   LI   R1,DSP3E-CUR3D
-	   BL   @RPLX2
+       LI   R1,DSP3E-CUR3D
+       BL   @RPLX2
        LI   R0,CUR3E
-	   LI   R1,DSP3F-CUR3E
-	   BL   @RPLX2
+       LI   R1,DSP3F-CUR3E
+       BL   @RPLX2
        LI   R0,CUR3F
-	   LI   R1,DSP4-CUR3F
-	   BL   @RPLX2
+       LI   R1,DSP4-CUR3F
+       BL   @RPLX2
        LI   R0,CUR4
-	   LI   R1,DSP5A-CUR4
-	   BL   @RPLX2
+       LI   R1,DSP5A-CUR4
+       BL   @RPLX2
        LI   R0,CUR5A
-	   LI   R1,DSP5B-CUR5A
-	   BL   @RPLX2
+       LI   R1,DSP5B-CUR5A
+       BL   @RPLX2
        LI   R0,CUR5B
-	   LI   R1,DSP5C-CUR5B
-	   BL   @RPLX2
+       LI   R1,DSP5C-CUR5B
+       BL   @RPLX2
        LI   R0,CUR5C
-	   LI   R1,DSP5D-CUR5C
-	   BL   @RPLX2
+       LI   R1,DSP5D-CUR5C
+       BL   @RPLX2
        LI   R0,CUR5D
-	   LI   R1,DSP5E-CUR5D
-	   BL   @RPLX2
+       LI   R1,DSP5E-CUR5D
+       BL   @RPLX2
        LI   R0,CUR5E
-	   LI   R1,DSP5F-CUR5E
-	   BL   @RPLX2
+       LI   R1,DSP5F-CUR5E
+       BL   @RPLX2
        LI   R0,CUR5F
-	   LI   R1,DSP6-CUR5F
-	   BL   @RPLX2
+       LI   R1,DSP6-CUR5F
+       BL   @RPLX2
        LI   R0,CUR6
-	   LI   R1,DSP7-CUR6
-	   BL   @RPLX2
+       LI   R1,DSP7-CUR6
+       BL   @RPLX2
        LI   R0,CUR7
-	   LI   R1,DSP8-CUR7
-	   BL   @RPLX2
+       LI   R1,DSP8-CUR7
+       BL   @RPLX2
        MOV  R12,R11
-	   RT
-	   
+       RT
+       
 BYTEX  TEXT 'X'
 BYTESP TEXT ' '
 BYTE0  BYTE >00
@@ -415,11 +419,11 @@ BYTEFF BYTE >FF
 RPLX2  CB   *R0,@BYTEX
        JEQ  RPLX3
        MOVB @BYTE0,*R0+
-	   JMP  RPLX4
+       JMP  RPLX4
 RPLX3  MOVB @BYTEFF,*R0+
 RPLX4  DEC  R1
        JNE  RPLX2
-	   RT
+       RT
 
 * Write something
 WRTST  LI   R0,STARTM
@@ -437,6 +441,61 @@ STARTM TEXT 'Testing'
 ENDM   TEXT 'Done'
 ENDME  EVEN
 
+* Test LIN1A (at index 0)
+* Compare results to DSP1A and CUR1A
+TST1A  LI   R0,0
+       BLWP @GETLIN
+* R0 Contains result string
+* R1 Contains cursor string
+* R2 Contains length
+       LI   R3,DSP1A
+       LI   R4,CUR1A
+       LI   R5,CUR1A-DSP1A
+       LI   R6,MSG1A
+       BLWP @MNTEST
+       RT
+MSG1A  TEXT 'TST1A '
+
+TST1B  LI   R0,1
+       BLWP @GETLIN
+       LI   R3,DSP1B
+       LI   R4,CUR1B
+       LI   R5,CUR1B-DSP1B
+       LI   R6,MSG1B
+       BLWP @MNTEST
+       RT
+MSG1B  TEXT 'TST1B '
+
+TST1C  LI   R0,2
+       BLWP @GETLIN
+       LI   R3,DSP1C
+       LI   R4,CUR1C
+       LI   R5,CUR1C-DSP1C
+       LI   R6,MSG1C
+       BLWP @MNTEST
+       RT
+MSG1C  TEXT 'TST1C '
+
+TST1D  LI   R0,3
+       BLWP @GETLIN
+       LI   R3,DSP1D
+       LI   R4,CUR1D
+       LI   R5,CUR1D-DSP1D
+       LI   R6,MSG1D
+       BLWP @MNTEST
+       RT
+MSG1D  TEXT 'TST1D '
+
+TST1E  LI   R0,4
+       BLWP @GETLIN
+       LI   R3,DSP1E
+       LI   R4,CUR1E
+       LI   R5,CUR1E-DSP1E
+       LI   R6,MSG1E
+       BLWP @MNTEST
+       RT
+MSG1E  TEXT 'TST1E '
+
 *
 * Test results
 * Input:
@@ -449,73 +508,82 @@ ENDME  EVEN
 MNWS   BSS  >20
 MNTEST DATA MNWS,MNTEST+4
        MOV  @4(13),R2
-	   MOV  @6(13),R3
-	   MOV  @8(13),R4
-	   MOV  @10(13),R5
+       MOV  @6(13),R3
+       MOV  @8(13),R4
+       MOV  @10(13),R5
 * Compare string length
        C    R2,R5
        JNE  MF1
 * Compare display strings
-	   MOV  R3,R8
-	   MOV  *R13,R9
-	   MOV  R5,R10
-	   BL   @STREQU
-	   MOV  R8,R8
-	   JNE  MF2
+       MOV  R3,R8
+       MOV  *R13,R9
+       MOV  R5,R10
+       BL   @STREQU
+       MOV  R8,R8
+       JNE  MF2
 * Compare cursor strings
-	   MOV  R4,R8
-	   MOV  @2(13),R9
-	   MOV  R5,R10
-	   BL   @STREQU
-	   MOV  R8,R8
-	   JNE  MF3
-	   RTWP
+       MOV  R4,R8
+       MOV  @2(13),R9
+       MOV  R5,R10
+       BL   @STREQU
+       MOV  R8,R8
+       JNE  MF3
+       RTWP
 * Length failed
 MF1    MOV  R5,R0
        LI   R1,MFMSG1+>31
-	   BLWP @MAKETX
+       BLWP @MAKETX
        MOV  R2,R0
        LI   R1,MFMSG2-4
        BLWP @MAKETX
-	   LI   R0,MFMSG1
-	   LI   R1,MFMSG2-MFMSG1
-	   BLWP @PRINTL
+       MOV  @12(13),R0
+       LI   R1,6
+       BLWP @PRINTL
+       LI   R0,MFMSG1
+       LI   R1,MFMSG2-MFMSG1
+       BLWP @PRINTL
        JMP  MF2A
 * Display strings failed.
 * SZC command ensures a length
 * no greater than >FF.
-MF2    LI   R0,MFMSG2
-	   LI   R1,MFMSG3-MFMSG2
-	   BLWP @PRINTL
+MF2    MOV  @12(13),R0
+       LI   R1,6
+       BLWP @PRINTL
+       LI   R0,MFMSG2
+       LI   R1,MFMSG3-MFMSG2
+       BLWP @PRINTL
 MF2A   MOV  R3,R0
-	   MOV  R5,R1
-	   SZC  @MXLGTH,R1
-	   BLWP @PRINTL
-	   MOV  *R13,R0
-	   MOV  R2,R1
-	   SZC  @MXLGTH,R1
-	   BLWP @PRINTL
-	   RTWP
+       MOV  R5,R1
+       SZC  @MXLGTH,R1
+       BLWP @PRINTL
+       MOV  *R13,R0
+       MOV  R2,R1
+       SZC  @MXLGTH,R1
+       BLWP @PRINTL
+       RTWP
 * Cursor strings failed.
 * SZC command ensures a length
 * no greater than >FF.
-MF3    LI   R0,MFMSG2
-	   LI   R1,MFMSG3-MFMSG2
-	   BLWP @PRINTL
-	   MOV  R4,R0
-	   MOV  R5,R1
-	   SZC  @MXLGTH,R1
-	   BLWP @PRINTL
-	   MOV  @2(13),R0
-	   MOV  R2,R1
-	   SZC  @MXLGTH,R1
-	   BLWP @PRINTL
-	   RTWP
+MF3    MOV  @12(13),R0
+       LI   R1,6
+       BLWP @PRINTL
+       LI   R0,MFMSG2
+       LI   R1,MFMSG3-MFMSG2
+       BLWP @PRINTL
+       MOV  R4,R0
+       MOV  R5,R1
+       SZC  @MXLGTH,R1
+       BLWP @PRINTL
+       MOV  @2(13),R0
+       MOV  R2,R1
+       SZC  @MXLGTH,R1
+       BLWP @PRINTL
+       RTWP
 MXLGTH DATA >FF00
-MFMSG1 TEXT 'Test failed:                    '
+MFMSG1 TEXT 'failed:                         '
        TEXT 'Expected Length: ....           '
-	   TEXT 'Actual Length:   ....'
-MFMSG2 TEXT 'Test failed: Strings do not match. '
+       TEXT 'Actual Length:   ....'
+MFMSG2 TEXT 'failed: Strings do not match.   '
        TEXT 'Expected and Actual:'
 MFMSG3 EVEN
 
@@ -527,26 +595,13 @@ MFMSG3 EVEN
 * Output:
 * R8 - 0 if match >FFFF if not.
 STREQU CB   *R8+,*R9+
-	   JNE  STREF
+       JNE  STREF
        DEC  R10
        JNE  STREQU
 * Match
        CLR  R8
-       RT       
+       RT
 * No Match
 STREF  SETO R8
-	   RT
-
-* Test LIN1A (at index 0)
-* Compare results to DSP1A and CUR1A
-TST1A  LI   R0,0
-       BLWP @GETLIN
-* R0 Contains result string
-* R1 Contains cursor string
-* R2 Contains length
-       LI   R3,DSP1A
-	   LI   R4,CUR1A
-	   LI   R5,CUR1A-DSP1A
-	   BLWP @MNTEST
-	   RT
+       RT
        END
