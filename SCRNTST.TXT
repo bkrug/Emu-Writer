@@ -22,8 +22,8 @@ LIN1C  BYTE 55
 LIN1D  BYTE 52
        TEXT 'relating to one another by Albert Einstein,s '
        TEXT 'famous '
-LIN1E  BYTE 11
-       TEXT 'formula:1'
+LIN1E  BYTE 18
+       TEXT 'formulafootnote1'
        BYTE 13,10
 LIN2   BYTE 13
        TEXT 'E=mc2   H2O'
@@ -95,9 +95,9 @@ LINLST DATA 21
 FMTLST DATA 17,0
 * Superscript
        DATA 4
-       BYTE 8,>10
+       BYTE 7,>10
        DATA 4
-       BYTE 9,>00
+       BYTE 16,>00
 * Superscript
        DATA 5
        BYTE 4,>10
@@ -198,12 +198,12 @@ DSP1D  TEXT 'relating to one another by Albert Einstein,s '
        TEXT 'famous '
 CUR1D  TEXT '                                             '
        TEXT '       '
-DSP1E  TEXT 'formula:'
+DSP1E  TEXT 'formula'
        BYTE >AB,>E2
-       TEXT '1'
+       TEXT 'footnote1'
        BYTE >AB,>E5
        TEXT ' '
-CUR1E  TEXT '         X  X '   
+CUR1E  TEXT '         X         X '
 DSP2   BYTE >C2,>CD
        TEXT 'E=mc'
        BYTE >AB,>E2

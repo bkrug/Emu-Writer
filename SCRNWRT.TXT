@@ -1,8 +1,6 @@
        DEF  GETLIN
        REF  LINLST,FMTLST,MGNLST
 
-SCRNWS BSS  >20
-
 * General Concepts:
 *
 * Character Position - position of a 
@@ -49,6 +47,13 @@ SCRNWS BSS  >20
 *    The fourth byte's first bit is
 *    set if the paragraph is centered.
 
+SCRNWS BSS  >20
+* Address of the begining of a string 
+* that hold source data. This address
+* is one byte later than the length
+* byte.
+SRCLIN DATA 0
+
 *
 * GETLIN
 * Get a Line of text to display.
@@ -71,23 +76,30 @@ GETLIN DATA SCRNWS,GETLIN+4
        A    R0,R1
        A    R0,R1
 * R1 now points to a location in LINLST
-* that contains the string address       
+* that contains the string address
        MOV  *R1,R1
 * R1 now contains the string address
        MOVB *R1+,R2
        SRL  R2,8
        MOV  R2,R4
-* R2 and R4 now contain string length
+* R2 and R4 now contain string length.
+* Copy address of source line's start.
+       MOV  R1,@SRCLIN
+* Initialization for copy-loop
        LI   R3,DSPSTR
        LI   R10,CURSTR
        BL   @MGNWRT
        BL   @DOINDT
+       BL   @GETFMT
 * Copy the string now
-GTLN1  MOVB *R1+,*R3+
+GTLN1  C    R1,R9
+       JNE  GTLN2
+       BL   @WRTFMT
+GTLN2  MOVB *R1+,*R3+
        MOVB @ALWCUR,*R10+
        DEC  R4
        JNE  GTLN1
-* Setup output parameters       
+* Setup output parameters
        LI   R0,DSPSTR
        MOV  R0,*R13
        LI   R1,CURSTR
@@ -124,6 +136,7 @@ INVLE  BYTE >E5
 ALWCUR BYTE >00
 * Prohibit Cursor
 PBTCUR BYTE >FF
+       EVEN
 
 * If margin settings have changed,
 * display notification of changes
@@ -287,6 +300,171 @@ CLRMGN DATA >7F7F
 CLRJ   DATA >80FF
 * Current margin
 INDENT BSS  >2
+
+*
+* Find first point in current line
+* where the character format will change
+*
+* Output:
+* R9 the position in source string where
+*    a string the format is going to 
+*    apply.
+GETFMT LI   R5,FMTLST
+* Set R6 to the end of FMTLST
+       MOV  *R5,R6
+       INC  R6
+       SLA  R6,2
+       A    R5,R6
+* Find first Format for current line or
+* later.
+FMT1   AI   R5,4
+       C    R5,R6
+       JHE  FMT2
+       C    *R5,R0
+       JL   FMT1
+       JH   FMT2
+* Store address of located format.
+FMT3   MOV  R5,@NXTFMT
+* Store address within source string at
+* which next format will apply
+       INCT R5
+       MOVB *R5,R9
+       SRL  R9,8
+       A    @SRCLIN,R9
+       RT
+* No format affects current line.
+FMT2   CLR  R9
+       CLR  @NXTFMT
+       RT
+
+* 
+* Write format characters
+WRTFMT
+* Give R6 address of new format entry.
+       MOV  @NXTFMT,R6
+* Is this the first format entry?
+       LI   R5,FMTLST
+       AI   R5,4
+       C    R6,R5
+       JEQ  WFMT1
+* No.
+* Give R5 address of previous format.
+       MOV  R6,R5
+       DEC  R5
+       JMP  WFMT2
+* Yes, R6 points to first format entry.
+* Give R5 address of DFTFMT.
+WFMT1  LI   R5,DFTFMT
+* Point R6 to format byte.
+WFMT2  AI   R6,3
+* Set R8 such that set bits represent
+* newly turned on formats.
+       MOVB *R5,R7
+       MOVB *R6,R8
+       SZC  R7,R8
+* Write the on-format characters into
+* the display scring
+       LI   R7,BLDBIT
+       LI   R9,FMTON
+WFMT3  COC  *R7,R8
+       JNE  WFMT4
+       MOVB *R9+,*R3+
+       MOVB *R9+,*R3+
+       MOVB @ALWCUR,*R10+
+       MOVB @PBTCUR,*R10+
+       JMP  WFMT4A
+WFMT4  INCT R9
+WFMT4A INCT R7
+       CI   R7,FMTON
+       JL   WFMT3
+* Set R8 such that set bits represent
+* newly turned off formats.
+       MOVB *R5,R8
+       MOVB *R6,R7
+       SZC  R7,R8
+* Write the off-format characters into
+* the display scring
+       LI   R7,BLDBIT
+       LI   R9,FMTOFF
+WFMT5  COC  *R7,R8
+       JNE  WFMT6
+       MOVB *R9+,*R3+
+       MOVB *R9+,*R3+
+       MOVB @ALWCUR,*R10+
+       MOVB @PBTCUR,*R10+
+       JMP  WFMT6A
+WFMT6  INCT R9
+WFMT6A INCT R7
+       CI   R7,FMTON
+       JL   WFMT5
+* Set R6 to next format position.
+       INC  R6
+* See if R6 has gone past the end of the
+* format list
+       LI   R7,FMTLST
+       MOV  *R7,R8
+       INC  R8
+       SLA  R8,2
+       A    R7,R8
+       C    R6,R8
+       JHE  WFMT8
+* There is another format entry. Does
+* it reference the current line?
+       C    *R6,R0
+       JNE  WFMT8
+* Yes, so do same routine as GETFMT.
+       MOV  R6,R5
+       B    @FMT3
+* Return to main routine such
+* that we know the current line will not
+* have any more format changes.
+WFMT8  B    @FMT2
+
+* Default Formating
+DFTFMT BYTE >04
+* Wasted Space
+       BYTE >00
+* Next Format Address
+NXTFMT BSS  2
+
+* Bits for comparisons
+*
+* Bold bit
+BLDBIT DATA >8000
+* Italic bit
+ITCBIT DATA >4000
+* Underline bit
+UDLBIT DATA >2000
+* Superscript bit
+SPRBIT DATA >1000
+* Subscript bit
+SBTBIT DATA >0800
+
+* Characters for turning format on
+*
+* Bold
+FMTON  DATA >C2E2
+* Italic
+       DATA >C9E2
+* Underline
+       DATA >D5E2
+* Superscript
+       DATA >ABE2
+* Subscript
+       DATA >ADE2
+
+* Characters for turning format off
+*
+* Bold
+FMTOFF DATA >C2E5
+* Italic
+       DATA >C9E5
+* Underline
+       DATA >D5E5
+* Superscript
+       DATA >ABE5
+* Subscript
+       DATA >ADE5
 
 * The string of text that will be 
 * displayed.
