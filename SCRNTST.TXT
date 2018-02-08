@@ -146,9 +146,9 @@ FMTLST DATA 17,0
        BYTE 47,>04
 * Italic, then superscript
        DATA 11
-       BYTE 8,>24
+       BYTE 8,>44
        DATA 11
-       BYTE 9,>34
+       BYTE 9,>54
        DATA 11
        BYTE 10,>04
 * 5 CPI
@@ -279,7 +279,7 @@ DSP3F  TEXT '     squared '
        TEXT '2'
        BYTE >C9,>E5,>AB,>E5
        TEXT '. '
-CUR3F  TEXT 'XXXXX        X  X  X X  '
+CUR3F  TEXT 'XXXXX         X  X  X X  '
 DSP4   BYTE >CC,>CD,>D2,>CD
        TEXT ' '
 CUR4   TEXT ' X X '
