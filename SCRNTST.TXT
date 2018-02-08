@@ -4,6 +4,27 @@
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  VMBW,VMBR
 
+* Run all tests
+RUNTST BLWP @OPENF
+       BL   @CHRSET
+       BL   @RPLXSP
+       BL   @WRTST
+       BL   @TST1A
+       BL   @TST1B
+       BL   @TST1C
+       BL   @TST1D
+       BL   @TST1E
+       BL   @TST2
+       BL   @TST3A
+       BL   @TST3B
+       BL   @TST3C
+       BL   @TST3D
+       BL   @TST3E
+       BL   @TST3F
+       BL   @WREND
+       BLWP @CLOSEF
+LOOP   JMP  LOOP
+
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
 * source file.
@@ -95,41 +116,41 @@ LINLST DATA 21
 FMTLST DATA 17,0
 * Superscript
        DATA 4
-       BYTE 7,>10
+       BYTE 7,>14
        DATA 4
-       BYTE 16,>00
+       BYTE 16,>04
 * Superscript
        DATA 5
-       BYTE 4,>10
+       BYTE 4,>14
        DATA 5
-       BYTE 5,>00
+       BYTE 5,>04
 * Subscript
        DATA 5
-       BYTE 9,>08
+       BYTE 9,>0C
        DATA 5
-       BYTE 9,>00
+       BYTE 10,>04
 * Bold
        DATA 8
-       BYTE 37,>80
+       BYTE 37,>84
        DATA 8
-       BYTE 46,>00
+       BYTE 46,>04
 * Italic
        DATA 9
-       BYTE 9,>40
+       BYTE 9,>44
        DATA 9
-       BYTE 15,>00
+       BYTE 15,>04
 * Underline
        DATA 9
-       BYTE 34,>20
+       BYTE 34,>24
        DATA 9
-       BYTE 47,>00
+       BYTE 47,>04
 * Italic, then superscript
        DATA 11
-       BYTE 8,>20
+       BYTE 8,>24
        DATA 11
-       BYTE 9,>30
+       BYTE 9,>34
        DATA 11
-       BYTE 10,>00
+       BYTE 10,>04
 * 5 CPI
        DATA 14
        BYTE 6,>07
@@ -295,20 +316,6 @@ DSP7   BYTE >CE,>CA
        TEXT '       Another line of text '
 CUR7   TEXT ' XXXXXXXX                     '
 DSP8
-
-* Run all tests
-RUNTST BLWP @OPENF
-       BL   @CHRSET
-       BL   @RPLXSP
-       BL   @WRTST
-       BL   @TST1A
-       BL   @TST1B
-       BL   @TST1C
-       BL   @TST1D
-       BL   @TST1E
-       BL   @WREND
-       BLWP @CLOSEF
-LOOP   JMP  LOOP
 
 * Create inverted version of the 
 * characters
@@ -496,6 +503,76 @@ TST1E  LI   R0,4
        RT
 MSG1E  TEXT 'TST1E '
 
+TST2   LI   R0,5
+       BLWP @GETLIN
+       LI   R3,DSP2
+       LI   R4,CUR2
+       LI   R5,CUR2-DSP2
+       LI   R6,MSG2
+       BLWP @MNTEST
+       RT
+MSG2   TEXT 'TST2  '
+
+TST3A  LI   R0,6
+       BLWP @GETLIN
+       LI   R3,DSP3A
+       LI   R4,CUR3A
+       LI   R5,CUR3A-DSP3A
+       LI   R6,MSG3A
+       BLWP @MNTEST
+       RT
+MSG3A  TEXT 'TST3A '
+
+TST3B  LI   R0,7
+       BLWP @GETLIN
+       LI   R3,DSP3B
+       LI   R4,CUR3B
+       LI   R5,CUR3B-DSP3B
+       LI   R6,MSG3B
+       BLWP @MNTEST
+       RT
+MSG3B  TEXT 'TST3B '
+
+TST3C  LI   R0,8
+       BLWP @GETLIN
+       LI   R3,DSP3C
+       LI   R4,CUR3C
+       LI   R5,CUR3C-DSP3C
+       LI   R6,MSG3C
+       BLWP @MNTEST
+       RT
+MSG3C  TEXT 'TST3C '
+
+TST3D  LI   R0,9
+       BLWP @GETLIN
+       LI   R3,DSP3D
+       LI   R4,CUR3D
+       LI   R5,CUR3D-DSP3D
+       LI   R6,MSG3D
+       BLWP @MNTEST
+       RT
+MSG3D  TEXT 'TST3D '
+
+TST3E  LI   R0,10
+       BLWP @GETLIN
+       LI   R3,DSP3E
+       LI   R4,CUR3E
+       LI   R5,CUR3E-DSP3E
+       LI   R6,MSG3E
+       BLWP @MNTEST
+       RT
+MSG3E  TEXT 'TST3E '
+
+TST3F  LI   R0,11
+       BLWP @GETLIN
+       LI   R3,DSP3F
+       LI   R4,CUR3F
+       LI   R5,CUR3F-DSP3F
+       LI   R6,MSG3F
+       BLWP @MNTEST
+       RT
+MSG3F  TEXT 'TST3F '
+
 *
 * Test results
 * Input:
@@ -505,6 +582,7 @@ MSG1E  TEXT 'TST1E '
 * R3 - Expected generated string
 * R4 - Expected generated cursor string
 * R5 - Expected length
+* R6 - Address of test name.
 MNWS   BSS  >20
 MNTEST DATA MNWS,MNTEST+4
        MOV  @4(13),R2
@@ -528,6 +606,15 @@ MNTEST DATA MNWS,MNTEST+4
        BL   @STREQU
        MOV  R8,R8
        JNE  MF3
+* Test passed.
+       MOV  @12(13),R6
+       LI   R2,MPASS
+       MOV  R2,R0
+MTEST1 MOVB *R6+,*R2+
+       CI   R2,MPASS+6
+       JL   MTEST1
+       LI   R1,MFMSG1-MPASS
+       BLWP @PRINTL
        RTWP
 * Length failed
 MF1    MOV  R5,R0
@@ -580,6 +667,7 @@ MF3    MOV  @12(13),R0
        BLWP @PRINTL
        RTWP
 MXLGTH DATA >FF00
+MPASS  TEXT '       passed'
 MFMSG1 TEXT 'failed:                         '
        TEXT 'Expected Length: ....           '
        TEXT 'Actual Length:   ....'

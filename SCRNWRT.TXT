@@ -163,8 +163,13 @@ ALWCUR BYTE >00
 PBTCUR BYTE >FF
        EVEN
 
+*
 * If margin settings have changed,
 * display notification of changes
+*
+* Input: R0,R3,R10
+* Conditional Output: R3,R10
+* Output: R5,R6,R7,R8
 MGNWRT LI   R6,MGNLST
        MOV  *R6,R5
 MGNW1  AI   R6,6
@@ -311,9 +316,13 @@ DOIND6 MOVB @SPACE,*R3+
        JNE  DOIND6
 DOIND7 RT
 * Later line indent
-* Return if beginning of paragraph
-DOIND8 MOV  R5,R5
+DOIND8 
+* Return if current line is paragraph's
+* first line.
+       MOV  R5,R5
        JEQ  DOIND7
+* Do a hanging indent
+       NEG  R6
        JMP  DOIN5A
 
 * Default Margin settings
