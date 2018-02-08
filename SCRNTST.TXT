@@ -7,7 +7,7 @@
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
 * source file.
-       
+
 * This paragraph is indented in the
 * first line.
 LIN1A  BYTE 48
@@ -433,7 +433,7 @@ WRTST  LI   R0,STARTM
  
 * Finished testing
 WREND  LI   R0,ENDM
-       LI   R1,ENDME-ENDM
+       LI   R1,4
        BLWP @PRINTL
        RT
 
