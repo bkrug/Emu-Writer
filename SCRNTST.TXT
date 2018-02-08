@@ -203,7 +203,7 @@ DSP1E  TEXT 'formula'
        TEXT 'footnote1'
        BYTE >AB,>E5
        TEXT ' '
-CUR1E  TEXT '         X         X '
+CUR1E  TEXT '        X          X '
 DSP2   BYTE >C2,>CD
        TEXT 'E=mc'
        BYTE >AB,>E2

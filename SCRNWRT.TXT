@@ -95,18 +95,43 @@ GETLIN DATA SCRNWS,GETLIN+4
 GTLN1  C    R1,R9
        JNE  GTLN2
        BL   @WRTFMT
-GTLN2  MOVB *R1+,*R3+
+GTLN2  CB   *R1,@SPACE
+       JL   HDLCR
+GTLN4  MOVB *R1+,*R3+
        MOVB @ALWCUR,*R10+
        DEC  R4
        JNE  GTLN1
 * Setup output parameters
-       LI   R0,DSPSTR
+GTLN5  LI   R0,DSPSTR
        MOV  R0,*R13
        LI   R1,CURSTR
        MOV  R1,@2(13)
        S    R0,R3
        MOV  R3,@4(13)
        RTWP
+
+* 
+* Handle CR/LF:
+* If source line contains CRLF, replace
+* it with a space and end processing.
+*
+* Input: R1,R3,R10
+* Output: R5,R6
+* Conditional Output: R3,R10
+HDLCR  MOV  R1,R5
+       MOVB *R5+,R6
+       SWPB R6
+       MOVB *R5,R6
+       SWPB R6
+       CI   R6,>0A0D
+       JEQ  HDLCR1
+       CI   R6,>0D0A
+       JEQ  HDLCR1
+       CB   R6,@CR
+       JNE  GTLN4
+HDLCR1 MOVB @SPACE,*R3+
+       MOVB @ALWCUR,*R10+
+       JMP  GTLN5
 
 LF     BYTE 10
 CR     BYTE 13
