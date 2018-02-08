@@ -252,11 +252,11 @@ CUR3B  TEXT 'XXXXX                                         '
        TEXT '             '
 DSP3C  TEXT '     light (c = about 3*108 m/s) squared. '
        BYTE >C2,>E2
-       TEXT 'Similarly,'
+       TEXT 'Similarly'
        BYTE >C2,>E5
-       TEXT ' '
+       TEXT ', '
 CUR3C  TEXT 'XXXXX                                      X'
-       TEXT '           X '
+       TEXT '          X  '
 DSP3D  TEXT '     anything '
        BYTE >C9,>E2
        TEXT 'having'
@@ -272,14 +272,14 @@ DSP3E  TEXT '     given by its energy E divided by the '
        TEXT 'speed of light '
 CUR3E  TEXT 'XXXXX                                     '
        TEXT '               '
-DSP3F  TEXT 'squared '
+DSP3F  TEXT '     squared '
        BYTE >C9,>E2
        TEXT 'c'
        BYTE >AB,>E2
        TEXT '2'
        BYTE >C9,>E5,>AB,>E5
        TEXT '. '
-CUR3F  TEXT '         X  X  X X  '
+CUR3F  TEXT 'XXXXX        X  X  X X  '
 DSP4   BYTE >CC,>CD,>D2,>CD
        TEXT ' '
 CUR4   TEXT ' X X '
