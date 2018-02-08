@@ -265,25 +265,36 @@ MGNW9  INC  R5
        SRA  R8,8
        MOV  R8,@INDENT
        RT
-       
+
+*
 * Indent if nessecary
+*
+* Input:
+* R0 - Index of the current line of text
+* R3 - Address within output string
+* R10 - Address within cursor string
+* Conditional Output:
+* R3 - Advanced by one or more positions
+* R10 - Advanced by one or more positions
+* Output:
+* R5,R6
+*
 DOINDT 
 * Find out if this is the begining of a
 * paragraph.
-       MOV  R0,R5
-* If index is zero, then yes.
+       MOV  R0,R0
+* If line index is zero, then yes.
        JEQ  DOIND4
-       DEC  R5
-* Convert Line Index to string address
+* Calculate the address of prior line of
+* text and place it in R6.
        LI   R6,LINLST
-       INCT R6
-       A    R5,R6
-       A    R5,R6
+       A    R0,R6
+       A    R0,R6
+       MOV  *R6,R6
 * Did previous line end in Carrg Return?
        MOVB *R6,R5
        SRL  R5,8
-* If previous liine is empty, then no.
-       MOV  R5,R5
+* If previous line is empty, then no.
        JEQ  DOIND3
        A    R5,R6
 * Check last byte of string.
@@ -296,34 +307,26 @@ DOINDT
        CB   *R6,@CR
        JEQ  DOIND4
 * No, not begining of paragraph.
-DOIND3 SETO R5
+* If configured indent is negative,
+* display it.
+DOIND3 MOV  @INDENT,R6
+       JGT  DOIND7
+       NEG  R6
        JMP  DOIND5
 * Yes, begining of paragraph.
-DOIND4 CLR  R5
-DOIND5 MOV  @INDENT,R6
-       JLT  DOIND8
-* First line indent
-* Return if not begining of paragraph
-       MOV  R5,R5
-       JNE  DOIND7
+* If configured indent is positive,
+* display it.
+DOIND4 MOV  @INDENT,R6
+       JLT  DOIND7
 * For now, assume 10 CPI
 * Return if indent is 0 chars.
-DOIN5A SRL  R6,1
+DOIND5 SRL  R6,1
        JEQ  DOIND7
 DOIND6 MOVB @SPACE,*R3+
        MOVB @PBTCUR,*R10+
        DEC  R6
        JNE  DOIND6
 DOIND7 RT
-* Later line indent
-DOIND8 
-* Return if current line is paragraph's
-* first line.
-       MOV  R5,R5
-       JEQ  DOIND7
-* Do a hanging indent
-       NEG  R6
-       JMP  DOIN5A
 
 * Default Margin settings
 DFTMGN DATA >1414,>2800
