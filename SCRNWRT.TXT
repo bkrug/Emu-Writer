@@ -376,7 +376,7 @@ FMT2   CLR  R9
 
 * 
 * Write format characters
-WRTFMT
+WRTFMT MOV  R11,R12
 * Give R6 address of new format entry.
        MOV  @NXTFMT,R6
 * Is this the first format entry?
@@ -400,20 +400,10 @@ WFMT2  AI   R6,3
        MOVB *R6,R8
        SZC  R7,R8
 * Write the on-format characters into
-* the display scring
+* the display string
        LI   R7,BLDBIT
        LI   R9,FMTON
-WFMT3  COC  *R7,R8
-       JNE  WFMT4
-       MOVB *R9+,*R3+
-       MOVB *R9+,*R3+
-       MOVB @ALWCUR,*R10+
-       MOVB @PBTCUR,*R10+
-       JMP  WFMT4A
-WFMT4  INCT R9
-WFMT4A INCT R7
-       CI   R7,FMTON
-       JL   WFMT3
+       BL   @WFMT3
 * Set R8 such that set bits represent
 * newly turned off formats.
        MOVB *R5,R8
@@ -423,17 +413,7 @@ WFMT4A INCT R7
 * the display scring
        LI   R7,BLDBIT
        LI   R9,FMTOFF
-WFMT5  COC  *R7,R8
-       JNE  WFMT6
-       MOVB *R9+,*R3+
-       MOVB *R9+,*R3+
-       MOVB @ALWCUR,*R10+
-       MOVB @PBTCUR,*R10+
-       JMP  WFMT6A
-WFMT6  INCT R9
-WFMT6A INCT R7
-       CI   R7,FMTON
-       JL   WFMT5
+       BL   @WFMT3
 * Set R6 to next format position.
        INC  R6
 * See if R6 has gone past the end of the
@@ -451,11 +431,26 @@ WFMT6A INCT R7
        JNE  WFMT8
 * Yes, so do same routine as GETFMT.
        MOV  R6,R5
+       MOV  R12,R11
        B    @FMT3
 * Return to main routine such
 * that we know the current line will not
 * have any more format changes.
-WFMT8  B    @FMT2
+WFMT8  MOV  R12,R11
+       B    @FMT2
+
+WFMT3  COC  *R7,R8
+       JNE  WFMT4
+       MOVB *R9+,*R3+
+       MOVB *R9+,*R3+
+       MOVB @ALWCUR,*R10+
+       MOVB @PBTCUR,*R10+
+       JMP  WFMT4A
+WFMT4  INCT R9
+WFMT4A INCT R7
+       CI   R7,FMTON
+       JL   WFMT3
+       RT
 
 * Default Formating
 DFTFMT BYTE >04
