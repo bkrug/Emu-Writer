@@ -476,9 +476,9 @@ TSTLP1 MOV  R7,R0
        INCT R9
        INCT R10
        AI   R12,6
-       CI   R8,EXPST2-8
+       CI   R8,EXPST2
        JL   TSTLP1
-	   RT
+       RT
 
 * Exptected Display strings
 EXPST1 DATA DSP1A,DSP1B,DSP1C,DSP1D

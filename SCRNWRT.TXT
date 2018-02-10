@@ -166,6 +166,9 @@ PBTCUR BYTE >FF
 *
 * If margin settings have changed,
 * display notification of changes
+* Store Indent amount at @INDENT.
+* Store flag representing if the 
+* paragraph is centered or not @CENTER.
 *
 * Input: R0,R3,R10
 * Conditional Output: R3,R10
@@ -222,8 +225,10 @@ MGNW4  CI   R8,>8000
        MOVB @PBTCUR,*R10+
        JMP  MGNW6
 * If newly centered
-MGNW5  CI   R8,>0080
+MGNW5  SETO @CENTER
+       CI   R8,>0080
        JNE  MGNW6
+       CLR  @CENTER
        MOVB @INVC,*R3+
        MOVB @INVN,*R3+
        MOVB @ALWCUR,*R10+
@@ -280,6 +285,9 @@ MGNW9  INC  R5
 * R5,R6
 *
 DOINDT 
+* Don't indent if this is centered text.
+       MOV  @CENTER,R6
+       JEQ  DOIND7
 * Find out if this is the begining of a
 * paragraph.
        MOV  R0,R0
@@ -337,6 +345,8 @@ CLRMGN DATA >7F7F
 CLRJ   DATA >80FF
 * Current margin
 INDENT BSS  >2
+* Set to zero if paragraph centered.
+CENTER DATA >FFFF
 
 *
 * Find first point in current line
