@@ -64,28 +64,28 @@ LIN3F  BYTE 13
        BYTE 13,10
 LIN4   BYTE 2
        BYTE 13,10
-LIN5A  BYTE LIN5B-LIN5A
+LIN5A  BYTE LIN5B-LIN5A-1
        TEXT 'The American Legion was a British provincial '
        TEXT 'militia '
-LIN5B  BYTE LIN5C-LIN5B
+LIN5B  BYTE LIN5C-LIN5B-1
        TEXT 'unit raised for Loyalist service late in the '
        TEXT 'American '
-LIN5C  BYTE LIN5D-LIN5C
+LIN5C  BYTE LIN5D-LIN5C-1
        TEXT 'Revolutionary War by Benedict Arnold, the '
        TEXT 'former Continental '
-LIN5D  BYTE LIN5E-LIN5D
+LIN5D  BYTE LIN5E-LIN5D-1
        TEXT 'Army general who had crossed over from the '
        TEXT 'Patriots to the '
-LIN5E  BYTE LIN5F-LIN5E
+LIN5E  BYTE LIN5F-LIN5E-1
        TEXT 'British. The unit was composed primarily of '
        TEXT 'deserters from '
-LIN5F  BYTE LIN6-LIN5F
+LIN5F  BYTE LIN6-LIN5F-1
        TEXT 'the Continental Army.'
        BYTE 13,10
-LIN6   BYTE LIN7-LIN6
+LIN6   BYTE LIN7-LIN6-1
        TEXT 'Regiment Formed'
        BYTE 13,10
-LIN7   BYTE LIN8-LIN7
+LIN7   BYTE LIN8-LIN7-1
        TEXT 'Another line of text'
        BYTE 13,10
 LIN8   EVEN
@@ -271,23 +271,23 @@ DSP3F  TEXT '     squared '
        TEXT '. '
 CUR3F  TEXT 'XXXXX         X  X  X X  '
 DSP4   BYTE >CC,>CD,>D2,>CD
-       TEXT ' '
-CUR4   TEXT ' X X '
+       TEXT '        '
+CUR4   TEXT ' X XXXXXXXX '
 DSP5A  TEXT '       The American Legion was a British '
        TEXT 'provincial militia '
 CUR5A  TEXT 'XXXXXXX                                  '
        TEXT '                   '
 DSP5B  TEXT 'unit r'
-       BYTE >C3,>B5
+       BYTE >C3,>B0,>B5
        TEXT 'aised for Loyalist service late in the '
        TEXT 'American '
-CUR5B  TEXT '       X                               '
+CUR5B  TEXT '       XX                               '
        TEXT '                 '
 DSP5C  TEXT 'Revolut'
        BYTE >C3,>B1,>B5
        TEXT 'ionary War by Benedict Arnold, the former '
        TEXT 'Continental '
-CUR5C  TEXT '         XX                               '
+CUR5C  TEXT '        XX                                '
        TEXT '                      '
 DSP5D  TEXT 'Army general who had crossed over from the '
        TEXT 'Patriots to the '
@@ -453,6 +453,9 @@ TST1A  LI   R0,0
        RT
 MSG1A  TEXT 'TST1A '
 
+*
+* Run each test on each string.
+*
 TSTLP  CLR  R7
        LI   R8,EXPST1
        LI   R9,EXPST2
@@ -473,7 +476,7 @@ TSTLP1 MOV  R7,R0
        INCT R9
        INCT R10
        AI   R12,6
-       CI   R8,EXPST2
+       CI   R8,EXPST2-8
        JL   TSTLP1
 	   RT
 

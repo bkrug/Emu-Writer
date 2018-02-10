@@ -342,10 +342,15 @@ INDENT BSS  >2
 * Find first point in current line
 * where the character format will change
 *
+* Input: 
+* R0 - Index of current line of text.
 * Output:
+* R5
+* R6
 * R9 the position in source string where
 *    a string the format is going to 
 *    apply.
+* NXTFMT
 GETFMT LI   R5,FMTLST
 * Set R6 to the end of FMTLST
        MOV  *R5,R6
@@ -414,8 +419,30 @@ WFMT2  AI   R6,3
        LI   R7,BLDBIT
        LI   R9,FMTOFF
        BL   @WFMT3
+* Look for change in CPI
+       MOVB *R5,R7
+       MOVB *R6,R8
+       SLA  R7,5
+       SRL  R7,13
+       SLA  R8,5
+       SRL  R8,13
+       C    R7,R8
+       JEQ  WFMT5
+* The CPI changed.
+* Get address of text representing
+* the new value.
+       LI   R7,CPITXT
+       A    R8,R7
+       A    R8,R7
+* Add to display string
+       MOVB @INVC,*R3+
+       MOVB *R7+,*R3+
+       MOVB *R7+,*R3+
+       MOVB @ALWCUR,*R10+
+       MOVB @PBTCUR,*R10+
+       MOVB @PBTCUR,*R10+
 * Set R6 to next format position.
-       INC  R6
+WFMT5  INC  R6
 * See if R6 has gone past the end of the
 * format list
        LI   R7,FMTLST
@@ -459,6 +486,7 @@ DFTFMT BYTE >04
 * Next Format Address
 NXTFMT BSS  2
 
+
 * Bits for comparisons
 *
 * Bold bit
@@ -497,6 +525,16 @@ FMTOFF DATA >C2E5
        DATA >ABE5
 * Subscript
        DATA >ADE5
+       
+* CPIs as text
+CPITXT DATA >B2B0
+       DATA >B1B7
+       DATA >B1B5
+       DATA >B1B2
+       DATA >B1B0
+       DATA >B0B7
+       DATA >B0B6
+       DATA >B0B5
 
 * The string of text that will be 
 * displayed.
