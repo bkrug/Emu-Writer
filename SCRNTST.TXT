@@ -10,17 +10,7 @@ RUNTST BLWP @OPENF
        BL   @RPLXSP
        BL   @WRTST
        BL   @TST1A
-       BL   @TST1B
-       BL   @TST1C
-       BL   @TST1D
-       BL   @TST1E
-       BL   @TST2
-       BL   @TST3A
-       BL   @TST3B
-       BL   @TST3C
-       BL   @TST3D
-       BL   @TST3E
-       BL   @TST3F
+       BL   @TSTLP
        BL   @WREND
        BLWP @CLOSEF
 LOOP   JMP  LOOP
@@ -463,115 +453,66 @@ TST1A  LI   R0,0
        RT
 MSG1A  TEXT 'TST1A '
 
-TST1B  LI   R0,1
+TSTLP  CLR  R7
+       LI   R8,EXPST1
+       LI   R9,EXPST2
+       LI   R10,EXPLNG
+       LI   R12,TSTNAM
+TSTLP1 MOV  R7,R0
        BLWP @GETLIN
-       LI   R3,DSP1B
-       LI   R4,CUR1B
-       LI   R5,CUR1B-DSP1B
-       LI   R6,MSG1B
+* R0 Contains result string
+* R1 Contains cursor string
+* R2 Contains length
+       MOV  *R8,R3
+       MOV  *R9,R4
+       MOV  *R10,R5
+       MOV  R12,R6
        BLWP @MNTEST
-       RT
-MSG1B  TEXT 'TST1B '
+       INC  R7
+       INCT R8
+       INCT R9
+       INCT R10
+       AI   R12,6
+       CI   R8,EXPST2
+       JL   TSTLP1
+	   RT
 
-TST1C  LI   R0,2
-       BLWP @GETLIN
-       LI   R3,DSP1C
-       LI   R4,CUR1C
-       LI   R5,CUR1C-DSP1C
-       LI   R6,MSG1C
-       BLWP @MNTEST
-       RT
-MSG1C  TEXT 'TST1C '
-
-TST1D  LI   R0,3
-       BLWP @GETLIN
-       LI   R3,DSP1D
-       LI   R4,CUR1D
-       LI   R5,CUR1D-DSP1D
-       LI   R6,MSG1D
-       BLWP @MNTEST
-       RT
-MSG1D  TEXT 'TST1D '
-
-TST1E  LI   R0,4
-       BLWP @GETLIN
-       LI   R3,DSP1E
-       LI   R4,CUR1E
-       LI   R5,CUR1E-DSP1E
-       LI   R6,MSG1E
-       BLWP @MNTEST
-       RT
-MSG1E  TEXT 'TST1E '
-
-TST2   LI   R0,5
-       BLWP @GETLIN
-       LI   R3,DSP2
-       LI   R4,CUR2
-       LI   R5,CUR2-DSP2
-       LI   R6,MSG2
-       BLWP @MNTEST
-       RT
-MSG2   TEXT 'TST2  '
-
-TST3A  LI   R0,6
-       BLWP @GETLIN
-       LI   R3,DSP3A
-       LI   R4,CUR3A
-       LI   R5,CUR3A-DSP3A
-       LI   R6,MSG3A
-       BLWP @MNTEST
-       RT
-MSG3A  TEXT 'TST3A '
-
-TST3B  LI   R0,7
-       BLWP @GETLIN
-       LI   R3,DSP3B
-       LI   R4,CUR3B
-       LI   R5,CUR3B-DSP3B
-       LI   R6,MSG3B
-       BLWP @MNTEST
-       RT
-MSG3B  TEXT 'TST3B '
-
-TST3C  LI   R0,8
-       BLWP @GETLIN
-       LI   R3,DSP3C
-       LI   R4,CUR3C
-       LI   R5,CUR3C-DSP3C
-       LI   R6,MSG3C
-       BLWP @MNTEST
-       RT
-MSG3C  TEXT 'TST3C '
-
-TST3D  LI   R0,9
-       BLWP @GETLIN
-       LI   R3,DSP3D
-       LI   R4,CUR3D
-       LI   R5,CUR3D-DSP3D
-       LI   R6,MSG3D
-       BLWP @MNTEST
-       RT
-MSG3D  TEXT 'TST3D '
-
-TST3E  LI   R0,10
-       BLWP @GETLIN
-       LI   R3,DSP3E
-       LI   R4,CUR3E
-       LI   R5,CUR3E-DSP3E
-       LI   R6,MSG3E
-       BLWP @MNTEST
-       RT
-MSG3E  TEXT 'TST3E '
-
-TST3F  LI   R0,11
-       BLWP @GETLIN
-       LI   R3,DSP3F
-       LI   R4,CUR3F
-       LI   R5,CUR3F-DSP3F
-       LI   R6,MSG3F
-       BLWP @MNTEST
-       RT
-MSG3F  TEXT 'TST3F '
+* Exptected Display strings
+EXPST1 DATA DSP1A,DSP1B,DSP1C,DSP1D
+       DATA DSP1E,DSP2
+       DATA DSP3A,DSP3B,DSP3C,DSP3D
+       DATA DSP3E,DSP3F,DSP4
+       DATA DSP5A,DSP5B,DSP5C,DSP5D
+       DATA DSP5E,DSP5F
+       DATA DSP6,DSP7
+* Expected Cursor strings
+EXPST2 DATA CUR1A,CUR1B,CUR1C,CUR1D
+       DATA CUR1E,CUR2
+       DATA CUR3A,CUR3B,CUR3C,CUR3D
+       DATA CUR3E,CUR3F,CUR4
+       DATA CUR5A,CUR5B,CUR5C,CUR5D
+       DATA CUR5E,CUR5F
+       DATA CUR6,CUR7
+* Expected string lengths
+EXPLNG DATA CUR1A-DSP1A,CUR1B-DSP1B
+       DATA CUR1C-DSP1C,CUR1D-DSP1D
+       DATA CUR1E-DSP1E,CUR2-DSP2
+       DATA CUR3A-DSP3A,CUR3B-DSP3B
+       DATA CUR3C-DSP3C,CUR3D-DSP3D
+       DATA CUR3E-DSP3E,CUR3F-DSP3F
+       DATA CUR4-DSP4
+       DATA CUR5A-DSP5A,CUR5B-DSP5B
+       DATA CUR5C-DSP5C,CUR5D-DSP5D
+       DATA CUR5E-DSP5E,CUR5F-DSP5F
+       DATA CUR6-DSP6,CUR7-DSP7
+* Test Names
+TSTNAM TEXT 'DSP1A DSP1B DSP1C DSP1D '
+       TEXT 'DSP1E DSP2  '
+       TEXT 'DSP3A DSP3B DSP3C DSP3D '
+       TEXT 'DSP3E DSP3F DSP4  '
+       TEXT 'DSP5A DSP5B DSP5C DSP5D '
+       TEXT 'DSP5E DSP5F '
+       TEXT 'DSP6  DSP7  '
 
 *
 * Test results
