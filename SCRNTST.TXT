@@ -301,12 +301,14 @@ CUR5E  TEXT '                                            '
        TEXT '               '
 DSP5F  TEXT 'the Continental Army. '
 CUR5F  TEXT '                      '
+* CPI is 15 at this point.
+* 7/10 inch indent should mean require 11 characters.
 DSP6   BYTE >C3,>CE
-       TEXT '       Regiment Formed '
-CUR6   TEXT ' XXXXXXXX                '
+       TEXT '           Regiment Formed '
+CUR6   TEXT ' XXXXXXXXXXXX                '
 DSP7   BYTE >CC,>CA
-       TEXT '       Another line of text '
-CUR7   TEXT ' XXXXXXXX                     '
+       TEXT '           Another line of text '
+CUR7   TEXT ' XXXXXXXXXXXX                     '
 DSP8
 
 * Create inverted version of the 
