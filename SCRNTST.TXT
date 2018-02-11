@@ -5,6 +5,9 @@
        REF  VMBW,VMBR
 
 * Run all tests
+* Keep RUNTST at the beginning of this
+* program so that LSCRNTST can find italic
+* easily.
 RUNTST BLWP @OPENF
        BL   @CHRSET
        BL   @RPLXSP

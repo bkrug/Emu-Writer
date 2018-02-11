@@ -546,6 +546,4 @@ DSPSTR BSS  >100
 * The string of text representing the
 * areas where a cursor may go.
 CURSTR BSS  >100
-TEXT1  TEXT 'This text if for debugging.'
-       EVEN
        END

@@ -1,6 +1,11 @@
        DEF  LTEST
        REF  LOADER,VMBW
 
+* Use this program in order to load all
+* of the files needed to test SCRNWRT.
+* It will execute the SCRNWRT tests
+* automatically.
+
 PABBUF EQU  >1000
 PAB    EQU  >F80
 STATUS EQU  >837C
@@ -30,11 +35,10 @@ LTEST  LI   R0,0
        LI   R1,LDMSG
        LI   R2,>40
        BLWP @VMBW
-*
+* Write PAB to VDP
        LI   R0,PAB
        LI   R1,PDATA1
        LI   R2,>20
-* Write PAB to VDP
 LTEST1 BLWP @VMBW
        LI   R6,PAB+9
        MOV  R6,@PNTR
