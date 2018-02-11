@@ -300,9 +300,9 @@ CUR5E  TEXT '                                            '
 DSP5F  TEXT 'the Continental Army. '
 CUR5F  TEXT '                      '
 DSP6   BYTE >C3,>CE
-       TEXT 'Regiment Formed '
-CUR6   TEXT ' X                '
-DSP7   BYTE >CE,>CA
+       TEXT '       Regiment Formed '
+CUR6   TEXT ' XXXXXXXX                '
+DSP7   BYTE >CC,>CA
        TEXT '       Another line of text '
 CUR7   TEXT ' XXXXXXXX                     '
 DSP8
