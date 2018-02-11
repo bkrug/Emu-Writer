@@ -1,4 +1,4 @@
-       DEF  RUNTST
+       DEF  RUNTST,DSPTXT
        DEF  LINLST,FMTLST,MGNLST
        REF  GETLIN
        REF  MAKETX,PRINTL,OPENF,CLOSEF
@@ -640,4 +640,27 @@ STREQU CB   *R8+,*R9+
 * No Match
 STREF  SETO R8
        RT
+
+*
+* Display all of the formatted lines
+*
+DSPTXT BL   @CHRSET
+       CLR  R3
+       CLR  R4
+DT1    MOV  R3,R0
+       BLWP @GETLIN
+* R0 Contains result string
+* R1 Contains cursor string
+* R2 Contains length
+       MOV  R0,R1
+       MOV  R4,R0
+       CI   R2,32
+       JLE  DT2
+       LI   R2,32
+DT2    BLWP @VMBW
+       AI   R4,32
+       INC  R3
+       C    R3,@LINLST
+       JL   DT1
+LOOP1  JMP  LOOP1
        END
