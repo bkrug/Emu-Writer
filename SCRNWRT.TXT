@@ -89,6 +89,7 @@ GETLIN DATA SCRNWS,GETLIN+4
        LI   R3,DSPSTR
        LI   R10,CURSTR
        BL   @MGNWRT
+	   BL   @GETCPI
        BL   @DOINDT
        BL   @GETFMT
 * Copy the string now
@@ -281,7 +282,7 @@ MGNW9  INC  R5
 * R3 - Advanced by one or more positions
 * R10 - Advanced by one or more positions
 * Output:
-* R5,R6
+* R5,R6,R7,R8,R9
 *
 DOINDT 
 * Find out if this is the begining of a
@@ -315,6 +316,7 @@ DOINDT
 * display it.
 DOIND3 MOV  @INDENT,R6
        JGT  DOIND7
+	   JEQ  DOIND7
        NEG  R6
        JMP  DOIND5
 * Yes, begining of paragraph.
@@ -322,9 +324,26 @@ DOIND3 MOV  @INDENT,R6
 * display it.
 DOIND4 MOV  @INDENT,R6
        JLT  DOIND7
-* For now, assume 10 CPI
+	   JEQ  DOIND7
+* Find the number of characters
+* required by indent.
+* Convert Indent from n/20 to n/120 of
+* an inch.
+DOIND5 MPY  @SIX,R6
+* Get width of one character.
+       LI   R8,PITCH
+	   A    @CPI,R8
+	   A    @CPI,R8
+	   MOV  *R8,R8
+* Increase indent by enough to allow
+* rounding to nearest integer.
+	   MOV  R8,R9
+	   SRL  R9,1
+	   A    R9,R7
+* Divide Indent by char width.
+       DIV  R8,R6
 * Return if indent is 0 chars.
-DOIND5 SRL  R6,1
+       MOV  R6,R6
        JEQ  DOIND7
 DOIND6 MOVB @SPACE,*R3+
        MOVB @PBTCUR,*R10+
@@ -341,6 +360,61 @@ CLRMGN DATA >7F7F
 CLRJ   DATA >80FF
 * Current margin
 INDENT BSS  >2
+* Number between 0 and 7 representing 
+* current CPI.
+* 0 through 7 respectively mean:
+* 20, 17.14, 15, 12, 10, 7.5, 6, 5
+CPI    BSS  >2
+
+* Describe each of these CPIs as n/120
+* of an inch.
+* 20, 17.14, 15, 12, 10, 7.5, 6, 5
+PITCH  DATA 6
+       DATA 7
+	   DATA 8
+	   DATA 10
+	   DATA 12
+	   DATA 16
+	   DATA 20
+	   DATA 24
+PITCHE
+ONETWT DATA 120
+SIX    DATA 6
+
+*
+* Get Initial CPI
+*
+* Input:
+* R0 - Index of current line of text.
+* Output:
+* R5,R6
+GETCPI MOV  R0,R0
+       JEQ  GTCPI4
+       LI   R5,FMTLST
+* Set R6 to the end of FMTLST
+       MOV  *R5,R6
+       INC  R6
+       SLA  R6,2
+       A    R5,R6
+* Find first Format for current line or
+* later.
+GTCPI1 AI   R5,4
+       C    R5,R6
+       JHE  GTCPI2
+       C    *R5,R0
+       JL   GTCPI1
+* Save CPI of previous format
+       MOV  R5,R6
+       DEC  R6
+       MOVB *R6,R6
+GTCPI3 SLA  R6,5
+       SRL  R6,13
+       MOV  R6,@CPI
+GTCPI2 RT
+* R0 is in the first line, so assume
+* default format.
+GTCPI4 MOVB @DFTFMT,R6
+       JMP  GTCPI3
 
 *
 * Find first point in current line
@@ -430,6 +504,9 @@ WFMT2  AI   R6,3
        SRL  R7,13
        SLA  R8,5
        SRL  R8,13
+* Save CPI
+       MOV  R8,@CPI
+*
        C    R7,R8
        JEQ  WFMT5
 * The CPI changed.
