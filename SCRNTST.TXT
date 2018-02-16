@@ -712,17 +712,17 @@ DSPTXT
        MOVB R0,@VDPCPY
        SWPB R0
        BLWP @VWTR
+* Initialize Buffer and ASCII
+       BL   @INTBUF
+       BL   @CHRSET
 * Clear Screen
-       LI   R0,0
+DT3    LI   R0,0
        LI   R1,EMPTYL
        LI   R2,40
 DT0    BLWP @VMBW
        A    R2,R0
        CI   R0,960
        JL   DT0
-* Initialize Buffer and ASCII
-       BL   @INTBUF
-       BL   @CHRSET
 *
        CLR  R3
        CLR  R4
