@@ -4,7 +4,7 @@
        REF  GETLIN
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
-       REF  VMBW,VMBR
+       REF  VMBW,VMBR,VWTR
 
 * Run all tests
 * Keep RUNTST at the beginning of this
@@ -404,18 +404,25 @@ INVCLR DATA >0101,>0101,>0101,>0101
 HEX0   DATA >0020,>5255,>5555,>5522
 HEXF   DATA >0070,>4744,>6446,>4444
 CHRSET
-* Set colors
-       LI   R0,>390
-       LI   R1,INVCLR
-       LI   R2,>10
-       BLWP @VMBW
 * Copy character codes
        LI   R3,>800
        LI   R4,>C00
+       LI   R1,INVCLR
+       LI   R2,>10
+* Pull definitions of two characters
+* into RAM
 CHRST1 MOV  R3,R0
        BLWP @VMBR
+* Invert Characters
+       LI   R5,INVCLR
+CHRST2 INV  *R5
+       INCT R5
+       CI   R5,INVCLR+>10
+       JL   CHRST2
+* Return definitions back to VDP RAM
        MOV  R4,R0
        BLWP @VMBW
+* Loop until inverting >FE an >FF.
        A    R2,R3
        A    R2,R4
        CI   R4,>1000
@@ -699,7 +706,24 @@ STREF  SETO R8
 *
 * Display all of the formatted lines
 *
-DSPTXT BL   @CHRSET
+DSPTXT 
+* Set to Text Mode
+       LI   R0,>F001
+       MOVB R0,@VDPCPY
+       SWPB R0
+       BLWP @VWTR
+* Clear Screen
+       LI   R0,0
+       LI   R1,EMPTYL
+       LI   R2,40
+DT0    BLWP @VMBW
+       A    R2,R0
+       CI   R0,960
+       JL   DT0
+* Initialize Buffer and ASCII
+       BL   @INTBUF
+       BL   @CHRSET
+*
        CLR  R3
        CLR  R4
 DT1    MOV  R3,R0
@@ -707,15 +731,27 @@ DT1    MOV  R3,R0
 * R0 Contains result string
 * R1 Contains cursor string
 * R2 Contains length
+       MOV  R0,R5
+       MOV  R1,R6
+*
        MOV  R0,R1
        MOV  R4,R0
-       CI   R2,32
+       CI   R2,40
        JLE  DT2
-       LI   R2,32
+       LI   R2,40
 DT2    BLWP @VMBW
-       AI   R4,32
+* Free old space
+       MOV  R6,R0
+       BLWP @BUFREE
+       MOV  R5,R0
+       BLWP @BUFREE
+*
+       AI   R4,40
        INC  R3
        C    R3,@LINLST
        JL   DT1
 LOOP1  JMP  LOOP1
+EMPTYL TEXT '                    '
+       TEXT '                    '
+VDPCPY EQU  >83D4
        END
