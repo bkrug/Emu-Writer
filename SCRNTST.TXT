@@ -11,11 +11,17 @@
 * program so that LSCRNTST can find italic
 * easily.
 RUNTST BLWP @OPENF
+* Initialize the memory buffer.
        BL   @INTBUF
+* Create inverted characters
        BL   @CHRSET
+* Change the expected cursor strings.
        BL   @RPLXSP
+* Write notification on screen.
        BL   @WRTST
+* Loop through every test.
        BL   @TSTLP
+* Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
 LOOP   JMP  LOOP
@@ -24,6 +30,13 @@ LOOP   JMP  LOOP
 * mocks. They would be defined in a 
 * source file.
 
+*
+* This section is all of the lines of
+* text in the document as they would
+* appear in the memory buffer.
+* They do not include formatting as that
+* is stored in a separate location.
+*
 * This paragraph is indented in the
 * first line.
 LIN1A  BYTE 48
@@ -95,6 +108,14 @@ LIN7   BYTE LIN8-LIN7-1
        BYTE 13,10
 LIN8   EVEN
 
+*
+* This is a list of pointers to every
+* line of text in the document.
+* The running application would need
+* this because each line takes up
+* different amounts of space and are not
+* stored in memory in order.
+*
 LINLST DATA 21
        DATA LIN1A,LIN1B,LIN1C,LIN1D
        DATA LIN1E
@@ -106,8 +127,25 @@ LINLST DATA 21
        DATA LIN5E,LIN5F
        DATA LIN6
        DATA LIN7
-       
+
+*
+* This is a list of all of the character
+* formats in the document.
+* The first word of memory is the number
+* of entries in the list.
+* The second word of memory is wasted
+* space.
+* The rest of the structure is made up
+* of four byte entries:
+*   bytes 0&1 - line index within LINLST
+*   byte 2    - char position with line
+*   byte 3    - charater formats
+* Bits 0 through 4 represent these
+* formats:
 * bold, italic, underline, super, sub
+*
+* Bits 5 through 7 represent one of
+* six possible CPIs.
 FMTLST DATA 17,0
 * Superscript
        DATA 4
@@ -152,7 +190,22 @@ FMTLST DATA 17,0
 * 15 CPI
        DATA 15
        BYTE 7,>02
-       
+
+*
+* This is a list of all of the margins.
+* Each entry is 6 bytes long.
+* The first word is the number of
+* entries.
+* Bytes 2-5 are wasted space.
+* In each entry:
+*  Byte 0-1 - line index
+*  Byte 2, bit 0 - Justified flag
+*  Byte 2, bit 1-7 - left margin
+*  Byte 3, bit 0 - Centered flag
+*  Byte 3, bit 1-7 - right margin
+*  Byte 4 - (signed) indent
+*  Byte 5 - top/bottom margin combined
+*
 MGNLST DATA 6,0,0
 * Default is >1414,>2800
 *
@@ -196,7 +249,20 @@ MGNLST DATA 6,0,0
 * >E2   Inverted b
 * >E5   Inverted e
 
+*
 * Expected Display Lines
+*
+* Each line labeled "DSP.." contains
+* text as it would appear on the screen.
+*
+* Each line labeled "CUR.." symbols for
+* where a cursor may be placed.
+* SCRNWRT returns a cursor string where
+* a cursor can be placed over positions
+* containing >00, but not >FF.
+* Spaces below represent >00 and X
+* represents >FF.
+*
 DSP1A  BYTE >CC,>CD,>D2,>CD
        TEXT '     In physics, mass energy equivalence '
        TEXT 'states that '
@@ -314,6 +380,7 @@ DSP7   BYTE >CC,>CA
 CUR7   TEXT ' XXXXXXXXXXXX                     '
 DSP8
 
+*
 * Initialize buffer.
 *
 INTBUF LI   R0,SPACE
@@ -364,78 +431,19 @@ CHRST1 MOV  R3,R0
        BLWP @VMBW
        RT
 
+*
 * Replace X with >FF and space with >00       
+*
 RPLXSP MOV  R11,R12
-       LI   R0,CUR1A
-       LI   R1,DSP1B-CUR1A
+       LI   R2,RPLDAT
+RPLXS2 MOV  *R2+,R0
+       MOV  *R2+,R1
        BL   @RPLX2
-       LI   R0,CUR1B
-       LI   R1,DSP1C-CUR1B
-       BL   @RPLX2
-       LI   R0,CUR1C
-       LI   R1,DSP1D-CUR1C
-       BL   @RPLX2
-       LI   R0,CUR1D
-       LI   R1,DSP1E-CUR1D
-       BL   @RPLX2
-       LI   R0,CUR1E
-       LI   R1,DSP2-CUR1E
-       BL   @RPLX2
-       LI   R0,CUR2
-       LI   R1,DSP3A-CUR2
-       BL   @RPLX2
-       LI   R0,CUR3A
-       LI   R1,DSP3B-CUR3A
-       BL   @RPLX2
-       LI   R0,CUR3B
-       LI   R1,DSP3C-CUR3B
-       BL   @RPLX2
-       LI   R0,CUR3C
-       LI   R1,DSP3D-CUR3C
-       BL   @RPLX2
-       LI   R0,CUR3D
-       LI   R1,DSP3E-CUR3D
-       BL   @RPLX2
-       LI   R0,CUR3E
-       LI   R1,DSP3F-CUR3E
-       BL   @RPLX2
-       LI   R0,CUR3F
-       LI   R1,DSP4-CUR3F
-       BL   @RPLX2
-       LI   R0,CUR4
-       LI   R1,DSP5A-CUR4
-       BL   @RPLX2
-       LI   R0,CUR5A
-       LI   R1,DSP5B-CUR5A
-       BL   @RPLX2
-       LI   R0,CUR5B
-       LI   R1,DSP5C-CUR5B
-       BL   @RPLX2
-       LI   R0,CUR5C
-       LI   R1,DSP5D-CUR5C
-       BL   @RPLX2
-       LI   R0,CUR5D
-       LI   R1,DSP5E-CUR5D
-       BL   @RPLX2
-       LI   R0,CUR5E
-       LI   R1,DSP5F-CUR5E
-       BL   @RPLX2
-       LI   R0,CUR5F
-       LI   R1,DSP6-CUR5F
-       BL   @RPLX2
-       LI   R0,CUR6
-       LI   R1,DSP7-CUR6
-       BL   @RPLX2
-       LI   R0,CUR7
-       LI   R1,DSP8-CUR7
-       BL   @RPLX2
+       CI   R2,RPLEND
+       JL   RPLXS2
        MOV  R12,R11
        RT
-       
-BYTEX  TEXT 'X'
-BYTESP TEXT ' '
-BYTE0  BYTE >00
-BYTEFF BYTE >FF
+
 RPLX2  CB   *R0,@BYTEX
        JEQ  RPLX3
        MOVB @BYTE0,*R0+
@@ -445,7 +453,35 @@ RPLX4  DEC  R1
        JNE  RPLX2
        RT
 
-* Write something
+BYTEX  TEXT 'X'
+BYTESP TEXT ' '
+BYTE0  BYTE >00
+BYTEFF BYTE >FF
+
+RPLDAT DATA CUR1A,DSP1B-CUR1A
+       DATA CUR1B,DSP1C-CUR1B
+       DATA CUR1C,DSP1D-CUR1C
+       DATA CUR1D,DSP1E-CUR1D
+       DATA CUR1E,DSP2-CUR1E
+       DATA CUR2,DSP3A-CUR2
+       DATA CUR3A,DSP3B-CUR3A
+       DATA CUR3B,DSP3C-CUR3B
+       DATA CUR3C,DSP3D-CUR3C
+       DATA CUR3D,DSP3E-CUR3D
+       DATA CUR3E,DSP3F-CUR3E
+       DATA CUR3F,DSP4-CUR3F
+       DATA CUR4,DSP5A-CUR4
+       DATA CUR5A,DSP5B-CUR5A
+       DATA CUR5B,DSP5C-CUR5B
+       DATA CUR5C,DSP5D-CUR5C
+       DATA CUR5D,DSP5E-CUR5D
+       DATA CUR5E,DSP5F-CUR5E
+       DATA CUR5F,DSP6-CUR5F
+       DATA CUR6,DSP7-CUR6
+       DATA CUR7,DSP8-CUR7
+RPLEND
+
+* Write notification
 WRTST  LI   R0,STARTM
        LI   R1,ENDM-STARTM
        BLWP @PRINTL
