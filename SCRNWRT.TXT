@@ -1,5 +1,6 @@
        DEF  GETLIN
        REF  LINLST,FMTLST,MGNLST
+       REF  BUFINT,BUFALC,BUFCPY,BUFREE
 
 * General Concepts:
 *
@@ -68,6 +69,9 @@ SRCLIN DATA 0
 * R0 - address of created line
 * R1 - address of cursor description
 * R2 - length of created line
+*
+* R0 will contain >FFFF if we could not
+* allocate space for the output strings.
 GETLIN DATA SCRNWS,GETLIN+4
        MOV  *R13,R0
 * Convert Line Index to string address
@@ -85,11 +89,18 @@ GETLIN DATA SCRNWS,GETLIN+4
 * R2 and R4 now contain string length.
 * Copy address of source line's start.
        MOV  R1,@SRCLIN
+* Allocate space for the output strings
+       BL   @ALCSPC
+       MOV  R0,@DSPSTR
+       MOV  R0,R3
+       BL   @ALCSPC
+       MOV  R0,@CURSTR
+       MOV  R0,R10
+* Restore line number to R0
+       MOV  *R13,R0
 * Initialization for copy-loop
-       LI   R3,DSPSTR
-       LI   R10,CURSTR
        BL   @MGNWRT
-	   BL   @GETCPI
+       BL   @GETCPI
        BL   @DOINDT
        BL   @GETFMT
 * Copy the string now
@@ -103,12 +114,22 @@ GTLN4  MOVB *R1+,*R3+
        DEC  R4
        JNE  GTLN1
 * Setup output parameters
-GTLN5  LI   R0,DSPSTR
-       MOV  R0,*R13
-       LI   R1,CURSTR
-       MOV  R1,@2(13)
-       S    R0,R3
+GTLN5
+       MOV  @DSPSTR,*R13
+       MOV  @CURSTR,@2(13)
+       S    *R13,R3
        MOV  R3,@4(13)
+       RTWP
+
+*
+* Allocate space for output
+* strings.
+ALCSPC LI   R0,>100
+       BLWP @BUFALC
+       CI   R0,>FFFF
+       JEQ  ALCSP2
+       RT
+ALCSP2 SETO *R13
        RTWP
 
 * 
@@ -316,7 +337,7 @@ DOINDT
 * display it.
 DOIND3 MOV  @INDENT,R6
        JGT  DOIND7
-	   JEQ  DOIND7
+       JEQ  DOIND7
        NEG  R6
        JMP  DOIND5
 * Yes, begining of paragraph.
@@ -324,7 +345,7 @@ DOIND3 MOV  @INDENT,R6
 * display it.
 DOIND4 MOV  @INDENT,R6
        JLT  DOIND7
-	   JEQ  DOIND7
+       JEQ  DOIND7
 * Find the number of characters
 * required by indent.
 * Convert Indent from n/20 to n/120 of
@@ -332,14 +353,14 @@ DOIND4 MOV  @INDENT,R6
 DOIND5 MPY  @SIX,R6
 * Get width of one character.
        LI   R8,PITCH
-	   A    @CPI,R8
-	   A    @CPI,R8
-	   MOV  *R8,R8
+       A    @CPI,R8
+       A    @CPI,R8
+       MOV  *R8,R8
 * Increase indent by enough to allow
 * rounding to nearest integer.
-	   MOV  R8,R9
-	   SRL  R9,1
-	   A    R9,R7
+       MOV  R8,R9
+       SRL  R9,1
+       A    R9,R7
 * Divide Indent by char width.
        DIV  R8,R6
 * Return if indent is 0 chars.
@@ -371,12 +392,12 @@ CPI    BSS  >2
 * 20, 17.14, 15, 12, 10, 7.5, 6, 5
 PITCH  DATA 6
        DATA 7
-	   DATA 8
-	   DATA 10
-	   DATA 12
-	   DATA 16
-	   DATA 20
-	   DATA 24
+       DATA 8
+       DATA 10
+       DATA 12
+       DATA 16
+       DATA 20
+       DATA 24
 PITCHE
 ONETWT DATA 120
 SIX    DATA 6
@@ -617,10 +638,11 @@ CPITXT DATA >B2B0
        DATA >B0B6
        DATA >B0B5
 
-* The string of text that will be 
-* displayed.
-DSPSTR BSS  >100
-* The string of text representing the
-* areas where a cursor may go.
-CURSTR BSS  >100
+* Stores the address of the string of
+* text that will be displayed.
+DSPSTR BSS  2
+* Stores the address of the string of
+* text representing the areas where a
+* cursor may go.
+CURSTR BSS  2
        END

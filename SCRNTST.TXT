@@ -1,6 +1,8 @@
        DEF  RUNTST,DSPTXT
        DEF  LINLST,FMTLST,MGNLST
+*
        REF  GETLIN
+       REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  VMBW,VMBR
 
@@ -9,6 +11,7 @@
 * program so that LSCRNTST can find italic
 * easily.
 RUNTST BLWP @OPENF
+       BL   @INTBUF
        BL   @CHRSET
        BL   @RPLXSP
        BL   @WRTST
@@ -311,6 +314,22 @@ DSP7   BYTE >CC,>CA
 CUR7   TEXT ' XXXXXXXXXXXX                     '
 DSP8
 
+* Initialize buffer.
+*
+INTBUF LI   R0,SPACE
+       LI   R1,>500
+       BLWP @BUFINT
+       MOV  R0,R0
+       JEQ  INTBF2
+       LI   R0,INTMSG
+       LI   R1,INTMSE-INTMSG
+       BLWP @PRINTL
+       B    @LOOP
+INTBF2 RT
+INTMSG TEXT 'Failed to initialize memory buffer.'
+INTMSE EVEN
+SPACE  BSS  >500
+
 * Create inverted version of the 
 * characters
 INVCLR DATA >0101,>0101,>0101,>0101
@@ -442,21 +461,6 @@ STARTM TEXT 'Testing'
 ENDM   TEXT 'Done'
 ENDME  EVEN
 
-* Test LIN1A (at index 0)
-* Compare results to DSP1A and CUR1A
-TST1A  LI   R0,0
-       BLWP @GETLIN
-* R0 Contains result string
-* R1 Contains cursor string
-* R2 Contains length
-       LI   R3,DSP1A
-       LI   R4,CUR1A
-       LI   R5,CUR1A-DSP1A
-       LI   R6,MSG1A
-       BLWP @MNTEST
-       RT
-MSG1A  TEXT 'TST1A '
-
 *
 * Run each test on each string.
 *
@@ -467,22 +471,37 @@ TSTLP  CLR  R7
        LI   R12,TSTNAM
 TSTLP1 MOV  R7,R0
        BLWP @GETLIN
+       CI   R0,>FFFF
+       JNE  TSTLP2
+* Report error.
+       LI   R0,ALCMG
+       LI   R1,ALCMGE-ALCMG
+       BLWP @PRINTL
+       RT
 * R0 Contains result string
 * R1 Contains cursor string
 * R2 Contains length
-       MOV  *R8,R3
+TSTLP2 MOV  *R8,R3
        MOV  *R9,R4
        MOV  *R10,R5
        MOV  R12,R6
        BLWP @MNTEST
+* Move to the next set of tests.
        INC  R7
        INCT R8
        INCT R9
        INCT R10
        AI   R12,6
+* Free up the memory for previous test.
+       BLWP @BUFREE
+       MOV  R1,R0
+       BLWP @BUFREE
+* Loop
        CI   R8,EXPST2
        JL   TSTLP1
        RT
+ALCMG  TEXT 'Could not allocate strings'
+ALCMGE EVEN
 
 * Exptected Display strings
 EXPST1 DATA DSP1A,DSP1B,DSP1C,DSP1D
