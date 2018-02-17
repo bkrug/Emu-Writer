@@ -24,7 +24,12 @@ RUNTST BLWP @OPENF
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
-LOOP   JMP  LOOP
+* Disable QUIT key
+*      LI   R0,>7000
+*      MOVB R0,@>83C2
+LOOP   LIMI 2
+       LIMI 0
+       JMP  LOOP
 
 * We define LINLST,FMTLST,MGNLST here as
 * mocks. They would be defined in a 
@@ -706,7 +711,7 @@ STREF  SETO R8
 *
 * Display all of the formatted lines
 *
-DSPTXT 
+DSPTXT CLR  @TIMER
 * Set to Text Mode
        LI   R0,>F001
        MOVB R0,@VDPCPY
@@ -715,11 +720,16 @@ DSPTXT
 * Initialize Buffer and ASCII
        BL   @INTBUF
        BL   @CHRSET
+* Define interrupt.
+       LI   R0,TIMINT
+       MOV  R0,@USRISR
 * Clear Screen
 DT3    LI   R0,0
        LI   R1,EMPTYL
        LI   R2,40
 DT0    BLWP @VMBW
+       LIMI 2
+       LIMI 0
        A    R2,R0
        CI   R0,960
        JL   DT0
@@ -727,7 +737,9 @@ DT0    BLWP @VMBW
        CLR  R3
        CLR  R4
 DT1    MOV  R3,R0
+       LIMI 2
        BLWP @GETLIN
+       LIMI 0
 * R0 Contains result string
 * R1 Contains cursor string
 * R2 Contains length
@@ -741,17 +753,48 @@ DT1    MOV  R3,R0
        LI   R2,40
 DT2    BLWP @VMBW
 * Free old space
+       LIMI 2
        MOV  R6,R0
        BLWP @BUFREE
        MOV  R5,R0
        BLWP @BUFREE
+       LIMI 0
 *
        AI   R4,40
        INC  R3
        C    R3,@LINLST
        JL   DT1
-LOOP1  JMP  LOOP1
+*
+       MOV  @TIMER,R0
+       LI   R1,TIMMSG+9
+       BLWP @MAKETX
+       MOV  R4,R0
+       LI   R1,TIMMSG
+       LI   R2,20
+       BLWP @VMBW
+       AI   R4,40
+LOOP1  LIMI 2
+       LIMI 0
+       MOV  @TIMER,R0
+       LI   R1,OTHRM+6
+       BLWP @MAKETX
+       MOV  R4,R0
+       LI   R1,OTHRM
+       LI   R2,20
+       BLWP @VMBW
+       JMP  LOOP1
 EMPTYL TEXT '                    '
        TEXT '                    '
+TIMMSG TEXT 'Runtime: .... ticks '
+OTHRM  TEXT 'Time: .... ticks    '
+* Address from which value for VDP
+* Register 1 is sometimes copied.
 VDPCPY EQU  >83D4
+* Address defining address of user-
+* defined service routine
+USRISR EQU  >83C4
+TIMER  BSS  >2
+
+TIMINT INC  @TIMER
+       RT
        END
