@@ -1,0 +1,13 @@
+       DEF  WRAP
+       REF  LINLST,FMTLST,MGNLST
+       REF  BUFINT,BUFALC,BUFCPY,BUFREE
+
+*
+* Wrap
+*
+* Input:
+* R0 - Line index. Wrap from here.
+* Output:
+WRAP   DATA WORKSP,WRAP+4
+       RTWP
+       END

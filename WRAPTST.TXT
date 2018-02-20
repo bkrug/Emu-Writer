@@ -1,0 +1,362 @@
+       DEF  RUNTST
+       DEF  LINLST,FMTLST,MGNLST
+*
+       REF  WRAP
+       REF  BUFINT,BUFALC,BUFREE,BUFCPY
+       REF  MAKETX,PRINTL,OPENF,CLOSEF
+       REF  VMBW
+
+RUNTST BLWP @OPENF
+* Initialize the memory buffer.
+       BL   @INTBUF
+* Write notification on screen.
+       BL   @WRTST
+* Loop through every test.
+       BL   @TSTLP
+* Write notification on screen.
+       BL   @WREND
+       BLWP @CLOSEF
+JMP    LIMI 2
+       LIMI 0
+       JMP  JMP
+
+* Write notification
+WRTST  LI   R0,STARTM
+       LI   R1,ENDM-STARTM
+       BLWP @PRINTL
+       RT
+ 
+* Finished testing
+WREND  LI   R0,ENDM
+       LI   R1,4
+       BLWP @PRINTL
+       RT
+
+STARTM TEXT 'Testing'
+ENDM   TEXT 'Done'
+ENDME  EVEN
+
+*
+* Initialize buffer.
+*
+INTBUF LI   R0,SPACE
+       LI   R1,>500
+       BLWP @BUFINT
+       MOV  R0,R0
+       JEQ  INTBF2
+       LI   R0,INTMSG
+       LI   R1,INTMSE-INTMSG
+       BLWP @PRINTL
+       B    @JMP
+INTBF2 RT
+INTMSG TEXT 'Failed to initialize memory buffer.'
+INTMSE EVEN
+
+*
+* Main Test Loop.
+*
+TSTLP
+* User R10 to track which test this is
+       CLR  R10
+TSTLP1 
+* Copy starting line list to LINLST
+       LI   R9,LINLST
+* Get address of starting line list
+       LI   R8,STRLIN
+       A    R10,R8
+       A    R10,R8
+       MOV  *R8,R8
+* Set up BUFCPY parameters
+       MOV  R8,R0
+       MOV  R9,R1
+       MOV  *R8,R2
+       A    *R8,R2
+* Copy
+       BLWP @BUFCPY
+* Setup wrap parameters
+       LI   R0,WRPLN
+       A    R10,R0
+       A    R10,R0
+       MOV  *R0,R0
+* Wrap TEXT
+       BLWP @WRAP
+*
+       LI   R8,EXPLIN
+       A    R10,R8
+          A    R10,R8
+       MOV  *R8,R8
+       MOV  *R9,R9
+* R8 now contains the address of the
+* expected line list.
+* R9 now contains the address of the
+* actual line list.
+*
+* Confirm that the number of lines in
+* the list is correct.
+       C    *R8,*R9
+       JNE  LPERR1
+* For each line in the list:
+*   (R5 shall store number of lines)
+       MOV  *R8,R5
+* Look at next line
+TSTLP2 INCT R8
+       INCT R9
+* Sore position within the line
+       MOV  R8,R6
+       MOV  R9,R7
+* Confirm that the line character length
+* is correct.
+       CB   *R6,*R7
+       JNE  LPERR2
+* R4 shall store character length
+       MOVB *R6,R4
+       SRL   R4,8
+* Confirm that the line space length is
+* correct. (n/120th inch)
+       INC  R6
+       INC  R7
+       MOVB *R6+,R0
+       MOVB *R7+,R1
+       SWPB R0
+       SWPB R1
+       MOVB *R6+,R0
+       MOVB *R7+,R1
+       SWPB R0
+       SWPB R1
+       C    R0,R1
+       JNE  LPERR2
+* Confirm string contents are correct.
+TSTLP3 CB   *R6+,*R7+
+       JNE  LPERR3
+       DEC  R4
+       JL   TSTLP3
+* See if we should check another line
+       DEC  R5
+       JL   TSTLP2
+* Run the next test
+       INC  R10
+       CI   R10,4
+       JL   TSTLP1
+       RT
+
+* Test result contains wrong number of
+* lines.
+LPERR1 RT
+
+* Test line contains wrong number of 
+* characters.
+LPERR2 RT
+
+* Test line contains wrong length in 
+* n/120 of an inch.
+LPERR3 RT
+
+* Test line contents don't match
+LPERR4 RT
+
+*Lines to wrap from
+WRPLN  DATA 0,0,0,0
+*Original Line Lists
+STRLIN DATA LINL0,LINL0,LINL0,LINL0
+STRLNE
+*Expected Line Lists
+EXPLIN DATA LINE1,LINE2,LINE3,LINE4
+EXPLNE
+*Test names
+TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
+TSTNME
+
+SPACE  BSS  >2000
+LINLST EQU  SPACE+2
+
+*
+* Data Format:
+* Byte 0: Number of characters in the
+*         string.
+* Byte 1&2: Length of text in format:
+*           n/120 inches.
+* Byte >=3: The string
+*
+* At 10 CPI bytes 1&2 will normally be
+* equal to either (byte0 - 1)*12 or
+* (byte0 - 2)*12. Each character is
+* 12/120 inch wide. And spaces or line
+* endings are not included in text
+* length.
+
+*
+* The entire paragraph will be
+* re-wrapped. A word will be brought
+* down to the next line.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+LIN1A  BYTE 47
+       DATA 552
+       TEXT 'Wuhan is the capital of Hubei province, '
+       TEXT 'China, '
+LIN1B  BYTE 41
+       DATA 480
+       TEXT 'and is the most populous city in Central '
+LIN1C  BYTE 8
+       DATA 72
+       TEXT 'China.'
+       BYTE 13,10
+EXP1A  BYTE 40
+       DATA 468
+       TEXT 'Wuhan is the capital of Hubei province, '
+EXP1B  BYTE 40
+       DATA 468
+       TEXT 'China, and is the most populous city in '
+EXP1C  BYTE 16
+       DATA 168
+       TEXT 'Central China.'
+       BYTE 13,10
+       EVEN
+
+*
+* The entire paragraph will be
+* re-wrapped. Some words will be brought
+* down to the next line, and a new line
+* will be created.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+LIN2A  BYTE 60
+       DATA 708
+       TEXT 'It lies in the eastern Jianghan Plain '
+       TEXT 'on the middle reaches '
+LIN2B  BYTE 41
+       DATA 480
+       TEXT 'of the Yangtze River at the intersection '
+LIN2C  BYTE 42
+       DATA 504
+       TEXT 'of the Yangtze and Han rivers.'
+       BYTE 13,10
+EXP2A  BYTE 38
+       DATA 444
+       TEXT 'It lies in the eastern Jianghan Plain '
+EXP2B  BYTE 37
+       DATA 432
+       TEXT 'on the middle reaches of the Yangtze '
+EXP2C  BYTE 33
+       DATA 384
+       TEXT 'River at the intersection of the '
+EXP2D  BYTE 25
+       DATA 300
+       TEXT 'Yangtze and Han rivers.'
+       BYTE 13,10
+
+*
+* The entire paragraph will be
+* re-wrapped. Some words will be brought
+* up to the first line.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+LIN3A  BYTE 19
+       DATA 216
+       TEXT 'Arising out of the '
+LIN3B  BYTE 32
+       DATA 372
+       TEXT 'conglomeration of three cities, '
+LIN3C  BYTE 39
+       DATA 456
+       TEXT 'Wuchang, Hankou, and Hanyang, Wuhan is '
+LIN3D  BYTE 34
+       DATA 384
+       TEXT 'known as "China"s Thoroughfare".'
+       BYTE 13,10
+EXP3A  BYTE 37
+       DATA 432
+       TEXT 'Arising out of the conglomeration of '
+EXP3B  BYTE 35
+       DATA 408
+       TEXT 'three cities, Wuchang, Hankou, and '
+EXP3C  BYTE 36
+       DATA 420
+       TEXT 'Hanyang, Wuhan is known as "China"s '
+EXP3D  BYTE 16
+       DATA 168
+       TEXT 'Thoroughfare".'
+       BYTE 13,10
+       
+*
+* The entire paragraph will be
+* re-wrapped. Some words will be brought
+* up to the first line. The final line
+* of the paragraph will be removed.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+LIN4A  BYTE 29
+       DATA 336
+       TEXT 'It is a major transportation '
+LIN4B  BYTE 36
+       DATA 420
+       TEXT 'hub, with dozens of railways, roads '
+LIN4C  BYTE 36
+       DATA 420
+       TEXT 'and expressways passing through the '
+LIN4D  BYTE 35
+       DATA 408
+       TEXT 'city and connecting to other major '
+LIN4E  BYTE 9
+       DATA 84
+       TEXT 'cities.'
+       BYTE 13,10
+EXP4A  BYTE 39
+       DATA 456
+       TEXT 'It is a major transportation hub, with '
+EXP4B  BYTE 39
+       DATA 468
+       TEXT 'dozens of railways, roads and '
+EXP4C  BYTE 37
+       DATA 432
+       TEXT 'expressways passing through the city '
+EXP4D  BYTE 39
+       DATA 444
+       TEXT 'and connecting to other major cities.'
+       BYTE 13,10
+
+LINL0  DATA 15
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINL0E
+
+* Expected Line results
+LINE1  DATA 15
+       DATA EXP1A,EXP1B,EXP1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINE1E
+* Expected Line results
+LINE2  DATA 16
+       DATA LIN1A,LIN1B,LIN1C
+       DATA EXP2A,EXP2B,EXP2C,EXP2D
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINE2E
+* Expected Line results
+LINE3  DATA 15
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA EXP3A,EXP3B,EXP3C,EXP3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINE3E
+* Expected Line results
+LINE4  DATA 14
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA EXP4A,EXP4B,EXP4C,EXP4D
+LINE4E
+
+       END
