@@ -24,9 +24,6 @@ RUNTST BLWP @OPENF
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
-* Disable QUIT key
-*      LI   R0,>7000
-*      MOVB R0,@>83C2
 LOOP   LIMI 2
        LIMI 0
        JMP  LOOP
