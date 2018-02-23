@@ -40,7 +40,7 @@ ENDME  EVEN
 * Initialize buffer.
 *
 INTBUF LI   R0,SPACE
-       LI   R1,>500
+       LI   R1,SPCEND-SPACE
        BLWP @BUFINT
        MOV  R0,R0
        JEQ  INTBF2
@@ -59,13 +59,21 @@ TSTLP
 * User R10 to track which test this is
        CLR  R10
 TSTLP1 
-* Copy starting line list to LINLST
-       LI   R9,LINLST
 * Get address of starting line list
        LI   R8,STRLIN
        A    R10,R8
        A    R10,R8
        MOV  *R8,R8
+* Reserve space for LINLST
+       MOV  *R8,R0
+       A    *R8,R0
+       INCT R0
+       BLWP @BUFALC
+* Copy starting line list to LINLST
+* R0 holds the location that LINLST is
+* stored at.
+       MOV  R0,R9
+       MOV  R0,@LINLST
 * Set up BUFCPY parameters
        MOV  R8,R0
        MOV  R9,R1
@@ -73,6 +81,30 @@ TSTLP1
        A    *R8,R2
 * Copy
        BLWP @BUFCPY
+* Copy strings into buffer.
+* Each string starts with the number of
+* characters stored in the 1st byte.
+* The memory consumed is equal to that 
+* plus three.
+       MOV  *R8,R3
+TSTLP4 INCT R8
+       INCT R9
+       MOVB *R8,R2
+       SRL  R2,8
+       AI   R2,3
+       MOV  R2,R0
+       BLWP @BUFALC
+       MOV  R0,R1
+       MOV  R8,R0
+       BLWP @BUFCPY
+* Also put the new string address in the
+* line list.
+       MOV  R1,*R9
+* Loop maybe
+       DEC  R3
+       JH   TSTLP4
+*
+       MOV  @LINLST,R9
 * Setup wrap parameters
        LI   R0,WRPLN
        A    R10,R0
@@ -83,7 +115,7 @@ TSTLP1
 *
        LI   R8,EXPLIN
        A    R10,R8
-          A    R10,R8
+       A    R10,R8
        MOV  *R8,R8
        MOV  *R9,R9
 * R8 now contains the address of the
@@ -167,7 +199,9 @@ TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
 TSTNME
 
 SPACE  BSS  >2000
-LINLST EQU  SPACE+2
+SPCEND
+* Address of LINLST
+LINLST DATA 0
 
 *
 * Data Format:
