@@ -162,6 +162,10 @@ TSTLP3 CB   *R6+,*R7+
        JNE  LPERR3
        DEC  R4
        JL   TSTLP3
+* Reinitialize space
+       LI   R0,SPACE
+       LI   R1,SPCEND-SPACE
+       BLWP @BUFINT
 * See if we should check another line
        DEC  R5
        JL   TSTLP2
@@ -173,18 +177,75 @@ TSTLP3 CB   *R6+,*R7+
 
 * Test result contains wrong number of
 * lines.
-LPERR1 RT
+LPERR1 LI   R0,TSTNAM
+       CLR  R3
+       MOV  R10,R4
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R1,LPER1M+5
+       LI   R2,6
+       BLWP @BUFCPY
+       LI   R0,LPER1M
+       LI   R1,LPER1N-LPER1M
+       BLWP @PRINTL
+       RT
+LPER1M TEXT 'Test ...... failed. Wrong '
+       TEXT 'number of lines.'
+LPER1N
 
 * Test line contains wrong number of 
 * characters.
-LPERR2 RT
+LPERR2 LI   R0,TSTNAM
+       CLR  R3
+       MOV  R10,R4
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R1,LPER2M+5
+       LI   R2,6
+       BLWP @BUFCPY
+       LI   R0,LPER2M
+       LI   R1,LPER2N-LPER2M
+       BLWP @PRINTL
+       RT
+LPER2M TEXT 'Test ...... failed. Wrong '
+       TEXT 'number of characters in '
+       TEXT 'line ....'
+LPER2N
 
 * Test line contains wrong length in 
 * n/120 of an inch.
-LPERR3 RT
+LPERR3 LI   R0,TSTNAM
+       CLR  R3
+       MOV  R10,R4
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R1,LPER3M+5
+       LI   R2,6
+       BLWP @BUFCPY
+       LI   R0,LPER3M
+       LI   R1,LPER3N-LPER3M
+       BLWP @PRINTL
+       RT
+LPER3M TEXT 'Test ...... failed. Wrong '
+       TEXT 'length in n/120 of an inch '
+LPER3N
 
 * Test line contents don't match
-LPERR4 RT
+LPERR4 LI   R0,TSTNAM
+       CLR  R3
+       MOV  R10,R4
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R1,LPER4M+5
+       LI   R2,6
+       BLWP @BUFCPY
+       LI   R0,LPER4M
+       LI   R1,LPER4N-LPER4M
+       BLWP @PRINTL
+       RT
+LPER4M TEXT 'Test ...... failed. Line '
+       TEXT 'contents were wrong.'
+LPER4N
 
 *Lines to wrap from
 WRPLN  DATA 0,0,0,0
@@ -197,6 +258,7 @@ EXPLNE
 *Test names
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
 TSTNME
+SIX    DATA 6
 
 SPACE  BSS  >2000
 SPCEND
