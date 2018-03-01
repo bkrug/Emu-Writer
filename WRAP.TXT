@@ -40,30 +40,34 @@ CR     BYTE 13
 * Output:
 * R0 - >FFFF implies an error.
 WRAP   DATA WORKSP,WRAP+4
+*
+* Initialize space width variables.
        CLR  @ACCUMW
        MOV  @LNWDTH,@RMAINW
 *
-       MOV  *R13,@WRPLN
-       MOV  *R13,@SEGLN
-       MOV  *R13,@SEGLNX
        MOV  *R13,R0
+* Line wrapping loop.
+* Return here to wrap the another line.
+WRAP0  MOV  R0,@WRPLN
+       MOV  R0,@SEGLN
+       MOV  R0,@SEGLNX
        SLA  R0,1
        INCT R0
        AI   R0,LINLST
-* R7 holds the address of the line
+* R7 shall hold the address of the line
 * starting a text segment
-* R8 holds the address of a character
-* starting a text segment
+* R8 shall hold the address of a 
+* character starting a text segment
        MOV  *R0,R7
        MOV  R7,R8
        AI   R8,3
-* R9 holds the address of the line
+* R9 shall hold the address of the line
 * starting the following segment
-* R10 holds the address of a character
-* starting the following segment
+* R10 shall hold the address of a
+* character starting the following segment
 WRAP1  BL   @NXTSEG
-* If R9 is 0, then there is not enough
-* text to wrap.
+* If R9 is 0, then we reached the end of
+* a paragraph.
        MOV  R9,R9
        JEQ  WRAPRT
 * Get segment width in R6
@@ -89,17 +93,16 @@ ORGSZ  DATA 0
 NEWLN  DATA 0
 * Character size of new line
 NEWSZ  DATA 0
-* Address of line text is being wrapped
-* down to
+* Address of line after the break line
 DOWNLN DATA 0
-* Character size of next line
+* Character size of the same line
 DOWNSZ DATA 0
 * Address in LINLST of pointer to line
-* being wrapped down to.
+* following the break line
 DOWNPT DATA 0
-* 
+
 *
-* Break 
+* Break a line
 *
 * Must now break. Give SEGLN, R7, and R8
 * the location to break the line at.
@@ -116,77 +119,21 @@ BRKNOW CB   R8,@SPACE
 BRK1
 * Check if break happens in the next line
        C    @WRPLN,@SEGLN
-       JEQ  BRK2
-* Yes, move to other part of code.
-       B    @BRK3
+       JNE  BRK3
 * No, break the original line
-* Reserve enough space for the text
-* being moved down and the entire next
-* line.
-BRK2   MOV  @SEGLN,R0
-* R0 now contains the index of line
-       INCT R0
-       SRL  R0,2
-       AI   R0,LINLST
-       MOV  R0,@DOWNPT
-* R0 now contains address within LINLST.
-* The word at this address contains the
-* address of next line.
-       MOV  *R0,R0
-       MOV  R0,@DOWNLN
-* R0 now contains the address of the
-* next line.
-       MOVB *R0,R0
-       SRL  R0,8
-       MOV  R0,@DOWNSZ
-* R0 now contains the number of 
-* characters in the next line
-       MOVB *R7,R2
-       SRL  R2,8
-       A    R7,R2
-       AI   R2,3
-       S    R8,R2
-       MOV  R2,@ORGSZ
-* R2 now contains the number of
-* characters wrapped down from current
-* line.
-* (Number of characters in current line
-*   + address of current line
-*   + 3 bytes of line header information
-*   - address of current character)
-       A    R2,R0
-       MOV  R0,@NEWSZ
+BRK2
+* Record size parameters of some lines.
+       BL   @LNPARM
+* R0 contains character size of new line
        AI   R0,3
-* R0 now tells us the required amount of
-* space.
+* R0 now contains byte size of new line.
        BLWP @BUFALC
        CI   R0,>FFFF
        JEQ  WRPERR
 * R0 contains address of new line
-* Assign length 
        MOV  R0,@NEWLN
-* Record character length of new line
-       MOV  @NEWSZ,R1
-       SLA  R1,8
-       MOVB R1,*R0+
-* Record space length of new line
-       MOV  @ACCUMW,R1
-       MOVB R1,*R0+
-       SWPB R1
-       MOVB R1,*R0+
-* Copy characters from current line to
-* new line.
-* R2 still contains number of characters
-* to move.
-       MOV  R0,R1
-       MOV  R8,R0
-       BLWP @BUFCPY
-* Copy characters from the next line
-       MOV  @DOWNLN,R0
-       AI   R0,3
-       A    R2,R1
-       MOV  @DOWNSZ,R2
-       BLWP @BUFCPY
+* Populate the new line
+       BL   @POPNEW
 * Replace next line with new line in
 * LINLST.
        MOV  @NEWLN,@DOWNPT
@@ -195,12 +142,25 @@ BRK2   MOV  @SEGLN,R0
        MOV  @DOWNLN,R0
        DECT R0
        BLWP @BUFREE
-* Shorten the line text is taken from
-       MOV  @ORGSZ,R0
-       SLA  R0,8
-       MOVB R0,*R7
-       RTWP
+* Shorten the character size of the
+* break line.
+       MOV  R7,R0
+       MOV  @ORGSZ,R2
+       SLA  R2,8
+       MOVB R2,*R0+
+* Shorten the space width of the break
+* line.
+       MOV  @ACCUMW,R1
+       MOVB R1,*R0+
+       SWPB R1
+       MOVB R1,*R0+
+* Wrap the next line.
+       MOV  @WRPLN,R0
+       INC  R0
+       B    @WRAP0
 
+* Yes, merge part of the next line into
+* original line.
 BRK3
 *TODO:
 
@@ -311,4 +271,88 @@ GWDTH2 MOV R7,R5
        A   *R7,R5
        AI  R5,3
        JMP GWDTH1
+       
+*
+* Populate Line Size parameters
+*
+* Get address of line text is being
+* moved down to.
+* Get character sizes of line text
+* is wrapped from, wrapped to, and
+* the new line.
+*
+* Input:
+*   SEGLN - index of line wrapping from
+*   R7 - address of line wrapping from
+*   R8 - character position of new break
+* Oputput:
+*   R0 - Same as NEWSZ
+*   R2 - Same as ORGSZ
+LNPARM MOV  @SEGLN,R0
+* R0 now contains the index of line
+       INCT R0
+       SRL  R0,2
+       AI   R0,LINLST
+       MOV  R0,@DOWNPT
+* R0 now contains address within LINLST.
+* The word at this address contains the
+* address of next line.
+       MOV  *R0,R0
+       MOV  R0,@DOWNLN
+* R0 now contains the address of the
+* next line.
+       MOVB *R0,R0
+       SRL  R0,8
+       MOV  R0,@DOWNSZ
+* R0 now contains the number of 
+* characters in the next line
+       MOVB *R7,R2
+       SRL  R2,8
+       A    R7,R2
+       AI   R2,3
+       S    R8,R2
+       MOV  R2,@ORGSZ
+* R2 now contains the number of
+* characters wrapped down from current
+* line.
+* (Number of characters in current line
+*   + address of current line
+*   + 3 bytes of line header information
+*   - address of current character)
+       A    R2,R0
+       MOV  R0,@NEWSZ
+       RT 
+       
+* 
+* Populate new line
+*
+* Input:
+*   R0 - address of new line
+*   R8 - address of character to break
+*        line at
+* Output:
+*   R0,R1,R2
+POPNEW
+* Record character length of new line
+       MOV  @NEWSZ,R1
+       SLA  R1,8
+       MOVB R1,*R0+
+* Record space length of new line
+       MPY  @CPI10,R1
+       MOVB R2,*R0+
+       SWPB R2
+       MOVB R2,*R0+
+* Copy characters from current line to
+* new line.
+       MOV  R0,R1
+       MOV  R8,R0
+       MOV  @ORGSZ,R2
+       BLWP @BUFCPY
+* Copy characters from the next line
+       MOV  @DOWNLN,R0
+       AI   R0,3
+       A    R2,R1
+       MOV  @DOWNSZ,R2
+       BLWP @BUFCPY
+       RT
        END
