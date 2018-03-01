@@ -140,7 +140,6 @@ BRK2
 * Free up space of what used to be the
 * next line
        MOV  @DOWNLN,R0
-       DECT R0
        BLWP @BUFREE
 * Shorten the character size of the
 * break line.
@@ -338,6 +337,9 @@ POPNEW
        SLA  R1,8
        MOVB R1,*R0+
 * Record space length of new line
+* TODO: Maybe this should be left blank.
+* This is the wrong way to calculate it.
+* And it will usually change right away.
        MPY  @CPI10,R1
        MOVB R2,*R0+
        SWPB R2
