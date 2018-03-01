@@ -1,14 +1,314 @@
        DEF  WRAP
        REF  LINLST,FMTLST,MGNLST
-       REF  BUFINT,BUFALC,BUFCPY,BUFREE
+       REF  BUFALC,BUFCPY,BUFREE
 
 WORKSP BSS  >20
+
+* Maximum width of a 4 inch line
+LNWDTH DATA 120*4
+* Character Width in n/120-inch
+* 10 cpi
+CPI10  DATA 12
+* Accumulated Width
+ACCUMW DATA 0
+* Remaining Width
+RMAINW DATA 0
+
+* Index within LINLST of line being
+* wrapped
+WRPLN  DATA 0
+* Index within LINLST of line containing
+* current segment
+SEGLN  DATA 0
+* Index within LINLST of line containing
+* next segment
+SEGLNX DATA 0
+
+*
+SPACE  TEXT ' '
+DASH   TEXT '-'
+LF     BYTE 10
+CR     BYTE 13
+       EVEN
+*Character width
+
 *
 * Wrap
 *
 * Input:
 * R0 - Line index. Wrap from here.
 * Output:
+* R0 - >FFFF implies an error.
 WRAP   DATA WORKSP,WRAP+4
+       CLR  @ACCUMW
+       MOV  @LNWDTH,@RMAINW
+*
+       MOV  *R13,@WRPLN
+       MOV  *R13,@SEGLN
+       MOV  *R13,@SEGLNX
+       MOV  *R13,R0
+       SLA  R0,1
+       INCT R0
+       AI   R0,LINLST
+* R7 holds the address of the line
+* starting a text segment
+* R8 holds the address of a character
+* starting a text segment
+       MOV  *R0,R7
+       MOV  R7,R8
+       AI   R8,3
+* R9 holds the address of the line
+* starting the following segment
+* R10 holds the address of a character
+* starting the following segment
+WRAP1  BL   @NXTSEG
+* If R9 is 0, then there is not enough
+* text to wrap.
+       MOV  R9,R9
+       JEQ  WRAPRT
+* Get segment width in R6
+       BL   @GWIDTH
+* Check if remaining width < 0
+       S    R6,@RMAINW
+       JLT  BRKNOW
+* Add same amount to accumated width
+       A    R6,@ACCUMW
+* There is space left. Make the next
+* segment the current segment.
+       MOV  R9,R7
+       MOV  R10,R8
+       MOV  @SEGLNX,@SEGLN
+       JMP  WRAP1
+
+WRAPRT RTWP
+
+* New character size of line text is
+* being taken from.
+ORGSZ  DATA 0
+* Address of new line
+NEWLN  DATA 0
+* Character size of new line
+NEWSZ  DATA 0
+* Address of line text is being wrapped
+* down to
+DOWNLN DATA 0
+* Character size of next line
+DOWNSZ DATA 0
+* Address in LINLST of pointer to line
+* being wrapped down to.
+DOWNPT DATA 0
+* 
+*
+* Break 
+*
+* Must now break. Give SEGLN, R7, and R8
+* the location to break the line at.
+BRKNOW CB   R8,@SPACE
+       JNE  BRK1
+* This is a space segment, put line
+* break after this segment
+       MOV  R9,R7
+       MOV  R10,R8
+       MOV  @SEGLNX,@SEGLN
+* This is a visible segment, put line
+* break before this segment.
+* Leave SEGLN, R7, and R8 as they are.
+BRK1
+* Check if break happens in the next line
+       C    @WRPLN,@SEGLN
+       JEQ  BRK2
+* Yes, move to other part of code.
+       B    @BRK3
+* No, break the original line
+* Reserve enough space for the text
+* being moved down and the entire next
+* line.
+BRK2   MOV  @SEGLN,R0
+* R0 now contains the index of line
+       INCT R0
+       SRL  R0,2
+       AI   R0,LINLST
+       MOV  R0,@DOWNPT
+* R0 now contains address within LINLST.
+* The word at this address contains the
+* address of next line.
+       MOV  *R0,R0
+       MOV  R0,@DOWNLN
+* R0 now contains the address of the
+* next line.
+       MOVB *R0,R0
+       SRL  R0,8
+       MOV  R0,@DOWNSZ
+* R0 now contains the number of 
+* characters in the next line
+       MOVB *R7,R2
+       SRL  R2,8
+       A    R7,R2
+       AI   R2,3
+       S    R8,R2
+       MOV  R2,@ORGSZ
+* R2 now contains the number of
+* characters wrapped down from current
+* line.
+* (Number of characters in current line
+*   + address of current line
+*   + 3 bytes of line header information
+*   - address of current character)
+       A    R2,R0
+       MOV  R0,@NEWSZ
+       AI   R0,3
+* R0 now tells us the required amount of
+* space.
+       BLWP @BUFALC
+       CI   R0,>FFFF
+       JEQ  WRPERR
+* R0 contains address of new line
+* Assign length 
+       MOV  R0,@NEWLN
+* Record character length of new line
+       MOV  @NEWSZ,R1
+       SLA  R1,8
+       MOVB R1,*R0+
+* Record space length of new line
+       MOV  @ACCUMW,R1
+       MOVB R1,*R0+
+       SWPB R1
+       MOVB R1,*R0+
+* Copy characters from current line to
+* new line.
+* R2 still contains number of characters
+* to move.
+       MOV  R0,R1
+       MOV  R8,R0
+       BLWP @BUFCPY
+* Copy characters from the next line
+       MOV  @DOWNLN,R0
+       AI   R0,3
+       A    R2,R1
+       MOV  @DOWNSZ,R2
+       BLWP @BUFCPY
+* Replace next line with new line in
+* LINLST.
+       MOV  @NEWLN,@DOWNPT
+* Free up space of what used to be the
+* next line
+       MOV  @DOWNLN,R0
+       DECT R0
+       BLWP @BUFREE
+* Shorten the line text is taken from
+       MOV  @ORGSZ,R0
+       SLA  R0,8
+       MOVB R0,*R7
        RTWP
+
+BRK3
+*TODO:
+
+* Report error.
+WRPERR MOV  R0,*R13
+       RTWP
+
+*
+* Find next Segment
+* If R9 results in zero, the segment is
+* last in the buffer or paragraph
+*
+* Input:
+* R7,R8 - address of line and character
+*      starting current segment
+* Output:
+* R9,R10 - address of line and character
+*      starting next segment
+* R6 - Gets changed
+NXTSEG MOV  R7,R9
+       MOV  R8,R10
+* Find end of line, store in R6
+       MOV  R7,R6
+       A    *R7,R6
+       INCT R6
+* Beginning of loop
+NXTSG1 INC R10
+* Check if we passed the end of the line
+       C    R10,R6
+       JHE  NXTSG3
+* Check if we reached end of paragraph.
+       CB   *R10,@LF
+       JEQ  NXTSG4
+       CB   *R10,@CR
+       JEQ  NXTSG4
+* Check if current segment is invisible
+       CB   *R8,@SPACE
+       JNE  NXTSG2
+* If we found a non-space character,
+* this is the next segment.
+       CB   *R10,@SPACE
+       JNE  NXTRT
+       JMP  NXTSG1
+* Current segment is visible text
+NXTSG2 
+* If we found a space character, this
+* is the next segment
+       CB   *R10,@SPACE
+       JEQ  NXTRT
+* If we found a dash character, the next
+* character is the next segment
+       CB   *R10,@DASH
+       JNE  NXTSG1
+       INC  R10
+*
+NXTRT  RT
+
+NXTSG3
+* SEGLNX will now point to index after
+* SEGLN
+       MOV  @SEGLN,R6
+       INC  R6
+       MOV  R6,@SEGLNX
+* If SEGLNX is now outside of line list,
+* return null
+       C    @SEGLNX,@LINLST
+       JH   NXTSG4
+* Put address of next line in R9
+       SLA  R6,2
+       AI   R6,LINLST
+       INCT R6
+       MOV  *R6,R9
+* Put address of next character in R10
+       MOV  R9,R10
+       AI   R10,3
+       RT
+* Tell caller that this is last segment
+* in LINLST or paragraph.
+NXTSG4 CLR  @SEGLNX
+       CLR  R9
+       CLR  R10
+       RT
+
+*
+* Find Width of a segment
+*
+* Input:
+* R7,R8 - address of line and character
+*      starting current segment
+* R9,R10 - address of line and character
+*      starting next segment
+* Output:
+* R6 - width in n/120-inch
+* R5 - zero
+GWIDTH 
+* If next segment is on the same line,
+* just find width of characters in
+* between
+       C   R7,R9
+       JNE GWDTH2
+       MOV R10,R5
+GWDTH1 S   R8,R5
+       MPY @CPI10,R5
+       RT
+* Next segment is on next line, so 
+* return the remaining width of the line
+GWDTH2 MOV R7,R5
+       A   *R7,R5
+       AI  R5,3
+       JMP GWDTH1
        END
