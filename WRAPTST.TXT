@@ -92,15 +92,15 @@ TSTLP1
 TSTLP2 INCT R8
        INCT R9
 * Store position within the line
-       MOV  R8,R6
-       MOV  R9,R7
+       MOV  *R8,R6
+       MOV  *R9,R7
 * Confirm that the line character length
 * is correct.
        CB   *R6,*R7
        JNE  LPERR2
 * R4 shall store character length
        MOVB *R6,R4
-       SRL   R4,8
+       SRL  R4,8
 * Confirm that the line space length is
 * correct. (n/120th inch)
        INC  R6
@@ -152,10 +152,6 @@ LPERR1 LI   R0,TSTNAM
        LI   R1,LPER1N-LPER1M
        BLWP @PRINTL
        B    *R12
-LPER1M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of lines. We see '
-       TEXT '....'
-LPER1N EVEN
 
 * Test line contains wrong number of 
 * characters.
@@ -167,14 +163,20 @@ LPERR2 LI   R0,TSTNAM
        LI   R1,LPER2M+5
        LI   R2,6
        BLWP @BUFCPY
+*
+       MOV  R10,R0
+       LI   R1,LPER2N
+       BLWP @MAKETX
+*
+       MOV  *R7,R0
+       LI   R1,LPER2N+11
+       BLWP @MAKETX
+*
        LI   R0,LPER2M
-       LI   R1,LPER2N-LPER2M
+       LI   R1,LPER2O-LPER2M
        BLWP @PRINTL
+*
        B    *R12
-LPER2M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of characters in '
-       TEXT 'line ....'
-LPER2N EVEN
 
 * Test line contains wrong length in 
 * n/120 of an inch.
@@ -190,9 +192,6 @@ LPERR3 LI   R0,TSTNAM
        LI   R1,LPER3N-LPER3M
        BLWP @PRINTL
        B    *R12
-LPER3M TEXT 'Test ...... failed. Wrong '
-       TEXT 'length in n/120 of an inch '
-LPER3N EVEN
 
 * Test line contents don't match
 LPERR4 LI   R0,TSTNAM
@@ -207,6 +206,23 @@ LPERR4 LI   R0,TSTNAM
        LI   R1,LPER4N-LPER4M
        BLWP @PRINTL
        B    *R12
+
+LPER1M TEXT 'Test ...... failed. Wrong '
+       TEXT 'number of lines. We see '
+       TEXT '....'
+LPER1N EVEN
+
+LPER2M TEXT 'Test ...... failed. Wrong '
+       TEXT 'number of characters in '
+       TEXT 'line '
+LPER2N TEXT '....'
+       TEXT ' found ..... characters'
+LPER2O EVEN
+
+LPER3M TEXT 'Test ...... failed. Wrong '
+       TEXT 'length in n/120 of an inch '
+LPER3N EVEN
+
 LPER4M TEXT 'Test ...... failed. Line '
        TEXT 'contents were wrong.'
 LPER4N EVEN
