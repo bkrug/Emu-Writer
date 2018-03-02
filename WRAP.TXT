@@ -14,14 +14,14 @@ ACCUMW DATA 0
 * Remaining Width
 RMAINW DATA 0
 
-* Index within LINLST of line being
+* Index within Line List of line being
 * wrapped
 WRPLN  DATA 0
-* Index within LINLST of line containing
-* current segment
+* Index within Line List of line
+* containing current segment
 SEGLN  DATA 0
-* Index within LINLST of line containing
-* next segment
+* Index within Line List of line
+* containing next segment
 SEGLNX DATA 0
 
 *
@@ -53,7 +53,9 @@ WRAP0  MOV  R0,@WRPLN
        MOV  R0,@SEGLNX
        SLA  R0,1
        INCT R0
-       AI   R0,LINLST
+       LI   R1,LINLST
+       MOV  *R1,R1
+       A    R1,R0
 * R7 shall hold the address of the line
 * starting a text segment
 * R8 shall hold the address of a 
@@ -97,8 +99,8 @@ NEWSZ  DATA 0
 DOWNLN DATA 0
 * Character size of the same line
 DOWNSZ DATA 0
-* Address in LINLST of pointer to line
-* following the break line
+* Address in Line List of pointer to
+* line following the break line
 DOWNPT DATA 0
 
 *
@@ -135,7 +137,7 @@ BRK2
 * Populate the new line
        BL   @POPNEW
 * Replace next line with new line in
-* LINLST.
+* Line List.
        MOV  @NEWLN,@DOWNPT
 * Free up space of what used to be the
 * next line
@@ -161,7 +163,14 @@ BRK2
 * Yes, merge part of the next line into
 * original line.
 BRK3
-*TODO:
+* Check if the break point is the first
+* character in the line. If yes, then
+* the line break is already in the right
+* place.
+       MOV  R7,R0
+       AI   R0,3
+       C    R0,R8
+       JEQ  WRAPRT
 
 * Report error.
 WRPERR MOV  R0,*R13
@@ -225,11 +234,12 @@ NXTSG3
        MOV  R6,@SEGLNX
 * If SEGLNX is now outside of line list,
 * return null
-       C    @SEGLNX,@LINLST
+       MOV  @LINLST,R0
+       C    @SEGLNX,*R0
        JH   NXTSG4
 * Put address of next line in R9
        SLA  R6,2
-       AI   R6,LINLST
+       AI   R6,R0
        INCT R6
        MOV  *R6,R9
 * Put address of next character in R10
@@ -237,7 +247,7 @@ NXTSG3
        AI   R10,3
        RT
 * Tell caller that this is last segment
-* in LINLST or paragraph.
+* in Line List or paragraph.
 NXTSG4 CLR  @SEGLNX
        CLR  R9
        CLR  R10
@@ -291,11 +301,12 @@ LNPARM MOV  @SEGLN,R0
 * R0 now contains the index of line
        INCT R0
        SRL  R0,2
-       AI   R0,LINLST
+       LI   R2,LINLST
+       A    R2,R0
        MOV  R0,@DOWNPT
-* R0 now contains address within LINLST.
-* The word at this address contains the
-* address of next line.
+* R0 now contains an address within Line
+* List. The word at this address
+* contains the address of next line.
        MOV  *R0,R0
        MOV  R0,@DOWNLN
 * R0 now contains the address of the

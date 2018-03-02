@@ -55,74 +55,32 @@ INTMSE EVEN
 *
 * Main Test Loop.
 *
-TSTLP
-* User R10 to track which test this is
+TSTLP  MOV  R11,R12
+* Use R10 to track which test this is
        CLR  R10
-TSTLP1 
-* Get address of starting line list
-       LI   R8,STRLIN
-       A    R10,R8
-       A    R10,R8
-       MOV  *R8,R8
-* Reserve space for LINLST
-       MOV  *R8,R0
-       A    *R8,R0
-       INCT R0
-       BLWP @BUFALC
-* Copy starting line list to LINLST
-* R0 holds the location that LINLST is
-* stored at.
-       MOV  R0,R9
-       MOV  R0,@LINLST
-* Set up BUFCPY parameters
-       MOV  R8,R0
-       MOV  R9,R1
-       MOV  *R8,R2
-       A    *R8,R2
-* Copy
-       BLWP @BUFCPY
-* Copy strings into buffer.
-* Each string starts with the number of
-* characters stored in the 1st byte.
-* The memory consumed is equal to that 
-* plus three.
-       MOV  *R8,R3
-TSTLP4 INCT R8
-       INCT R9
-       MOVB *R8,R2
-       SRL  R2,8
-       AI   R2,3
-       MOV  R2,R0
-       BLWP @BUFALC
-       MOV  R0,R1
-       MOV  R8,R0
-       BLWP @BUFCPY
-* Also put the new string address in the
-* line list.
-       MOV  R1,*R9
-* Loop maybe
-       DEC  R3
-       JH   TSTLP4
-*
-       MOV  @LINLST,R9
-* Setup wrap parameters
+* Loop through each test.
+TSTLP1
+* Initialize the Line List.
+       BL   @INITLL
+* Copy each line into the line list.
+       BL   @CPYLIN
+* Setup wrap parameters.
+* Place index of line to wrap in R0.
        LI   R0,WRPLN
        A    R10,R0
        A    R10,R0
        MOV  *R0,R0
 * Wrap TEXT
        BLWP @WRAP
-*
+* Assign R8 the address of the expected
+* line list.
+* Assign R9 the address of the actual
+* line list.
        LI   R8,EXPLIN
        A    R10,R8
        A    R10,R8
        MOV  *R8,R8
-       MOV  *R9,R9
-* R8 now contains the address of the
-* expected line list.
-* R9 now contains the address of the
-* actual line list.
-*
+       MOV  @LINLST,R9
 * Confirm that the number of lines in
 * the list is correct.
        C    *R8,*R9
@@ -133,7 +91,7 @@ TSTLP4 INCT R8
 * Look at next line
 TSTLP2 INCT R8
        INCT R9
-* Sore position within the line
+* Store position within the line
        MOV  R8,R6
        MOV  R9,R7
 * Confirm that the line character length
@@ -173,7 +131,7 @@ TSTLP3 CB   *R6+,*R7+
        INC  R10
        CI   R10,4
        JL   TSTLP1
-       RT
+       B    *R12
 
 * Test result contains wrong number of
 * lines.
@@ -185,13 +143,19 @@ LPERR1 LI   R0,TSTNAM
        LI   R1,LPER1M+5
        LI   R2,6
        BLWP @BUFCPY
+*
+       MOV  @LINLST,R0
+       LI   R1,LPER1N-4
+       BLWP @MAKETX
+*
        LI   R0,LPER1M
        LI   R1,LPER1N-LPER1M
        BLWP @PRINTL
-       RT
+       B    *R12
 LPER1M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of lines.'
-LPER1N
+       TEXT 'number of lines. We see '
+       TEXT '....'
+LPER1N EVEN
 
 * Test line contains wrong number of 
 * characters.
@@ -206,11 +170,11 @@ LPERR2 LI   R0,TSTNAM
        LI   R0,LPER2M
        LI   R1,LPER2N-LPER2M
        BLWP @PRINTL
-       RT
+       B    *R12
 LPER2M TEXT 'Test ...... failed. Wrong '
        TEXT 'number of characters in '
        TEXT 'line ....'
-LPER2N
+LPER2N EVEN
 
 * Test line contains wrong length in 
 * n/120 of an inch.
@@ -225,10 +189,10 @@ LPERR3 LI   R0,TSTNAM
        LI   R0,LPER3M
        LI   R1,LPER3N-LPER3M
        BLWP @PRINTL
-       RT
+       B    *R12
 LPER3M TEXT 'Test ...... failed. Wrong '
        TEXT 'length in n/120 of an inch '
-LPER3N
+LPER3N EVEN
 
 * Test line contents don't match
 LPERR4 LI   R0,TSTNAM
@@ -242,10 +206,99 @@ LPERR4 LI   R0,TSTNAM
        LI   R0,LPER4M
        LI   R1,LPER4N-LPER4M
        BLWP @PRINTL
-       RT
+       B    *R12
 LPER4M TEXT 'Test ...... failed. Line '
        TEXT 'contents were wrong.'
-LPER4N
+LPER4N EVEN
+
+*
+* Initialize Line List for the
+* current test.
+* Reserve space for the list and store
+* length of the list in first word.
+*
+* Input:
+*   R10 - Index of current test
+* Output:
+*   R0 - address of the line list within
+*        buffer
+*   R8 - address of the source line list
+*        (like LIN0)
+INITLL
+* Get address of starting line list
+       LI   R8,STRLIN
+       A    R10,R8
+       A    R10,R8
+       MOV  *R8,R8
+* R8 now contains the address of 
+* initial line list.
+* Reserve space for line list in buffer.
+       MOV  *R8,R0
+       SRL  R0,1
+       INCT R0
+       BLWP @BUFALC
+* Copy starting line list to LINLST.
+* R0 holds the location that LINLST is
+* stored at.
+       MOV  R0,@LINLST
+* Copy number of lines to Line List.
+       MOV  *R8,*R0
+*
+       RT
+
+*
+* Copy strings into buffer.
+* Each string starts with the number of
+* characters stored in the 1st byte.
+* The memory consumed is equal to that 
+* plus three.
+*
+* Also, store the address of copied
+* strings in the line list.
+*
+* Input:
+*   R0 - Address of Line List
+*   R8 - Address of Source Line List
+*        (Like LINL0)
+* Output:
+*   R9,R1,R0,R2,R3
+CPYLIN
+* Store Address of new Line List in R9.
+       MOV  R0,R9
+* Store number of lines to copy in R3.
+       MOV  *R8,R3
+CPYL2 
+* R8 and R9 hold address of the address
+* the lines of text
+       INCT R8
+       INCT R9
+* R0 will contain address of line to
+* copy.
+       MOV  *R8,R0
+* Change R0's value to number of bytes
+* to copy and allocate that much space.
+       MOVB *R0,R2
+       SRL  R2,8
+       AI   R2,3
+       MOV  R2,R0
+       BLWP @BUFALC
+* Copy the string
+       MOV  R0,R1
+       MOV  *R8,R0
+       BLWP @BUFCPY
+* Put the new string address in the
+* line list.
+       MOV  R1,*R9
+* If there are more lines, loop.
+       DEC  R3
+       JH   CPYL2
+*
+       RT
+
+SPACE  BSS  >2000
+SPCEND
+* Address of LINLST
+LINLST DATA 0
 
 *Lines to wrap from
 WRPLN  DATA 0,0,0,0
@@ -259,11 +312,6 @@ EXPLNE
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
 TSTNME
 SIX    DATA 6
-
-SPACE  BSS  >2000
-SPCEND
-* Address of LINLST
-LINLST DATA 0
 
 *
 * Data Format:
