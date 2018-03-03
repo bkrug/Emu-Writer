@@ -64,6 +64,9 @@ TSTLP1
        BL   @INITLL
 * Copy each line into the line list.
        BL   @CPYLIN
+	   MOV  @LINLST,R0
+	   DECT R0
+	   B    @MEMDMP
 * Setup wrap parameters.
 * Place index of line to wrap in R0.
        LI   R0,WRPLN
@@ -89,6 +92,8 @@ TSTLP1
 *   (R5 shall store number of lines)
        MOV  *R8,R5
 * Look at next line
+* R6 holds address of expected line
+* R7 holds address of actual line
 TSTLP2 INCT R8
        INCT R9
 * Store position within the line
@@ -114,10 +119,10 @@ TSTLP2 INCT R8
        SWPB R0
        SWPB R1
        C    R0,R1
-       JNE  LPERR2
+       JNE  LPERR3
 * Confirm string contents are correct.
 TSTLP3 CB   *R6+,*R7+
-       JNE  LPERR3
+       JNE  LPERR4
        DEC  R4
        JL   TSTLP3
 * Reinitialize space
@@ -176,7 +181,9 @@ LPERR2 LI   R0,TSTNAM
        LI   R1,LPER2O-LPER2M
        BLWP @PRINTL
 *
-       B    *R12
+       MOV  @LINLST,R0
+       DECT R0
+       B    @MEMDMP
 
 * Test line contains wrong length in 
 * n/120 of an inch.
@@ -216,7 +223,7 @@ LPER2M TEXT 'Test ...... failed. Wrong '
        TEXT 'number of characters in '
        TEXT 'line '
 LPER2N TEXT '....'
-       TEXT ' found ..... characters'
+       TEXT ' found .... characters'
 LPER2O EVEN
 
 LPER3M TEXT 'Test ...... failed. Wrong '
@@ -250,8 +257,9 @@ INITLL
 * initial line list.
 * Reserve space for line list in buffer.
        MOV  *R8,R0
-       SRL  R0,1
-       INCT R0
+       INC  R0
+       SLA  R0,1
+*       LI   R0,>20
        BLWP @BUFALC
 * Copy starting line list to LINLST.
 * R0 holds the location that LINLST is
@@ -328,6 +336,42 @@ EXPLNE
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
 TSTNME
 SIX    DATA 6
+
+LINL0  DATA 15
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINL0E
+
+* Expected Line results
+LINE1  DATA 15
+       DATA EXP1A,EXP1B,EXP1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINE1E
+* Expected Line results
+LINE2  DATA 16
+       DATA LIN1A,LIN1B,LIN1C
+       DATA EXP2A,EXP2B,EXP2C,EXP2D
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINE2E
+* Expected Line results
+LINE3  DATA 15
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA EXP3A,EXP3B,EXP3C,EXP3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+LINE3E
+* Expected Line results
+LINE4  DATA 14
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA EXP4A,EXP4B,EXP4C,EXP4D
+LINE4E
 
 *
 * Data Format:
@@ -483,40 +527,29 @@ EXP4D  BYTE 39
        TEXT 'and connecting to other major cities.'
        BYTE 13,10
 
-LINL0  DATA 15
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-LINL0E
-
-* Expected Line results
-LINE1  DATA 15
-       DATA EXP1A,EXP1B,EXP1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-LINE1E
-* Expected Line results
-LINE2  DATA 16
-       DATA LIN1A,LIN1B,LIN1C
-       DATA EXP2A,EXP2B,EXP2C,EXP2D
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-LINE2E
-* Expected Line results
-LINE3  DATA 15
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA EXP3A,EXP3B,EXP3C,EXP3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-LINE3E
-* Expected Line results
-LINE4  DATA 14
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA EXP4A,EXP4B,EXP4C,EXP4D
-LINE4E
-
+HEXLIN BSS  >20
+*
+* Do a memory dump
+*
+* R0 - starting address
+MEMDMP MOV  R0,R3
+       MOV  R0,R4
+       AI   R4,>140
+*
+MEMD0  LI   R1,HEXLIN
+MEMD1  MOV  *R3+,R0
+       BLWP @MAKETX
+       AI   R1,4
+       CI   R1,HEXLIN+>20
+       JL   MEMD1
+*
+       MOV  R0,R5
+       LI   R0,HEXLIN
+       LI   R1,>20
+       BLWP @PRINTL
+       MOV  R5,R0
+*
+       C    R3,R4
+       JL   MEMD0
+       B    *R12
        END
