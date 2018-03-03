@@ -102,37 +102,21 @@ TSTLP2 INCT R8
        MOV  *R9,R7
 * Confirm that the line character length
 * is correct.
-       CB   *R6,*R7
+       CB   *R6,*R7+
        JNE  LPERR2
 * R4 shall store character length
        MOVB *R6+,R4
        SRL  R4,8
-* Confirm that the line space length is
-* correct. (n/120th inch)
-*       INC  R6
-       INC  R7
-*       MOVB *R6+,R0
-*       MOVB *R7+,R1
-*       SWPB R0
-*       SWPB R1
-*       MOVB *R6+,R0
-*       MOVB *R7+,R1
-*       SWPB R0
-*       SWPB R1
-*       C    R0,R1
-*       JNE  LPERR3
-*
 * Increment R6 and R7 by two in order
 * to skip the space width check.
-*       C    *R6+,*R7+
-       INCT R6
-       INCT R7
+       C    *R6+,*R7+
 * Confirm string contents are correct.
 TSTLP3 CB   *R6+,*R7+
        JNE  LPERR4
        DEC  R4
        JH   TSTLP3
-* Reinitialize space
+* One test is complete.
+* Reinitialize memory buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
        BLWP @BUFINT
@@ -140,10 +124,6 @@ TSTLP3 CB   *R6+,*R7+
        DEC  R5
        JL   TSTLP2
 * Run the next test
-       MOV  @LINLST,R0
-       DECT R0
-       B    @MEMDMP
-
        INC  R10
        CI   R10,4
        JL   TSTLP1
@@ -152,8 +132,7 @@ TSTLP3 CB   *R6+,*R7+
 * Test result contains wrong number of
 * lines.
 LPERR1 LI   R0,TSTNAM
-       CLR  R3
-       MOV  R10,R4
+       MOV  R10,R3
        MPY  @SIX,R3
        A    R4,R0
        LI   R1,LPER1M+5
@@ -172,8 +151,7 @@ LPERR1 LI   R0,TSTNAM
 * Test line contains wrong number of 
 * characters.
 LPERR2 LI   R0,TSTNAM
-       CLR  R3
-       MOV  R10,R4
+       MOV  R10,R3
        MPY  @SIX,R3
        A    R4,R0
        LI   R1,LPER2M+5
@@ -195,29 +173,11 @@ LPERR2 LI   R0,TSTNAM
 *
        B    *R12
 
-* Test line contains wrong length in 
-* n/120 of an inch.
-LPERR3 LI   R0,TSTNAM
-       CLR  R3
-       MOV  R10,R4
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R1,LPER3M+5
-       LI   R2,6
-       BLWP @BUFCPY
-*
-       LI   R0,LPER3M
-       LI   R1,LPER3N-LPER3M
-       BLWP @PRINTL
-*
-       B    *R12
-
 * Test line contents don't match
 LPERR4 
 * Copy test name.
        LI   R0,TSTNAM
-       CLR  R3
-       MOV  R10,R4
+       MOV  R10,R3
        MPY  @SIX,R3
        A    R4,R0
        LI   R1,LPER4M+5
@@ -264,10 +224,6 @@ LPER4B BLWP @BUFCPY
        LI   R0,LPER4M
        LI   R1,LPER4Q-LPER4M
        BLWP @PRINTL
-* Memory dump
-*       MOV  @LINLST,R0
-*       DECT R0
-*       B    @MEMDMP
 *
        B    *R12
 
@@ -296,7 +252,7 @@ LPER4O TEXT '                    '
        TEXT '                    '
        TEXT '                    '
        TEXT '                    '
-       TEXT '                    '
+       TEXT '           '
 LPER4P 
 LPER4Q TEXT '|-- Actual:'
 LPER4R EVEN
