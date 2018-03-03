@@ -64,9 +64,6 @@ TSTLP1
        BL   @INITLL
 * Copy each line into the line list.
        BL   @CPYLIN
-	   MOV  @LINLST,R0
-	   DECT R0
-	   B    @MEMDMP
 * Setup wrap parameters.
 * Place index of line to wrap in R0.
        LI   R0,WRPLN
@@ -133,6 +130,10 @@ TSTLP3 CB   *R6+,*R7+
        DEC  R5
        JL   TSTLP2
 * Run the next test
+	   MOV  @LINLST,R0
+	   DECT R0
+	   B    @MEMDMP
+
        INC  R10
        CI   R10,4
        JL   TSTLP1

@@ -51,15 +51,14 @@ WRAP   DATA WORKSP,WRAP+4
 WRAP0  MOV  R0,@WRPLN
        MOV  R0,@SEGLN
        MOV  R0,@SEGLNX
+       INC  R0
        SLA  R0,1
-       INCT R0
-       LI   R1,LINLST
-       MOV  *R1,R1
+       MOV  @LINLST,R1
        A    R1,R0
 * R7 shall hold the address of the line
 * starting a text segment
 * R8 shall hold the address of a 
-* character starting a text segment
+* character starting at the same segment
        MOV  *R0,R7
        MOV  R7,R8
        AI   R8,3
@@ -88,9 +87,9 @@ WRAP1  BL   @NXTSEG
 
 WRAPRT RTWP
 
-* New character size of line text is
-* being taken from.
-ORGSZ  DATA 0
+* Number of characters to take from the
+* original line.
+TAKORG  DATA 0
 * Address of new line
 NEWLN  DATA 0
 * Character size of new line
@@ -146,7 +145,7 @@ BRK2
 * Shorten the character size of the
 * break line.
        MOV  R7,R0
-       MOV  @ORGSZ,R2
+       MOV  @TAKORG,R2
        SLA  R2,8
        MOVB R2,*R0+
 * Shorten the space width of the break
@@ -296,13 +295,12 @@ GWDTH2 MOV R7,R5
 *   R8 - character position of new break
 * Oputput:
 *   R0 - Same as NEWSZ
-*   R2 - Same as ORGSZ
+*   R2 - Same as TAKORG
 LNPARM MOV  @SEGLN,R0
 * R0 now contains the index of line
-       INCT R0
-       SRL  R0,2
-       LI   R2,LINLST
-       A    R2,R0
+       INC  R0
+       SLA  R0,1
+       AI   R0,LINLST
        MOV  R0,@DOWNPT
 * R0 now contains an address within Line
 * List. The word at this address
@@ -321,7 +319,7 @@ LNPARM MOV  @SEGLN,R0
        A    R7,R2
        AI   R2,3
        S    R8,R2
-       MOV  R2,@ORGSZ
+       MOV  R2,@TAKORG
 * R2 now contains the number of
 * characters wrapped down from current
 * line.
@@ -347,6 +345,7 @@ POPNEW
        MOV  @NEWSZ,R1
        SLA  R1,8
        MOVB R1,*R0+
+       SRL  R1,8
 * Record space length of new line
 * TODO: Maybe this should be left blank.
 * This is the wrong way to calculate it.
@@ -359,7 +358,7 @@ POPNEW
 * new line.
        MOV  R0,R1
        MOV  R8,R0
-       MOV  @ORGSZ,R2
+       MOV  @TAKORG,R2
        BLWP @BUFCPY
 * Copy characters from the next line
        MOV  @DOWNLN,R0
