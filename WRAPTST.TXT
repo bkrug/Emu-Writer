@@ -52,9 +52,12 @@ INTBF2 RT
 INTMSG TEXT 'Failed to initialize memory buffer.'
 INTMSE EVEN
 
+****************************************
 *
 * Main Test Loop.
 *
+****************************************
+
 TSTLP  MOV  R11,R12
 * Use R10 to track which test this is
        CLR  R10
@@ -88,9 +91,10 @@ TSTLP1
 * For each line in the list:
 *   (R5 shall store number of lines)
        MOV  *R8,R5
-* Look at next line
-* R6 holds address of expected line
-* R7 holds address of actual line
+* R8 holds address of the address of the
+* expected line
+* R9 holds address of the address of the
+* actual line
 TSTLP2 INCT R8
        INCT R9
 * Store position within the line
@@ -101,27 +105,33 @@ TSTLP2 INCT R8
        CB   *R6,*R7
        JNE  LPERR2
 * R4 shall store character length
-       MOVB *R6,R4
+       MOVB *R6+,R4
        SRL  R4,8
 * Confirm that the line space length is
 * correct. (n/120th inch)
-       INC  R6
+*       INC  R6
        INC  R7
-       MOVB *R6+,R0
-       MOVB *R7+,R1
-       SWPB R0
-       SWPB R1
-       MOVB *R6+,R0
-       MOVB *R7+,R1
-       SWPB R0
-       SWPB R1
-       C    R0,R1
-       JNE  LPERR3
+*       MOVB *R6+,R0
+*       MOVB *R7+,R1
+*       SWPB R0
+*       SWPB R1
+*       MOVB *R6+,R0
+*       MOVB *R7+,R1
+*       SWPB R0
+*       SWPB R1
+*       C    R0,R1
+*       JNE  LPERR3
+*
+* Increment R6 and R7 by two in order
+* to skip the space width check.
+*       C    *R6+,*R7+
+       INCT R6
+       INCT R7
 * Confirm string contents are correct.
 TSTLP3 CB   *R6+,*R7+
        JNE  LPERR4
        DEC  R4
-       JL   TSTLP3
+       JH   TSTLP3
 * Reinitialize space
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
@@ -130,9 +140,9 @@ TSTLP3 CB   *R6+,*R7+
        DEC  R5
        JL   TSTLP2
 * Run the next test
-	   MOV  @LINLST,R0
-	   DECT R0
-	   B    @MEMDMP
+       MOV  @LINLST,R0
+       DECT R0
+       B    @MEMDMP
 
        INC  R10
        CI   R10,4
@@ -175,6 +185,7 @@ LPERR2 LI   R0,TSTNAM
        BLWP @MAKETX
 *
        MOV  *R7,R0
+       SRL  R0,8
        LI   R1,LPER2N+11
        BLWP @MAKETX
 *
@@ -182,9 +193,7 @@ LPERR2 LI   R0,TSTNAM
        LI   R1,LPER2O-LPER2M
        BLWP @PRINTL
 *
-       MOV  @LINLST,R0
-       DECT R0
-       B    @MEMDMP
+       B    *R12
 
 * Test line contains wrong length in 
 * n/120 of an inch.
@@ -196,13 +205,17 @@ LPERR3 LI   R0,TSTNAM
        LI   R1,LPER3M+5
        LI   R2,6
        BLWP @BUFCPY
+*
        LI   R0,LPER3M
        LI   R1,LPER3N-LPER3M
        BLWP @PRINTL
+*
        B    *R12
 
 * Test line contents don't match
-LPERR4 LI   R0,TSTNAM
+LPERR4 
+* Copy test name.
+       LI   R0,TSTNAM
        CLR  R3
        MOV  R10,R4
        MPY  @SIX,R3
@@ -210,9 +223,52 @@ LPERR4 LI   R0,TSTNAM
        LI   R1,LPER4M+5
        LI   R2,6
        BLWP @BUFCPY
+* Record line index
+       MOV  R9,R0
+       S    @LINLST,R0
+       SRL  R0,1
+       DEC  R0
+       LI   R1,LPER4N
+       BLWP @MAKETX
+* Copy expected text
+       LI   R1,LPER4O
+       MOV  *R8,R0
+       MOVB *R0,R2
+       AI   R0,3
+       SRL  R2,8
+       CI   R2,60
+       JL   LPER4A
+       LI   R2,60
+LPER4A BLWP @BUFCPY
+*
+       LI   R0,LPER4Q
+       A    R2,R1
+       LI   R2,LPER4R-LPER4Q
+       BLWP @BUFCPY
+* Copy actual text
+       A    R2,R1
+       MOV  *R9,R0
+       MOVB *R0,R2
+       AI   R0,3
+       SRL  R2,8
+       CI   R2,60
+       JL   LPER4B
+       LI   R2,60
+LPER4B BLWP @BUFCPY
+*
+       LI   R0,LPER4Q
+       A    R2,R1
+       LI   R2,3
+       BLWP @BUFCPY
+* Output error message.
        LI   R0,LPER4M
-       LI   R1,LPER4N-LPER4M
+       LI   R1,LPER4Q-LPER4M
        BLWP @PRINTL
+* Memory dump
+*       MOV  @LINLST,R0
+*       DECT R0
+*       B    @MEMDMP
+*
        B    *R12
 
 LPER1M TEXT 'Test ...... failed. Wrong '
@@ -231,9 +287,19 @@ LPER3M TEXT 'Test ...... failed. Wrong '
        TEXT 'length in n/120 of an inch '
 LPER3N EVEN
 
-LPER4M TEXT 'Test ...... failed. Line '
-       TEXT 'contents were wrong.'
-LPER4N EVEN
+LPER4M TEXT 'Test ...... failed. '
+       TEXT 'Contents of line '
+LPER4N TEXT '.... were wrong. Expected:'
+LPER4O TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+LPER4P 
+LPER4Q TEXT '|-- Actual:'
+LPER4R EVEN
 
 *
 * Initialize Line List for the
@@ -325,6 +391,12 @@ SPCEND
 * Address of LINLST
 LINLST DATA 0
 
+****************************************
+*
+* Test data
+*
+****************************************
+
 *Lines to wrap from
 WRPLN  DATA 0,0,0,0
 *Original Line Lists
@@ -397,25 +469,25 @@ LINE4E
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN1A  BYTE 47
-       DATA 552
+LIN1A  BYTE 47,>02,>28
+*       DATA 552
        TEXT 'Wuhan is the capital of Hubei province, '
        TEXT 'China, '
-LIN1B  BYTE 41
-       DATA 480
+LIN1B  BYTE 41,>01,>E0
+*       DATA 480
        TEXT 'and is the most populous city in Central '
-LIN1C  BYTE 8
-       DATA 72
+LIN1C  BYTE 8,>0,>0
+*       DATA 72
        TEXT 'China.'
        BYTE 13,10
-EXP1A  BYTE 40
-       DATA 468
+EXP1A  BYTE 40,>0,>0
+*       DATA 468
        TEXT 'Wuhan is the capital of Hubei province, '
-EXP1B  BYTE 40
-       DATA 468
+EXP1B  BYTE 40,>0,>0
+*       DATA 468
        TEXT 'China, and is the most populous city in '
-EXP1C  BYTE 16
-       DATA 168
+EXP1C  BYTE 16,>0,>0
+*       DATA 168
        TEXT 'Central China.'
        BYTE 13,10
        EVEN
@@ -429,28 +501,28 @@ EXP1C  BYTE 16
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN2A  BYTE 60
-       DATA 708
+LIN2A  BYTE 60,>0,>0
+*       DATA 708
        TEXT 'It lies in the eastern Jianghan Plain '
        TEXT 'on the middle reaches '
-LIN2B  BYTE 41
-       DATA 480
+LIN2B  BYTE 41,>0,>0
+*       DATA 480
        TEXT 'of the Yangtze River at the intersection '
-LIN2C  BYTE 42
-       DATA 504
+LIN2C  BYTE 42,>0,>0
+*       DATA 504
        TEXT 'of the Yangtze and Han rivers.'
        BYTE 13,10
-EXP2A  BYTE 38
-       DATA 444
+EXP2A  BYTE 38,>0,>0
+*       DATA 444
        TEXT 'It lies in the eastern Jianghan Plain '
-EXP2B  BYTE 37
-       DATA 432
+EXP2B  BYTE 37,>0,>0
+*       DATA 432
        TEXT 'on the middle reaches of the Yangtze '
-EXP2C  BYTE 33
-       DATA 384
+EXP2C  BYTE 33,>0,>0
+*       DATA 384
        TEXT 'River at the intersection of the '
-EXP2D  BYTE 25
-       DATA 300
+EXP2D  BYTE 25,>0,>0
+*       DATA 300
        TEXT 'Yangtze and Han rivers.'
        BYTE 13,10
 
@@ -462,30 +534,30 @@ EXP2D  BYTE 25
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN3A  BYTE 19
-       DATA 216
+LIN3A  BYTE 19,>0,>0
+*       DATA 216
        TEXT 'Arising out of the '
-LIN3B  BYTE 32
-       DATA 372
+LIN3B  BYTE 32,>0,>0
+*       DATA 372
        TEXT 'conglomeration of three cities, '
-LIN3C  BYTE 39
-       DATA 456
+LIN3C  BYTE 39,>0,>0
+*       DATA 456
        TEXT 'Wuchang, Hankou, and Hanyang, Wuhan is '
-LIN3D  BYTE 34
-       DATA 384
+LIN3D  BYTE 34,>0,>0
+*       DATA 384
        TEXT 'known as "China"s Thoroughfare".'
        BYTE 13,10
-EXP3A  BYTE 37
-       DATA 432
+EXP3A  BYTE 37,>0,>0
+*       DATA 432
        TEXT 'Arising out of the conglomeration of '
-EXP3B  BYTE 35
-       DATA 408
+EXP3B  BYTE 35,>0,>0
+*       DATA 408
        TEXT 'three cities, Wuchang, Hankou, and '
-EXP3C  BYTE 36
-       DATA 420
+EXP3C  BYTE 36,>0,>0
+*       DATA 420
        TEXT 'Hanyang, Wuhan is known as "China"s '
-EXP3D  BYTE 16
-       DATA 168
+EXP3D  BYTE 16,>0,>0
+*       DATA 168
        TEXT 'Thoroughfare".'
        BYTE 13,10
        
@@ -498,33 +570,33 @@ EXP3D  BYTE 16
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN4A  BYTE 29
-       DATA 336
+LIN4A  BYTE 29,>0,>0
+*       DATA 336
        TEXT 'It is a major transportation '
-LIN4B  BYTE 36
-       DATA 420
+LIN4B  BYTE 36,>0,>0
+*       DATA 420
        TEXT 'hub, with dozens of railways, roads '
-LIN4C  BYTE 36
-       DATA 420
+LIN4C  BYTE 36,>0,>0
+*       DATA 420
        TEXT 'and expressways passing through the '
-LIN4D  BYTE 35
-       DATA 408
+LIN4D  BYTE 35,>0,>0
+*       DATA 408
        TEXT 'city and connecting to other major '
-LIN4E  BYTE 9
-       DATA 84
+LIN4E  BYTE 9,>0,>0
+*       DATA 84
        TEXT 'cities.'
        BYTE 13,10
-EXP4A  BYTE 39
-       DATA 456
+EXP4A  BYTE 39,>0,>0
+*       DATA 456
        TEXT 'It is a major transportation hub, with '
-EXP4B  BYTE 39
-       DATA 468
+EXP4B  BYTE 39,>0,>0
+*       DATA 468
        TEXT 'dozens of railways, roads and '
-EXP4C  BYTE 37
-       DATA 432
+EXP4C  BYTE 37,>0,>0
+*       DATA 432
        TEXT 'expressways passing through the city '
-EXP4D  BYTE 39
-       DATA 444
+EXP4D  BYTE 39,>0,>0
+*       DATA 444
        TEXT 'and connecting to other major cities.'
        BYTE 13,10
 

@@ -107,7 +107,7 @@ DOWNPT DATA 0
 *
 * Must now break. Give SEGLN, R7, and R8
 * the location to break the line at.
-BRKNOW CB   R8,@SPACE
+BRKNOW CB   *R8,@SPACE
        JNE  BRK1
 * This is a space segment, put line
 * break after this segment
@@ -137,7 +137,8 @@ BRK2
        BL   @POPNEW
 * Replace next line with new line in
 * Line List.
-       MOV  @NEWLN,@DOWNPT
+       MOV  @DOWNPT,R0
+       MOV  @NEWLN,*R0
 * Free up space of what used to be the
 * next line
        MOV  @DOWNLN,R0
@@ -147,7 +148,7 @@ BRK2
        MOV  R7,R0
        MOV  @TAKORG,R2
        SLA  R2,8
-       MOVB R2,*R0+
+       SB   R2,*R0+
 * Shorten the space width of the break
 * line.
        MOV  @ACCUMW,R1
@@ -297,14 +298,17 @@ GWDTH2 MOV R7,R5
 *   R0 - Same as NEWSZ
 *   R2 - Same as TAKORG
 LNPARM MOV  @SEGLN,R0
-* R0 now contains the index of line
-       INC  R0
+* R0 now contains the index of break
+* line.
+       INCT R0
        SLA  R0,1
-       AI   R0,LINLST
+       MOV  @LINLST,R2
+       A    R2,R0
        MOV  R0,@DOWNPT
 * R0 now contains an address within Line
 * List. The word at this address
-* contains the address of next line.
+* contains the address of line after the
+* break line.
        MOV  *R0,R0
        MOV  R0,@DOWNLN
 * R0 now contains the address of the
