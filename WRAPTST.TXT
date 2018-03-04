@@ -109,23 +109,31 @@ TSTLP2 INCT R8
 * is correct.
        CB   *R6+,*R7+
        JNE  LPERR2
-* Increment R6 and R7 by two in order
-* to skip the space width check.
-       C    *R6+,*R7+
 * Confirm string contents are correct.
 TSTLP3 CB   *R6+,*R7+
        JNE  LPERR4
        DEC  R4
        JH   TSTLP3
+* See if we should check another line
+       DEC  R5
+       JH   TSTLP2
+* Run the next test
+       LI   R0,SPACE
+       LI   R1,>30
+       BL   @MEMDMP
+       MOV  @LINLST,R0
+       AI   R0,4
+       MOV  *R0,R0
+       DECT R0
+       LI   R1,>80
+       BL   @MEMDMP
+       B    *R12
 * One test is complete.
 * Reinitialize memory buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
        BLWP @BUFINT
-* See if we should check another line
-       DEC  R5
-       JL   TSTLP2
-* Run the next test
+*
        INC  R10
        CI   R10,4
        JL   TSTLP1
@@ -160,7 +168,10 @@ LPERR2 LI   R0,TSTNAM
        LI   R2,6
        BLWP @BUFCPY
 *
-       MOV  R10,R0
+       MOV  R9,R0
+       S    @LINLST,R0
+       SRL  R0,1
+       DEC  R0
        LI   R1,LPER2N
        BLWP @MAKETX
 *
@@ -196,7 +207,7 @@ LPERR4
        LI   R1,LPER4O
        MOV  *R8,R0
        MOVB *R0,R2
-       AI   R0,3
+       INC  R0
        SRL  R2,8
        CI   R2,60
        JL   LPER4A
@@ -211,7 +222,7 @@ LPER4A BLWP @BUFCPY
        A    R2,R1
        MOV  *R9,R0
        MOVB *R0,R2
-       AI   R0,3
+       INC  R0
        SRL  R2,8
        CI   R2,60
        JL   LPER4B
@@ -237,8 +248,7 @@ LPER1N EVEN
 LPER2M TEXT 'Test ...... failed. Wrong '
        TEXT 'number of characters in '
        TEXT 'line '
-LPER2N TEXT '....'
-       TEXT ' found .... characters'
+LPER2N TEXT '.... found .... characters'
 LPER2O EVEN
 
 LPER4M TEXT 'Test ...... failed. '
@@ -251,7 +261,7 @@ LPER4O TEXT '                    '
        TEXT '                    '
        TEXT '                    '
        TEXT '           '
-LPER4P 
+LPER4P EVEN
 LPER4Q TEXT '|-- Actual:'
 LPER4R EVEN
 
@@ -324,7 +334,7 @@ CPYL2
 * to copy and allocate that much space.
        MOVB *R0,R0
        SRL  R0,8
-       AI   R0,3
+       INC  R0
        MOV  R0,R2
        BLWP @BUFALC
 * Copy the string. R2 still holds byte
@@ -424,24 +434,29 @@ LINE4E
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN1A  BYTE 47,>02,>28
+LIN1A  BYTE 47
 *       DATA 552
        TEXT 'Wuhan is the capital of Hubei province, '
        TEXT 'China, '
-LIN1B  BYTE 41,>01,>E0
+       EVEN
+LIN1B  BYTE 41
 *       DATA 480
        TEXT 'and is the most populous city in Central '
-LIN1C  BYTE 8,>0,>0
+       EVEN
+LIN1C  BYTE 8
 *       DATA 72
        TEXT 'China.'
        BYTE 13,10
-EXP1A  BYTE 40,>0,>0
+       EVEN
+EXP1A  BYTE 40
 *       DATA 468
        TEXT 'Wuhan is the capital of Hubei province, '
-EXP1B  BYTE 40,>0,>0
+       EVEN
+EXP1B  BYTE 40
 *       DATA 468
        TEXT 'China, and is the most populous city in '
-EXP1C  BYTE 16,>0,>0
+       EVEN
+EXP1C  BYTE 16
 *       DATA 168
        TEXT 'Central China.'
        BYTE 13,10
@@ -456,30 +471,37 @@ EXP1C  BYTE 16,>0,>0
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN2A  BYTE 60,>0,>0
+LIN2A  BYTE 60
 *       DATA 708
        TEXT 'It lies in the eastern Jianghan Plain '
        TEXT 'on the middle reaches '
-LIN2B  BYTE 41,>0,>0
+       EVEN
+LIN2B  BYTE 41
 *       DATA 480
        TEXT 'of the Yangtze River at the intersection '
-LIN2C  BYTE 42,>0,>0
+       EVEN
+LIN2C  BYTE 42
 *       DATA 504
        TEXT 'of the Yangtze and Han rivers.'
        BYTE 13,10
-EXP2A  BYTE 38,>0,>0
+       EVEN
+EXP2A  BYTE 38
 *       DATA 444
        TEXT 'It lies in the eastern Jianghan Plain '
-EXP2B  BYTE 37,>0,>0
+       EVEN
+EXP2B  BYTE 37
 *       DATA 432
        TEXT 'on the middle reaches of the Yangtze '
-EXP2C  BYTE 33,>0,>0
+       EVEN
+EXP2C  BYTE 33
 *       DATA 384
        TEXT 'River at the intersection of the '
-EXP2D  BYTE 25,>0,>0
+       EVEN
+EXP2D  BYTE 25
 *       DATA 300
        TEXT 'Yangtze and Han rivers.'
        BYTE 13,10
+       EVEN
 
 *
 * The entire paragraph will be
@@ -489,33 +511,41 @@ EXP2D  BYTE 25,>0,>0
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN3A  BYTE 19,>0,>0
+LIN3A  BYTE 19
 *       DATA 216
        TEXT 'Arising out of the '
-LIN3B  BYTE 32,>0,>0
+       EVEN
+LIN3B  BYTE 32
 *       DATA 372
        TEXT 'conglomeration of three cities, '
-LIN3C  BYTE 39,>0,>0
+       EVEN
+LIN3C  BYTE 39
 *       DATA 456
        TEXT 'Wuchang, Hankou, and Hanyang, Wuhan is '
-LIN3D  BYTE 34,>0,>0
+       EVEN
+LIN3D  BYTE 34
 *       DATA 384
        TEXT 'known as "China"s Thoroughfare".'
        BYTE 13,10
-EXP3A  BYTE 37,>0,>0
+       EVEN
+EXP3A  BYTE 37
 *       DATA 432
        TEXT 'Arising out of the conglomeration of '
-EXP3B  BYTE 35,>0,>0
+       EVEN
+EXP3B  BYTE 35
 *       DATA 408
        TEXT 'three cities, Wuchang, Hankou, and '
-EXP3C  BYTE 36,>0,>0
+       EVEN
+EXP3C  BYTE 36
 *       DATA 420
        TEXT 'Hanyang, Wuhan is known as "China"s '
-EXP3D  BYTE 16,>0,>0
+       EVEN
+EXP3D  BYTE 16
 *       DATA 168
        TEXT 'Thoroughfare".'
        BYTE 13,10
-       
+       EVEN
+
 *
 * The entire paragraph will be
 * re-wrapped. Some words will be brought
@@ -525,44 +555,54 @@ EXP3D  BYTE 16,>0,>0
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN4A  BYTE 29,>0,>0
+LIN4A  BYTE 29
 *       DATA 336
        TEXT 'It is a major transportation '
-LIN4B  BYTE 36,>0,>0
+       EVEN
+LIN4B  BYTE 36
 *       DATA 420
        TEXT 'hub, with dozens of railways, roads '
-LIN4C  BYTE 36,>0,>0
+       EVEN
+LIN4C  BYTE 36
 *       DATA 420
        TEXT 'and expressways passing through the '
-LIN4D  BYTE 35,>0,>0
+       EVEN
+LIN4D  BYTE 35
 *       DATA 408
        TEXT 'city and connecting to other major '
-LIN4E  BYTE 9,>0,>0
+       EVEN
+LIN4E  BYTE 9
 *       DATA 84
        TEXT 'cities.'
        BYTE 13,10
-EXP4A  BYTE 39,>0,>0
+       EVEN
+EXP4A  BYTE 39
 *       DATA 456
        TEXT 'It is a major transportation hub, with '
-EXP4B  BYTE 39,>0,>0
+       EVEN
+EXP4B  BYTE 39
 *       DATA 468
        TEXT 'dozens of railways, roads and '
-EXP4C  BYTE 37,>0,>0
+       EVEN
+EXP4C  BYTE 37
 *       DATA 432
        TEXT 'expressways passing through the city '
-EXP4D  BYTE 39,>0,>0
+       EVEN
+EXP4D  BYTE 39
 *       DATA 444
        TEXT 'and connecting to other major cities.'
        BYTE 13,10
+       EVEN
 
 HEXLIN BSS  >20
 *
 * Do a memory dump
 *
 * R0 - starting address
+* R1 - dump size
 MEMDMP MOV  R0,R3
        MOV  R0,R4
-       AI   R4,>140
+       A    R1,R4
 *
 MEMD0  LI   R1,HEXLIN
 MEMD1  MOV  *R3+,R0
@@ -579,5 +619,5 @@ MEMD1  MOV  *R3+,R0
 *
        C    R3,R4
        JL   MEMD0
-       B    *R12
+       RT
        END

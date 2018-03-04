@@ -44,24 +44,25 @@ WRAP   DATA WORKSP,WRAP+4
 * Initialize space width variables.
        CLR  @ACCUMW
        MOV  @LNWDTH,@RMAINW
-*
+* Get index of starting line.
        MOV  *R13,R0
 * Line wrapping loop.
 * Return here to wrap the another line.
 WRAP0  MOV  R0,@WRPLN
        MOV  R0,@SEGLN
        MOV  R0,@SEGLNX
+* Assign to R0 the address of the
+* address of the next line to wrap.
        INC  R0
        SLA  R0,1
-       MOV  @LINLST,R1
-       A    R1,R0
+       A    @LINLST,R0
 * R7 shall hold the address of the line
 * starting a text segment
 * R8 shall hold the address of a 
 * character starting the same segment
        MOV  *R0,R7
        MOV  *R0,R8
-       AI   R8,3
+       INC  R8
 * R9 shall hold the address of the line
 * starting the following segment
 * R10 shall hold the address of a
@@ -125,7 +126,7 @@ BRK1
 * Record size parameters of some lines.
        BL   @LNPARM
 * R0 contains character size of new line
-       AI   R0,3
+       INC  R0
 * R0 now contains byte size of new line.
        BLWP @BUFALC
        CI   R0,>FFFF
@@ -148,16 +149,13 @@ BRK1
        MOV  @TAKORG,R2
        SLA  R2,8
        SB   R2,*R0+
-* Shorten the space width of the break
-* line.
-       MOV  @ACCUMW,R1
-       MOVB R1,*R0+
-       SWPB R1
-       MOVB R1,*R0+
 * Wrap the next line.
        MOV  @WRPLN,R0
        INC  R0
+	   CI   R0,2
+	   JHE  DEBUG1
        B    @WRAP0
+DEBUG1 B    @WRAPRT
 
 * Yes, merge part of the next line into
 * original line.
@@ -167,7 +165,7 @@ BRK3
 * the line break is already in the right
 * place. We are done wrapping text.
        MOV  R7,R0
-       AI   R0,3
+       INC  R0
        C    R0,R8
        JEQ  WRAPRT
 * TODO: Write code to bring text up from
@@ -248,7 +246,7 @@ NXTSG3
        MOV  *R6,R9
 * Put address of next character in R10
        MOV  R9,R10
-       AI   R10,3
+       INC  R10
        RT
 * Tell caller that this is last segment
 * in Line List or paragraph.
@@ -282,7 +280,7 @@ GWDTH1 S    R8,R5
 * return the remaining width of the line
 GWDTH2 MOV  R7,R5
        A    *R7,R5
-       AI   R5,3
+       INC  R5
        JMP  GWDTH1
        
 *
@@ -325,7 +323,7 @@ LNPARM MOV  @SEGLN,R0
        MOVB *R7,R2
        SRL  R2,8
        A    R7,R2
-       AI   R2,3
+       INC  R2
        S    R8,R2
        MOV  R2,@TAKORG
 * R2 now contains the number of
@@ -355,15 +353,6 @@ POPNEW
        MOV  @NEWSZ,R1
        SLA  R1,8
        MOVB R1,*R0+
-       SRL  R1,8
-* Record space length of new line
-* TODO: Maybe this should be left blank.
-* This is the wrong way to calculate it.
-* And it will usually change right away.
-       MPY  @CPI10,R1
-       MOVB R2,*R0+
-       SWPB R2
-       MOVB R2,*R0+
 * Copy characters from current line to
 * new line.
        MOV  R0,R1
@@ -372,7 +361,7 @@ POPNEW
        BLWP @BUFCPY
 * Copy characters from the next line
        MOV  @DOWNLN,R0
-       AI   R0,3
+       INC  R0
        A    R2,R1
        MOV  @DOWNSZ,R2
        BLWP @BUFCPY
