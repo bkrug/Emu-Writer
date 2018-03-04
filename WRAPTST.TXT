@@ -117,23 +117,12 @@ TSTLP3 CB   *R6+,*R7+
 * See if we should check another line
        DEC  R5
        JH   TSTLP2
-* Run the next test
-       LI   R0,SPACE
-       LI   R1,>30
-       BL   @MEMDMP
-       MOV  @LINLST,R0
-       AI   R0,4
-       MOV  *R0,R0
-       DECT R0
-       LI   R1,>80
-       BL   @MEMDMP
-       B    *R12
 * One test is complete.
 * Reinitialize memory buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
        BLWP @BUFINT
-*
+* Run the next test
        INC  R10
        CI   R10,4
        JL   TSTLP1

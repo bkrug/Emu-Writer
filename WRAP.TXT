@@ -41,14 +41,14 @@ CR     BYTE 13
 * R0 - >FFFF implies an error.
 WRAP   DATA WORKSP,WRAP+4
 *
-* Initialize space width variables.
-       CLR  @ACCUMW
-       MOV  @LNWDTH,@RMAINW
 * Get index of starting line.
        MOV  *R13,R0
+* Initialize space width variables.
+WRAP0  CLR  @ACCUMW
+       MOV  @LNWDTH,@RMAINW
 * Line wrapping loop.
 * Return here to wrap the another line.
-WRAP0  MOV  R0,@WRPLN
+       MOV  R0,@WRPLN
        MOV  R0,@SEGLN
        MOV  R0,@SEGLNX
 * Assign to R0 the address of the
@@ -152,10 +152,9 @@ BRK1
 * Wrap the next line.
        MOV  @WRPLN,R0
        INC  R0
-	   CI   R0,2
-	   JHE  DEBUG1
+* BUG: prevents the system from wrapping
+* more than two lines
        B    @WRAP0
-DEBUG1 B    @WRAPRT
 
 * Yes, merge part of the next line into
 * original line.
