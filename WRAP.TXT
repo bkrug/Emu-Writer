@@ -58,14 +58,14 @@ WRAP0  MOV  R0,@WRPLN
 * R7 shall hold the address of the line
 * starting a text segment
 * R8 shall hold the address of a 
-* character starting at the same segment
+* character starting the same segment
        MOV  *R0,R7
-       MOV  R7,R8
+       MOV  *R0,R8
        AI   R8,3
 * R9 shall hold the address of the line
 * starting the following segment
 * R10 shall hold the address of a
-* character starting the following segment
+* character starting that same segment
 WRAP1  BL   @NXTSEG
 * If R9 is 0, then we reached the end of
 * a paragraph.
@@ -89,7 +89,7 @@ WRAPRT RTWP
 
 * Number of characters to take from the
 * original line.
-TAKORG  DATA 0
+TAKORG DATA 0
 * Address of new line
 NEWLN  DATA 0
 * Character size of new line
@@ -109,7 +109,7 @@ DOWNPT DATA 0
 * the location to break the line at.
 BRKNOW CB   *R8,@SPACE
        JNE  BRK1
-* This is a space segment, put line
+* This is an invisible segment, put line
 * break after this segment
        MOV  R9,R7
        MOV  R10,R8
@@ -122,7 +122,6 @@ BRK1
        C    @WRPLN,@SEGLN
        JNE  BRK3
 * No, break the original line
-BRK2
 * Record size parameters of some lines.
        BL   @LNPARM
 * R0 contains character size of new line
@@ -166,11 +165,13 @@ BRK3
 * Check if the break point is the first
 * character in the line. If yes, then
 * the line break is already in the right
-* place.
+* place. We are done wrapping text.
        MOV  R7,R0
        AI   R0,3
        C    R0,R8
        JEQ  WRAPRT
+* TODO: Write code to bring text up from
+* the next line.
 
 * Report error.
 WRPERR MOV  R0,*R13
@@ -190,10 +191,12 @@ WRPERR MOV  R0,*R13
 * R6 - Gets changed
 NXTSEG MOV  R7,R9
        MOV  R8,R10
+       MOV  @SEGLN,@SEGLNX
 * Find end of line, store in R6
-       MOV  R7,R6
-       A    *R7,R6
-       INCT R6
+       MOVB *R7,R6
+       SRL  R6,8
+       INC  R6
+       A    R7,R6
 * Beginning of loop
 NXTSG1 INC R10
 * Check if we passed the end of the line
@@ -208,7 +211,8 @@ NXTSG1 INC R10
        CB   *R8,@SPACE
        JNE  NXTSG2
 * If we found a non-space character,
-* this is the next segment.
+* This is an invisible segment, so if we
+* found a non-space character,
        CB   *R10,@SPACE
        JNE  NXTRT
        JMP  NXTSG1
@@ -268,18 +272,18 @@ GWIDTH
 * If next segment is on the same line,
 * just find width of characters in
 * between
-       C   R7,R9
-       JNE GWDTH2
-       MOV R10,R5
-GWDTH1 S   R8,R5
-       MPY @CPI10,R5
+       C    R7,R9
+       JNE  GWDTH2
+       MOV  R10,R5
+GWDTH1 S    R8,R5
+       MPY  @CPI10,R5
        RT
 * Next segment is on next line, so 
 * return the remaining width of the line
-GWDTH2 MOV R7,R5
-       A   *R7,R5
-       AI  R5,3
-       JMP GWDTH1
+GWDTH2 MOV  R7,R5
+       A    *R7,R5
+       AI   R5,3
+       JMP  GWDTH1
        
 *
 * Populate Line Size parameters
@@ -333,8 +337,10 @@ LNPARM MOV  @SEGLN,R0
 *   - address of current character)
        A    R2,R0
        MOV  R0,@NEWSZ
+* R0 now contains the number characters
+* that will go in the new line.
        RT 
-       
+
 * 
 * Populate new line
 *

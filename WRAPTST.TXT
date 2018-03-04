@@ -88,9 +88,9 @@ TSTLP1
 * the list is correct.
        C    *R8,*R9
        JNE  LPERR1
-* For each line in the list:
-*   (R5 shall store number of lines)
+* R5 shall store number of lines.
        MOV  *R8,R5
+* Now loop through each line.
 * R8 holds address of the address of the
 * expected line
 * R9 holds address of the address of the
@@ -98,15 +98,17 @@ TSTLP1
 TSTLP2 INCT R8
        INCT R9
 * Store position within the line
+* R6 and R7 hold the position within
+* each line.
        MOV  *R8,R6
        MOV  *R9,R7
+* R4 shall store character length
+       MOVB *R6,R4
+       SRL  R4,8
 * Confirm that the line character length
 * is correct.
-       CB   *R6,*R7+
+       CB   *R6+,*R7+
        JNE  LPERR2
-* R4 shall store character length
-       MOVB *R6+,R4
-       SRL  R4,8
 * Increment R6 and R7 by two in order
 * to skip the space width check.
        C    *R6+,*R7+
@@ -200,7 +202,7 @@ LPERR4
        JL   LPER4A
        LI   R2,60
 LPER4A BLWP @BUFCPY
-*
+* Copy "|-- Actual:" into message
        LI   R0,LPER4Q
        A    R2,R1
        LI   R2,LPER4R-LPER4Q
@@ -215,7 +217,7 @@ LPER4A BLWP @BUFCPY
        JL   LPER4B
        LI   R2,60
 LPER4B BLWP @BUFCPY
-*
+* Copy "|--" into message.
        LI   R0,LPER4Q
        A    R2,R1
        LI   R2,3
@@ -238,10 +240,6 @@ LPER2M TEXT 'Test ...... failed. Wrong '
 LPER2N TEXT '....'
        TEXT ' found .... characters'
 LPER2O EVEN
-
-LPER3M TEXT 'Test ...... failed. Wrong '
-       TEXT 'length in n/120 of an inch '
-LPER3N EVEN
 
 LPER4M TEXT 'Test ...... failed. '
        TEXT 'Contents of line '
@@ -308,7 +306,7 @@ INITLL
 *   R8 - Address of Source Line List
 *        (Like LINL0)
 * Output:
-*   R9,R1,R0,R2,R3
+*   R8,R9,R1,R0,R2,R3
 CPYLIN
 * Store Address of new Line List in R9.
        MOV  R0,R9
@@ -324,12 +322,13 @@ CPYL2
        MOV  *R8,R0
 * Change R0's value to number of bytes
 * to copy and allocate that much space.
-       MOVB *R0,R2
-       SRL  R2,8
-       AI   R2,3
-       MOV  R2,R0
+       MOVB *R0,R0
+       SRL  R0,8
+       AI   R0,3
+       MOV  R0,R2
        BLWP @BUFALC
-* Copy the string
+* Copy the string. R2 still holds byte
+* size to copy.
        MOV  R0,R1
        MOV  *R8,R0
        BLWP @BUFCPY
