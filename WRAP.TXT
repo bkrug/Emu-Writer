@@ -135,14 +135,8 @@ BRK1
        MOV  R0,@NEWLN
 * Populate the new line
        BL   @POPNEW
-* Replace next line with new line in
-* Line List.
-       MOV  @DOWNPT,R0
-       MOV  @NEWLN,*R0
-* Free up space of what used to be the
-* next line
-       MOV  @DOWNLN,R0
-       BLWP @BUFREE
+* Place new line in line list
+       BL   @ADDLIN
 * Shorten the character size of the
 * break line.
        MOV  R7,R0
@@ -152,8 +146,10 @@ BRK1
 * Wrap the next line.
        MOV  @WRPLN,R0
        INC  R0
-* BUG: prevents the system from wrapping
+* DEBUG: prevents the system from wrapping
 * more than two lines
+*       CI   R0,2
+*	   JH   WRAPRT
        B    @WRAP0
 
 * Yes, merge part of the next line into
@@ -298,9 +294,21 @@ GWDTH2 MOV  R7,R5
 * Oputput:
 *   R0 - Same as NEWSZ
 *   R2 - Same as TAKORG
-LNPARM MOV  @SEGLN,R0
+LNPARM
+DNPARM MOV  @SEGLN,R0
 * R0 now contains the index of break
 * line.
+* Check if this is the last line of
+* paragraph
+       MOVB *R7,R2
+       SRL  R2,8
+       A    R7,R2
+       CB   *R2,@CR
+       JEQ  DNPRM2
+       CB   *R2,@LF
+       JEQ  DNPRM2
+* No, so text from this line will become
+* part of the next.
        INCT R0
        SLA  R0,1
        MOV  @LINLST,R2
@@ -319,7 +327,7 @@ LNPARM MOV  @SEGLN,R0
        MOV  R0,@DOWNSZ
 * R0 now contains the number of 
 * characters in the next line
-       MOVB *R7,R2
+DNPRM1 MOVB *R7,R2
        SRL  R2,8
        A    R7,R2
        INC  R2
@@ -336,7 +344,17 @@ LNPARM MOV  @SEGLN,R0
        MOV  R0,@NEWSZ
 * R0 now contains the number characters
 * that will go in the new line.
-       RT 
+       RT
+* Yes, so no text from the next line
+* will be included in the line we are
+* about to create.
+DNPRM2 CLR  @DOWNPT
+       CLR  @DOWNLN
+       CLR  @DOWNSZ
+       CLR  R0
+       JMP  DNPRM1
+
+UPPARM
 
 * 
 * Populate new line
@@ -358,11 +376,97 @@ POPNEW
        MOV  R8,R0
        MOV  @TAKORG,R2
        BLWP @BUFCPY
-* Copy characters from the next line
-       MOV  @DOWNLN,R0
-       INC  R0
+* Copy characters from the next line,
+* unless DOWNSZ is zero.
        A    R2,R1
        MOV  @DOWNSZ,R2
+       JEQ  POP1
+       MOV  @DOWNLN,R0
+       INC  R0
        BLWP @BUFCPY
+POP1   RT
+
+BLKUSE DATA >8000
+
+*
+* Add Line
+*
+* Either replace the next line with the
+* new line, or insert the new line.
+ADDLIN MOV  @DOWNSZ,R0
+       JEQ  ADDL1
+* Replace next line with new line in
+* Line List.
+       MOV  @DOWNPT,R0
+       MOV  @NEWLN,*R0
+* Free up space of what used to be the
+* next line
+       MOV  @DOWNLN,R0
+       BLWP @BUFREE
+       RT
+* Insert the new line.
+ADDL1  MOV  @LINLST,R3
+* Does line list's memory block have
+* enough space?
+       MOV  R3,R1
+       DECT R1
+       MOV  *R1,R1
+       SZC  @BLKUSE,R1
+       MOV  *R0,R2
+       INCT R2
+       SLA  R2,1
+       C    R2,R1
+       JLE  ADDL3
+* No, create another buffer roughly
+* twice the size of the old one.
+       SLA  R2,1
+       MOV  R2,R0
+       BLWP @BUFALC
+       CI   R0,>FFFF
+       JNE  ADDL2
+       B    @WRPERR
+* Save address of new line list
+ADDL2  MOV  R0,@LINLST
+* Copy the line list
+* Delete old line list
+* R0 contains address of new line list
+* R3 contains address of old line list
+       MOV  R1,R2
+       MOV  R0,R1
+       MOV  R3,R0
+       BLWP @BUFCPY
+       BLWP @BUFREE
+* Let R4 hold address of line list
+ADDL3  MOV  @LINLST,R4
+* Insert line
+       MOV  @WRPLN,R0
+       INCT R0
+       SLA  R0,1
+       A    R4,R0
+* R0 is now the address in the line list
+* located directly after the index
+* referenced by WRPLN.
+* R4 has address of line list.
+*
+* Assign R2 the address of the last
+* element in the line list.
+* Assign R3 the address after that
+       MOV  R4,R2
+       MOV  *R4,R1
+       SLA  R1,1
+       A    R1,R2
+       MOV  R2,R3
+       INCT R3
+* Copy from end up to address of R0
+ADDL4  MOV  *R2,*R3
+       DECT R2
+       DECT R3
+       C    R2,R0
+       JHE  ADDL4
+* Increase length of line list
+*       INC  *R4
+* Place new line address directly after
+* space referenced by WRPLN
+       MOV  @NEWLN,*R0
        RT
        END

@@ -139,6 +139,7 @@ LPERR1 LI   R0,TSTNAM
        BLWP @BUFCPY
 *
        MOV  @LINLST,R0
+       MOV  *R0,R0
        LI   R1,LPER1N-4
        BLWP @MAKETX
 *
@@ -352,7 +353,7 @@ LINLST DATA 0
 ****************************************
 
 *Lines to wrap from
-WRPLN  DATA 0,0,0,0
+WRPLN  DATA 0,3,6,10
 *Original Line Lists
 STRLIN DATA LINL0,LINL0,LINL0,LINL0
 STRLNE
@@ -469,26 +470,26 @@ LIN2B  BYTE 41
 *       DATA 480
        TEXT 'of the Yangtze River at the intersection '
        EVEN
-LIN2C  BYTE 42
+LIN2C  BYTE 32
 *       DATA 504
        TEXT 'of the Yangtze and Han rivers.'
        BYTE 13,10
        EVEN
-EXP2A  BYTE 38
+EXP2A  BYTE 41
 *       DATA 444
-       TEXT 'It lies in the eastern Jianghan Plain '
+       TEXT 'It lies in the eastern Jianghan Plain on '
        EVEN
-EXP2B  BYTE 37
+EXP2B  BYTE 40
 *       DATA 432
-       TEXT 'on the middle reaches of the Yangtze '
+       TEXT 'the middle reaches of the Yangtze River '
        EVEN
-EXP2C  BYTE 33
+EXP2C  BYTE 39
 *       DATA 384
-       TEXT 'River at the intersection of the '
+       TEXT 'at the intersection of the Yangtze and '
        EVEN
-EXP2D  BYTE 25
+EXP2D  BYTE 13
 *       DATA 300
-       TEXT 'Yangtze and Han rivers.'
+       TEXT 'Han rivers.'
        BYTE 13,10
        EVEN
 
