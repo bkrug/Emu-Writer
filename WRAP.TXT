@@ -464,7 +464,7 @@ ADDL4  MOV  *R2,*R3
        C    R2,R0
        JHE  ADDL4
 * Increase length of line list
-*       INC  *R4
+       INC  *R4
 * Place new line address directly after
 * space referenced by WRPLN
        MOV  @NEWLN,*R0
