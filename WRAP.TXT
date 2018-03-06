@@ -113,7 +113,9 @@ UNIADR DATA 0
 * Size
 UNIEND DATA 0
 * Last address within the line list that
-* we can just copy over.
+* points to this same paragraph.
+* Therefore, also the last entry that
+* can be copied over.
 FINLIN DATA 0
 
 *
