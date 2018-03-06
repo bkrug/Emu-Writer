@@ -591,17 +591,17 @@ EXP4A  BYTE 39
 *       DATA 456
        TEXT 'It is a major transportation hub, with '
        EVEN
-EXP4B  BYTE 39
+EXP4B  BYTE 30
 *       DATA 468
        TEXT 'dozens of railways, roads and '
        EVEN
-EXP4C  BYTE 37
+EXP4C  BYTE 41
 *       DATA 432
-       TEXT 'expressways passing through the city '
+       TEXT 'expressways passing through the city and '
        EVEN
-EXP4D  BYTE 39
+EXP4D  BYTE 35
 *       DATA 444
-       TEXT 'and connecting to other major cities.'
+       TEXT 'connecting to other major cities.'
        BYTE 13,10
        EVEN
 

@@ -52,6 +52,7 @@ WRAP2  BL   @FNDBRK
 *
        MOV  @UNIADR,R0
        BLWP @BUFREE
+       BL   @RMXTRA
 *
        RTWP
 
@@ -252,4 +253,30 @@ MAKLIN MOV  R8,R2
 
 WRPERR MOV  R0,*R13
        RTWP
+
+* 
+* Remove extra lines when text wrapped
+* up.
+* 
+RMXTRA MOV  @LINLST,R4
+*
+       MOV  @WRPLN,R5
+       INC  R5
+       SLA  R5,1
+       A    R4,R5
+*
+       MOV  @FINLIN,R2
+       S    R5,R2
+       INCT R2
+       JGT  XTRA1
+       RT
+* Copy parts of line list forward
+XTRA1  MOV  R5,R0
+       INCT R0
+       MOV  R5,R1
+       BLWP @BUFCPY
+* Decrease size of line list
+       SRL  R2,1
+       S    R2,*R4
+       RT
        END
