@@ -259,19 +259,22 @@ WRPERR MOV  R0,*R13
 * up.
 * 
 RMXTRA MOV  @LINLST,R4
-*
+* Set R5 to the address in the line list
+* pointing to the last line that was 
+* wrapped into.
        MOV  @WRPLN,R5
-       INC  R5
        SLA  R5,1
        A    R4,R5
-*
+* If FINLIN, is at least one index after
+* the last line wrapped into, then 
+* remove FINLIN's entry from line list.
        MOV  @FINLIN,R2
        S    R5,R2
-       INCT R2
        JGT  XTRA1
        RT
 * Copy parts of line list forward
-XTRA1  MOV  R5,R0
+XTRA1  INCT R5
+       MOV  R5,R0
        INCT R0
        MOV  R5,R1
        BLWP @BUFCPY
