@@ -75,6 +75,8 @@ TSTLP1
        MOV  *R0,R0
 * Wrap TEXT
        BLWP @WRAP
+	   CI   R0,>FFFF
+	   JEQ  LPERR3
 * Assign R8 the address of the expected
 * line list.
 * Assign R9 the address of the actual
@@ -176,6 +178,21 @@ LPERR2 LI   R0,TSTNAM
 *
        B    *R12
 
+LPERR3 LI   R0,TSTNAM
+       MOV  R10,R3
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R1,LPER3M+5
+       LI   R2,6
+       BLWP @BUFCPY
+*
+       LI   R0,LPER3M
+       LI   R1,LPER3N-LPER3M
+       BLWP @PRINTL
+*
+       B    *R12
+
+*
 * Test line contents don't match
 LPERR4 
 * Copy test name.
@@ -240,6 +257,10 @@ LPER2M TEXT 'Test ...... failed. Wrong '
        TEXT 'line '
 LPER2N TEXT '.... found .... characters'
 LPER2O EVEN
+
+LPER3M TEXT 'Test ...... failed. WRAP '
+       TEXT 'could not allocate space.'
+LPER3N EVEN
 
 LPER4M TEXT 'Test ...... failed. '
        TEXT 'Contents of line '
