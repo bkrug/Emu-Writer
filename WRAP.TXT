@@ -60,23 +60,29 @@ WRAP2  BL   @FNDBRK
 * Unify the remainder of a paragraph
 * into one line.
 *
-UNIPAR MOV  @WRPLN,R5
+UNIPAR
+* Let R5 point to the address in the
+* line list that represents the line to
+* be wrapped.
+       MOV  @WRPLN,R5
        INC  R5
        SLA  R5,1
        A    @LINLST,R5
 *
        MOV  R5,R6
-*
+* Let R0 hold the number of characters
+* in the paragraph.
        CLR  R0
 *
 UNI1   MOV  *R5,R3
-*
+* Accumulate the number of characters in
+* all of the lines in the paragraph.
        MOVB *R3,R4
        SRL  R4,8
        A    R4,R0
-*
+* Check if this is the last line in the
+* paragraph.
        A    R3,R4
-*
        CB   *R4,@CR
        JEQ  UNI2
        CB   *R4,@LF
@@ -84,15 +90,16 @@ UNI1   MOV  *R5,R3
 *
        INCT R5
        JMP  UNI1
-*
+* Allocate space for unified line.
 UNI2   MOV  R0,@UNIEND
        BLWP @BUFALC
        CI   R0,>FFFF
        JNE  UNI2B
        B    @WRPERR
+*
 UNI2B  MOV  R0,@UNIADR
        A    R0,@UNIEND
-*
+* Copy the lines to the unified line.
        MOV  R0,R1
 UNI3   MOV  *R6,R0
        MOVB *R0,R2
@@ -121,9 +128,12 @@ FINLIN DATA 0
 *
 * Find Break
 *
-FNDBRK MOV  @CPL,R2
+FNDBRK
+* Point R2 to one line's width later
+* than position of R10
+       MOV  @CPL,R2
        A    R10,R2
-*
+* Is R2 past end of paragraph?
        C    R2,@UNIEND
        JHE  FND5
 *
@@ -147,6 +157,8 @@ FND3   INC  R2
 * Save break address in R8
 FND4   MOV  R2,R8
        RT
+* All remaining characters fit on one
+* line.
 FND5   MOV  @UNIEND,R8
        RT
 CPL    DATA 0
