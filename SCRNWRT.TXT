@@ -1,6 +1,30 @@
        DEF  GETLIN
        REF  LINLST,FMTLST,MGNLST
        REF  BUFINT,BUFALC,BUFCPY,BUFREE
+* Workspace
+       REF  SCRNWS
+* Constants
+       REF  SPACE,LF,CR
+* Variables
+*
+* Address of the begining of a string 
+* that hold source data. This address
+* is one byte later than the length
+* byte.
+       REF  SRCLIN
+* Current margin
+       REF  INDENT
+* Number between 0 and 7
+       REF  CPI
+* Next Format Address
+       REF  NXTFMT
+* Stores the address of the string of
+* text that will be displayed.
+       REF  DSPSTR
+* Stores the address of the string of
+* text representing the areas where a
+* cursor may go.
+       REF  CURSTR
 
 * General Concepts:
 *
@@ -47,13 +71,6 @@
 *    set if the paragraph is justified.
 *    The fourth byte's first bit is
 *    set if the paragraph is centered.
-
-SCRNWS BSS  >20
-* Address of the begining of a string 
-* that hold source data. This address
-* is one byte later than the length
-* byte.
-SRCLIN DATA 0
 
 *
 * GETLIN
@@ -155,9 +172,6 @@ HDLCR1 MOVB @SPACE,*R3+
        MOVB @ALWCUR,*R10+
        JMP  GTLN5
 
-LF     BYTE 10
-CR     BYTE 13
-SPACE  BYTE >20
 * Character code for inverted symbols
 INVPL  BYTE >AB
 INVMN  BYTE >AD
@@ -380,12 +394,12 @@ CLRMGN DATA >7F7F
 * margin
 CLRJ   DATA >80FF
 * Current margin
-INDENT BSS  >2
+*      REF  INDENT
 * Number between 0 and 7 representing 
 * current CPI.
 * 0 through 7 respectively mean:
 * 20, 17.14, 15, 12, 10, 7.5, 6, 5
-CPI    BSS  >2
+*      REF  CPI
 
 * Describe each of these CPIs as n/120
 * of an inch.
@@ -583,10 +597,9 @@ WFMT4A INCT R7
 
 * Default Formating
 DFTFMT BYTE >04
-* Wasted Space
-       BYTE >00
+       EVEN
 * Next Format Address
-NXTFMT BSS  2
+*NXTFMT
 
 
 * Bits for comparisons
@@ -637,12 +650,4 @@ CPITXT DATA >B2B0
        DATA >B0B7
        DATA >B0B6
        DATA >B0B5
-
-* Stores the address of the string of
-* text that will be displayed.
-DSPSTR BSS  2
-* Stores the address of the string of
-* text representing the areas where a
-* cursor may go.
-CURSTR BSS  2
        END
