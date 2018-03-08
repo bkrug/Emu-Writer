@@ -126,7 +126,7 @@ TSTLP3 CB   *R6+,*R7+
        BLWP @BUFINT
 * Run the next test
        INC  R10
-       CI   R10,4
+       C    R10,@TSTCNT
        JL   TSTLP1
        B    *R12
 
@@ -373,6 +373,8 @@ LINLST DATA 0
 *
 ****************************************
 
+*Number of tests
+TSTCNT DATA 4
 *Lines to wrap from
 WRPLN  DATA 0,3,6,10
 *Original Line Lists
