@@ -1,25 +1,31 @@
        DEF  WRAP
        REF  LINLST,FMTLST,MGNLST
        REF  BUFALC,BUFCPY,BUFREE
-
-WORKSP BSS  >20
+* Workspace
+       REF  WRAPSP
+* Constants
+       REF  SPACE,DASH,LF,CR,BLKUSE
+* Variables
+*
+       REF  CPL
+* Index within Line List of line being
+* wrapped
+       REF  WRPLN
+* Address of unified line.
+       REF  UNIADR
+* Size
+       REF  UNIEND
+* Last address within the line list that
+* points to this same paragraph.
+* Therefore, also the last entry that
+* can be copied over.
+       REF  FINLIN
 
 * Maximum width of a 4 inch line
 LNWDTH DATA 120*4
 * Character Width in n/120-inch
 * 10 cpi
 CPI10  DATA 12
-
-* Index within Line List of line being
-* wrapped
-WRPLN  DATA 0
-
-*
-SPACE  TEXT ' '
-DASH   TEXT '-'
-LF     BYTE 10
-CR     BYTE 13
-       EVEN
 
 *
 * Wrap
@@ -28,7 +34,7 @@ CR     BYTE 13
 * R0 - Line index. Wrap from here.
 * Output:
 * R0 - >FFFF implies an error.
-WRAP   DATA WORKSP,WRAP+4
+WRAP   DATA WRAPSP,WRAP+4
 *
 * Get index of starting line.
        MOV  *R13,@WRPLN
@@ -115,15 +121,6 @@ UNI3   MOV  *R6,R0
 *
        MOV  R5,@FINLIN
        RT
-* Address of unified line.
-UNIADR DATA 0
-* Size
-UNIEND DATA 0
-* Last address within the line list that
-* points to this same paragraph.
-* Therefore, also the last entry that
-* can be copied over.
-FINLIN DATA 0
 
 *
 * Find Break
@@ -161,7 +158,6 @@ FND4   MOV  R2,R8
 * line.
 FND5   MOV  @UNIEND,R8
        RT
-CPL    DATA 0
 
 * 
 * Either delete a line from buffer
@@ -239,7 +235,6 @@ INSRT3 MOV  *R2,*R1
 * Increase size of new line list by one
        INC  *R4
        RT
-BLKUSE DATA >8000
 
 *
 * Make a line

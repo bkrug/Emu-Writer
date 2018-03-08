@@ -1,0 +1,20 @@
+       DEF  WRAPSP
+       DEF  WRPLN,UNIADR,UNIEND,FINLIN
+       DEF  CPL
+
+* Areas of memory that absolutely have
+* to be in RAM and could never be part
+* of a cartridge ROM should go here.
+
+* Areas for workspace registers
+WRAPSP BSS  >20
+
+* Areas for changeable values
+* WRAP.TXT
+WRPLN  DATA 0
+UNIADR DATA 0
+UNIEND DATA 0
+FINLIN DATA 0
+CPL    DATA 0
+
+       END
