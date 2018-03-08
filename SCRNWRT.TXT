@@ -93,6 +93,7 @@ GETLIN DATA SCRNWS,GETLIN+4
        MOV  *R13,R0
 * Convert Line Index to string address
        LI   R1,LINLST
+       MOV  *R1,R1
        INCT R1
        A    R0,R1
        A    R0,R1
@@ -328,6 +329,7 @@ DOINDT
 * Calculate the address of prior line of
 * text and place it in R6.
        LI   R6,LINLST
+       MOV  *R6,R6
        A    R0,R6
        A    R0,R6
        MOV  *R6,R6

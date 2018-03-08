@@ -1,6 +1,7 @@
        DEF  RUNTST,DSPTXT
-       DEF  LINLST,FMTLST,MGNLST
+       DEF  FMTLST,MGNLST
 *
+       REF  LINLST
        REF  GETLIN
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
@@ -13,6 +14,9 @@
 RUNTST BLWP @OPENF
 * Initialize the memory buffer.
        BL   @INTBUF
+* Register mock line list.
+       LI   R0,LINES
+       MOV  R0,@LINLST
 * Create inverted characters
        BL   @CHRSET
 * Change the expected cursor strings.
@@ -118,7 +122,7 @@ LIN8   EVEN
 * different amounts of space and are not
 * stored in memory in order.
 *
-LINLST DATA 21
+LINES  DATA 21
        DATA LIN1A,LIN1B,LIN1C,LIN1D
        DATA LIN1E
        DATA LIN2
@@ -709,6 +713,9 @@ STREF  SETO R8
 * Display all of the formatted lines
 *
 DSPTXT CLR  @TIMER
+*
+       LI   R0,LINES
+       MOV  R0,@LINLST
 * Set to Text Mode
        LI   R0,>F001
        MOVB R0,@VDPCPY
@@ -759,7 +766,7 @@ DT2    BLWP @VMBW
 *
        AI   R4,40
        INC  R3
-       C    R3,@LINLST
+       C    R3,@LINES
        JL   DT1
 *
        MOV  @TIMER,R0
@@ -791,6 +798,7 @@ VDPCPY EQU  >83D4
 * defined service routine
 USRISR EQU  >83C4
 TIMER  BSS  >2
+LINCNT DATA 0
 
 TIMINT INC  @TIMER
        RT

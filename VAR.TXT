@@ -1,4 +1,5 @@
        DEF  WRAPSP,SCRNWS
+       DEF  LINLST
        DEF  WRPLN,UNIADR,UNIEND,FINLIN
        DEF  CPL
        DEF  SRCLIN,INDENT,CPI,NXTFMT
@@ -17,6 +18,9 @@ SCRNWS BSS  >20
 *
 * Areas for changeable values
 *
+
+* Address of line list
+LINLST DATA 0
 
 * WRAP.TXT
 WRPLN  DATA 0

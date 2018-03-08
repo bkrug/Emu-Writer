@@ -364,8 +364,6 @@ CPYL2
 
 SPACE  BSS  >2000
 SPCEND
-* Address of LINLST
-LINLST DATA 0
 
 ****************************************
 *
