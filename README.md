@@ -15,5 +15,22 @@ It takes format information like bold, underline, and italic and inserts markers
 SCRNTST.TXT - unit tests for SCRNWRT.TXT. 
 If you assemble SCRNWRT and SCRNTST and have TESTUTIL.O, you can load all three files from Load and Run and Run RUNTST.
 
-LSCRNTST.TXT - loads SCRNWRT.O, SCRNTST.O, and TESTUTIL.O and runs the tests for you.
+LSCRNTST.TXT - loads SCRNWRT.O, SCRNTST.O, and some other object code and runs the tests for you.
 After loading, use LTEST to run.
+
+### WRAP
+
+WRAP.TXT - a routine to wrap text.
+
+WRAPTST.TXT - unit tests for WRAP.TXT
+
+LWRAPTST.TXT - loads WRAP.O, WRAPTST.O, and some other object code.
+After loading, use LTSEST to run.
+
+### VAR & CONST
+
+CONST.TXT - Stores some constant values that are shared by at least two source code files
+
+VAR.TXT - All areas of memory that can change should ideally be located here.
+If the finished program is small enough, then I can simulate a ROM cartridge for most of the code.
+But variables will still need to be stored in the memory expansion RAM.
