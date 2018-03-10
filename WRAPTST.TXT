@@ -75,8 +75,8 @@ TSTLP1
        MOV  *R0,R0
 * Wrap TEXT
        BLWP @WRAP
-	   CI   R0,>FFFF
-	   JEQ  LPERR3
+       CI   R0,>FFFF
+       JEQ  LPERR3
 * Assign R8 the address of the expected
 * line list.
 * Assign R9 the address of the actual
@@ -301,7 +301,6 @@ INITLL
        MOV  *R8,R0
        INC  R0
        SLA  R0,1
-*       LI   R0,>20
        BLWP @BUFALC
 * Copy starting line list to LINLST.
 * R0 holds the location that LINLST is
@@ -374,53 +373,66 @@ SPCEND
 *Number of tests
 TSTCNT DATA 4
 *Lines to wrap from
-WRPLN  DATA 0,3,6,10
+WRPLN  DATA 0,3,6,10,15
 *Original Line Lists
-STRLIN DATA LINL0,LINL0,LINL0,LINL0
+STRLIN DATA LINL0,LINL0,LINL0,LINL0,LINL0
 STRLNE
 *Expected Line Lists
-EXPLIN DATA LINE1,LINE2,LINE3,LINE4
+EXPLIN DATA LINE1,LINE2,LINE3,LINE4,LINE5
 EXPLNE
 *Test names
-TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
+TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  LIN5  '
 TSTNME
 SIX    DATA 6
 
-LINL0  DATA 15
+LINL0  DATA 20
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D
        DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+	   DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINL0E
 
 * Expected Line results
-LINE1  DATA 15
+LINE1  DATA 20
        DATA EXP1A,EXP1B,EXP1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D
        DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+	   DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE1E
 * Expected Line results
-LINE2  DATA 16
+LINE2  DATA 21
        DATA LIN1A,LIN1B,LIN1C
        DATA EXP2A,EXP2B,EXP2C,EXP2D
        DATA LIN3A,LIN3B,LIN3C,LIN3D
        DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+	   DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE2E
 * Expected Line results
-LINE3  DATA 15
+LINE3  DATA 20
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA EXP3A,EXP3B,EXP3C,EXP3D
        DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+	   DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE3E
 * Expected Line results
-LINE4  DATA 14
+LINE4  DATA 19
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D
        DATA EXP4A,EXP4B,EXP4C,EXP4D
+	   DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE4E
+* Expected Line results
+LINE5  DATA 19
+       DATA LIN1A,LIN1B,LIN1C
+       DATA LIN2A,LIN2B,LIN2C
+       DATA LIN3A,LIN3B,LIN3C,LIN3D
+       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
+	   DATA EXP5A,EXP5B,EXP5C,EXP5D
+LINE5E
 
 *
 * Data Format:
@@ -604,6 +616,40 @@ EXP4D  BYTE 35
        TEXT 'connecting to other major cities.'
        BYTE 13,10
        EVEN
+
+*
+* Doesn't test much itself, but it has
+* some formatting attached to it.
+*
+LIN5A  BYTE 36
+       TEXT 'Because of its key role in domestic '
+	   EVEN
+LIN5B  BYTE 44
+       TEXT 'transportation, Wuhan is sometimes referred '
+	   EVEN
+LIN5C  BYTE 11
+       TEXT 'to as "the '
+	   EVEN
+LIN5D  BYTE 11
+       TEXT 'Chicago of '
+	   EVEN
+LIN5E  BYTE 28
+       TEXT 'China" by foreign sources.'
+       BYTE 13,10
+	   EVEN
+EXP5A  BYTE 36
+       TEXT 'Because of its key role in domestic '
+	   EVEN
+EXP5B  BYTE 34
+       TEXT 'transportation, Wuhan is sometimes '
+	   EVEN
+EXP5C  BYTE 38
+       TEXT 'referred to as "the Chicago of China" '
+	   EVEN
+EXP5D  BYTE 21
+       TEXT 'by foreign sources.'
+       BYTE 13,10
+	   EVEN
 
 HEXLIN BSS  >20
 *
