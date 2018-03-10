@@ -370,8 +370,8 @@ SPCEND
 *
 ****************************************
 
-*Number of tests
-TSTCNT DATA 4
+*Number of tests to run
+TSTCNT DATA 5
 *Lines to wrap from
 WRPLN  DATA 0,3,6,10,15
 *Original Line Lists
@@ -640,14 +640,14 @@ LIN5E  BYTE 28
 EXP5A  BYTE 36
        TEXT 'Because of its key role in domestic '
 	   EVEN
-EXP5B  BYTE 34
+EXP5B  BYTE 35
        TEXT 'transportation, Wuhan is sometimes '
 	   EVEN
-EXP5C  BYTE 38
-       TEXT 'referred to as "the Chicago of China" '
+EXP5C  BYTE 41
+       TEXT 'referred to as "the Chicago of China" by '
 	   EVEN
-EXP5D  BYTE 21
-       TEXT 'by foreign sources.'
+EXP5D  BYTE 18
+       TEXT 'foreign sources.'
        BYTE 13,10
 	   EVEN
 
