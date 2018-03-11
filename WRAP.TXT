@@ -175,10 +175,7 @@ FND5   MOV  @UNIEND,R8
 * Either delete a line from buffer
 * or insert a space in the line list
 * 
-DELLIN MOV  @WRPLN,R5
-       INC  R5
-       SLA  R5,1
-       A    @LINLST,R5
+DELLIN MOV  @WRPLNR,R5
 *
        C    R5,@FINLIN
        JH   INSRT
@@ -230,6 +227,7 @@ INSRT  MOV  @LINLST,R4
        INC  R5
        SLA  R5,1
        A    @LINLST,R5
+       MOV  R5,@WRPLNR
 * Insert a space in line list
 INSRT2 
 * Find end of the list
@@ -294,10 +292,7 @@ RMXTRA MOV  @LINLST,R4
 * into. If we need to remove anything
 * from the line list, this will be the
 * first line that needs to be removed.
-       MOV  @WRPLN,R1
-       INC  R1
-       SLA  R1,1
-       A    R4,R1
+       MOV  @WRPLNR,R1
 * If R0 points to the same location as
 * R1, then there is nothing to delete.
        C    R0,R1
