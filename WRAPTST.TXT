@@ -651,6 +651,13 @@ EXP5D  BYTE 18
        BYTE 13,10
        EVEN
 
+FMT0   DATA 2,0
+* Bold
+       DATA 16
+       BYTE 8,>84
+       DATA 16
+       BYTE 10,>04
+
 HEXLIN BSS  >20
 *
 * Do a memory dump

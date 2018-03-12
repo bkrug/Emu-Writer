@@ -428,6 +428,7 @@ SIX    DATA 6
 GETCPI MOV  R0,R0
        JEQ  GTCPI4
        LI   R5,FMTLST
+       MOV  *R5,R5
 * Set R6 to the end of FMTLST
        MOV  *R5,R6
        INC  R6
@@ -467,6 +468,7 @@ GTCPI4 MOVB @DFTFMT,R6
 *    apply.
 * NXTFMT
 GETFMT LI   R5,FMTLST
+       MOV  *R5,R5
 * Set R6 to the end of FMTLST
        MOV  *R5,R6
        INC  R6
@@ -501,6 +503,7 @@ WRTFMT MOV  R11,R12
        MOV  @NXTFMT,R6
 * Is this the first format entry?
        LI   R5,FMTLST
+       MOV  *R5,R5
        AI   R5,4
        C    R6,R5
        JEQ  WFMT1
@@ -564,6 +567,7 @@ WFMT5  INC  R6
 * See if R6 has gone past the end of the
 * format list
        LI   R7,FMTLST
+       MOV  *R7,R7
        MOV  *R7,R8
        INC  R8
        SLA  R8,2

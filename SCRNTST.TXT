@@ -1,7 +1,7 @@
        DEF  RUNTST,DSPTXT
-       DEF  FMTLST,MGNLST
+       DEF  MGNLST
 *
-       REF  LINLST
+       REF  LINLST,FMTLST
        REF  GETLIN
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
@@ -14,9 +14,12 @@
 RUNTST BLWP @OPENF
 * Initialize the memory buffer.
        BL   @INTBUF
-* Register mock line list.
+* Register mock line list and format
+* list.
        LI   R0,LINES
        MOV  R0,@LINLST
+       LI   R0,FMT0
+       MOV  R0,@FMTLST
 * Create inverted characters
        BL   @CHRSET
 * Change the expected cursor strings.
@@ -152,7 +155,7 @@ LINES  DATA 21
 *
 * Bits 5 through 7 represent one of
 * six possible CPIs.
-FMTLST DATA 17,0
+FMT0   DATA 17,0
 * Superscript
        DATA 4
        BYTE 7,>14

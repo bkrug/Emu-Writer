@@ -1,5 +1,5 @@
        DEF  WRAPSP,SCRNWS
-       DEF  LINLST
+       DEF  LINLST,FMTLST
        DEF  WRPLN,WRPLNR,UNIADR,UNIEND
 	   DEF  FINLIN,CPL
        DEF  SRCLIN,INDENT,CPI,NXTFMT
@@ -21,6 +21,8 @@ SCRNWS BSS  >20
 
 * Address of line list
 LINLST DATA 0
+* Address of format line list
+FMTLST DATA 0
 
 * WRAP.TXT
 WRPLN  DATA 0
