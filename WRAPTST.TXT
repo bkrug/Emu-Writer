@@ -380,6 +380,12 @@ STRLNE
 *Expected Line Lists
 EXPLIN DATA LINE1,LINE2,LINE3,LINE4,LINE5
 EXPLNE
+*Original Format Lists
+STRFMT DATA FMT0,FMT0,FMT0,FMT0,FMT0
+STRFME
+*Expected Format Lists
+EXPFMT DATA FMT0,FMTE2,FMT0,FMTE4,FMT0
+EXPFME
 *Test names
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  LIN5  '
 TSTNME
@@ -653,10 +659,24 @@ EXP5D  BYTE 18
 
 FMT0   DATA 2,0
 * Bold
+       DATA 17
+       BYTE 3,>84
+       DATA 17
+       BYTE 5,>04
+
+FMTE2  DATA 2,0
+* Bold
+       DATA 18
+       BYTE 3,>84
+       DATA 18
+       BYTE 5,>04
+
+FMTE4  DATA 2,0
+* Bold
        DATA 16
-       BYTE 8,>84
+       BYTE 3,>84
        DATA 16
-       BYTE 10,>04
+       BYTE 5,>04
 
 HEXLIN BSS  >20
 *
