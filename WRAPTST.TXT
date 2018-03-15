@@ -1,7 +1,7 @@
        DEF  RUNTST
-       DEF  FMTLST,MGNLST
+       DEF  MGNLST
 *
-       REF  WRAP,LINLST
+       REF  WRAP,LINLST,FMTLST
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  VMBW
@@ -59,6 +59,12 @@ INTMSE EVEN
 ****************************************
 
 TSTLP  MOV  R11,R12
+       LI   R8,EXPLIN
+       MOV  R8,@EXPLNR
+       LI   R8,EXPFMT
+       MOV  R8,@EXPFMR
+       LI   R8,WRPLN
+       MOV  R8,@WRPLNR
 * Use R10 to track which test this is
        CLR  R10
 * Loop through each test.
@@ -67,214 +73,41 @@ TSTLP1
        BL   @INITLL
 * Copy each line into the line list.
        BL   @CPYLIN
+* Copy the format list for this test.
+       BL   @INTFMT
 * Setup wrap parameters.
 * Place index of line to wrap in R0.
-       LI   R0,WRPLN
-       A    R10,R0
-       A    R10,R0
+       MOV  @WRPLNR,R0
        MOV  *R0,R0
 * Wrap TEXT
        BLWP @WRAP
        CI   R0,>FFFF
-       JEQ  LPERR3
-* Assign R8 the address of the expected
-* line list.
-* Assign R9 the address of the actual
-* line list.
-       LI   R8,EXPLIN
-       A    R10,R8
-       A    R10,R8
-       MOV  *R8,R8
-       MOV  @LINLST,R9
-* Confirm that the number of lines in
-* the list is correct.
-       C    *R8,*R9
-       JNE  LPERR1
-* R5 shall store number of lines.
-       MOV  *R8,R5
-* Now loop through each line.
-* R8 holds address of the address of the
-* expected line
-* R9 holds address of the address of the
-* actual line
-TSTLP2 INCT R8
-       INCT R9
-* Store position within the line
-* R6 and R7 hold the position within
-* each line.
-       MOV  *R8,R6
-       MOV  *R9,R7
-* R4 shall store character length
-       MOVB *R6,R4
-       SRL  R4,8
-* Confirm that the line character length
-* is correct.
-       CB   *R6+,*R7+
-       JNE  LPERR2
-* Confirm string contents are correct.
-TSTLP3 CB   *R6+,*R7+
-       JNE  LPERR4
-       DEC  R4
-       JH   TSTLP3
-* See if we should check another line
-       DEC  R5
-       JH   TSTLP2
+       JNE  TSTLP2
+       B    @LPERR3
+* Test Line List and Format List.
+TSTLP2 BL   @TSTLIN
+       BL   @TSTFMT
 * One test is complete.
 * Reinitialize memory buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
        BLWP @BUFINT
 * Run the next test
+       INCT @EXPLNR
+       INCT @EXPFMR
+       INCT @WRPLNR
        INC  R10
        C    R10,@TSTCNT
        JL   TSTLP1
-       B    *R12
-
-* Test result contains wrong number of
-* lines.
-LPERR1 LI   R0,TSTNAM
-       MOV  R10,R3
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R1,LPER1M+5
-       LI   R2,6
-       BLWP @BUFCPY
-*
-       MOV  @LINLST,R0
-       MOV  *R0,R0
-       LI   R1,LPER1N-4
-       BLWP @MAKETX
-*
-       LI   R0,LPER1M
-       LI   R1,LPER1N-LPER1M
-       BLWP @PRINTL
-       B    *R12
-
-* Test line contains wrong number of 
-* characters.
-LPERR2 LI   R0,TSTNAM
-       MOV  R10,R3
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R1,LPER2M+5
-       LI   R2,6
-       BLWP @BUFCPY
-*
-       MOV  R9,R0
-       S    @LINLST,R0
-       SRL  R0,1
-       DEC  R0
-       LI   R1,LPER2N
-       BLWP @MAKETX
-*
-       MOV  *R7,R0
-       SRL  R0,8
-       LI   R1,LPER2N+11
-       BLWP @MAKETX
-*
-       LI   R0,LPER2M
-       LI   R1,LPER2O-LPER2M
-       BLWP @PRINTL
 *
        B    *R12
 
-LPERR3 LI   R0,TSTNAM
-       MOV  R10,R3
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R1,LPER3M+5
-       LI   R2,6
-       BLWP @BUFCPY
-*
-       LI   R0,LPER3M
-       LI   R1,LPER3N-LPER3M
-       BLWP @PRINTL
-*
-       B    *R12
-
-*
-* Test line contents don't match
-LPERR4 
-* Copy test name.
-       LI   R0,TSTNAM
-       MOV  R10,R3
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R1,LPER4M+5
-       LI   R2,6
-       BLWP @BUFCPY
-* Record line index
-       MOV  R9,R0
-       S    @LINLST,R0
-       SRL  R0,1
-       DEC  R0
-       LI   R1,LPER4N
-       BLWP @MAKETX
-* Copy expected text
-       LI   R1,LPER4O
-       MOV  *R8,R0
-       MOVB *R0,R2
-       INC  R0
-       SRL  R2,8
-       CI   R2,60
-       JL   LPER4A
-       LI   R2,60
-LPER4A BLWP @BUFCPY
-* Copy "|-- Actual:" into message
-       LI   R0,LPER4Q
-       A    R2,R1
-       LI   R2,LPER4R-LPER4Q
-       BLWP @BUFCPY
-* Copy actual text
-       A    R2,R1
-       MOV  *R9,R0
-       MOVB *R0,R2
-       INC  R0
-       SRL  R2,8
-       CI   R2,60
-       JL   LPER4B
-       LI   R2,60
-LPER4B BLWP @BUFCPY
-* Copy "|--" into message.
-       LI   R0,LPER4Q
-       A    R2,R1
-       LI   R2,3
-       BLWP @BUFCPY
-* Output error message.
-       LI   R0,LPER4M
-       LI   R1,LPER4Q-LPER4M
-       BLWP @PRINTL
-*
-       B    *R12
-
-LPER1M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of lines. We see '
-       TEXT '....'
-LPER1N EVEN
-
-LPER2M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of characters in '
-       TEXT 'line '
-LPER2N TEXT '.... found .... characters'
-LPER2O EVEN
-
-LPER3M TEXT 'Test ...... failed. WRAP '
-       TEXT 'could not allocate space.'
-LPER3N EVEN
-
-LPER4M TEXT 'Test ...... failed. '
-       TEXT 'Contents of line '
-LPER4N TEXT '.... were wrong. Expected:'
-LPER4O TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '           '
-LPER4P EVEN
-LPER4Q TEXT '|-- Actual:'
-LPER4R EVEN
+* Address within line list.
+WRPLNR DATA 0
+* Address within EXPLIN.
+EXPLNR DATA 0
+* Address within EXPFMT
+EXPFMR DATA 0
 
 *
 * Initialize Line List for the
@@ -359,6 +192,272 @@ CPYL2
        DEC  R3
        JH   CPYL2
 *
+       RT
+
+*
+* Initialize format list.
+*
+INTFMT
+* Get address of starting format list
+       LI   R8,STRFMT
+       A    R10,R8
+       A    R10,R8
+       MOV  *R8,R8
+* R8 now contains the address of 
+* initial format list.
+* Reserve space for format list in buffer.
+       MOV  *R8,R0
+       INC  R0
+       SLA  R0,2
+       MOV  R0,R2
+       BLWP @BUFALC
+* Copy starting line list to FMTLST.
+* R0 holds the location that FMTLST is
+* stored at.
+       MOV  R0,@FMTLST
+* Copy formats into buffer.
+       MOV  R0,R1
+       MOV  R8,R0
+       BLWP @BUFCPY
+*
+       RT
+
+*
+* Test Line List results
+*
+* Assign R8 the address of the expected
+* line list.
+* Assign R9 the address of the actual
+* line list.
+TSTLIN MOV  @EXPLNR,R8
+       MOV  *R8,R8
+       MOV  @LINLST,R9
+* Confirm that the number of lines in
+* the list is correct.
+       C    *R8,*R9
+       JNE  LPERR1
+* R5 shall store number of lines.
+       MOV  *R8,R5
+* Now loop through each line.
+* R8 holds address of the address of the
+* expected line
+* R9 holds address of the address of the
+* actual line
+TSTLN2 INCT R8
+       INCT R9
+* Store position within the line
+* R6 and R7 hold the position within
+* each line.
+       MOV  *R8,R6
+       MOV  *R9,R7
+* R4 shall store character length
+       MOVB *R6,R4
+       SRL  R4,8
+* Confirm that the line character length
+* is correct.
+       CB   *R6+,*R7+
+       JNE  LPERR2
+* Confirm string contents are correct.
+TSTLN3 CB   *R6+,*R7+
+       JNE  LPERR4
+       DEC  R4
+       JH   TSTLN3
+* See if we should check another line
+       DEC  R5
+       JH   TSTLN2
+       RT
+
+*
+* Test format list
+*
+TSTFMT
+* Confirm format contents are correct.
+       MOV  @EXPFMR,R8
+       MOV  *R8,R8
+       MOV  @FMTLST,R9
+*
+       C    *R8,*R9
+       JNE  LPERR5
+*
+       MOV  *R8,R4
+       SLA  R4,2
+TSTFM1 CB   *R8+,*R9+
+       JNE  TSTFE1
+       DEC  R4
+       JH   TSTFM1
+       RT
+TSTFE1 B    @LPERR6
+
+* Test result contains wrong number of
+* lines.
+LPERR1
+       LI   R1,LPER1M+5
+       BL   @WRTNAM
+*
+       MOV  @LINLST,R0
+       MOV  *R0,R0
+       LI   R1,LPER1N-4
+       BLWP @MAKETX
+*
+       LI   R0,LPER1M
+       LI   R1,LPER1N-LPER1M
+       BLWP @PRINTL
+       B    *R12
+
+* Test line contains wrong number of 
+* characters.
+LPERR2
+       LI   R1,LPER2M+5
+       BL   @WRTNAM
+*
+       MOV  R9,R0
+       S    @LINLST,R0
+       SRL  R0,1
+       DEC  R0
+       LI   R1,LPER2N
+       BLWP @MAKETX
+*
+       MOV  *R7,R0
+       SRL  R0,8
+       LI   R1,LPER2N+11
+       BLWP @MAKETX
+*
+       LI   R0,LPER2M
+       LI   R1,LPER2O-LPER2M
+       BLWP @PRINTL
+*
+       B    *R12
+
+LPERR3
+       LI   R1,LPER3M+5
+       BL   @WRTNAM
+*
+       LI   R0,LPER3M
+       LI   R1,LPER3N-LPER3M
+       BLWP @PRINTL
+*
+       B    *R12
+
+*
+* Test line contents don't match
+LPERR4 
+* Copy test name.
+       LI   R1,LPER4M+5
+       BL   @WRTNAM
+* Record line index
+       MOV  R9,R0
+       S    @LINLST,R0
+       SRL  R0,1
+       DEC  R0
+       LI   R1,LPER4N
+       BLWP @MAKETX
+* Copy expected text
+       LI   R1,LPER4O
+       MOV  *R8,R0
+       MOVB *R0,R2
+       INC  R0
+       SRL  R2,8
+       CI   R2,60
+       JL   LPER4A
+       LI   R2,60
+LPER4A BLWP @BUFCPY
+* Copy "|-- Actual:" into message
+       LI   R0,LPER4Q
+       A    R2,R1
+       LI   R2,LPER4R-LPER4Q
+       BLWP @BUFCPY
+* Copy actual text
+       A    R2,R1
+       MOV  *R9,R0
+       MOVB *R0,R2
+       INC  R0
+       SRL  R2,8
+       CI   R2,60
+       JL   LPER4B
+       LI   R2,60
+LPER4B BLWP @BUFCPY
+* Copy "|--" into message.
+       LI   R0,LPER4Q
+       A    R2,R1
+       LI   R2,3
+       BLWP @BUFCPY
+* Output error message.
+       LI   R0,LPER4M
+       LI   R1,LPER4Q-LPER4M
+       BLWP @PRINTL
+*
+       B    *R12
+
+LPERR5
+       LI   R1,LPER5M+5
+       BL   @WRTNAM
+*
+       MOV  *R9,R0
+       LI   R1,LPER5N-4
+       BLWP @MAKETX
+*
+       LI   R0,LPER5M
+       LI   R1,LPER5N-LPER5M
+       BLWP @PRINTL
+*
+       B    *R12
+
+LPERR6
+       LI   R1,LPER6M+5
+       BL   @WRTNAM
+*
+       LI   R0,LPER6M
+       LI   R1,LPER6N-LPER6M
+       BLWP @PRINTL
+*
+       B    *R12
+
+LPER1M TEXT 'Test ...... failed. Wrong '
+       TEXT 'number of lines. We see '
+       TEXT '....'
+LPER1N EVEN
+
+LPER2M TEXT 'Test ...... failed. Wrong '
+       TEXT 'number of characters in '
+       TEXT 'line '
+LPER2N TEXT '.... found .... characters'
+LPER2O EVEN
+
+LPER3M TEXT 'Test ...... failed. WRAP '
+       TEXT 'could not allocate space.'
+LPER3N EVEN
+
+LPER4M TEXT 'Test ...... failed. '
+       TEXT 'Contents of line '
+LPER4N TEXT '.... were wrong. Expected:'
+LPER4O TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '                    '
+       TEXT '           '
+LPER4P EVEN
+LPER4Q TEXT '|-- Actual:'
+LPER4R EVEN
+
+LPER5M TEXT 'Text ...... failed. Wrong '
+       TEXT 'number of formats. We see '
+       TEXT '....'
+LPER5N EVEN
+
+LPER6M TEXT 'Test ...... failed. Wrong '
+       TEXT 'format list contents.'
+LPER6N EVEN
+
+WRTNAM
+* Copy test name.
+       LI   R0,TSTNAM
+       MOV  R10,R3
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R2,6
+       BLWP @BUFCPY
        RT
 
 SPACE  BSS  >2000
