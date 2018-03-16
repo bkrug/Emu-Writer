@@ -25,6 +25,8 @@
 * Therefore, also the last entry that
 * can be copied over.
        REF  FINLIN
+* Count the number of new lines inserted
+       REF  INSCNT
 
 * Maximum width of a 4 inch line
 LNWDTH DATA 120*4
@@ -43,6 +45,8 @@ WRAP   DATA WRAPSP,WRAP+4
 *
 * Get index of starting line.
        MOV  *R13,@WRPLN
+*
+       CLR  @INSCNT
 * Get address in line list
        MOV  *R13,R0
        INC  R0
@@ -70,6 +74,7 @@ WRAP2  BL   @FNDBRK
 *
        MOV  @UNIADR,R0
        BLWP @BUFREE
+       BL   @ADJFMT
        BL   @RMXTRA
 *
        RTWP
@@ -172,7 +177,8 @@ FND5   MOV  @UNIEND,R8
        RT
 
 * 
-* Either delete a line from buffer
+* Either replace a line from buffer
+* with a line just created
 * or insert a space in the line list
 * 
 DELLIN MOV  @WRPLNR,R5
@@ -244,6 +250,9 @@ INSRT3 MOV  *R2,*R1
        JHE  INSRT3
 * Increase size of new line list by one
        INC  *R4
+* Record the fact that we inserted a
+* line.
+       INC  @INSCNT
        RT
 
 *
@@ -272,6 +281,44 @@ MAKLIN MOV  R8,R2
 
 WRPERR MOV  R0,*R13
        RTWP
+
+*
+* Adjust Format Lines
+*
+ADJFMT MOV  @INSCNT,R0
+       JEQ  AJFMT3
+* Wrap algorithm caused formats to move
+* down.
+AJFMT0 MOV  @WRPLN,R1
+       MOV  @FMTLST,R2
+       MOV  *R2,R3
+       SLA  R3,2
+       A    R2,R3
+* R2 Is the location of the format entry.
+* R3 already contains the location of the
+*    last format entry.
+AJFMT1 C    *R2+,*R2+
+       C    *R2,R1
+       JL   AJFMT2
+       MOV  @INSCNT,R4
+       JEQ  AJFMT5
+       A    R0,*R2
+       JMP  AJFMT2
+AJFMT5 S    R0,*R2
+AJFMT2 C    R2,R3
+       JL   AJFMT1
+       RT
+* Check if lines were deleted
+AJFMT3 MOV  @FINLIN,R0
+       INCT R0
+       MOV  @WRPLNR,R1
+       S    R1,R0
+       JGT  AJFMT4
+       RT
+* Wrap algorithm cause formats to move
+* up.
+AJFMT4 SRL  R0,1
+       JMP AJFMT0
 
 * 
 * Remove extra lines when text wrapped
