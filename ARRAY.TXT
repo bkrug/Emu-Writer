@@ -127,6 +127,7 @@ INS1   MOV  R1,@2(13)
 ARYDEL DATA ARRYWS,ARYDEL+4
 *
        BL   @ADRSIZ
+       MOV  R0,R9
 * ---- Main delete function ----
 * Get address directly after array.
        MOV  *R10,R2
@@ -144,7 +145,7 @@ ARYDEL DATA ARRYWS,ARYDEL+4
        MOV  R1,R0
        A    R8,R0
 * Get length to copy
-       S    R0,R2
+       S    R1,R2
 *
        BLWP @BUFCPY
 * Decrease array length
@@ -217,7 +218,6 @@ ARYADR DATA ARRYWS,ARYADR+4
 *
 * Output:
 *  R0 - exponent for item size
-*  R2 - (changed)
 *  R10 - address of array
 ADRSIZ
 * First get address of array
@@ -306,17 +306,18 @@ CPYBCK
        A    R10,R1
        C    *R1+,*R1+
 * Get address immediately following the
-* end of the array.
+* end of the array + item size - 2
        MOV  *R10,R3
+       INC  R3
        SLA  R3,0
        A    R10,R3
-       C    *R3+,*R3+
-* Get address of last item in array
+       INCT R3
+* Get address of last word in last item
+* in array
        MOV  *R10,R2
-       DEC  R2
        SLA  R2,0
        A    R10,R2
-       C    *R2+,*R2+
+       INCT R2
 * Copy each word until we reach the
 * address of insertion.
 CPYBK1 MOV  *R2,*R3
