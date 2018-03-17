@@ -25,30 +25,24 @@ ARYALC DATA ARRYWS,ARYALC+4
        MOV  *R13,R0
        MOV  *R13,R3
        JEQ  ALC2
-* Get array item size
-       LI   R2,1
-       SLA  R2,0
+* Get array item size * 4 + 4.
 * We'll initially give array space for
-* 3 items and the array header
-       SLA  R2,2
+* 4 items and the array header
+       LI   R2,4
+       SLA  R2,0
+       C    *R2+,*R2+           Add four to R2
 * Allocate space
        MOV  R2,R0
        BLWP @BUFALC
 * Handle memory error
        CI   R0,>FFFF
        JEQ  ALC2
-* Declare that the array length is 0
-       CLR  *R0
-* If the item size is something other
-* than 2, record size in bytes 2 and 3.
-       CI   R3,1
-       JEQ  ALC1
-       SOC  @BLKUSE,*R0
-       MOV  R0,R1
-       INCT R1
-       MOV  R3,*R1
 * Notify caller of array address
-ALC1   MOV  R0,*R13
+       MOV  R0,*R13
+* Declare that the array length is 0
+       CLR  *R0+
+* Put record item size in bytes 2 and 3.
+       MOV  R3,*R0
        RTWP
 * Notify caller of error
 ALC2   SETO *R13
@@ -106,7 +100,7 @@ INS1   MOV  R1,@2(13)
 *
 * Put array address in caller's R0
 *
-INSRT  MOV  R10,*R13
+       MOV  R10,*R13
        RTWP
 
 
@@ -131,11 +125,10 @@ ARYDEL DATA ARRYWS,ARYDEL+4
        BL   @ADDRES
        MOV  R8,R1
 * Get source to copy from.
-       MOV  R9,R0
-       LI   R3,1
-       SLA  R3,0
+       MOV  @2(13),R8
+	   DEC  R8
+       BL   @ADDRES
        MOV  R8,R0
-       A    R3,R0
 * Get length to copy
        S    R0,R2
 *
@@ -172,14 +165,7 @@ ADRSIZ
 * First get address of array
        MOV  *R13,R10
 * Get memory size of array item
-	   MOV  *R10,R2
-       COC  @BLKUSE,2
-       JEQ  ADD1
-* Item size is 2^1
-       LI   R0,1
-       RT
-* Get item size from byte 2 & 3
-ADD1   MOV  R10,R9
+       MOV  R10,R9
        INCT R9
        MOV  *R9,R0
        RT
@@ -193,9 +179,9 @@ ADD1   MOV  R10,R9
 *  R10 - address of array
 * Output:
 *  R8 - item address
-ADDRES INC  R8
-       SLA  R8,0
+ADDRES SLA  R8,0
        A    R10,R8
+       C    *R8+,*R8+
        RT
 
 *
@@ -214,11 +200,12 @@ REALC
 *
 * Get potential size of array after add.
 * Put in R2
-* Calc: (array length + 2) * Item size
+* Calc: (array length + 1) * Item size + 4
 *
        MOV  *R10,R2
-       INCT R2
+       INC  R2
        SLA  R2,0
+       C    *R2+,*R2+
 *
 * Get current size of memory block - 2
 * Put in R3
@@ -234,15 +221,14 @@ REALC
 *
        C    R2,R3
        JLE  REALC2
-* Allocate space
+* Allocate required space * 2
        MOV  R2,R0
+       SLA  R0,1
        BLWP @BUFALC
        CI   R0,>FFFF
-       JNE  REALC1
-       SETO *R13
-       RTWP
+       JEQ  RTERR
 * Copy to new location
-REALC1 MOV  R0,R1
+       MOV  R0,R1
        MOV  R10,R0
        BLWP @BUFCPY
 * Free up old space
@@ -250,6 +236,10 @@ REALC1 MOV  R0,R1
 * Save new address
        MOV  R1,R10
 REALC2 RT
+
+RTERR  SETO *R13
+       RTWP
+
 
 *
 * Copy part of memory backwards
@@ -259,12 +249,14 @@ REALC2 RT
 *  R10 - address of array
 *  R13 - caller's workspace
 * Output:
-*  R0,R1,R2,R3,R4,R7,R8
+*  R0
+*  R1 - Address of insertion index
+*  R2,R3,R4,R7,R8
 CPYBCK
-* Get insertion index
-       MOV  @2(13),R8
-* Get address of insertion index
+* R0 must have memory size of item
        MOV  R9,R0
+* Get address of insertion index
+       MOV  @2(13),R8
        BL   @ADDRES
        MOV  R8,R1
 * Get address immediately following the

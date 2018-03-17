@@ -151,14 +151,14 @@ TST1   LI   R2,1
        CLR  R1
        BLWP @ARYADR
        MOV  R0,R2
-       INCT R2
+       AI   R2,4
        C    R1,R2
        JNE  ERR1A
 * Check an address
        LI   R1,4
        BLWP @ARYADR
        MOV  R0,R2
-       AI   R2,10
+       AI   R2,12
        C    R1,R2
        JNE  ERR1A
 * Check array contents
@@ -170,7 +170,7 @@ TST1   LI   R2,1
 
 ERR1A  B    @ADRERR
 
-EXP1   DATA 10
+EXP1   DATA 10,1
        DATA 7,2,3,5,6,8,9,12,10,11
 
 
