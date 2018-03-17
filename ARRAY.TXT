@@ -165,17 +165,26 @@ ARYDEL DATA ARRYWS,ARYDEL+4
        SZC  @BLKUSE,R3
        MOV  R3,R5
        DECT R3
-* If current size is at least 4 times 
-* larger than array size, then shrink
-* memory block.
+* Get minimum reservable space for array
+* (item size * 4 + 4)
+       LI   R6,4
+       SLA  R6,0
+       C    *R6+,*R6+
+* If current block size is at least 4
+* times larger than array size AND a 
+* space twice as large as array size is
+* larger than minimum reservable space,
+* then shrink memory block.
        SRL  R3,2
        C    R3,R2
        JL   DELRT
+       SLA  R2,1
+       C    R6,R2
+       JH   DELRT
 * Shrink block to twice the array size
-* R2 still has array size.
+* R2 still has array size * 2.
 * R4 still has address of meory block.
 * R5 still has size of memory block.
-       SLA  R2,1
        INCT R2
        S    R2,R5
        S    R5,*R4
