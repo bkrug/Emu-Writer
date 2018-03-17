@@ -72,7 +72,7 @@ ARYADD DATA ARRYWS,ARYADD+4
 * in the array in caller's R1
        MOV  *R10,R8
        BL   @ADDRES
-       MOV  R7,@2(13)
+       MOV  R8,@2(13)
 * Increase length of array
        INC  *R10
 * Put array address in caller's R0
@@ -125,16 +125,16 @@ ARYDEL DATA ARRYWS,ARYDEL+4
 * Get address directly after array.
        MOV  *R10,R8
        BL   @ADDRES
-       MOV  R7,R2
+       MOV  R8,R2
 * Get destination to copy to.
        MOV  @2(13),R8
        BL   @ADDRES
-       MOV  R7,R1
+       MOV  R8,R1
 * Get source to copy from.
        MOV  R9,R0
        LI   R3,1
        SLA  R3,0
-       MOV  R7,R0
+       MOV  R8,R0
        A    R3,R0
 * Get length to copy
        S    R0,R2
@@ -157,7 +157,7 @@ ARYADR DATA ARRYWS,ARYADR+4
        BL   @ADRSIZ
        MOV  @2(13),R8
        BL   @ADDRES
-       MOV  R7,@2(13)
+       MOV  R8,@2(13)
        RTWP
 
 *
@@ -192,11 +192,10 @@ ADD1   MOV  R10,R9
 *  R8 - index of item
 *  R10 - address of array
 * Output:
-*  R7 - item address
-ADDRES MOV  R8,R7
-       INC  R7
-       SLA  R7,0
-       A    R10,R7
+*  R8 - item address
+ADDRES INC  R8
+       SLA  R8,0
+       A    R10,R8
        RT
 
 *
@@ -267,12 +266,12 @@ CPYBCK
 * Get address of insertion index
        MOV  R9,R0
        BL   @ADDRES
-       MOV  R7,R1
+       MOV  R8,R1
 * Get address immediately following the
 * end of the array.
        MOV  *R10,R8
        BL   @ADDRES
-       MOV  R7,R3
+       MOV  R8,R3
 * Get address of last item in array
        MOV  R9,R0
        LI   R4,1
