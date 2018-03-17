@@ -74,7 +74,9 @@ ARYADD DATA ARRYWS,ARYADD+4
 * Put address of soon-to-be last element
 * in the array in caller's R1
        MOV  *R10,R8
-       BL   @ADDRES
+       SLA  R8,0
+       A    R10,R8
+       C    *R8+,*R8+
        MOV  R8,@2(13)
 * Increase length of array
        INC  *R10
@@ -126,18 +128,20 @@ ARYDEL DATA ARRYWS,ARYDEL+4
 *
        BL   @ADRSIZ
 * Get address directly after array.
-       MOV  *R10,R8
-       BL   @ADDRES
-       MOV  R8,R2
+       MOV  *R10,R2
+       SLA  R2,0
+       A    R10,R2
+       C    *R2+,*R2+
 * Get destination to copy to.
-       MOV  @2(13),R8
-       BL   @ADDRES
-       MOV  R8,R1
+       MOV  @2(13),R1
+       SLA  R1,0
+       A    R10,R1
+       C    *R1+,*R1+
 * Get source to copy from.
-       MOV  @2(13),R8
-       DEC  R8
-       BL   @ADDRES
-       MOV  R8,R0
+       LI   R8,1
+       SLA  R8,0
+       MOV  R1,R0
+       A    R8,R0
 * Get length to copy
        S    R0,R2
 *
@@ -158,7 +162,9 @@ ARYDEL DATA ARRYWS,ARYDEL+4
 ARYADR DATA ARRYWS,ARYADR+4
        BL   @ADRSIZ
        MOV  @2(13),R8
-       BL   @ADDRES
+       SLA  R8,0
+       A    R10,R8
+       C    *R8+,*R8+
        MOV  R8,@2(13)
        RTWP
 
@@ -177,20 +183,6 @@ ADRSIZ
        MOV  R10,R9
        INCT R9
        MOV  *R9,R0
-       RT
-
-*
-* Get Address of index in R8
-*
-* Input:
-*  R0 - exponent for item size
-*  R8 - index of item
-*  R10 - address of array
-* Output:
-*  R8 - item address
-ADDRES SLA  R8,0
-       A    R10,R8
-       C    *R8+,*R8+
        RT
 
 *
@@ -265,20 +257,22 @@ CPYBCK
 * R0 must have memory size of item
        MOV  R9,R0
 * Get address of insertion index
-       MOV  @2(13),R8
-       BL   @ADDRES
-       MOV  R8,R1
+       MOV  @2(13),R1
+       SLA  R1,0
+       A    R10,R1
+       C    *R1+,*R1+
 * Get address immediately following the
 * end of the array.
-       MOV  *R10,R8
-       BL   @ADDRES
-       MOV  R8,R3
+       MOV  *R10,R3
+       SLA  R3,0
+       A    R10,R3
+       C    *R3+,*R3+
 * Get address of last item in array
-       MOV  R9,R0
-       LI   R4,1
-       SLA  R4,0
-       MOV  R3,R2
-       S    R4,R2
+       MOV  *R10,R2
+       DEC  R2
+       SLA  R2,0
+       A    R10,R2
+       C    *R2+,*R2+
 * Copy each word until we reach the
 * address of insertion.
 CPYBK1 MOV  *R2,*R3
