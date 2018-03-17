@@ -142,6 +142,11 @@ TST1   LI   R2,1
 * Delete 1
        LI   R1,4
        BLWP @ARYDEL
+*
+* Check Results
+*
+* ASCII of number 1
+       LI   R8,>3100
 * Check an address
        CLR  R1
        BLWP @ARYADR
@@ -157,17 +162,31 @@ TST1   LI   R2,1
        C    R1,R2
        JNE  ERR1A
 * Check array contents
-       LI   R2,COMPM+3
-       LI   R3,>31
-       MOVB R3,*R2
-*
        LI   R9,EXP1
        MOV  R0,R10
        B    @COMPAR
 *
 * COMPAR ends with RT
 
-ERR1A  MOV  R1,R3
+ERR1A  B    @ADRERR
+
+EXP1   DATA 10
+       DATA 7,2,3,5,6,8,9,12,10,11
+
+
+*
+* Report address error
+*
+* R8 - byte 0 contains ascii code for
+*      test number
+* R1 - Array address
+* R2 - Expected Item Address
+* R3 - Actual Item Address
+* 
+ADRERR
+       MOVB R8,@ERR1Q
+*
+       MOV  R1,R3
 *
        LI   R1,ERR1N-5
        BLWP @MAKETX
@@ -183,22 +202,29 @@ ERR1A  MOV  R1,R3
        LI   R0,ERR1M
        LI   R1,ERR1P-ERR1M
        BLWP @PRINTL
-	   RT
+       RT
 
-EXP1   DATA 2
-       DATA 7,2,3,5,6,8,9,12,10,11
-
-ERR1M  TEXT 'Wrong address of index. '
+ERR1M  TEXT 'TST : Wrong address of index. '
        TEXT 'Array Address: .... '
 ERR1N  TEXT 'Expected Item Address: .... '
 ERR1O  TEXT 'Actual Item Address: ....'
 ERR1P  EVEN
+ERR1Q  EQU  ERR1M+3
+
 
 *
+* R8 - byte 0 contains ascii code for
+*      test number
 * R9 - address of expected contents
 * R10 - address of actual contents
 *
 COMPAR
+*
+       MOVB R8,@COMPO
+*
+       MOV  R10,R0
+       LI   R1,COMPN-5
+       BLWP @MAKETX
 * Place ending address in R2
        MOV  *R9,R2
        INC  R2
@@ -217,8 +243,11 @@ COMP2  LI   R0,COMPM
        BLWP @PRINTL
        RT
 
-COMPM  TEXT 'TST : WRONG ARRAY CONTENTS'
+COMPM  TEXT 'TST : Wrong array contents. '
+       TEXT 'Array Address: .... '
 COMPN  EVEN
+COMPO  EQU  COMPM+3
+
 
 SPACE  BSS  >2000
 SPAEND

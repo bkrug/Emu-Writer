@@ -154,9 +154,8 @@ ARYDEL DATA ARRYWS,ARYDEL+4
 * Output:
 * R1 - address of item
 ARYADR DATA ARRYWS,ARYADR+4
-       MOV  *R13,R10
-       MOV  @2(13),R8
        BL   @ADRSIZ
+       MOV  @2(13),R8
        BL   @ADDRES
        MOV  R7,@2(13)
        RTWP
@@ -167,37 +166,34 @@ ARYADR DATA ARRYWS,ARYADR+4
 *
 * Output:
 *  R0 - exponent for item size
-*  R9 - exponent for item size
+*  R2 - (changed)
 *  R10 - address of array
 ADRSIZ
 * First get address of array
        MOV  *R13,R10
 * Get memory size of array item
-       COC  @BLKUSE,R1
+	   MOV  *R10,R2
+       COC  @BLKUSE,2
        JEQ  ADD1
 * Item size is 2^1
        LI   R0,1
-       JMP  ADD2
+       RT
 * Get item size from byte 2 & 3
-ADD1   SZC  @BLKUSE,R2
-       MOV  R10,R9
+ADD1   MOV  R10,R9
        INCT R9
        MOV  *R9,R0
-* Continue to store item size in R9
-ADD2   MOV  R0,R9
        RT
 
 *
 * Get Address of index in R8
 *
 * Input:
+*  R0 - exponent for item size
 *  R8 - index of item
-*  R9 - exponent for item size
 *  R10 - address of array
 * Output:
 *  R7 - item address
 ADDRES MOV  R8,R7
-       MOV  R9,R0
        INC  R7
        SLA  R7,0
        A    R10,R7
@@ -209,11 +205,13 @@ ADDRES MOV  R8,R7
 *
 * Input:
 *  R0 - exponent for item size
-*  R9 - exponent for item size
 *  R10 - address of array
 * Output:
 *  R0, R1, R2, R3
+*  R9 - exponent for item size
 REALC
+* Continue to store item size in R9
+       MOV  R0,R9
 *
 * Get potential size of array after add.
 * Put in R2
@@ -267,6 +265,7 @@ CPYBCK
 * Get insertion index
        MOV  @2(13),R8
 * Get address of insertion index
+       MOV  R9,R0
        BL   @ADDRES
        MOV  R7,R1
 * Get address immediately following the
