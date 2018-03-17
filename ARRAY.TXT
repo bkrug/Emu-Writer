@@ -8,15 +8,24 @@
 * the array size if it is half empty
 
 *
+* Array format:
+*   Word 0: number of items in array
+*   Word 1: exponent representing size
+*           of each item in the array
+*          (1 for 2 bytes,
+*           2 for 4 bytes,
+*           3 for 8 bytes, etc.)
+*   Rest of the memory is a list of
+*   items in the array.
+*
+
+*
 * Allocate space for an array.
 * Initially there will be space for
 * 8 items.
 *
 * Input:
 * R0 - Size of each item
-*      (1 for 2 bytes,
-*       2 for 4 bytes,
-*       3 for 8 bytes, etc.)
 * Output:
 * R0 - address of array
 *      >FFFF indicates error
@@ -126,7 +135,7 @@ ARYDEL DATA ARRYWS,ARYDEL+4
        MOV  R8,R1
 * Get source to copy from.
        MOV  @2(13),R8
-	   DEC  R8
+       DEC  R8
        BL   @ADDRES
        MOV  R8,R0
 * Get length to copy
