@@ -1,0 +1,78 @@
+       DEF  ARYALC,ARYADD,ARYINS,ARYDEL
+       DEF  ARYADR
+       REF  BUFALC,BUFREE,BUFCPY
+       REF  ARRYWS
+
+*
+* Allocate space for an array.
+* Initially there will be space for
+* 8 items.
+*
+* Input:
+* R0 - Size of each item
+*      (1 for 2 bytes,
+*       2 for 4 bytes,
+*       3 for 8 bytes, etc.)
+* Output:
+* R0 - address of array
+*      >FFFF indicates error
+ARYALC DATA ARRYWS,ARYALC+4
+       
+       RTWP
+
+
+*
+* Insert element into the array.
+*
+* Input:
+* R0 - array address
+* Output:
+* R0 - address of array
+*      >FFFF indicates error
+* R1 - address of new item
+ARYADD DATA ARRYWS,ARYADD+4
+       
+       RTWP
+
+
+*
+* Insert element into the array.
+*
+* Input:
+* R0 - array address
+* R1 - index to insert at
+* Output:
+* R0 - address of array
+*      >FFFF indicates error
+* R1 - address of new item
+ARYINS DATA ARRYWS,ARYINS+4
+       
+       RTWP
+
+
+*
+* Remove element from the array.
+*
+* Input:
+* R0 - array address
+* R1 - index to delete at
+* Output:
+* R0 - address of array
+*      >FFFF indicates error
+ARYDEL DATA ARRYWS,ARYDEL+4
+       
+       RTWP
+
+
+*
+* Get index address
+*
+* Input:
+* R0 - array address
+* R1 - index of item
+* Output:
+* R1 - address of item
+ARYADR DATA ARRYWS,ARYADR+4
+       
+       RTWP
+       END
