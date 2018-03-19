@@ -4,6 +4,7 @@
        REF  WRAP,LINLST,FMTLST
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
+       REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  VMBW
 
 RUNTST BLWP @OPENF
@@ -123,25 +124,14 @@ EXPFMR DATA 0
 *   R8 - address of the source line list
 *        (like LIN0)
 INITLL
-* Get address of starting line list
-       LI   R8,STRLIN
-       A    R10,R8
-       A    R10,R8
-       MOV  *R8,R8
-* R8 now contains the address of 
-* initial line list.
-* Reserve space for line list in buffer.
-       MOV  *R8,R0
-       INC  R0
-       SLA  R0,1
-       BLWP @BUFALC
+* Reserve space for an array with items
+* of size 2 bytes.
+       LI   R0,1
+       BLWP @ARYALC
 * Copy starting line list to LINLST.
 * R0 holds the location that LINLST is
 * stored at.
        MOV  R0,@LINLST
-* Copy number of lines to Line List.
-       MOV  *R8,*R0
-*
        RT
 
 *
@@ -156,25 +146,26 @@ INITLL
 *
 * Input:
 *   R0 - Address of Line List
-*   R8 - Address of Source Line List
-*        (Like LINL0)
 * Output:
 *   R8,R9,R1,R0,R2,R3
 CPYLIN
-* Store Address of new Line List in R9.
-       MOV  R0,R9
+* Get address of starting line list
+*        (Like LINL0)
+       LI   R8,STRLIN
+       A    R10,R8
+       A    R10,R8
+       MOV  *R8,R8
 * Store number of lines to copy in R3.
        MOV  *R8,R3
-CPYL2 
-* R8 and R9 hold address of the address
+* R8 holds address of the address
 * the lines of text
-       INCT R8
-       INCT R9
+       C    *R8+,*R8+
 * R0 will contain address of line to
 * copy.
-       MOV  *R8,R0
+CPYL2
 * Change R0's value to number of bytes
 * to copy and allocate that much space.
+       MOV  *R8,R0
        MOVB *R0,R0
        SRL  R0,8
        INC  R0
@@ -187,7 +178,13 @@ CPYL2
        BLWP @BUFCPY
 * Put the new string address in the
 * line list.
-       MOV  R1,*R9
+       MOV  R1,R9
+       MOV  @LINLST,R0
+       BLWP @ARYADD
+       MOV  R0,@LINLST
+       MOV  R9,*R1
+*
+       INCT R8
 * If there are more lines, loop.
        DEC  R3
        JH   CPYL2
@@ -490,7 +487,7 @@ TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  LIN5  '
 TSTNME
 SIX    DATA 6
 
-LINL0  DATA 20
+LINL0  DATA 20,1
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D
@@ -499,7 +496,7 @@ LINL0  DATA 20
 LINL0E
 
 * Expected Line results
-LINE1  DATA 20
+LINE1  DATA 20,1
        DATA EXP1A,EXP1B,EXP1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D
@@ -507,7 +504,7 @@ LINE1  DATA 20
        DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE1E
 * Expected Line results
-LINE2  DATA 21
+LINE2  DATA 21,1
        DATA LIN1A,LIN1B,LIN1C
        DATA EXP2A,EXP2B,EXP2C,EXP2D
        DATA LIN3A,LIN3B,LIN3C,LIN3D
@@ -515,7 +512,7 @@ LINE2  DATA 21
        DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE2E
 * Expected Line results
-LINE3  DATA 20
+LINE3  DATA 20,1
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA EXP3A,EXP3B,EXP3C,EXP3D
@@ -523,7 +520,7 @@ LINE3  DATA 20
        DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE3E
 * Expected Line results
-LINE4  DATA 19
+LINE4  DATA 19,1
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D
@@ -531,7 +528,7 @@ LINE4  DATA 19
        DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
 LINE4E
 * Expected Line results
-LINE5  DATA 19
+LINE5  DATA 19,1
        DATA LIN1A,LIN1B,LIN1C
        DATA LIN2A,LIN2B,LIN2C
        DATA LIN3A,LIN3B,LIN3C,LIN3D

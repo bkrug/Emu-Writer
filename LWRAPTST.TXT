@@ -35,11 +35,14 @@ FILEN5 TEXT 'DSK2.VAR.O     '
 PDATA6 DATA >0004,PABBUF,>5000,>0000,>000C
 FILEN6 TEXT 'DSK2.CONST.O   '
        BSS  7
+PDATA7 DATA >0004,PABBUF,>5000,>0000,>000C
+FILEN7 TEXT 'DSK2.ARRAY.O   '
+       BSS  7
 PDATAE
 
 LDMSG  TEXT 'Loading WRAPTST.O, TESTUTIL.O,  '
-       TEXT 'WRAP.O, MEMBUF.O, VAR.O, CONST.O'
-       TEXT '                                '
+       TEXT 'WRAP.O, MEMBUF.O, VAR.O,        '
+       TEXT 'ARRAY.O, CONST.O                '
 LDMSGE
 
 LTEST  LI   R0,0
