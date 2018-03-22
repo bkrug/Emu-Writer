@@ -194,8 +194,7 @@ LPERR2
        BLWP @MAKETX
 *
        S    R6,R8
-       SRL  R6,1
-       MOV  R6,R0
+       MOV  R8,R0
        LI   R1,LPER2N
        BLWP @MAKETX
 *

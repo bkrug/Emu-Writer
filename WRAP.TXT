@@ -1,7 +1,7 @@
        DEF  WRAP
        REF  LINLST,FMTLST,MGNLST
        REF  BUFALC,BUFCPY,BUFREE
-       REF  ARYINS,ARYDEL
+       REF  ARYINS,ARYDEL,ARYADR
 * Workspace
        REF  WRAPSP
 * Constants
@@ -46,99 +46,23 @@ WRAP   DATA WRAPSP,WRAP+4
 *
 * Get index of starting line.
        MOV  *R13,@WRPLN
-*
-       CLR  @INSCNT
-* Get address in line list
+* Get address in paragraph list
        MOV  *R13,R0
-       SLA  R0,1
-       C    *R0+,*R0+         Add 4 to R0
-       A    @LINLST,R0
+       BLWP @ARYADR
        MOV  R0,@WRPLNR
 * Find Characters Per Line
        CLR  R2
        MOV  @LNWDTH,R3
        DIV  @CPI10,R2
        MOV  R2,@CPL
-* Unify a paragraph
-       BL   @UNIPAR
 *
-       MOV  @UNIADR,R10
-*
-WRAP2  BL   @FNDBRK
-       BL   @DELLIN
-       BL   @MAKLIN
-       INC  @WRPLN
-       INCT @WRPLNR
-       A    R2,R10
-       C    R10,@UNIEND
-       JL   WRAP2
-*
-       MOV  @UNIADR,R0
-       BLWP @BUFREE
-       BL   @ADJFMT
-       BL   @RMXTRA
+WRAP2
+*  BL   @FNDBRK
+*       INC  @WRPLN
+*       INCT @WRPLNR
+*       JL   WRAP2
 *
        RTWP
-
-*
-* Unify the remainder of a paragraph
-* into one line.
-*
-UNIPAR
-* Let R5 point to the address in the
-* line list that represents the line to
-* be wrapped.
-       MOV  @WRPLN,R5
-       SLA  R5,1
-       C    *R5+,*R5+
-       A    @LINLST,R5
-*
-       MOV  R5,R6
-* Let R0 hold the number of characters
-* in the paragraph.
-       CLR  R0
-*
-UNI1   MOV  *R5,R3
-* Accumulate the number of characters in
-* all of the lines in the paragraph.
-       MOVB *R3,R4
-       SRL  R4,8
-       A    R4,R0
-* Check if this is the last line in the
-* paragraph.
-       A    R3,R4
-       CB   *R4,@CR
-       JEQ  UNI2
-       CB   *R4,@LF
-       JEQ  UNI2
-*
-       INCT R5
-       JMP  UNI1
-* Allocate space for unified line.
-UNI2   MOV  R0,@UNIEND
-       BLWP @BUFALC
-       CI   R0,>FFFF
-       JNE  UNI2B
-       B    @WRPERR
-*
-UNI2B  MOV  R0,@UNIADR
-       A    R0,@UNIEND
-* Copy the lines to the unified line.
-       MOV  R0,R1
-UNI3   MOV  *R6,R0
-       MOVB *R0,R2
-       INC  R0
-       SRL  R2,8
-       BLWP @BUFCPY
-*
-       A    R2,R1
-*
-       INCT R6
-       C    R6,R5
-       JLE  UNI3
-*
-       MOV  R5,@FINLIN
-       RT
 
 *
 * Find Break
@@ -177,136 +101,7 @@ FND4   MOV  R2,R8
 FND5   MOV  @UNIEND,R8
        RT
 
-* 
-* Either replace a line from buffer
-* with a line just created
-* or insert a space in the line list
-* 
-DELLIN MOV  @WRPLNR,R5
-*
-       C    R5,@FINLIN
-       JLE  DELLN1
-* Reserve space for new line
-       MOV  @LINLST,R0
-       MOV  @WRPLN,R1
-       BLWP @ARYINS
-*
-       CI   R0,>FFFF
-       JEQ  WRPERR
-* Record new addresses.
-       MOV  R0,@LINLST
-       MOV  R1,@WRPLNR
-* Record the fact that we inserted a
-* line.
-       INC  @INSCNT
-*
-* Replace
-*
-DELLN1 MOV  *R5,R0
-       BLWP @BUFREE
-       RT
-
-*
-* Make a line
-*
-MAKLIN MOV  R8,R2
-       S    R10,R2
-*
-       MOV  R2,R0
-       INC  R0
-       BLWP @BUFALC
-       CI   R0,>FFFF
-       JEQ  WRPERR
-*
-       MOV  R2,R1
-       SLA  R1,8
-       MOVB R1,*R0+
-*
-       MOV  R0,R1
-       MOV  R10,R0
-       BLWP @BUFCPY
-* Save the line in line list.
-       DEC  R1
-       MOV  R1,*R5
-       RT
-
 WRPERR MOV  R0,*R13
        RTWP
 
-*
-* Adjust Format Lines
-*
-ADJFMT
-* Check if lines were inserted.
-       MOV  @INSCNT,R0
-       JNE  AJFMT3
-* Check if lines were deleted
-       MOV  @FINLIN,R0
-       INCT R0
-       MOV  @WRPLNR,R1
-       S    R1,R0
-       JGT  AJFMT2
-       RT
-* Wrap algorithm cause formats to move
-* up.
-AJFMT2 SRL  R0,1
-       NEG  R0
-* Wrap algorithm caused formats to move
-* down.
-AJFMT3 MOV  @WRPLN,R1
-       MOV  @FMTLST,R2
-       MOV  *R2,R3
-       SLA  R3,2
-       A    R2,R3
-* R2 Is the location of the format entry.
-* R3 already contains the location of the
-*    last format entry.
-* Increase R2 by 4
-AJFMT4 C    *R2+,*R2+
-       C    *R2,R1
-       JL   AJFMT5
-       A    R0,*R2
-AJFMT5 C    R2,R3
-       JL   AJFMT4
-       RT
-
-* 
-* Remove extra lines when text wrapped
-* up. For example, the wrapping changed
-* the paragraph from being 7 lines long
-* to only 5 lines long. We recorded over
-* 5 entries in the line list earlier,
-* and now we need to delete 2 entries.
-* 
-RMXTRA MOV  @LINLST,R4
-* Set R0 to the address withing the line
-* list that holds the address of the
-* first line in the next paragraph.
-       MOV  @FINLIN,R0
-       INCT R0
-* Set R1 to the address in the line list
-* following an address that we wrapped
-* into. If we need to remove anything
-* from the line list, this will be the
-* first line that needs to be removed.
-       MOV  @WRPLNR,R1
-* If R0 points to the same location as
-* R1, then there is nothing to delete.
-       C    R0,R1
-       JLE  XTRA2
-* Find the space in the line list
-* following the address in R0.
-XTRA1  MOV  *R4,R2
-       INC  R2
-       SLA  R2,1
-       C    *R2+,*R2+
-       A    R4,R2
-       S    R0,R2
-*
-       BLWP @BUFCPY
-* Decrease size of line list
-       S    R1,R0
-       SRL  R0,1
-       S    R0,*R4
-XTRA2  RT
        END
