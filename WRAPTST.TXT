@@ -60,163 +60,72 @@ INTMSE EVEN
 ****************************************
 
 TSTLP  MOV  R11,R12
-       LI   R8,EXPLIN
-       MOV  R8,@EXPLNR
-       LI   R8,EXPFMT
-       MOV  R8,@EXPFMR
-       LI   R8,WRPLN
-       MOV  R8,@WRPLNR
+*
+       LI   R0,LINL0
+       MOV  R0,@LINLST
+       LI   R0,FMT0
+       MOV  R0,@FMTLST
 * Use R10 to track which test this is
        CLR  R10
 * Loop through each test.
 TSTLP1
-* Initialize the Line List.
-       BL   @INITLL
-* Copy each line into the line list.
+* Copy each wrap list into the buffer.
        BL   @CPYLIN
-* Copy the format list for this test.
-       BL   @INTFMT
-* Setup wrap parameters.
-* Place index of line to wrap in R0.
-       MOV  @WRPLNR,R0
-       MOV  *R0,R0
 * Wrap TEXT
+       MOV  R10,R0
        BLWP @WRAP
+* Confirm routine did not report error.
        CI   R0,>FFFF
        JNE  TSTLP2
        B    @LPERR3
-* Test Line List and Format List.
+* Test Wrap List.
 TSTLP2 BL   @TSTLIN
-       BL   @TSTFMT
 * One test is complete.
 * Reinitialize memory buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
        BLWP @BUFINT
 * Run the next test
-       INCT @EXPLNR
-       INCT @EXPFMR
-       INCT @WRPLNR
        INC  R10
        C    R10,@TSTCNT
        JL   TSTLP1
 *
        B    *R12
 
-* Address within line list.
-WRPLNR DATA 0
-* Address within EXPLIN.
-EXPLNR DATA 0
-* Address within EXPFMT
-EXPFMR DATA 0
 
 *
-* Initialize Line List for the
-* current test.
-* Reserve space for the list and store
-* length of the list in first word.
-*
-* Input:
-*   R10 - Index of current test
-* Output:
-*   R0 - address of the line list within
-*        buffer
-*   R8 - address of the source line list
-*        (like LIN0)
-INITLL
-* Reserve space for an array with items
-* of size 2 bytes.
-       LI   R0,1
-       BLWP @ARYALC
-* Copy starting line list to LINLST.
-* R0 holds the location that LINLST is
-* stored at.
-       MOV  R0,@LINLST
-       RT
-
-*
-* Copy strings into buffer.
-* Each string starts with the number of
-* characters stored in the 1st byte.
-* The memory consumed is equal to that 
-* plus three.
+* Copy wrap list into buffer.
 *
 * Also, store the address of copied
-* strings in the line list.
+* wrap list in the line list.
 *
 * Input:
-*   R0 - Address of Line List
 * Output:
-*   R8,R9,R1,R0,R2,R3
-CPYLIN
-* Get address of starting line list
-*        (Like LINL0)
-       LI   R8,STRLIN
-       A    R10,R8
-       A    R10,R8
-       MOV  *R8,R8
-* Store number of lines to copy in R3.
+CPYLIN MOV  @LINLST,R8
+* Store number of lists to copy in R3.
        MOV  *R8,R3
-* R8 holds address of the address
-* the lines of text
+* Move R8 to address of next line
        C    *R8+,*R8+
-* R0 will contain address of line to
-* copy.
-CPYL2
-* Change R0's value to number of bytes
-* to copy and allocate that much space.
-       MOV  *R8,R0
-       MOVB *R0,R0
-       SRL  R0,8
-       INC  R0
+* Put address of address of line's 
+* wrap list in R7
+CPY1   MOV  *R8,R7
+       INCT R7
+* Put address of wrap list in R6
+       MOV  *R7,R6
+* Get byte size of Wrap List
+       MOV  *R6,R0
+       INCT R0
+       SLA  R0,1
        MOV  R0,R2
        BLWP @BUFALC
-* Copy the string. R2 still holds byte
-* size to copy.
+* Copy wrap list
        MOV  R0,R1
-       MOV  *R8,R0
+       MOV  R6,R0
        BLWP @BUFCPY
-* Put the new string address in the
-* line list.
-       MOV  R1,R9
-       MOV  @LINLST,R0
-       BLWP @ARYADD
-       MOV  R0,@LINLST
-       MOV  R9,*R1
 *
        INCT R8
-* If there are more lines, loop.
        DEC  R3
-       JH   CPYL2
-*
-       RT
-
-*
-* Initialize format list.
-*
-INTFMT
-* Get address of starting format list
-       LI   R8,STRFMT
-       A    R10,R8
-       A    R10,R8
-       MOV  *R8,R8
-* R8 now contains the address of 
-* initial format list.
-* Reserve space for format list in buffer.
-       MOV  *R8,R0
-       INC  R0
-       SLA  R0,2
-       MOV  R0,R2
-       BLWP @BUFALC
-* Copy starting line list to FMTLST.
-* R0 holds the location that FMTLST is
-* stored at.
-       MOV  R0,@FMTLST
-* Copy formats into buffer.
-       MOV  R0,R1
-       MOV  R8,R0
-       BLWP @BUFCPY
-*
+       JNE  CPY1
        RT
 
 *
@@ -226,67 +135,40 @@ INTFMT
 * line list.
 * Assign R9 the address of the actual
 * line list.
-TSTLIN MOV  @EXPLNR,R8
+TSTLIN 
+* Load address of actual wrap list into
+* R8
+       MOV  @LINLST,R8
+       C    *R8+,*R8+
+       A    R10,R8
+       A    R10,R8
        MOV  *R8,R8
-       MOV  @LINLST,R9
-* Confirm that the number of lines in
-* the list is correct.
-       C    *R8,*R9
-       JNE  LPERR1
-* R5 shall store number of lines.
-       MOV  *R8,R5
-* Now loop through each line.
-* R8 holds address of the address of the
-* expected line
-* R9 holds address of the address of the
-* actual line
-TSTLN2 INCT R8
-       INCT R9
-* Store position within the line
-* R6 and R7 hold the position within
-* each line.
-       MOV  *R8,R6
+       INCT R8
+       MOV  *R8,R8
+* Load address of expected wrap list in
+* R9
+       MOV  R10,R9
+       SLA  R9,1
+       AI   R9,EXPWRP
+       MOV  *R9,R9
+* Store number of items to test in R7
        MOV  *R9,R7
-* R4 shall store character length
-       MOVB *R6,R4
-       SRL  R4,8
-* Confirm that the line character length
-* is correct.
-       CB   *R6+,*R7+
+* Test length of wrap list array.
+       C    *R8+,*R9+
+       JNE  LPERR1
+* Don't bother testing array bytes 2&3
+       C    *R8+,*R9+
+* Use R6 to derive index of failure
+       MOV  R8,R6
+* Test list contents
+TSTLN1 C    *R8+,*R9+
        JNE  LPERR2
-* Confirm string contents are correct.
-TSTLN3 CB   *R6+,*R7+
-       JNE  LPERR4
-       DEC  R4
-       JH   TSTLN3
-* See if we should check another line
-       DEC  R5
-       JH   TSTLN2
+       DEC  R7
+       JNE  TSTLN1
        RT
 
-*
-* Test format list
-*
-TSTFMT
-* Confirm format contents are correct.
-       MOV  @EXPFMR,R8
-       MOV  *R8,R8
-       MOV  @FMTLST,R9
-*
-       C    *R8,*R9
-       JNE  LPERR5
-*
-       MOV  *R8,R4
-       SLA  R4,2
-TSTFM1 CB   *R8+,*R9+
-       JNE  TSTFE1
-       DEC  R4
-       JH   TSTFM1
-       RT
-TSTFE1 B    @LPERR6
-
-* Test result contains wrong number of
-* lines.
+* Wrap List contains the wrong number of
+* entries
 LPERR1
        LI   R1,LPER1M+5
        BL   @WRTNAM
@@ -307,20 +189,18 @@ LPERR2
        LI   R1,LPER2M+5
        BL   @WRTNAM
 *
-       MOV  R9,R0
-       S    @LINLST,R0
-       SRL  R0,1
-       DEC  R0
+       MOV  *R8,R0
+       LI   R1,LPER2O
+       BLWP @MAKETX
+*
+       S    R6,R8
+       SRL  R6,1
+       MOV  R6,R0
        LI   R1,LPER2N
        BLWP @MAKETX
 *
-       MOV  *R7,R0
-       SRL  R0,8
-       LI   R1,LPER2N+11
-       BLWP @MAKETX
-*
        LI   R0,LPER2M
-       LI   R1,LPER2O-LPER2M
+       LI   R1,LPER2P-LPER2M
        BLWP @PRINTL
 *
        B    *R12
@@ -335,117 +215,21 @@ LPERR3
 *
        B    *R12
 
-*
-* Test line contents don't match
-LPERR4 
-* Copy test name.
-       LI   R1,LPER4M+5
-       BL   @WRTNAM
-* Record line index
-       MOV  R9,R0
-       S    @LINLST,R0
-       SRL  R0,1
-       DEC  R0
-       LI   R1,LPER4N
-       BLWP @MAKETX
-* Copy expected text
-       LI   R1,LPER4O
-       MOV  *R8,R0
-       MOVB *R0,R2
-       INC  R0
-       SRL  R2,8
-       CI   R2,60
-       JL   LPER4A
-       LI   R2,60
-LPER4A BLWP @BUFCPY
-* Copy "|-- Actual:" into message
-       LI   R0,LPER4Q
-       A    R2,R1
-       LI   R2,LPER4R-LPER4Q
-       BLWP @BUFCPY
-* Copy actual text
-       A    R2,R1
-       MOV  *R9,R0
-       MOVB *R0,R2
-       INC  R0
-       SRL  R2,8
-       CI   R2,60
-       JL   LPER4B
-       LI   R2,60
-LPER4B BLWP @BUFCPY
-* Copy "|--" into message.
-       LI   R0,LPER4Q
-       A    R2,R1
-       LI   R2,3
-       BLWP @BUFCPY
-* Output error message.
-       LI   R0,LPER4M
-       LI   R1,LPER4Q-LPER4M
-       BLWP @PRINTL
-*
-       B    *R12
-
-LPERR5
-       LI   R1,LPER5M+5
-       BL   @WRTNAM
-*
-       MOV  *R9,R0
-       LI   R1,LPER5N-4
-       BLWP @MAKETX
-*
-       LI   R0,LPER5M
-       LI   R1,LPER5N-LPER5M
-       BLWP @PRINTL
-*
-       B    *R12
-
-LPERR6
-       LI   R1,LPER6M+5
-       BL   @WRTNAM
-*
-       LI   R0,LPER6M
-       LI   R1,LPER6N-LPER6M
-       BLWP @PRINTL
-*
-       B    *R12
-
 LPER1M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of lines. We see '
-       TEXT '....'
+       TEXT 'number of entries in the '
+       TEXT 'wrap list. We see ....'
 LPER1N EVEN
 
-LPER2M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of characters in '
-       TEXT 'line '
-LPER2N TEXT '.... found .... characters'
-LPER2O EVEN
+LPER2M TEXT 'Test ...... failed. Wrap '
+       TEXT 'list contents were wrong. '
+       TEXT 'See index '
+LPER2N TEXT '..... We see the value '
+LPER2O TEXT '..... there.'
+LPER2P EVEN
 
 LPER3M TEXT 'Test ...... failed. WRAP '
        TEXT 'could not allocate space.'
 LPER3N EVEN
-
-LPER4M TEXT 'Test ...... failed. '
-       TEXT 'Contents of line '
-LPER4N TEXT '.... were wrong. Expected:'
-LPER4O TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '                    '
-       TEXT '           '
-LPER4P EVEN
-LPER4Q TEXT '|-- Actual:'
-LPER4R EVEN
-
-LPER5M TEXT 'Text ...... failed. Wrong '
-       TEXT 'number of formats. We see '
-       TEXT '....'
-LPER5N EVEN
-
-LPER6M TEXT 'Test ...... failed. Wrong '
-       TEXT 'format list contents.'
-LPER6N EVEN
 
 WRTNAM
 * Copy test name.
@@ -468,81 +252,31 @@ SPCEND
 
 *Number of tests to run
 TSTCNT DATA 5
-*Lines to wrap from
-WRPLN  DATA 0,3,6,10,15
-*Original Line Lists
-STRLIN DATA LINL0,LINL0,LINL0,LINL0,LINL0
-STRLNE
-*Expected Line Lists
-EXPLIN DATA LINE1,LINE2,LINE3,LINE4,LINE5
-EXPLNE
-*Original Format Lists
-STRFMT DATA FMT0,FMT0,FMT0,FMT0,FMT0
-STRFME
-*Expected Format Lists
-EXPFMT DATA FMT0,FMTE2,FMT0,FMTE4,FMT0
-EXPFME
+SIX    DATA 6
+
+*Expected Wrap Lists
+EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4,WRPE5
+EXPWRE
+
 *Test names
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  LIN5  '
 TSTNME
-SIX    DATA 6
 
-LINL0  DATA 20,1
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-       DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
+
+*Line List
+LINL0  DATA 5,1
+       DATA LIN1A
+       DATA LIN2A
+       DATA LIN3A
+       DATA LIN4A
+       DATA LIN5A
 LINL0E
-
-* Expected Line results
-LINE1  DATA 20,1
-       DATA EXP1A,EXP1B,EXP1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-       DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
-LINE1E
-* Expected Line results
-LINE2  DATA 21,1
-       DATA LIN1A,LIN1B,LIN1C
-       DATA EXP2A,EXP2B,EXP2C,EXP2D
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-       DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
-LINE2E
-* Expected Line results
-LINE3  DATA 20,1
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA EXP3A,EXP3B,EXP3C,EXP3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-       DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
-LINE3E
-* Expected Line results
-LINE4  DATA 19,1
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA EXP4A,EXP4B,EXP4C,EXP4D
-       DATA LIN5A,LIN5B,LIN5C,LIN5D,LIN5E
-LINE4E
-* Expected Line results
-LINE5  DATA 19,1
-       DATA LIN1A,LIN1B,LIN1C
-       DATA LIN2A,LIN2B,LIN2C
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN4A,LIN4B,LIN4C,LIN4D,LIN4E
-       DATA EXP5A,EXP5B,EXP5C,EXP5D
-LINE5E
 
 *
 * Data Format:
-* Byte 0: Number of characters in the
-*         string.
-* Byte 1&2: Length of text in format:
-*           n/120 inches.
-* Byte >=3: The string
+* Byte 0&1: Length of string (paragraph)
+* Byte 2&3: Address of Wrap List
+* Byte >=4: The string
 *
 * At 10 CPI bytes 1&2 will normally be
 * equal to either (byte0 - 1)*12 or
@@ -559,33 +293,16 @@ LINE5E
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN1A  BYTE 47
-*       DATA 552
+LIN1A  DATA 47+41+8
+       DATA WRPL1
        TEXT 'Wuhan is the capital of Hubei province, '
        TEXT 'China, '
-       EVEN
-LIN1B  BYTE 41
-*       DATA 480
        TEXT 'and is the most populous city in Central '
-       EVEN
-LIN1C  BYTE 8
-*       DATA 72
        TEXT 'China.'
        BYTE 13,10
        EVEN
-EXP1A  BYTE 40
-*       DATA 468
-       TEXT 'Wuhan is the capital of Hubei province, '
-       EVEN
-EXP1B  BYTE 40
-*       DATA 468
-       TEXT 'China, and is the most populous city in '
-       EVEN
-EXP1C  BYTE 16
-*       DATA 168
-       TEXT 'Central China.'
-       BYTE 13,10
-       EVEN
+WRPL1  DATA 2,1,47,47+41
+WRPE1  DATA 2,1,40,40+40
 
 *
 * The entire paragraph will be
@@ -596,37 +313,17 @@ EXP1C  BYTE 16
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN2A  BYTE 60
-*       DATA 708
+LIN2A  DATA 60+41+32
+       DATA WRPL2
        TEXT 'It lies in the eastern Jianghan Plain '
        TEXT 'on the middle reaches '
-       EVEN
-LIN2B  BYTE 41
-*       DATA 480
        TEXT 'of the Yangtze River at the intersection '
-       EVEN
-LIN2C  BYTE 32
-*       DATA 504
        TEXT 'of the Yangtze and Han rivers.'
        BYTE 13,10
        EVEN
-EXP2A  BYTE 41
-*       DATA 444
-       TEXT 'It lies in the eastern Jianghan Plain on '
-       EVEN
-EXP2B  BYTE 40
-*       DATA 432
-       TEXT 'the middle reaches of the Yangtze River '
-       EVEN
-EXP2C  BYTE 39
-*       DATA 384
-       TEXT 'at the intersection of the Yangtze and '
-       EVEN
-EXP2D  BYTE 13
-*       DATA 300
-       TEXT 'Han rivers.'
-       BYTE 13,10
-       EVEN
+WRPL2  DATA 2,1,60,60+41
+WRPE2  DATA 3,1,41,41+40,41+40+39
+
 
 *
 * The entire paragraph will be
@@ -636,40 +333,16 @@ EXP2D  BYTE 13
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN3A  BYTE 19
-*       DATA 216
+LIN3A  BYTE 19+32+39+34
+       DATA WRPL3
        TEXT 'Arising out of the '
-       EVEN
-LIN3B  BYTE 32
-*       DATA 372
        TEXT 'conglomeration of three cities, '
-       EVEN
-LIN3C  BYTE 39
-*       DATA 456
        TEXT 'Wuchang, Hankou, and Hanyang, Wuhan is '
-       EVEN
-LIN3D  BYTE 34
-*       DATA 384
        TEXT 'known as "China"s Thoroughfare".'
        BYTE 13,10
        EVEN
-EXP3A  BYTE 37
-*       DATA 432
-       TEXT 'Arising out of the conglomeration of '
-       EVEN
-EXP3B  BYTE 35
-*       DATA 408
-       TEXT 'three cities, Wuchang, Hankou, and '
-       EVEN
-EXP3C  BYTE 36
-*       DATA 420
-       TEXT 'Hanyang, Wuhan is known as "China"s '
-       EVEN
-EXP3D  BYTE 16
-*       DATA 168
-       TEXT 'Thoroughfare".'
-       BYTE 13,10
-       EVEN
+WRPL3  DATA 3,1,19,19+32,19+32+39
+WRPE3  DATA 3,1,37,37+35,37+35+36
 
 *
 * The entire paragraph will be
@@ -680,99 +353,42 @@ EXP3D  BYTE 16
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN4A  BYTE 29
-*       DATA 336
+LIN4A  DATA 29+36+36+35+9
+       DATA WRPL4
        TEXT 'It is a major transportation '
-       EVEN
-LIN4B  BYTE 36
-*       DATA 420
        TEXT 'hub, with dozens of railways, roads '
-       EVEN
-LIN4C  BYTE 36
-*       DATA 420
        TEXT 'and expressways passing through the '
-       EVEN
-LIN4D  BYTE 35
-*       DATA 408
        TEXT 'city and connecting to other major '
-       EVEN
-LIN4E  BYTE 9
-*       DATA 84
        TEXT 'cities.'
        BYTE 13,10
        EVEN
-EXP4A  BYTE 39
-*       DATA 456
-       TEXT 'It is a major transportation hub, with '
-       EVEN
-EXP4B  BYTE 30
-*       DATA 468
-       TEXT 'dozens of railways, roads and '
-       EVEN
-EXP4C  BYTE 41
-*       DATA 432
-       TEXT 'expressways passing through the city and '
-       EVEN
-EXP4D  BYTE 35
-*       DATA 444
-       TEXT 'connecting to other major cities.'
-       BYTE 13,10
-       EVEN
+WRPL4  DATA 4,1,29,29+36,29+36+36,29+36+36+35
+WRPE4  DATA 3,1,39,39+30,39+30+41
 
 *
 * Doesn't test much itself, but it has
 * some formatting attached to it.
 *
-LIN5A  BYTE 36
+LIN5A  DATA 36+44+11+11+28
+       DATA WRPL5
        TEXT 'Because of its key role in domestic '
-       EVEN
-LIN5B  BYTE 44
        TEXT 'transportation, Wuhan is sometimes referred '
-       EVEN
-LIN5C  BYTE 11
        TEXT 'to as "the '
-       EVEN
-LIN5D  BYTE 11
        TEXT 'Chicago of '
-       EVEN
-LIN5E  BYTE 28
        TEXT 'China" by foreign sources.'
        BYTE 13,10
        EVEN
-EXP5A  BYTE 36
-       TEXT 'Because of its key role in domestic '
-       EVEN
-EXP5B  BYTE 35
-       TEXT 'transportation, Wuhan is sometimes '
-       EVEN
-EXP5C  BYTE 41
-       TEXT 'referred to as "the Chicago of China" by '
-       EVEN
-EXP5D  BYTE 18
-       TEXT 'foreign sources.'
-       BYTE 13,10
-       EVEN
+WRPL5  DATA 4,1,36,36+44,36+44+11,36+44+11+11
+WRPE5  DATA 3,1,36,36+35,36+35+41
+
 
 FMT0   DATA 2,0
 * Bold
-       DATA 17
+       DATA 4
        BYTE 3,>84
-       DATA 17
+       DATA 4
        BYTE 5,>04
-
-FMTE2  DATA 2,0
-* Bold
-       DATA 18
-       BYTE 3,>84
-       DATA 18
-       BYTE 5,>04
-
-FMTE4  DATA 2,0
-* Bold
-       DATA 16
-       BYTE 3,>84
-       DATA 16
-       BYTE 5,>04
+FMT0E
 
 HEXLIN BSS  >20
 *
