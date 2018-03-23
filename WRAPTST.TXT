@@ -67,10 +67,10 @@ TSTLP  MOV  R11,R12
        MOV  R0,@FMTLST
 * Use R10 to track which test this is
        CLR  R10
-* Loop through each test.
-TSTLP1
 * Copy each wrap list into the buffer.
        BL   @CPYLIN
+* Loop through each test.
+TSTLP1
 * Wrap TEXT
        MOV  R10,R0
        BLWP @WRAP
@@ -82,16 +82,12 @@ TSTLP1
 TSTLP2
        BL   @TSTLIN
 * One test is complete.
-* Reinitialize memory buffer.
-       LI   R0,SPACE
-       LI   R1,SPCEND-SPACE
-       BLWP @BUFINT
 * Run the next test
        INC  R10
        C    R10,@TSTCNT
        JL   TSTLP1
 *
-TSTLP3 B    *R12
+       B    *R12
 
 
 *
@@ -328,7 +324,7 @@ WRPE2  DATA 3,1,41,41+40,41+40+39
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN3A  BYTE 19+32+39+34
+LIN3A  DATA 19+32+39+34
        DATA WRPL3
        TEXT 'Arising out of the conglomeration of '
        TEXT 'three cities, Wuchang, Hankou, and '
