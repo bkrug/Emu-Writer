@@ -79,7 +79,8 @@ TSTLP1
        JNE  TSTLP2
        B    @LPERR3
 * Test Wrap List.
-TSTLP2 BL   @TSTLIN
+TSTLP2
+       BL   @TSTLIN
 * One test is complete.
 * Reinitialize memory buffer.
        LI   R0,SPACE
@@ -90,7 +91,7 @@ TSTLP2 BL   @TSTLIN
        C    R10,@TSTCNT
        JL   TSTLP1
 *
-       B    *R12
+TSTLP3 B    *R12
 
 
 *
@@ -129,12 +130,8 @@ CPY1   MOV  *R8,R7
        RT
 
 *
-* Test Line List results
+* Test Wrap List results
 *
-* Assign R8 the address of the expected
-* line list.
-* Assign R9 the address of the actual
-* line list.
 TSTLIN 
 * Load address of actual wrap list into
 * R8
@@ -173,8 +170,8 @@ LPERR1
        LI   R1,LPER1M+5
        BL   @WRTNAM
 *
-       MOV  @LINLST,R0
-       MOV  *R0,R0
+       DECT R8
+       MOV  *R8,R0
        LI   R1,LPER1N-4
        BLWP @MAKETX
 *
@@ -204,7 +201,7 @@ LPERR2
 *
        B    *R12
 
-LPERR3
+LPERR3 
        LI   R1,LPER3M+5
        BL   @WRTNAM
 *
@@ -216,14 +213,14 @@ LPERR3
 
 LPER1M TEXT 'Test ...... failed. Wrong '
        TEXT 'number of entries in the '
-       TEXT 'wrap list. We see ....'
+       TEXT 'wrap list.  We see ....'
 LPER1N EVEN
 
 LPER2M TEXT 'Test ...... failed. Wrap '
        TEXT 'list contents were wrong. '
        TEXT 'See index '
 LPER2N TEXT '..... We see the value '
-LPER2O TEXT '..... there.'
+LPER2O TEXT '.... there.'
 LPER2P EVEN
 
 LPER3M TEXT 'Test ...... failed. WRAP '
@@ -295,9 +292,8 @@ LINL0E
 LIN1A  DATA 47+41+8
        DATA WRPL1
        TEXT 'Wuhan is the capital of Hubei province, '
-       TEXT 'China, '
-       TEXT 'and is the most populous city in Central '
-       TEXT 'China.'
+       TEXT 'China, and is the most populous city in '
+       TEXT 'Central China.'
        BYTE 13,10
        EVEN
 WRPL1  DATA 2,1,47,47+41
@@ -314,10 +310,10 @@ WRPE1  DATA 2,1,40,40+40
 * 10 CPI
 LIN2A  DATA 60+41+32
        DATA WRPL2
-       TEXT 'It lies in the eastern Jianghan Plain '
-       TEXT 'on the middle reaches '
-       TEXT 'of the Yangtze River at the intersection '
-       TEXT 'of the Yangtze and Han rivers.'
+       TEXT 'It lies in the eastern Jianghan Plain on '
+	   TEXT 'the middle reaches of the Yangtze River '
+	   TEXT 'at the intersection of the Yangtze and '
+	   TEXT 'Han rivers.'
        BYTE 13,10
        EVEN
 WRPL2  DATA 2,1,60,60+41
@@ -334,10 +330,10 @@ WRPE2  DATA 3,1,41,41+40,41+40+39
 * 10 CPI
 LIN3A  BYTE 19+32+39+34
        DATA WRPL3
-       TEXT 'Arising out of the '
-       TEXT 'conglomeration of three cities, '
-       TEXT 'Wuchang, Hankou, and Hanyang, Wuhan is '
-       TEXT 'known as "China"s Thoroughfare".'
+       TEXT 'Arising out of the conglomeration of '
+       TEXT 'three cities, Wuchang, Hankou, and '
+       TEXT 'Hanyang, Wuhan is known as "China"s '
+       TEXT 'Thoroughfare".'
        BYTE 13,10
        EVEN
 WRPL3  DATA 3,1,19,19+32,19+32+39

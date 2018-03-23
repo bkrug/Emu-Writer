@@ -1,33 +1,12 @@
        DEF  WRAP
+*
        REF  LINLST,FMTLST,MGNLST
        REF  BUFALC,BUFCPY,BUFREE
-       REF  ARYINS,ARYDEL,ARYADR
+       REF  ARYALC,ARYADD,ARYADR
 * Workspace
        REF  WRAPSP
 * Constants
-       REF  SPACE,DASH,LF,CR,BLKUSE
-* Variables
-*
-       REF  CPL
-* Index within Line List of line being
-* wrapped
-       REF  WRPLN
-* Same as WRPLN accept that WRPLNR
-* stores an address in the line list.
-* The word at WRPLNR's address is in
-* turn the address of a line.
-       REF  WRPLNR
-* Address of unified line.
-       REF  UNIADR
-* Size
-       REF  UNIEND
-* Last address within the line list that
-* points to this same paragraph.
-* Therefore, also the last entry that
-* can be copied over.
-       REF  FINLIN
-* Count the number of new lines inserted
-       REF  INSCNT
+       REF  SPACE,DASH
 
 * Maximum width of a 4 inch line
 LNWDTH DATA 120*4
@@ -42,64 +21,98 @@ CPI10  DATA 12
 * R0 - Line index. Wrap from here.
 * Output:
 * R0 - >FFFF implies an error.
+*
 WRAP   DATA WRAPSP,WRAP+4
 *
-* Get index of starting line.
-       MOV  *R13,@WRPLN
-* Get address in paragraph list
-       MOV  *R13,R0
-       BLWP @ARYADR
-       MOV  R0,@WRPLNR
-* Find Characters Per Line
+* Let R2 hold character length of each
+*    line.
+* Let R3 hold address of beginning of a
+*    line within the paragraph.
+* Let R4 hold address of beginning of
+*    the following line
+* Let R5 hold begining of paragraph text
+* Let R6 hold address of new wrap list.
+* Let R7 hold the address past the end
+*    of the paragraph.
+*
+* characters per line
        CLR  R2
        MOV  @LNWDTH,R3
        DIV  @CPI10,R2
-       MOV  R2,@CPL
-*
-WRAP2
-*  BL   @FNDBRK
-*       INC  @WRPLN
-*       INCT @WRPLNR
-*       JL   WRAP2
-*
-       RTWP
+* address of paragraph text
+       MOV  @LINLST,R0
+       MOV  *R13,R1
+       BLWP @ARYADR
+       MOV  R1,R5
+       MOV  *R5,R5
+       MOV  *R5,R7               Put character length in R7
+       C    *R5+,*R5+            Skip paragraph header
+* address of begginng of line
+       MOV  R5,R3
+* address after end of paragraph
+       A    R5,R7
+* Create new wrap list and save address
+       LI   R0,1
+       BLWP @ARYALC
+       CI   R0,>FFFF
+       JEQ  WRPERR
+       MOV  R0,R6
+
 
 *
-* Find Break
+* Populate New Wrap List
 *
-FNDBRK
-* Point R2 to one line's width later
-* than position of R10
-       MOV  @CPL,R2
-       A    R10,R2
-* Is R2 past end of paragraph?
-       C    R2,@UNIEND
-       JHE  FND5
+       MOV  R3,R4
+WRP0   A    R2,R4
+* Is R4 past end of paragraph?
+       C    R4,R7
+       JHE  WRP5
 *
-       CB   *R2,@SPACE
-       JEQ  FND2
+       CB   *R4,@SPACE
+       JEQ  WRP2
 * Find last invisible character in early
 * line
-FND1   DEC  R2
-       CB   *R2,@SPACE
-       JEQ  FND3
-       CB   *R2,@DASH
-       JEQ  FND3
-       JMP  FND1
+WRP1   DEC  R4
+       CB   *R4,@SPACE
+       JEQ  WRP3
+       CB   *R4,@DASH
+       JEQ  WRP3
+       JMP  WRP1
 * Find first visible character in next
 * line
-FND2   INC  R2
-       CB   *R2,@SPACE
-       JEQ  FND2
-       JMP  FND4
-FND3   INC  R2
-* Save break address in R8
-FND4   MOV  R2,R8
-       RT
+WRP2   INC  R4
+       C    R4,R7
+       JHE  WRP5
+       CB   *R4,@SPACE
+       JEQ  WRP2
+       JMP  WRP4
+WRP3   INC  R4
+* Put address at end of wrap list
+WRP4   MOV  R6,R0
+       BLWP @ARYADD
+       CI   R0,>FFFF
+       JEQ  WRPERR
+       MOV  R4,*R1
+* Convert from address to string index
+       S    R5,*R1
+* Do next line in paragraph
+       MOV  R4,R3
+       JMP  WRP0
+* 
 * All remaining characters fit on one
 * line.
-FND5   MOV  @UNIEND,R8
-       RT
+WRP5
+
+
+* Deallocate old wrap list.
+       MOV  R5,R0
+       AI   R0,-4
+       BLWP @BUFREE
+* Register new wrap list with paragraph
+       MOV  R5,R0
+       AI   R0,-2
+       MOV  R6,*R0
+       RTWP
 
 WRPERR MOV  R0,*R13
        RTWP
