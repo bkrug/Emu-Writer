@@ -1,4 +1,4 @@
-       DEF  BLKUSE
+       DEF  BLKUSE,FMTLEN
        DEF  SPACE,DASH,LF,CR
 
 * Values in this file are constants that
@@ -9,6 +9,9 @@
 * indicates if the memory chunk is in
 * use or not.
 BLKUSE DATA >8000
+* Number of bytes in each entry of the
+* format list.
+FMTLEN DATA 8
 
 * ASCII codes
 SPACE  TEXT ' '

@@ -7,12 +7,11 @@
        REF  WRAPSP
 * Constants
        REF  SPACE,DASH
+* Variables
+       REF  FMTLEN,FMTEND
 
 * Maximum width of a 4 inch line
 LNWDTH DATA 120*4
-* Character Width in n/120-inch
-* 10 cpi
-CPI10  DATA 12
 
 *
 * Wrap
@@ -23,6 +22,46 @@ CPI10  DATA 12
 * R0 - >FFFF implies an error.
 *
 WRAP   DATA WRAPSP,WRAP+4
+*
+* Let R8 hold the the current char width
+* Let R9 hold the the next char change
+* Let FMTEND hold the address following
+*     the format list
+       MOV  @FMTLST,R9
+       MOV  *R9,R8
+       JEQ  FMT3
+       SLA  R8,3
+       C    *R9+,*R9+
+       A    R9,R8
+       MOV  R8,@FMTEND
+* Move backwards through format list
+* Find the entry for the begining of our
+* target paragraph, or the last entry
+* of a previous paragraph.
+FMT1   S    @FMTLEN,R8
+       C    R8,R9
+       JL   FMT4
+       C    *R8,*R13
+       JH   FMT1
+       JL   FMT2
+       MOV  @2(R8),@2(R8)
+       JNE  FMT1
+* We found current format
+FMT2   MOV  R8,R9
+       A    @FMTLEN,R9
+       AI   R8,6
+       MOV  *R8,R8
+       JMP  FMT5
+* The format list is empty
+FMT3   C    *R9+,*R9+
+       MOV  R9,@FMTEND
+       CLR  R9
+* There is no previous format
+FMT4   LI   R8,12
+* R8, R9, and FMTEND now have required values
+FMT5
+
+
 *
 * Let R2 hold character length of each
 *    line.
@@ -38,7 +77,7 @@ WRAP   DATA WRAPSP,WRAP+4
 * characters per line
        CLR  R2
        MOV  @LNWDTH,R3
-       DIV  @CPI10,R2
+       DIV  R8,R2
 * address of paragraph text
        MOV  @LINLST,R0
        MOV  *R13,R1

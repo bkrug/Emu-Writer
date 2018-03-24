@@ -277,8 +277,8 @@ LINL0  DATA 7,1
        DATA LIN3A
        DATA LIN4A
        DATA LIN5A
-	   DATA LIN6A
-	   DATA LIN7A
+       DATA LIN6A
+       DATA LIN7A
 LINL0E
 
 *
@@ -415,12 +415,12 @@ WRPE6  DATA 7,1
 LIN7A  DATA 36+47+45
        DATA WRPL6
        TEXT 'In 1927, Wuhan was '
-	   TEXT 'briefly the capital '
-	   TEXT 'of China under the '
-	   TEXT 'left wing of the '
-	   TEXT 'Kuomintang (KMT) '
-	   TEXT 'government led by '
-	   TEXT 'Wang Jingwei.'
+       TEXT 'briefly the capital '
+       TEXT 'of China under the '
+       TEXT 'left wing of the '
+       TEXT 'Kuomintang (KMT) '
+       TEXT 'government led by '
+       TEXT 'Wang Jingwei.'
        EVEN
 WRPL7  DATA 2,1,40,39
 WRPE7  DATA 6,1
@@ -432,7 +432,7 @@ WRPE7  DATA 6,1
        DATA 19+20+19+17+17+18
 
 
-FMT0   DATA 2,0
+FMT0   DATA 2,3
 * 12-Cpi at paragraph start
        DATA 4,0,0,10
 * 5-Cpi in middle of second line of 
