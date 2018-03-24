@@ -256,25 +256,29 @@ SPCEND
 ****************************************
 
 *Number of tests to run
-TSTCNT DATA 5
+TSTCNT DATA 7
 SIX    DATA 6
 
 *Expected Wrap Lists
-EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4,WRPE5
+EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4
+       DATA WRPE5,WRPE6,WRPE7
 EXPWRE
 
 *Test names
-TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  LIN5  '
+TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
+       TEXT 'LIN5  LIN6  LIN7  '
 TSTNME
 
 
 *Line List
-LINL0  DATA 5,1
+LINL0  DATA 7,1
        DATA LIN1A
        DATA LIN2A
        DATA LIN3A
        DATA LIN4A
        DATA LIN5A
+	   DATA LIN6A
+	   DATA LIN7A
 LINL0E
 
 *
@@ -366,27 +370,74 @@ WRPL4  DATA 4,1,29,29+36,29+36+36,29+36+36+35
 WRPE4  DATA 3,1,39,39+30,39+30+41
 
 *
-* Doesn't test much itself, but it has
-* some formatting attached to it.
-*
-LIN5A  DATA 36+44+11+11+26
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 12 CPI
+LIN5A  DATA 36+47+45
        DATA WRPL5
        TEXT 'Because of its key role in domestic '
        TEXT 'transportation, Wuhan is sometimes referred '
-       TEXT 'to as "the '
-       TEXT 'Chicago of '
-       TEXT 'China" by foreign sources.'
+       TEXT 'to '
+       TEXT 'as "the Chicago of China" by foreign sources.'
        EVEN
 WRPL5  DATA 4,1,36,36+44,36+44+11,36+44+11+11
-WRPE5  DATA 3,1,36,36+35,36+35+41
+WRPE5  DATA 2,1,36,36+47
+
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* more than one CPI
+LIN6A  DATA 36+47+45
+       DATA WRPL6
+       TEXT 'Holding sub-provincial status,[16] Wuhan is '
+       TEXT 'recognized as the political, '
+       TEXT 'economic, financial, '
+       TEXT 'cultural, '
+       TEXT 'educational and '
+       TEXT 'transportation '
+       TEXT 'center of central '
+       TEXT 'China.'
+       EVEN
+WRPL6  DATA 4,1,40,39,42,38
+WRPE6  DATA 7,1
+       DATA 44
+       DATA 44+29
+       DATA 44+29+21
+       DATA 44+29+21+10
+       DATA 44+29+21+10+16
+       DATA 44+29+21+10+16+15
+       DATA 44+29+21+10+16+15+18
+
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 5 CPI
+LIN7A  DATA 36+47+45
+       DATA WRPL6
+       TEXT 'In 1927, Wuhan was '
+	   TEXT 'briefly the capital '
+	   TEXT 'of China under the '
+	   TEXT 'left wing of the '
+	   TEXT 'Kuomintang (KMT) '
+	   TEXT 'government led by '
+	   TEXT 'Wang Jingwei.'
+       EVEN
+WRPL7  DATA 2,1,40,39
+WRPE7  DATA 6,1
+       DATA 19
+       DATA 19+20
+       DATA 19+20+19
+       DATA 19+20+19+17
+       DATA 19+20+19+17+17
+       DATA 19+20+19+17+17+18
 
 
 FMT0   DATA 2,0
-* Bold
-       DATA 4
-       BYTE 3,>84
-       DATA 4
-       BYTE 5,>04
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+* 5-Cpi in middle of second line of 
+* paragraph
+       DATA 5,64,0,24
 FMT0E
 
 HEXLIN BSS  >20
