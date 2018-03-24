@@ -68,7 +68,7 @@ TSTLP  MOV  R11,R12
 * Use R10 to track which test this is
        CLR  R10
 * Copy each wrap list into the buffer.
-       BL   @CPYLIN
+       BL   @CPYWRP
 * Loop through each test.
 TSTLP1
 * Wrap TEXT
@@ -95,7 +95,7 @@ TSTLP2
        C    R10,@TSTCNT
        JL   TSTLP1
 *
-TSTLP3 B    *R12
+       B    *R12
 
 PASSMG TEXT '. passed.'
        EVEN
@@ -104,16 +104,16 @@ PASSMG TEXT '. passed.'
 * Copy wrap list into buffer.
 *
 * Also, store the address of copied
-* wrap list in the line list.
+* wrap list in the paragraph list.
 *
 * Input:
 * Output:
-CPYLIN MOV  @LINLST,R8
+CPYWRP MOV  @LINLST,R8
 * Store number of lists to copy in R3.
        MOV  *R8,R3
-* Move R8 to address of next line
+* Move R8 to address of next paragraph
        C    *R8+,*R8+
-* Put address of address of line's 
+* Put address of address of paragraph's
 * wrap list in R7
 CPY1   MOV  *R8,R7
        INCT R7
@@ -129,6 +129,9 @@ CPY1   MOV  *R8,R7
        MOV  R0,R1
        MOV  R6,R0
        BLWP @BUFCPY
+* Store address of copied wrap list in
+* the paragraph header.
+       MOV  R1,*R7
 *
        INCT R8
        DEC  R3

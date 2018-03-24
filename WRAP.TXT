@@ -104,14 +104,14 @@ WRP4   MOV  R6,R0
 WRP5
 
 
+* Change R5 from paragraph text address
+* to pointer to paragraph's wrap list.
+       AI   R5,-2
 * Deallocate old wrap list.
-       MOV  R5,R0
-       AI   R0,-4
-*       BLWP @BUFREE
+       MOV  *R5,R0
+       BLWP @BUFREE
 * Register new wrap list with paragraph
-       MOV  R5,R0
-       AI   R0,-2
-       MOV  R6,*R0
+       MOV  R6,*R5
        RTWP
 
 WRPERR MOV  R0,*R13
