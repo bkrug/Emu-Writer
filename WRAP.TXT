@@ -1,7 +1,7 @@
        DEF  WRAP
 *
        REF  LINLST,FMTLST,MGNLST
-       REF  BUFALC,BUFCPY,BUFREE
+       REF  BUFREE
        REF  ARYALC,ARYADD,ARYADR
 * Workspace
        REF  WRAPSP
@@ -107,7 +107,7 @@ WRP5
 * Deallocate old wrap list.
        MOV  R5,R0
        AI   R0,-4
-       BLWP @BUFREE
+*       BLWP @BUFREE
 * Register new wrap list with paragraph
        MOV  R5,R0
        AI   R0,-2

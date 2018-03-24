@@ -81,14 +81,24 @@ TSTLP1
 * Test Wrap List.
 TSTLP2
        BL   @TSTLIN
+* Report which test this is
+       MOV  R10,R0
+       AI   R0,>30
+       SLA  R0,8
+       MOVB R0,@PASSMG
+       LI   R0,PASSMG
+       LI   R1,9
+       BLWP @PRINTL
 * One test is complete.
 * Run the next test
        INC  R10
        C    R10,@TSTCNT
        JL   TSTLP1
 *
-       B    *R12
+TSTLP3 B    *R12
 
+PASSMG TEXT '. passed.'
+       EVEN
 
 *
 * Copy wrap list into buffer.
@@ -285,12 +295,11 @@ LINL0E
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN1A  DATA 47+41+8
+LIN1A  DATA 47+41+6
        DATA WRPL1
        TEXT 'Wuhan is the capital of Hubei province, '
        TEXT 'China, and is the most populous city in '
        TEXT 'Central China.'
-       BYTE 13,10
        EVEN
 WRPL1  DATA 2,1,47,47+41
 WRPE1  DATA 2,1,40,40+40
@@ -304,13 +313,12 @@ WRPE1  DATA 2,1,40,40+40
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN2A  DATA 60+41+32
+LIN2A  DATA 60+41+30
        DATA WRPL2
        TEXT 'It lies in the eastern Jianghan Plain on '
-	   TEXT 'the middle reaches of the Yangtze River '
-	   TEXT 'at the intersection of the Yangtze and '
-	   TEXT 'Han rivers.'
-       BYTE 13,10
+       TEXT 'the middle reaches of the Yangtze River '
+       TEXT 'at the intersection of the Yangtze and '
+       TEXT 'Han rivers.'
        EVEN
 WRPL2  DATA 2,1,60,60+41
 WRPE2  DATA 3,1,41,41+40,41+40+39
@@ -324,13 +332,12 @@ WRPE2  DATA 3,1,41,41+40,41+40+39
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN3A  DATA 19+32+39+34
+LIN3A  DATA 19+32+39+32
        DATA WRPL3
        TEXT 'Arising out of the conglomeration of '
        TEXT 'three cities, Wuchang, Hankou, and '
        TEXT 'Hanyang, Wuhan is known as "China"s '
        TEXT 'Thoroughfare".'
-       BYTE 13,10
        EVEN
 WRPL3  DATA 3,1,19,19+32,19+32+39
 WRPE3  DATA 3,1,37,37+35,37+35+36
@@ -344,14 +351,13 @@ WRPE3  DATA 3,1,37,37+35,37+35+36
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN4A  DATA 29+36+36+35+9
+LIN4A  DATA 29+36+36+35+7
        DATA WRPL4
        TEXT 'It is a major transportation '
        TEXT 'hub, with dozens of railways, roads '
        TEXT 'and expressways passing through the '
        TEXT 'city and connecting to other major '
        TEXT 'cities.'
-       BYTE 13,10
        EVEN
 WRPL4  DATA 4,1,29,29+36,29+36+36,29+36+36+35
 WRPE4  DATA 3,1,39,39+30,39+30+41
@@ -360,14 +366,13 @@ WRPE4  DATA 3,1,39,39+30,39+30+41
 * Doesn't test much itself, but it has
 * some formatting attached to it.
 *
-LIN5A  DATA 36+44+11+11+28
+LIN5A  DATA 36+44+11+11+26
        DATA WRPL5
        TEXT 'Because of its key role in domestic '
        TEXT 'transportation, Wuhan is sometimes referred '
        TEXT 'to as "the '
        TEXT 'Chicago of '
        TEXT 'China" by foreign sources.'
-       BYTE 13,10
        EVEN
 WRPL5  DATA 4,1,36,36+44,36+44+11,36+44+11+11
 WRPE5  DATA 3,1,36,36+35,36+35+41
