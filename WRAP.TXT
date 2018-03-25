@@ -55,16 +55,12 @@ FMT2   MOV  R8,R9
 * The format list is empty
 FMT3   C    *R9+,*R9+
        MOV  R9,@FMTEND
-       CLR  R9
 * There is no previous format
 FMT4   LI   R8,12
 * R8, R9, and FMTEND now have required values
 FMT5
 
-
 *
-* Let R2 hold character length of each
-*    line.
 * Let R3 hold address of beginning of a
 *    line within the paragraph.
 * Let R4 hold address of beginning of
@@ -74,10 +70,6 @@ FMT5
 * Let R7 hold the address past the end
 *    of the paragraph.
 *
-* characters per line
-       CLR  R2
-       MOV  @LNWDTH,R3
-       DIV  R8,R2
 * address of paragraph text
        MOV  @LINLST,R0
        MOV  *R13,R1
@@ -98,11 +90,65 @@ FMT5
        MOV  R0,R6
 
 
+*=========================
 *
 * Populate New Wrap List
 *
+*=========================
        MOV  R3,R4
-WRP0   A    R2,R4
+* 
+* Determine number of characters to go
+* into the next line and place this in
+* R2
+*
+* Use R10 as the remaining line width.
+WRP0   CLR  R2
+       MOV  @LNWDTH,R10
+* If the next format position points
+* past the format list or at a different
+* paragraph, then goto WRP0C.
+*   If the next format position does not
+* change the character width, look at
+* the next format list item.
+WRP0A  C    R9,@FMTEND
+       JEQ  WRP0C
+       C    *R9,*R13
+       JNE  WRP0C
+       C    @6(9),R8
+       JNE  WRP0B
+       A    @FMTLEN,R9
+       JMP  WRP0A
+* Given the current character width,
+* find out how much space the characters
+* between the format changes will use.
+* If the result is less than the
+* remaining line width in R10, then
+* subtract from R10. Otherwise, goto
+* WRP0C.
+WRP0B  MOV  @6(9),R0
+       S    R2,R0
+       MPY  R8,R0
+       MOV  @6(9),R8          Record new character width
+       C    R1,R10
+       JH   WRP0C
+       S    R1,R10
+       A    @2(9),R2
+       A    @FMTLEN,R9
+       JMP  WRP0A
+* Divide remaining line width by current
+* character width and add result to R2
+WRP0C  CLR  R0
+       MOV  R10,R1
+       DIV  R8,R0
+       A    R0,R2
+*
+* R2 now contains the maximum number of
+* visible characters that can go in the
+* next line. Increase R4 by this amount
+* and then adjust it to a good breaking
+* character.
+*
+       A    R2,R4
 * Is R4 past end of paragraph?
        C    R4,R7
        JHE  WRP5
