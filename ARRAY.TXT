@@ -71,6 +71,8 @@ ARYADD DATA ARRYWS,ARYADD+4
 *
        BL   @ADRSIZ
        BL   @REALC
+* Restore item size to R0 if necessary.
+       MOV  R9,R0
 * Put address of soon-to-be last element
 * in the array in caller's R1
        MOV  *R10,R8

@@ -13,6 +13,7 @@ RUNTST BLWP @OPENF
 * Run each test
        BL   @TST1
        BL   @TST2
+       BL   @TST3
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -298,6 +299,72 @@ EXP2   DATA 7,3
        DATA 5,5,5,5
        DATA 7,7,7,7
        DATA 8,8,8,8
+
+
+*
+* Test an array with indexes of size 2
+* bytes.
+*
+TST3   LI   R2,100
+*
+       LI   R0,1
+       BLWP @ARYALC
+*
+* Add 100
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 101
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 102
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 103
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 104
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 105
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 106
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 107
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 108
+       BLWP @ARYADD
+       MOV  R2,*R1
+       INC  R2
+* Add 109
+       BLWP @ARYADD
+       MOV  R2,*R1
+*
+* Check Results
+*
+* ASCII of number 3
+       LI   R8,>3300
+* Check array contents
+       LI   R9,EXP3
+       MOV  R0,R10
+       B    @COMPAR
+*
+* COMPAR ends with RT
+
+ERR3A  B    @ADRERR
+
+EXP3   DATA 10,1
+       DATA 100,101,102,103,104,105,106,107,108,109
 
 
 *
