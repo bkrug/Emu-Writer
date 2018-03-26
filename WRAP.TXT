@@ -9,7 +9,7 @@
        REF  SPACE,DASH,SIX
        REF  FMTLEN,MGNLEN,PGWDTH
 * Variables
-       REF  FMTEND,MGNEND,LNWDTH
+       REF  FMTEND,MGNEND,LNWDT1,LNWDTH
 
 *
 * Wrap
@@ -42,32 +42,59 @@ MGN1   S    @MGNLEN,R8
        C    *R8,*R13
        JH   MGN1
 * We found current margin entry
-* Add 4 to R8 where left/right is stored
-MGN2   C    *R8+,*R8+
+* Get indent and left/right margin
+MGN2   INCT R8
+       MOV  *R8+,R7
        MOV  *R8,R8
        JMP  MGN5
 * The format list is empty
 MGN3   C    *R9+,*R9+
        MOV  R9,@MGNEND
 * There is no previous format
-MGN4   LI   R8,>1414
+MGN4   LI   R7,>0000
+       LI   R8,>1414
+* R7 now contains indent and more
 * R8 now contains left and right margin
+* Limit R7 to just indent.
 * Put left margin in R8
 * Put right margin in R9
 MGN5   MOV  R8,R9
        SRA  R8,8
        MOVB R8,R9
+       SLA  R7,8
+       SRA  R7,8
 * Convert margins from 1/20th to 1/120th
 * of an inch.
        MPY  @SIX,R9
        MPY  @SIX,R8
+       MPY  @SIX,R7
+       MOV  R8,R7
+       ABS  R8
 * Now left margin is in R9 and right is
 * in R10.
-* Set LNWDTH to:
+* Set R0:
 * Page Width - left margn - right margn
-       MOV  @PGWDTH,@LNWDTH
-       S    R9,@LNWDTH
-       S    R10,@LNWDTH
+* Set R1: R0 - indent
+       MOV  @PGWDTH,R0
+       S    R9,R0
+       S    R10,R0
+*
+       MOV  R0,R1
+       S    R8,R1
+* If this is a hanging indent,
+* R0 goes in LNWDT1, R1 goes in LNWDTH
+* else reverse.
+       MOV  R7,R7
+       JLT  MGN6
+       MOV  R0,@LNWDTH
+       MOV  R1,@LNWDT1
+       JMP  MGN7
+MGN6   MOV  R0,@LNWDT1
+       MOV  R1,@LNWDTH
+MGN7   MOV  R7,@R7COPY
+       MOV  R8,@R8COPY
+       MOV  R9,@R9COPY
+       MOV  R10,@R10CPY
 
 *=======================================
 *
@@ -154,9 +181,15 @@ FMT5
 * this point in the document and place
 * this in R2
 *
-* Use R10 as the remaining line width.
 WRP0   CLR  R2
+* Use R10 as the remaining line width.
+* Give it a different value for first
+* line in paragraph.
+       MOV  R12,R12
+       JEQ  WRP0AA
        MOV  @LNWDTH,R10
+       JMP  WRP0A
+WRP0AA MOV  @LNWDT1,R10
 * If the next format position points
 * past the format list or at a different
 * paragraph, then goto WRP0C.
@@ -261,4 +294,9 @@ WRP5
 WRPERR MOV  R0,*R13
        RTWP
 
+       TEXT 'R7COPY'
+R7COPY DATA 0
+R8COPY DATA 0
+R9COPY DATA 0
+R10CPY DATA 0
        END

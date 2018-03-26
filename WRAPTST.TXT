@@ -84,7 +84,7 @@ TSTLP2
        BL   @TSTLIN
 * Report which test this is
        MOV  R10,R0
-       AI   R0,>30
+       AI   R0,>31
        SLA  R0,8
        MOVB R0,@PASSMG
        LI   R0,PASSMG
@@ -207,8 +207,9 @@ LPERR2
        LI   R1,LPER2O
        BLWP @MAKETX
 *
-       S    R6,R8
        MOV  R8,R0
+       S    R6,R0
+       SRL  R0,1
        LI   R1,LPER2N
        BLWP @MAKETX
 *
@@ -478,17 +479,23 @@ WRPE9  DATA 1,1,73
 LIN10A DATA 297
        DATA WRPL10
        TEXT '"Wuhan" is derived from the pinyin '
-       TEXT 'romanization '
-       TEXT 'of the Standard Mandarin pronunciation of the '
-       TEXT 'name of the city (Wu3han4). In 1926, the '
-       TEXT 'Northern Expedition reached the Wuhan area '
-       TEXT 'and '
-       TEXT 'decided to merge Hankou, Wuchang and Hanyang '
-       TEXT 'into one city in order to make a new capital '
-       TEXT 'for Nationalist China.'
+       TEXT 'romanization of the Standard Mandarin '
+       TEXT 'pronunciation of the name of the city '
+       TEXT '(Wu3han4). '
+       TEXT 'In 1926, the Northern Expedition reached the '
+       TEXT 'Wuhan area and decided to merge Hankou, '
+       TEXT 'Wuchang '
+       TEXT 'and Hanyang into one city in order to make a '
+       TEXT 'new capital for Nationalist China.'
        EVEN
 WRPL10 DATA 2,1,74,98
-WRPE10 DATA 6,1,37,75,124,169,217,266
+WRPE10 DATA 6,1
+       DATA 35
+       DATA 35+38
+       DATA 35+38+49
+       DATA 35+38+49+45
+       DATA 35+38+49+45+48
+       DATA 35+38+49+45+48+49
 
 *
 * Assume a page width of eight inches
@@ -522,7 +529,7 @@ FMT0   DATA 3,3
        DATA 7,0,0,10
 FMT0E
 
-MRGN0  DATA 2,3
+MRGN0  DATA 4,3
 * 2-inch margins
        DATA 0,>0000,>2828,>1414
 * 1-inch margins
@@ -531,7 +538,7 @@ MRGN0  DATA 2,3
        DATA 9,>0014,>2828,>1414
 * 2.5-inch margins,
 * 0.5-inch hanging indent
-       DATA 10,>00F9,>2F2F,>1414
+       DATA 10,>00F6,>2F2F,>1414
 MRGN0E
 
 HEXLIN BSS  >20

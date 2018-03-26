@@ -6,7 +6,7 @@
 * Arrays
        DEF  LINLST,FMTLST,MGNLST
 * WRAP.TXT
-       DEF  FMTEND,MGNEND,LNWDTH
+       DEF  FMTEND,MGNEND,LNWDT1,LNWDTH
 * SCRNWRT.TXT
        DEF  SRCLIN,INDENT,CPI,NXTFMT
        DEF  DSPSTR,CURSTR
@@ -38,6 +38,11 @@ MGNLST DATA 0
 * WRAP.TXT
 FMTEND DATA 0
 MGNEND DATA 0
+* Width of first paragraph line
+* If there is no indent it will match
+* LNWDTH.
+LNWDT1 DATA 0
+* General line width
 LNWDTH DATA 0
 
 * SCRNWRT.TXT
