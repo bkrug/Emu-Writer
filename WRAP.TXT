@@ -99,8 +99,9 @@ FMT5
        CLR  R12
 * 
 * Determine number of characters to go
-* into the next line and place this in
-* R2
+* into the next line based on the CPI at
+* this point in the document and place
+* this in R2
 *
 * Use R10 as the remaining line width.
 WRP0   CLR  R2
@@ -195,6 +196,7 @@ WRP4   MOV  R6,R0
 WRP5
 
 
+*=======================================
 * Change R5 from paragraph text address
 * to pointer to paragraph's wrap list.
        AI   R5,-2

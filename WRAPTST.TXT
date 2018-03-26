@@ -387,7 +387,7 @@ WRPE5  DATA 2,1,36,36+47
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * more than one CPI
-LIN6A  DATA 36+47+45
+LIN6A  DATA >9E
        DATA WRPL6
        TEXT 'Holding sub-provincial status,[16] Wuhan is '
        TEXT 'recognized as the political, '
