@@ -264,24 +264,24 @@ SPCEND
 ****************************************
 
 *Number of tests to run
-TSTCNT DATA 9
+TSTCNT DATA 11
 SIX    DATA 6
 
 *Expected Wrap Lists
 EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4
        DATA WRPE5,WRPE6,WRPE7,WRPE8
-       DATA WRPE9
+       DATA WRPE9,WRPE10,WRPE11
 EXPWRE
 
 *Test names
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
        TEXT 'LIN5  LIN6  LIN7  LIN8  '
-       TEXT 'LIN9  '
+       TEXT 'LIN9  LIN10 LIN11 '
 TSTNME
 
 
 *Line List
-LINL0  DATA 8,1
+LINL0  DATA 11,1
        DATA LIN1A
        DATA LIN2A
        DATA LIN3A
@@ -291,6 +291,8 @@ LINL0  DATA 8,1
        DATA LIN7A
        DATA LIN8A
        DATA LIN9A
+       DATA LIN10A
+       DATA LIN11A
 LINL0E
 
 *
@@ -469,6 +471,47 @@ LIN9A  DATA 126
 WRPL9  DATA 2,1,74,98
 WRPE9  DATA 1,1,73
 
+*
+* Assume a page width of eight inches
+* with two inch margins, 1 inch indent,
+* 12 CPI
+LIN10A DATA 297
+       DATA WRPL10
+       TEXT '"Wuhan" is derived from the pinyin '
+       TEXT 'romanization '
+       TEXT 'of the Standard Mandarin pronunciation of the '
+       TEXT 'name of the city (Wu3han4). In 1926, the '
+       TEXT 'Northern Expedition reached the Wuhan area '
+       TEXT 'and '
+       TEXT 'decided to merge Hankou, Wuchang and Hanyang '
+       TEXT 'into one city in order to make a new capital '
+       TEXT 'for Nationalist China.'
+       EVEN
+WRPL10 DATA 2,1,74,98
+WRPE10 DATA 6,1,37,75,124,169,217,266
+
+*
+* Assume a page width of eight inches
+* with 2.5 inch margins,
+* 0.5 inch hanging indent,
+* 12 CPI
+LIN11A DATA 498
+       DATA WRPL11
+       TEXT 'The city was named Wuhan, which was later '
+       TEXT 'simplified (Wuhan). The "Wu" in "Wuhan" is '
+       TEXT 'derived from the "Wu" in "Wuchang" (literally '
+       TEXT 'prospering from military, regarding its '
+       TEXT 'logistics '
+       TEXT 'role of the military bases established before '
+       TEXT 'the '
+       TEXT 'Battle of Red Cliffs).'
+       EVEN
+WRPL11 DATA 2,1,74,98,148
+WRPE11 DATA 6,1
+       DATA 36,66,93,120
+       DATA 147,171,193,220
+       DATA 245
+
 FMT0   DATA 3,3
 * 12-Cpi at paragraph start
        DATA 4,0,0,10
@@ -484,6 +527,11 @@ MRGN0  DATA 2,3
        DATA 0,>0000,>2828,>1414
 * 1-inch margins
        DATA 7,>0000,>1414,>1414
+* 2-inch margins, 1-inch indent
+       DATA 9,>0014,>2828,>1414
+* 2.5-inch margins,
+* 0.5-inch hanging indent
+       DATA 10,>00F9,>2F2F,>1414
 MRGN0E
 
 HEXLIN BSS  >20
