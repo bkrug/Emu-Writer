@@ -53,8 +53,8 @@ MGN3   C    *R9+,*R9+
 * There is no previous format
 MGN4   LI   R7,>0000
        LI   R8,>1414
-* R7 now contains indent and more
-* R8 now contains left and right margin
+* R7 now contains indent and some junk.
+* R8 now contains left and right margin.
 * Limit R7 to just indent.
 * Put left margin in R8
 * Put right margin in R9
@@ -70,11 +70,14 @@ MGN5   MOV  R8,R9
        MPY  @SIX,R7
        MOV  R8,R7
        ABS  R8
-* Now left margin is in R9 and right is
-* in R10.
+* Now index is in R7,
+* absolute index is in R8,
+* left margin is in R9,
+* right margin is in R10.
 * Set R0:
-* Page Width - left margn - right margn
-* Set R1: R0 - indent
+* Page Width - left margn - right margin
+* Set R1:
+* R0 - indent
        MOV  @PGWDTH,R0
        S    R9,R0
        S    R10,R0
@@ -178,51 +181,51 @@ FMT5
 * this point in the document and place
 * this in R2
 *
-WRP0   CLR  R2
+CHRCT1 CLR  R2
 * Use R10 as the remaining line width.
 * Give it a different value for first
 * line in paragraph.
-       MOV  R12,R12
-       JEQ  WRP0AA
        MOV  @LNWDTH,R10
-       JMP  WRP0A
-WRP0AA MOV  @LNWDT1,R10
+       MOV  R12,R12
+       JNE  CHRCT2
+       MOV  @LNWDT1,R10
 * If the next format position points
 * past the format list or at a different
-* paragraph, then goto WRP0C.
+* paragraph, then goto CHRCT5.
 *   If the next format position does not
 * change the character width, look at
 * the next format list item.
-WRP0A  C    R9,@FMTEND
-       JEQ  WRP0C
+CHRCT2
+CHRCT3 C    R9,@FMTEND
+       JEQ  CHRCT5
        C    *R9,*R13
-       JNE  WRP0C
+       JNE  CHRCT5
        C    @6(9),R8
-       JNE  WRP0B
+       JNE  CHRCT4
        A    @FMTLEN,R9
-       JMP  WRP0A
+       JMP  CHRCT3
 * Given the current character width,
 * find out how much space the characters
 * between the format changes will use.
 * If the result is less than the
 * remaining line width in R10, then
 * subtract from R10. Otherwise, goto
-* WRP0C.
-WRP0B  MOV  @2(9),R0
+* CHRCT5.
+CHRCT4 MOV  @2(9),R0
        S    R2,R0
        S    R12,R0
        MPY  R8,R0
        C    R1,R10
-       JH   WRP0C
+       JH   CHRCT5
        S    R1,R10
        MOV  @2(9),R2
        S    R12,R2
        MOV  @6(9),R8          Record new character width
        A    @FMTLEN,R9
-       JMP  WRP0A
+       JMP  CHRCT3
 * Divide remaining line width by current
 * character width and add result to R2
-WRP0C  CLR  R0
+CHRCT5 CLR  R0
        MOV  R10,R1
        DIV  R8,R0
 *
@@ -270,7 +273,7 @@ WRP4   MOV  R6,R0
        S    R5,*R1
 * Do next line in paragraph
        MOV  R4,R3
-       JMP  WRP0
+       JMP  CHRCT1
 * 
 * All remaining characters fit on one
 * line.
