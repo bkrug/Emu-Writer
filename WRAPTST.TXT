@@ -1,7 +1,6 @@
        DEF  RUNTST
-       DEF  MGNLST
 *
-       REF  WRAP,LINLST,FMTLST
+       REF  WRAP,LINLST,FMTLST,MGNLST
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -65,6 +64,8 @@ TSTLP  MOV  R11,R12
        MOV  R0,@LINLST
        LI   R0,FMT0
        MOV  R0,@FMTLST
+       LI   R0,MRGN0
+       MOV  R0,@MGNLST
 * Use R10 to track which test this is
        CLR  R10
 * Copy each wrap list into the buffer.
@@ -162,6 +163,10 @@ TSTLIN
 * Test length of wrap list array.
        C    *R8+,*R9+
        JNE  LPERR1
+* If expected line length is 0, then
+* this part of test is done.
+       MOV  R7,R7
+       JEQ  TSTLN2
 * Don't bother testing array bytes 2&3
        C    *R8+,*R9+
 * Use R6 to derive index of failure
@@ -171,7 +176,7 @@ TSTLN1 C    *R8+,*R9+
        JNE  LPERR2
        DEC  R7
        JNE  TSTLN1
-       RT
+TSTLN2 RT
 
 * Wrap List contains the wrong number of
 * entries
@@ -256,22 +261,22 @@ SPCEND
 ****************************************
 
 *Number of tests to run
-TSTCNT DATA 7
+TSTCNT DATA 8
 SIX    DATA 6
 
 *Expected Wrap Lists
 EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4
-       DATA WRPE5,WRPE6,WRPE7
+       DATA WRPE5,WRPE6,WRPE7,WRPE8
 EXPWRE
 
 *Test names
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
-       TEXT 'LIN5  LIN6  LIN7  '
+       TEXT 'LIN5  LIN6  LIN7  LIN8  '
 TSTNME
 
 
 *Line List
-LINL0  DATA 7,1
+LINL0  DATA 8,1
        DATA LIN1A
        DATA LIN2A
        DATA LIN3A
@@ -279,6 +284,7 @@ LINL0  DATA 7,1
        DATA LIN5A
        DATA LIN6A
        DATA LIN7A
+       DATA LIN8A
 LINL0E
 
 *
@@ -413,7 +419,7 @@ WRPE6  DATA 7,1
 * with two inch margins, no indent,
 * 5 CPI
 LIN7A  DATA 36+47+45
-       DATA WRPL6
+       DATA WRPL7
        TEXT 'In 1927, Wuhan was '
        TEXT 'briefly the capital '
        TEXT 'of China under the '
@@ -431,14 +437,34 @@ WRPE7  DATA 6,1
        DATA 19+20+19+17+17
        DATA 19+20+19+17+17+18
 
+*
+* Assume a page width of eight inches
+* with one inch margins, no indent,
+* 12 CPI
+LIN8A  DATA 62
+       DATA WRPL8
+       TEXT 'The city later served as the wartime '
+       TEXT 'capital of China in 1937.'
+       EVEN
+WRPL8  DATA 1,1,40
+WRPE8  DATA 0,1
 
-FMT0   DATA 2,3
+FMT0   DATA 3,3
 * 12-Cpi at paragraph start
        DATA 4,0,0,10
 * 5-Cpi in middle of second line of 
 * paragraph
        DATA 5,64,0,24
+* 12-Cpi at paragraph start
+       DATA 7,0,0,10
 FMT0E
+
+MRGN0  DATA 2,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+MRGN0E
 
 HEXLIN BSS  >20
 *

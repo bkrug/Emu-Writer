@@ -6,12 +6,10 @@
 * Workspace
        REF  WRAPSP
 * Constants
-       REF  SPACE,DASH
+       REF  SPACE,DASH,SIX
+       REF  FMTLEN,MGNLEN,PGWDTH
 * Variables
-       REF  FMTLEN,FMTEND
-
-* Maximum width of a 4 inch line
-LNWDTH DATA 120*4
+       REF  FMTEND,MGNEND,LNWDTH
 
 *
 * Wrap
@@ -22,11 +20,62 @@ LNWDTH DATA 120*4
 * R0 - >FFFF implies an error.
 *
 WRAP   DATA WRAPSP,WRAP+4
+*=======================================
+*
+* Figure out available line width based
+* on left and right margins
+*
+*
+       MOV  @MGNLST,R9
+       MOV  *R9,R8
+       JEQ  MGN3
+       SLA  R8,3
+       C    *R9+,*R9+
+       A    R9,R8
+       MOV  R8,@MGNEND
+* Move backwards through margin list
+* Find the entry for our target
+* paragraph, or the entry before it.
+MGN1   S    @MGNLEN,R8
+       C    R8,R9
+       JL   MGN4
+       C    *R8,*R13
+       JH   MGN1
+* We found current margin entry
+* Add 4 to R8 where left/right is stored
+MGN2   C    *R8+,*R8+
+       MOV  *R8,R8
+       JMP  MGN5
+* The format list is empty
+MGN3   C    *R9+,*R9+
+       MOV  R9,@MGNEND
+* There is no previous format
+MGN4   LI   R8,>1414
+* R8 now contains left and right margin
+* Put left margin in R8
+* Put right margin in R9
+MGN5   MOV  R8,R9
+       SRA  R8,8
+       MOVB R8,R9
+* Convert margins from 1/20th to 1/120th
+* of an inch.
+       MPY  @SIX,R9
+       MPY  @SIX,R8
+* Now left margin is in R9 and right is
+* in R10.
+* Set LNWDTH to:
+* Page Width - left margn - right margn
+       MOV  @PGWDTH,@LNWDTH
+       S    R9,@LNWDTH
+       S    R10,@LNWDTH
+
+*=======================================
 *
 * Let R8 hold the the current char width
 * Let R9 hold the the next char change
 * Let FMTEND hold the address following
 *     the format list
+*
        MOV  @FMTLST,R9
        MOV  *R9,R8
        JEQ  FMT3
@@ -57,9 +106,11 @@ FMT3   C    *R9+,*R9+
        MOV  R9,@FMTEND
 * There is no previous format
 FMT4   LI   R8,12
-* R8, R9, and FMTEND now have required values
+* R8, R9, and FMTEND now have required
+* values.
 FMT5
 
+*=======================================
 *
 * Let R3 hold address of beginning of a
 *    line within the paragraph.

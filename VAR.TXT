@@ -4,9 +4,9 @@
 * Register Workspaces
        DEF  WRAPSP,SCRNWS,ARRYWS
 * Arrays
-       DEF  LINLST,FMTLST
+       DEF  LINLST,FMTLST,MGNLST
 * WRAP.TXT
-       DEF  FMTEND
+       DEF  FMTEND,MGNEND,LNWDTH
 * SCRNWRT.TXT
        DEF  SRCLIN,INDENT,CPI,NXTFMT
        DEF  DSPSTR,CURSTR
@@ -27,13 +27,18 @@ ARRYWS BSS  >20
 * Areas for changeable values
 *
 
+       TEXT 'VARIABLE'
 * Address of line list
 LINLST DATA 0
 * Address of format line list
 FMTLST DATA 0
+* Address of margin list
+MGNLST DATA 0
 
 * WRAP.TXT
 FMTEND DATA 0
+MGNEND DATA 0
+LNWDTH DATA 0
 
 * SCRNWRT.TXT
 SRCLIN DATA 0
