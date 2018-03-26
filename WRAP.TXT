@@ -91,10 +91,7 @@ MGN5   MOV  R8,R9
        JMP  MGN7
 MGN6   MOV  R0,@LNWDT1
        MOV  R1,@LNWDTH
-MGN7   MOV  R7,@R7COPY
-       MOV  R8,@R8COPY
-       MOV  R9,@R9COPY
-       MOV  R10,@R10CPY
+MGN7
 
 *=======================================
 *
@@ -294,9 +291,4 @@ WRP5
 WRPERR MOV  R0,*R13
        RTWP
 
-       TEXT 'R7COPY'
-R7COPY DATA 0
-R8COPY DATA 0
-R9COPY DATA 0
-R10CPY DATA 0
        END

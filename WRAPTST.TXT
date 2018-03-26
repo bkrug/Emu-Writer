@@ -505,13 +505,13 @@ WRPE10 DATA 6,1
 LIN11A DATA 253
        DATA WRPL11
        TEXT 'The city was named Wuhan, which was '
-	   TEXT 'later simplified (Wuhan). The '
-	   TEXT '"Wu" in "Wuhan" is derived '
-	   TEXT 'from the "Wu" in "Wuchang" '
-	   TEXT '(literally prospering from '
-	   TEXT 'military, regarding its '
-	   TEXT 'logistics role of the military '
-	   TEXT 'bases established before the '
+       TEXT 'later simplified (Wuhan). The '
+       TEXT '"Wu" in "Wuhan" is derived '
+       TEXT 'from the "Wu" in "Wuchang" '
+       TEXT '(literally prospering from '
+       TEXT 'military, regarding its '
+       TEXT 'logistics role of the military '
+       TEXT 'bases established before the '
        TEXT 'Battle of Red Cliffs).'
        EVEN
 WRPL11 DATA 2,1,74,98,148
