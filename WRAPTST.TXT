@@ -502,22 +502,22 @@ WRPE10 DATA 6,1
 * with 2.5 inch margins,
 * 0.5 inch hanging indent,
 * 12 CPI
-LIN11A DATA 498
+LIN11A DATA 253
        DATA WRPL11
-       TEXT 'The city was named Wuhan, which was later '
-       TEXT 'simplified (Wuhan). The "Wu" in "Wuhan" is '
-       TEXT 'derived from the "Wu" in "Wuchang" (literally '
-       TEXT 'prospering from military, regarding its '
-       TEXT 'logistics '
-       TEXT 'role of the military bases established before '
-       TEXT 'the '
+       TEXT 'The city was named Wuhan, which was '
+	   TEXT 'later simplified (Wuhan). The '
+	   TEXT '"Wu" in "Wuhan" is derived '
+	   TEXT 'from the "Wu" in "Wuchang" '
+	   TEXT '(literally prospering from '
+	   TEXT 'military, regarding its '
+	   TEXT 'logistics role of the military '
+	   TEXT 'bases established before the '
        TEXT 'Battle of Red Cliffs).'
        EVEN
 WRPL11 DATA 2,1,74,98,148
-WRPE11 DATA 6,1
+WRPE11 DATA 8,1
        DATA 36,66,93,120
-       DATA 147,171,193,220
-       DATA 245
+       DATA 147,171,202,231
 
 FMT0   DATA 3,3
 * 12-Cpi at paragraph start
@@ -538,7 +538,7 @@ MRGN0  DATA 4,3
        DATA 9,>0014,>2828,>1414
 * 2.5-inch margins,
 * 0.5-inch hanging indent
-       DATA 10,>00F6,>2F2F,>1414
+       DATA 10,>00F6,>3232,>1414
 MRGN0E
 
 HEXLIN BSS  >20
