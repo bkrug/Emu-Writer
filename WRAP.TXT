@@ -174,19 +174,19 @@ FMT5
 *
 *=========================
        MOV  R3,R4
-       CLR  R12
 * 
 * Determine number of characters to go
 * into the next line based on the CPI at
 * this point in the document and place
 * this in R2
 *
-CHRCT1 CLR  R2
+CHRCT1 MOV  R3,R2
+       S    R5,R2
 * Use R10 as the remaining line width.
 * Give it a different value for first
 * line in paragraph.
        MOV  @LNWDTH,R10
-       MOV  R12,R12
+       MOV  R2,R2
        JNE  CHRCT2
        MOV  @LNWDT1,R10
 * If the next format position points
@@ -213,13 +213,11 @@ CHRCT3 C    R9,@FMTEND
 * CHRCT5.
 CHRCT4 MOV  @2(9),R0
        S    R2,R0
-       S    R12,R0
        MPY  R8,R0
        C    R1,R10
        JH   CHRCT5
        S    R1,R10
        MOV  @2(9),R2
-       S    R12,R2
        MOV  @6(9),R8          Record new character width
        A    @FMTLEN,R9
        JMP  CHRCT3
@@ -228,9 +226,12 @@ CHRCT4 MOV  @2(9),R0
 CHRCT5 CLR  R0
        MOV  R10,R1
        DIV  R8,R0
-*
        A    R0,R2
-       A    R2,R12
+* Decrease R2 by the number of
+* characters already placed in previous
+* lines.
+       A    R5,R2
+       S    R3,R2
 *
 * R2 now contains the maximum number of
 * visible characters that can go in the
