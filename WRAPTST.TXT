@@ -197,6 +197,9 @@ LPERR1
 * Test line contains wrong number of 
 * characters.
 LPERR2
+* R8 was already advanced. Move backwards
+       DECT R8
+*
        LI   R1,LPER2M+5
        BL   @WRTNAM
 *
@@ -261,17 +264,19 @@ SPCEND
 ****************************************
 
 *Number of tests to run
-TSTCNT DATA 8
+TSTCNT DATA 9
 SIX    DATA 6
 
 *Expected Wrap Lists
 EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4
        DATA WRPE5,WRPE6,WRPE7,WRPE8
+       DATA WRPE9
 EXPWRE
 
 *Test names
 TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
        TEXT 'LIN5  LIN6  LIN7  LIN8  '
+       TEXT 'LIN9  '
 TSTNME
 
 
@@ -285,6 +290,7 @@ LINL0  DATA 8,1
        DATA LIN6A
        DATA LIN7A
        DATA LIN8A
+       DATA LIN9A
 LINL0E
 
 *
@@ -448,6 +454,20 @@ LIN8A  DATA 62
        EVEN
 WRPL8  DATA 1,1,40
 WRPE8  DATA 0,1
+
+*
+* Assume a page width of eight inches
+* with one inch margins, no indent,
+* 12 CPI
+LIN9A  DATA 126
+       DATA WRPL9
+       TEXT 'The Wuhan Gymnasium held the 2011 FIBA Asia '
+       TEXT 'Championship and will be one '
+       TEXT 'of the venues for the 2019 FIBA '
+       TEXT 'Basketball World Cup.'
+       EVEN
+WRPL9  DATA 2,1,74,98
+WRPE9  DATA 1,1,73
 
 FMT0   DATA 3,3
 * 12-Cpi at paragraph start
