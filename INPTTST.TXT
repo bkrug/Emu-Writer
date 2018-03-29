@@ -1,0 +1,320 @@
+       DEF  RUNTST
+*
+       REF  INPUT
+
+       REF  LINLST,FMTLST,MGNLST
+       REF  MAKETX,PRINTL,OPENF,CLOSEF
+       REF  ARYALC,ARYADD,ARYINS,ARYDEL
+       REF  ARYADR
+       REF  BUFALC,BUFINT
+
+       REF  KEYSTB,KEYSTE,KEYSTX
+       REF  PARINX,LININX,CHRPAX,CHRLIX
+       REF  WINOFF
+       REF  INSTMD
+       REF  USRISR
+
+
+RUNTST BLWP @OPENF
+* Write notification on screen.
+       BL   @WRTST
+* Run each test
+       BL   @TSTINT
+* Write notification on screen.
+       BL   @WREND
+       BLWP @CLOSEF
+JMP    LIMI 2
+       LIMI 0
+       JMP  JMP
+
+* Write notification
+WRTST  LI   R0,STARTM
+       LI   R1,ENDM-STARTM
+       BLWP @PRINTL
+       RT
+ 
+* Finished testing
+WREND  LI   R0,ENDM
+       LI   R1,4
+       BLWP @PRINTL
+       RT
+
+STARTM TEXT 'Testing'
+ENDM   TEXT 'Done'
+ENDME  EVEN
+
+****************************************
+*
+* Initialization for individual test.
+*
+****************************************
+
+TSTINT
+* Initialize buffer.
+       LI   R0,SPACE
+       LI   R1,>2000
+       BLWP @BUFINT
+* Reserve space for margin and format
+* and paragraph list.
+       LI   R0,3
+       BLWP @ARYALC
+       MOV  R0,@FMTLST
+       LI   R0,3
+       BLWP @ARYALC
+       MOV  R0,@MGNLST
+       LI   R0,3
+       BLWP @ARYALC
+       MOV  R0,@LINLST
+*
+       LI   R10,INTADR
+* Copy a paragraph into buffer
+TSTIN1
+       MOV  *R10+,R0
+       MOV  R0,R2
+       BLWP @BUFALC
+       MOV  R0,R1
+       MOV  *R10+,R0
+       BLWP @BUFCPY
+       MOV  R1,R4
+* and a wrap list
+       MOV  *R10+,R0
+       MOV  R0,R2
+       BLWP @BUFALC
+       MOV  R0,R1
+       MOV  *R10+,R0
+       BLWP @BUFCPY
+       MOV  R1,R5
+* Put the paragraph into the
+* paragraph list
+       MOV  @LINLST,R0
+       BLWP @ARYADD
+       MOV  R0,@LINLST
+       MOV  R4,*R1
+* Put the wrap list in the paragraph
+* header
+       INCT R4
+       MOV  R5,*R4
+* Loop
+       CI   R10,INTADE
+       JL   TSTIN1
+       RT
+
+* paragraph size, paragraph address,
+* wrap list size, wrap list address
+INTADR DATA PAR0A-PAR0,PAR0,PAR0-WRAP0,WRAP0
+       DATA PAR1A-PAR1,PAR1,PAR1-WRAP1,WRAP1
+       DATA PAR2A-PAR2,PAR2,PAR2-WRAP2,WRAP2
+INTADE
+
+****************************************
+*
+* Starting Data
+*
+****************************************
+
+*Number of tests to run
+TSTCNT DATA 0
+
+PARL0  DATA 3,1
+       DATA PAR0
+       DATA PAR1
+       DATA PAR2
+
+WRAP0 DATA 0,1
+PAR0  DATA PAR0A-PAR0-4,WRAP0
+      TEXT 'History'
+PAR0A
+      EVEN
+WRAP1 DATA 0,1
+PAR1  DATA PAR1A-PAR1-4,WRAP1
+      TEXT 'Antiquity'
+PAR1A
+      EVEN
+WRAP2 DATA 0,1
+PAR2  DATA PAR2A-PAR2-4,WRAP2
+      TEXT 'With a history, Wuhan is one of the most '
+      TEXT 'ancient and civilized metropolitan cities '
+      TEXT 'in China. Panlongcheng is located in modern-day '
+      TEXT 'Huangpi District. During the Western Zhou, '
+      TEXT 'the E state controlled the present-day '
+      TEXT 'Wuchang area south of the Yangtze River. '
+      TEXT 'After the conquest of the E state, the '
+      TEXT 'present-day Wuhan area was controlled by the '
+      TEXT 'Chu state for the rest of the Western Zhou '
+      TEXT 'and Eastern Zhou periods.'
+PAR2A
+*3,500-year-long 
+*, an archaeological site associated with the Erligang culture,
+
+LKYSTB TEXT 'KEYSTB'
+LKYSTE TEXT 'KEYSTB'
+LKYSTX TEXT 'KEYSTX'
+LPRINX TEXT 'PARINX'
+LLNINX TEXT 'LININX'
+LCRPAX TEXT 'CHRPAX'
+LCRLIX TEXT 'CHRLIX'
+LWNOFF TEXT 'WINOFF'
+LISTMD TEXT 'INSTMD'
+
+****************************************
+*
+* Each Test
+*
+****************************************
+
+* Test 1
+* ------
+* User inserted some text such that
+* "With a history"
+* became
+* "With a 3,500-year-long history"
+TST1   MOV  R11,R12
+* Set position values
+       CLR  R0
+       MOVB R0,@INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       CLR  @LININX
+       LI   R0,7
+       MOV  R0,@CHRPAX
+       MOV  R0,@CHRLIX
+       CLR  @WINOFF
+* Allocate space for key stream
+       LI   R0,32
+       BLWP @BUFALC
+       MOV  R0,@KEYSTB
+       MOV  R0,@KEYSTE
+       AI   R0,32
+       MOV  R0,@KEYSTX
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,EXP1A+4
+TST1A  CB   *R1+,*R2+
+       JNE  ERR1A
+       CI   R2,EXP1B
+       JL   TEST1A
+* Test position values.
+* Only CHRPAX and CHRLIX should have
+* changed due to cursor moving.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       LI   R3,1
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       CLR  R1
+       LI   R2,LLNINX
+       LI   R3,1
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,7+16
+       LI   R2,LCRPAX
+       LI   R3,1
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,7+16
+       LI   R2,LCRLIX
+       LI   R3,1
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       CLR  R1
+       LI   R2,LWNOFF
+       LI   R3,1
+       BL   @COMPVL
+*
+       B    *R12
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL1  TEXT '________'
+       TEXT '________'
+       TEXT '3_______'
+       TEXT ',_______'
+       TEXT '________'
+       TEXT '________'
+       TEXT '________'
+       TEXT '500-ye__'
+       TEXT '________'
+       TEXT 'ar-lo___'
+       TEXT 'n_______'
+       TEXT '________'
+       TEXT 'g ______'
+       BYTE >FF
+       BSS  7
+KEYL1E
+
+EXP1A DATA 0,0
+      TEXT 'With a history, Wuhan is one of the most '
+      TEXT 'ancient and civilized metropolitan cities '
+      TEXT 'in China. Panlongcheng is located in modern-day '
+      TEXT 'Huangpi District. During the Western Zhou, '
+      TEXT 'the E state controlled the present-day '
+      TEXT 'Wuchang area south of the Yangtze River. '
+      TEXT 'After the conquest of the E state, the '
+      TEXT 'present-day Wuhan area was controlled by the '
+      TEXT 'Chu state for the rest of the Western Zhou '
+      TEXT 'and Eastern Zhou periods.'
+EXP1B
+
+****************************************
+
+WRTNAM
+* Copy test name.
+       LI   R0,TSTNAM
+       MOV  R10,R3
+       MPY  @SIX,R3
+       A    R4,R0
+       LI   R2,6
+       BLWP @BUFCPY
+       RT
+
+* Interrupt routine to simulate key
+* presses.
+KEYINT MOV  @KEYSRC,R0
+       MOV  *R0,R0
+       MOV  @KEYSTB,R1
+       MOV  R0,R2
+       AI   R2,8
+KEYIN1 CB   *R1,@UNDRLN
+       JEQ  KEYINR
+       MOVB *R0+,*R1+
+       C    R0,R2
+       JL   KEYIN1
+KEYINR MOV  R2,@KEYSRT
+       RT
+* Contains the address at which the next
+* simulated keystroke is found.
+* Every time the interupt routine is hit
+* take up to eight characters from the
+* position starting at this address.
+* At the end of the routine, the value
+* of KEYSRC should be 8 bytes higher
+* than when the routine started.
+* The 8-byte block that starts >FF
+* signals the end of simulated input,
+* but let the INPUT routine worry about
+* that.
+KEYSRC DATA 0
+UNDRLN TEXT '_'
+       EVEN
+
+****************************************
+
+SPACE  BSS  >2000
+SPCEND
+
+       END

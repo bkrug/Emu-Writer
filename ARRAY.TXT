@@ -4,9 +4,6 @@
        REF  BUFALC,BUFREE,BUFCPY
        REF  ARRYWS,BLKUSE
 
-* TODO: ARYDEL should be able to shrink
-* the array size if it is half empty
-
 *
 * Array format:
 *   Word 0: number of items in array

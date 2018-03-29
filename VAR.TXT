@@ -10,6 +10,11 @@
 * SCRNWRT.TXT
        DEF  SRCLIN,INDENT,CPI,NXTFMT
        DEF  DSPSTR,CURSTR
+* INPUT.TXT
+       DEF  KEYSTB,KEYSTE,KEYSTX
+       DEF  PARINX,LININX,CHRPAX,CHRLIX
+       DEF  WINOFF
+       DEF  INSTMD
 
 * Areas of memory that absolutely have
 * to be in RAM and could never be part
@@ -18,7 +23,7 @@
 *
 * Areas for workspace registers
 *
-       TEXT 'LOOKHERE'
+       TEXT 'WORKSPCE'
 WRAPSP BSS  >20
 SCRNWS BSS  >20
 ARRYWS BSS  >20
@@ -52,5 +57,30 @@ CPI    DATA 0
 NXTFMT DATA 0
 DSPSTR DATA 0
 CURSTR DATA 0
+
+* INPUT.TXT
+* Address of the beginning of the key
+* stream that the interupt is currently
+* allowed to write to.
+KEYSTB DATA 0
+* Address of the next available position
+* in the key stream.
+KEYSTE DATA 0
+* First address past the available
+* space for the key stream.
+KEYSTX DATA 0
+* Current Paragraph Index
+PARINX DATA 0
+* Line Index in Paragraph
+LININX DATA 0
+* Character Index in Paragraph
+CHRPAX DATA 0
+* Character Index in line
+CHRLIX DATA 0
+* Window offset
+WINOFF DATA 0
+* Insert Mode. 0 = insert, -1 = overwrit
+INSTMD BYTE 0
+       EVEN
 
        END
