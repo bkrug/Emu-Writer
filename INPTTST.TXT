@@ -189,6 +189,8 @@ TST1   MOV  R11,R12
 * Set up interupt routine.
        LI   R0,KEYINT
        MOV  R0,@USRISR
+       LI   R0,KEYL1
+       MOV  R0,@KEYSRC
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -285,7 +287,6 @@ WRTNAM
 * Interrupt routine to simulate key
 * presses.
 KEYINT MOV  @KEYSRC,R0
-       MOV  *R0,R0
        MOV  @KEYSTB,R1
        MOV  R0,R2
        AI   R2,8
