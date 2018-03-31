@@ -1,0 +1,130 @@
+       DEF  INPUT
+*
+       REF  LINLST,FMTLST,MGNLST
+       REF  MAKETX,PRINTL,OPENF,CLOSEF
+       REF  ARYALC,ARYADD,ARYINS,ARYDEL
+       REF  ARYADR
+       REF  BUFALC,BUFREE,BUFCPY
+
+       REF  INPTWS
+       REF  KEYSTB,KEYSTE,KEYSTX
+       REF  OLDSTB,OLDSTE,OLDSTX
+       REF  PARINX,LININX,CHRPAX,CHRLIX
+       REF  WINOFF
+       REF  INSTMD
+
+       REF  BLKUSE,USRISR,SIX
+
+ENDINP BYTE >FF
+       EVEN
+
+INPUT  DATA INPTWS,INPUT+4
+       JMP  INPTRT
+       LIMI 2
+       LIMI 0
+       C    @KEYSTB,@KEYSTE
+       JEQ  INPUT
+* Deallocate the old key buffer and
+* allocate a ne key buffer.
+       MOV  @KEYSTB,@OLDSTB
+       MOV  @KEYSTE,@OLDSTE
+       MOV  @KEYSTX,@OLDSTX
+       LI   R0,32
+       BLWP @BUFALC
+       CI   R0,>FFFF
+       JEQ  RTERR
+       INCT R0
+       MOV  R0,@KEYSTB
+       MOV  R0,@KEYSTE
+       AI   R0,32
+       MOV  R0,@KEYSTX
+* Record space to deallocate later.
+       MOV  R0,R12
+* Process the new keystrokes
+INPUT1 MOV  @OLDSTB,R10
+* Check if this was the end of a
+* unit test.
+       CB   *R10,@ENDINP
+       JEQ  INPTRT
+* Handle visible character key strokes
+       B    @ADDTXT
+* Are there more keystrokes to process?
+INPUT2 C    @OLDSTB,@OLDSTE
+       JL   INPUT1
+* Free up old space
+       MOV  R12,R0
+       DECT R0
+       BLWP @BUFREE
+       JMP  INPUT
+
+INPTRT RTWP
+
+* Somehow let the user know that there
+* is no remaining buffer space.
+RTERR  RTWP
+
+* User typed some text.
+* Put it in the buffer.
+* R10 hold address of next input key
+ADDTXT
+* Get paragraph address
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+* Check if there is space to insert a
+* new character.
+* Let R1 be the address in paragraph
+* list of current paragraph.
+* Let R3 be the address of the
+* paragraph.
+* Let R5 be the amount of new space
+* required.
+       MOV  *R1,R3
+       MOV  R3,R4
+       MOV  R3,R5
+       DECT R4
+       MOV  *R4,R4
+       SZC  @BLKUSE,R4
+       MOV  *R5,R5
+       AI   R5,5
+       C    R5,R4
+       JLE  ADDTX1
+* Allocate more space
+       AI   R5,15
+       MOV  R5,R0
+       BLWP @BUFALC
+       MOV  R0,R1
+       MOV  R3,R0
+       MOV  R5,R2
+       AI   R2,-16
+       BLWP @BUFCPY
+       MOV  R1,R3
+       DECT R0
+       BLWP @BUFREE
+* Insert character.
+* Let R4 contain address following
+* the paragraph
+* Change R3 to insertion address.
+ADDTX1 MOV  *R3+,R4
+       INCT R3
+       A    R3,R4
+       A    @CHRPAX,R3
+* Copy
+       MOV  R4,R5
+       DEC  R5
+ADDCPY MOVB *R5,*R4
+       DEC  R4
+       DEC  R5
+       LIMI 2
+       LIMI 0
+       C    R5,R3
+       JHE  ADDCPY
+* put keystroke in new space
+       MOVB *R10,*R3
+*
+       INC  @OLDSTB
+       INC  @CHRPAX
+       INC  @CHRLIX
+       B    @INPUT2
+
+       END

@@ -243,8 +243,8 @@ TST1A  CB   *R1+,*R2+
        B    *R12
 
 *
-ERR1A LI   R3,1
-      BL   @STRERR
+ERR1A  LI   R3,1
+       B    @STRERR
 
 * Pretend that "_" means there was no
 * input from the keyboard.
@@ -344,7 +344,7 @@ COMPVL
        LI   R1,COMPM3-COMPMS
        BLWP @PRINTL
 *
-COMPRT RT
+COMPRT B    *R12
 *
 COMPMS TEXT 'Test .... failed. '
 COMPM1 TEXT 'Value in ...... is wrong. '
@@ -359,7 +359,7 @@ STRERR MOV  R3,R0
        LI   R1,STRMS1-STRMS
        BLWP @PRINTL
 *
-       RT
+       B    *R12
 STRMS  TEXT 'Test .... failed. '
        TEXT 'Strings do not match.'
 STRMS1 EVEN

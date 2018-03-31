@@ -2,7 +2,7 @@
 * Definitions in this file
 *
 * Register Workspaces
-       DEF  WRAPSP,SCRNWS,ARRYWS
+       DEF  WRAPSP,SCRNWS,ARRYWS,INPTWS
 * Arrays
        DEF  LINLST,FMTLST,MGNLST
 * WRAP.TXT
@@ -27,6 +27,7 @@
 WRAPSP BSS  >20
 SCRNWS BSS  >20
 ARRYWS BSS  >20
+INPTWS BSS  >20
 
 *
 * Areas for changeable values
@@ -69,6 +70,10 @@ KEYSTE DATA 0
 * First address past the available
 * space for the key stream.
 KEYSTX DATA 0
+* Old addresses for key values
+OLDSTB DATA 0
+OLDSTE DATA 0
+OLDSTX DATA 0
 * Current Paragraph Index
 PARINX DATA 0
 * Line Index in Paragraph
