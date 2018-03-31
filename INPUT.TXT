@@ -18,12 +18,12 @@
 ENDINP BYTE >FF
        EVEN
 
-INPUT  DATA INPTWS,INPUT+4
-       JMP  INPTRT
-       LIMI 2
+INPUT  DATA INPTWS,INPUT0
+INPUT0 LIMI 2
        LIMI 0
        C    @KEYSTB,@KEYSTE
-       JEQ  INPUT
+       JEQ  INPUT0
+*
 * Deallocate the old key buffer and
 * allocate a ne key buffer.
        MOV  @KEYSTB,@OLDSTB
@@ -33,7 +33,6 @@ INPUT  DATA INPTWS,INPUT+4
        BLWP @BUFALC
        CI   R0,>FFFF
        JEQ  RTERR
-       INCT R0
        MOV  R0,@KEYSTB
        MOV  R0,@KEYSTE
        AI   R0,32
@@ -55,7 +54,7 @@ INPUT2 C    @OLDSTB,@OLDSTE
        MOV  R12,R0
        DECT R0
        BLWP @BUFREE
-       JMP  INPUT
+       JMP  INPUT0
 
 INPTRT RTWP
 
