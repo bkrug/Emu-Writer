@@ -6,13 +6,13 @@
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
-       REF  BUFALC,BUFINT
+       REF  BUFALC,BUFINT,BUFCPY
 
        REF  KEYSTB,KEYSTE,KEYSTX
        REF  PARINX,LININX,CHRPAX,CHRLIX
        REF  WINOFF
        REF  INSTMD
-       REF  USRISR
+       REF  USRISR,SIX
 
 
 RUNTST BLWP @OPENF
@@ -134,7 +134,8 @@ WRAP2 DATA 0,1
 PAR2  DATA PAR2A-PAR2-4,WRAP2
       TEXT 'With a history, Wuhan is one of the most '
       TEXT 'ancient and civilized metropolitan cities '
-      TEXT 'in China. Panlongcheng is located in modern-day '
+      TEXT 'in China. Panlongcheng is located in '
+      TEXT 'modern-day '
       TEXT 'Huangpi District. During the Western Zhou, '
       TEXT 'the E state controlled the present-day '
       TEXT 'Wuchang area south of the Yangtze River. '
@@ -204,7 +205,7 @@ TST1   MOV  R11,R12
 TST1A  CB   *R1+,*R2+
        JNE  ERR1A
        CI   R2,EXP1B
-       JL   TEST1A
+       JL   TST1A
 * Test position values.
 * Only CHRPAX and CHRLIX should have
 * changed due to cursor moving.
@@ -236,9 +237,13 @@ TST1A  CB   *R1+,*R2+
        CLR  R1
        LI   R2,LWNOFF
        LI   R3,1
-       BL   @COMPVL
+       BLWP @COMPVL
 *
        B    *R12
+
+*
+ERR1A LI   R3,1
+      BL   @STRERR
 
 * Pretend that "_" means there was no
 * input from the keyboard.
@@ -260,9 +265,12 @@ KEYL1  TEXT '________'
 KEYL1E
 
 EXP1A DATA 0,0
-      TEXT 'With a history, Wuhan is one of the most '
+      TEXT 'With a 3,500-year-long history, Wuhan is '
+      TEXT 'one of '
+      TEXT 'the most '
       TEXT 'ancient and civilized metropolitan cities '
-      TEXT 'in China. Panlongcheng is located in modern-day '
+      TEXT 'in China. Panlongcheng is located in '
+      TEXT 'modern-day '
       TEXT 'Huangpi District. During the Western Zhou, '
       TEXT 'the E state controlled the present-day '
       TEXT 'Wuchang area south of the Yangtze River. '
@@ -273,16 +281,6 @@ EXP1A DATA 0,0
 EXP1B
 
 ****************************************
-
-WRTNAM
-* Copy test name.
-       LI   R0,TSTNAM
-       MOV  R10,R3
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R2,6
-       BLWP @BUFCPY
-       RT
 
 * Interrupt routine to simulate key
 * presses.
@@ -295,7 +293,8 @@ KEYIN1 CB   *R1,@UNDRLN
        MOVB *R0+,*R1+
        C    R0,R2
        JL   KEYIN1
-KEYINR MOV  R2,@KEYSRT
+KEYINR MOV  R2,@KEYSRC
+       MOV  R1,@KEYSTE
        RT
 * Contains the address at which the next
 * simulated keystroke is found.
@@ -312,6 +311,57 @@ KEYINR MOV  R2,@KEYSRT
 KEYSRC DATA 0
 UNDRLN TEXT '_'
        EVEN
+
+* Compare contents of R0 and R1.
+* Report if they don't match.
+*
+* R0 - Actual value
+* R1 - Expected value
+* R2 - Address of six byte string
+*      containing variable name
+* R3 - text number
+COMPVL
+       C    R0,R1
+       JEQ  COMPRT
+*
+       LI   R1,COMPM2+13
+       BLWP @MAKETX
+*
+       MOV  R3,R0
+       LI   R1,COMPMS+5
+       BLWP @MAKETX
+*
+       LI   R1,COMPM1+9
+       MOVB *R2+,*R1+
+       MOVB *R2+,*R1+
+       MOVB *R2+,*R1+
+       MOVB *R2+,*R1+
+       MOVB *R2+,*R1+
+       MOVB *R2+,*R1+
+*
+       LI   R0,COMPMS
+       LI   R1,COMPM3-COMPMS
+       BLWP @PRINTL
+*
+COMPRT RT
+*
+COMPMS TEXT 'Test .... failed. '
+COMPM1 TEXT 'Value in ...... is wrong. '
+COMPM2 TEXT 'Actual value .....'
+COMPM3 EVEN
+
+STRERR MOV  R3,R0
+       LI   R1,COMPMS+5
+       BLWP @MAKETX
+*
+       LI   R0,STRMS
+       LI   R1,STRMS1-STRMS
+       BLWP @PRINTL
+*
+       RT
+STRMS  TEXT 'Test .... failed. '
+       TEXT 'Strings do not match.'
+STRMS1 EVEN
 
 ****************************************
 
