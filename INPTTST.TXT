@@ -20,6 +20,7 @@ RUNTST BLWP @OPENF
        BL   @WRTST
 * Run each test
        BL   @TSTINT
+       BL   @TST1
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -120,29 +121,29 @@ PARL0  DATA 3,1
        DATA PAR1
        DATA PAR2
 
-WRAP0 DATA 0,1
-PAR0  DATA PAR0A-PAR0-4,WRAP0
-      TEXT 'History'
+WRAP0  DATA 0,1
+PAR0   DATA PAR0A-PAR0-4,WRAP0
+       TEXT 'History'
 PAR0A
-      EVEN
-WRAP1 DATA 0,1
-PAR1  DATA PAR1A-PAR1-4,WRAP1
-      TEXT 'Antiquity'
+       EVEN
+WRAP1  DATA 0,1
+PAR1   DATA PAR1A-PAR1-4,WRAP1
+       TEXT 'Antiquity'
 PAR1A
-      EVEN
-WRAP2 DATA 0,1
-PAR2  DATA PAR2A-PAR2-4,WRAP2
-      TEXT 'With a history, Wuhan is one of the most '
-      TEXT 'ancient and civilized metropolitan cities '
-      TEXT 'in China. Panlongcheng is located in '
-      TEXT 'modern-day '
-      TEXT 'Huangpi District. During the Western Zhou, '
-      TEXT 'the E state controlled the present-day '
-      TEXT 'Wuchang area south of the Yangtze River. '
-      TEXT 'After the conquest of the E state, the '
-      TEXT 'present-day Wuhan area was controlled by the '
-      TEXT 'Chu state for the rest of the Western Zhou '
-      TEXT 'and Eastern Zhou periods.'
+       EVEN
+WRAP2  DATA 0,1
+PAR2   DATA PAR2A-PAR2-4,WRAP2
+       TEXT 'With a history, Wuhan is one of the most '
+       TEXT 'ancient and civilized metropolitan cities '
+       TEXT 'in China. Panlongcheng is located in '
+       TEXT 'modern-day '
+       TEXT 'Huangpi District. During the Western Zhou, '
+       TEXT 'the E state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods.'
 PAR2A
 *3,500-year-long 
 *, an archaeological site associated with the Erligang culture,
