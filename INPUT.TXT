@@ -38,7 +38,7 @@ INPUT0 LIMI 2
        AI   R0,32
        MOV  R0,@KEYSTX
 * Record space to deallocate later.
-       MOV  R0,R12
+       MOV  @OLDSTB,R12
 * Process the new keystrokes
 INPUT1 MOV  @OLDSTB,R10
 * Check if this was the end of a
@@ -78,12 +78,16 @@ ADDTXT
 * paragraph.
 * Let R5 be the amount of new space
 * required.
-       MOV  *R1,R3
+* Let R6 be the address in the
+* paragraph list.
+       MOV  R1,R6
+       MOV  *R6,R3
        MOV  R3,R4
        MOV  R3,R5
        DECT R4
        MOV  *R4,R4
        SZC  @BLKUSE,R4
+	   DECT R4
        MOV  *R5,R5
        AI   R5,5
        C    R5,R4
@@ -98,14 +102,17 @@ ADDTXT
        AI   R2,-16
        BLWP @BUFCPY
        MOV  R1,R3
-       DECT R0
        BLWP @BUFREE
+       MOV  R3,*R6
 * Insert character.
 * Let R4 contain address following
 * the paragraph
+* Increase paragraph length by one.
 * Change R3 to insertion address.
-ADDTX1 MOV  *R3+,R4
-       INCT R3
+ADDTX1
+       MOV  *R3,R4
+	   INC  *R3
+       C    *R3+,*R3+
        A    R3,R4
        A    @CHRPAX,R3
 * Copy
@@ -114,8 +121,8 @@ ADDTX1 MOV  *R3+,R4
 ADDCPY MOVB *R5,*R4
        DEC  R4
        DEC  R5
-       LIMI 2
-       LIMI 0
+*       LIMI 2
+*       LIMI 0
        C    R5,R3
        JHE  ADDCPY
 * put keystroke in new space

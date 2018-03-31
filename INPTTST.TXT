@@ -63,7 +63,7 @@ TSTINT
        LI   R0,3
        BLWP @ARYALC
        MOV  R0,@MGNLST
-       LI   R0,3
+       LI   R0,1
        BLWP @ARYALC
        MOV  R0,@LINLST
 *
@@ -248,11 +248,11 @@ ERR1A  LI   R3,1
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL1  BYTE >FF
-       BSS  7
-	   TEXT '________'
+KEYL1  TEXT '________'
        TEXT '________'
        TEXT '3_______'
+       BYTE >FF
+       BSS  7
        TEXT ',_______'
        TEXT '________'
        TEXT '________'
