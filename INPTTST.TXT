@@ -251,8 +251,6 @@ ERR1A  LI   R3,1
 KEYL1  TEXT '________'
        TEXT '________'
        TEXT '3_______'
-       BYTE >FF
-       BSS  7
        TEXT ',_______'
        TEXT '________'
        TEXT '________'
