@@ -1,4 +1,4 @@
-       DEF  RUNTST,HITADR,HITLST
+       DEF  RUNTST
 *
        REF  INPUT
 
@@ -319,10 +319,7 @@ NOPINT RT
 * but let the INPUT routine worry about
 * that.
 KEYSRC DATA 0
-HITADR DATA HITLST
 UNDRLN TEXT '_'
-       TEXT 'HIT LIST'
-HITLST BSS  >2000
        EVEN
 
 * Compare contents of R0 and R1.

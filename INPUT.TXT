@@ -15,8 +15,6 @@
 
        REF  BLKUSE,USRISR,SIX
 
-       REF  HITADR,HITLST
-
 ENDINP BYTE >FF
        EVEN
 
