@@ -1,4 +1,4 @@
-       DEF  RUNTST
+       DEF  RUNTST,HITADR,HITLST
 *
        REF  INPUT
 
@@ -285,18 +285,27 @@ EXP1B
 
 * Interrupt routine to simulate key
 * presses.
-KEYINT MOV  @KEYSRC,R0
-       MOV  @KEYSTB,R1
+KEYINT
+       MOV  @KEYSRC,R0
+       MOV  @KEYSTE,R1
        MOV  R0,R2
        AI   R2,8
 KEYIN1 CB   *R0,@UNDRLN
        JEQ  KEYINR
        MOVB *R0+,*R1+
+       C    R1,@KEYSTX
+       JEQ  KEYINR
        C    R0,R2
        JL   KEYIN1
 KEYINR MOV  R2,@KEYSRC
        MOV  R1,@KEYSTE
        RT
+* Cancel the old interupt.
+KEYCNL LI   R0,NOPINT
+       MOV  R0,@USRISR
+       JMP  KEYINR
+* An interupt that does nothing.
+NOPINT RT
 * Contains the address at which the next
 * simulated keystroke is found.
 * Every time the interupt routine is hit
@@ -310,7 +319,10 @@ KEYINR MOV  R2,@KEYSRC
 * but let the INPUT routine worry about
 * that.
 KEYSRC DATA 0
+HITADR DATA HITLST
 UNDRLN TEXT '_'
+       TEXT 'HIT LIST'
+HITLST BSS  >2000
        EVEN
 
 * Compare contents of R0 and R1.
