@@ -18,25 +18,18 @@
 ENDINP BYTE >FF
        EVEN
 
-INPUT  DATA INPTWS,INPUT0
+INPUT  DATA INPTWS,INPUT+4
+       BL   @RSVKS
 INPUT0 LIMI 2
        LIMI 0
        C    @KEYSTB,@KEYSTE
        JEQ  INPUT0
-* 
 * Deallocate the old key buffer and
 * allocate a ne key buffer.
        MOV  @KEYSTB,@OLDSTB
        MOV  @KEYSTE,@OLDSTE
        MOV  @KEYSTX,@OLDSTX
-       LI   R0,32
-       BLWP @BUFALC
-       CI   R0,>FFFF
-       JEQ  RTERR
-       MOV  R0,@KEYSTB
-       MOV  R0,@KEYSTE
-       AI   R0,32
-       MOV  R0,@KEYSTX
+       BL   @RSVKS
 * Record space to deallocate later.
        MOV  @OLDSTB,R12
 * Process the new keystrokes
@@ -54,10 +47,22 @@ INPUT2 LIMI 2
        JL   INPUT1
 * Free up old space
        MOV  R12,R0
-*       BLWP @BUFREE
+       BLWP @BUFREE
        JMP  INPUT0
 
 INPTRT RTWP
+
+* Reserve new key stream
+RSVKS
+       LI   R0,32
+       BLWP @BUFALC
+       CI   R0,>FFFF
+       JEQ  RTERR
+       MOV  R0,@KEYSTB
+       MOV  R0,@KEYSTE
+       AI   R0,32
+       MOV  R0,@KEYSTX
+       RT
 
 * Somehow let the user know that there
 * is no remaining buffer space.
