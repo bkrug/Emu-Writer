@@ -1,5 +1,5 @@
        DEF  BLKUSE,FMTLEN,MGNLEN,PGWDTH
-       DEF  SPACE,DASH,LF,CR
+       DEF  SPACE,DASH,LF,CR,ENDINP
        DEF  SIX
        DEF  USRISR
 
@@ -30,5 +30,6 @@ SPACE  TEXT ' '
 DASH   TEXT '-'
 LF     BYTE 10
 CR     BYTE 13
+ENDINP BYTE >FF
        EVEN
        END
