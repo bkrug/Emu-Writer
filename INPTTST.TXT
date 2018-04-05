@@ -17,6 +17,17 @@
 * constants
        REF  USRISR,SIX
 
+* Should equal keystroke for FCTN-2
+INSKEY EQU  >04
+DELKEY EQU  >03
+FNCTN3 EQU  >07
+FNCTN4 EQU  >02
+FNCTN5 EQU  >0E
+FNCTN6 EQU  >0C
+FNCTN7 EQU  >01
+FNCTN8 EQU  >06
+FNCTN9 EQU  >0F
+FNCTN0 EQU  >BC
 
 RUNTST BLWP @OPENF
 * Write notification on screen.
@@ -169,10 +180,11 @@ LISTMD TEXT 'INSTMD'
 
 * Test 1
 * ------
-* User inserted some text such that
-* "With a history"
+* User inserted some text and overwrotesuch
+* some other text such that
+* "With a history, Wuhan"
 * became
-* "With a 3,500-year-long history"
+* "With a 3,500-year-long HISTORY, Wuhan"
 TST1   MOV  R11,R12
 * Set position values
        CLR  R0
@@ -264,12 +276,24 @@ KEYL1  TEXT '________'
        TEXT 'n_______'
        TEXT '________'
        TEXT 'g ______'
-       BYTE >FF
+       TEXT '________'
+       TEXT '________'
+       BYTE INSKEY
+       TEXT '_______'
+       TEXT 'H_______'
+       TEXT 'I_______'
+       TEXT 'S_______'
+       TEXT 'T_______'
+       TEXT 'O_______'
+       TEXT 'R_______'
+       TEXT 'Y_______'
+       TEXT '________'
+       BYTE >FE
        BSS  7
 KEYL1E
 
 EXP1A DATA 0,0
-      TEXT 'With a 3,500-year-long history, Wuhan is '
+      TEXT 'With a 3,500-year-long HISTORY, Wuhan is '
       TEXT 'one of '
       TEXT 'the most '
       TEXT 'ancient and civilized metropolitan cities '
@@ -293,6 +317,8 @@ KEYINT
        MOV  @KEYSTE,R1
        MOV  R0,R2
        AI   R2,8
+       CI   R0,KEYL1E
+       JHE  KEYINR
 KEYIN1 CB   *R0,@UNDRLN
        JEQ  KEYIR2
        C    R1,@KEYSTX

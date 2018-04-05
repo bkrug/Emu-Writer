@@ -30,6 +30,6 @@ SPACE  TEXT ' '
 DASH   TEXT '-'
 LF     BYTE 10
 CR     BYTE 13
-ENDINP BYTE >FF
+ENDINP BYTE >FE
        EVEN
        END
