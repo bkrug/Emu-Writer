@@ -86,7 +86,7 @@ CHRLIX DATA 0
 * Window offset
 WINOFF DATA 0
 * Insert Mode. 0 = insert, -1 = overwrit
-INSTMD BYTE 0
+INSTMD DATA 0
        EVEN
 
        END

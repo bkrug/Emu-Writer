@@ -14,7 +14,8 @@
        REF  INSTMD
 
 * constants
-       REF  BLKUSE,USRISR,SIX,ENDINP
+       REF  BLKUSE,USRISR,SIX
+       REF  INSKEY,ENDINP
 
 INPUT  DATA INPTWS,INPUT+4
        BL   @RSVKS
@@ -32,15 +33,19 @@ INPUT0 LIMI 2
        MOV  @OLDSTB,R12
 * Process the new keystrokes
 INPUT1 MOV  @OLDSTB,R10
+*
+       CB   *R10,@INSKEY
+       JEQ  INSSWP
 * Check if this was the end of a
 * unit test.
        CB   *R10,@ENDINP
        JEQ  INPTRT
 * Handle visible character key strokes
        B    @ADDTXT
+* Are there more keystrokes to process?
 INPUT2 LIMI 2
        LIMI 0
-* Are there more keystrokes to process?
+       INC  @OLDSTB
        C    @OLDSTB,@OLDSTE
        JL   INPUT1
 * Free up old space
@@ -49,6 +54,9 @@ INPUT2 LIMI 2
        JMP  INPUT0
 
 INPTRT RTWP
+
+INSSWP INV  @INSTMD
+       JMP  INPUT2
 
 * Reserve new key stream
 RSVKS
@@ -74,6 +82,9 @@ ADDTXT
        MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
+* Decide if to insert or overwrite.
+       MOV  @INSTMD,R2
+       JNE  OVRWRT
 * Check if there is space to insert a
 * new character.
 * Let R1 be the address in paragraph
@@ -129,11 +140,20 @@ ADDCPY MOVB *R5,*R4
        C    R5,R3
        JHE  ADDCPY
 * put keystroke in new space
-       MOVB *R10,*R3
+RPLTXT MOVB *R10,*R3
 *
-       INC  @OLDSTB
        INC  @CHRPAX
        INC  @CHRLIX
        B    @INPUT2
+
+* Overwrite text
+* R1 already contains address in
+* paragraph list
+* Give R3 address within paragraph
+* to write text to.
+OVRWRT MOV  *R1,R3
+       C    *R3+,*R3+
+       A    @CHRPAX,R3
+       JMP  RPLTXT
 
        END
