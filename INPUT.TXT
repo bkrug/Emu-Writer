@@ -4,6 +4,7 @@
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFREE,BUFCPY
+       REF  WRAP
 
 * variables just for INPUT
        REF  INPTWS
@@ -48,6 +49,9 @@ INPUT2 LIMI 2
        INC  @OLDSTB
        C    @OLDSTB,@OLDSTE
        JL   INPUT1
+* Wrap line
+       MOV  @PARINX,R0
+       BLWP @WRAP
 * Free up old space
        MOV  R12,R0
        BLWP @BUFREE
