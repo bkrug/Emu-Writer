@@ -39,6 +39,8 @@ RUNTST BLWP @OPENF
        BL   @TST2
        BL   @TSTINT
        BL   @TST3
+       BL   @TSTINT
+       BL   @TST4
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -164,6 +166,7 @@ PAR2   DATA PAR2A-PAR2-4,WRAP2
        TEXT 'Chu state for the rest of the Western Zhou '
        TEXT 'and Eastern Zhou periods.'
 PAR2A
+       EVEN
 *3,500-year-long 
 *, an archaeological site associated with the Erligang culture,
 
@@ -525,6 +528,105 @@ EXP3B
        EVEN
 
 
+* Test 4
+* ------
+* User inserted some text that would have taken
+* the user down to the next line.
+TST4   MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,109
+       MOV  R0,@CHRPAX
+       LI   R0,56
+       MOV  R0,@CHRLIX
+	   LI   R0,20
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL4
+       MOV  R0,@KEYSRC
+       LI   R0,KEYL4E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,EXP4A+4
+       LI   R0,EXP4B
+       LI   R3,4
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,2
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,115
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,12
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL4  TEXT '________'
+       TEXT 'essen___'
+       TEXT '________'
+       TEXT 'tially _'
+       TEXT '________'
+       TEXT '________'
+       BYTE >FE
+       BSS  7
+KEYL4E
+
+EXP4A  DATA 0,0
+       TEXT 'With a history, Wuhan is one of the most '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlongcheng '
+       TEXT 'is essentially located in '
+       TEXT 'modern-day Huangpi District. During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods.'
+EXP4B
+       EVEN
 
 ****************************************
 
