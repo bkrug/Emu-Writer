@@ -35,6 +35,8 @@ RUNTST BLWP @OPENF
 * Run each test
        BL   @TSTINT
        BL   @TST1
+       BL   @TSTINT
+       BL   @TST2
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -148,11 +150,12 @@ PAR1A
 WRAP2  DATA 0,1
 PAR2   DATA PAR2A-PAR2-4,WRAP2
        TEXT 'With a history, Wuhan is one of the most '
-       TEXT 'ancient and civilized metropolitan cities '
-       TEXT 'in China. Panlongcheng is located in '
-       TEXT 'modern-day '
-       TEXT 'Huangpi District. During the Western Zhou, '
-       TEXT 'the E state controlled the present-day '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlongcheng '
+       TEXT 'is located in '
+       TEXT 'modern-day Huangpi District. During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
        TEXT 'Wuchang area south of the Yangtze River. '
        TEXT 'After the conquest of the E state, the '
        TEXT 'present-day Wuhan area was controlled by the '
@@ -197,17 +200,14 @@ TST1   MOV  R11,R12
        MOV  R0,@CHRLIX
        CLR  @WINOFF
 * Allocate space for key stream
-       LI   R0,32
-       BLWP @BUFALC
-       MOV  R0,@KEYSTB
-       MOV  R0,@KEYSTE
-       AI   R0,32
-       MOV  R0,@KEYSTX
+       BL   @FSTKS
 * Set up interupt routine.
        LI   R0,KEYINT
        MOV  R0,@USRISR
        LI   R0,KEYL1
        MOV  R0,@KEYSRC
+       LI   R0,KEYL1E
+       MOV  R0,@KEYEND
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -308,6 +308,125 @@ EXP1A DATA 0,0
       TEXT 'and Eastern Zhou periods.'
 EXP1B
 
+
+* Test 2
+* ------
+* User inserted enough new text such
+* that the cursor should move right to
+* the second horizontal window.
+* Type in the second line of paragraph.
+* Start at character index 37.
+* Stop at character index 45.
+TST2   MOV  R11,R12
+* Set position values
+       CLR  R0
+       MOVB R0,@INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,37
+       MOV  R0,@CHRPAX
+       LI   R0,100
+       MOV  R0,@CHRLIX
+       CLR  @WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL2
+       MOV  R0,@KEYSRC
+       LI   R0,KEYL2E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,EXP1A+4
+TST2A  CB   *R1+,*R2+
+       JNE  ERR2A
+       CI   R2,EXP1B
+       JL   TST2A
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       LI   R3,2
+*
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,1
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,108
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,45
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,20
+       LI   R2,LWNOFF
+       BLWP @COMPVL
+*
+       B    *R12
+
+*
+ERR2A  LI   R3,2
+       B    @STRERR
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL2  TEXT '________'
+       TEXT ' _______'
+       TEXT '________'
+       TEXT 'a_______'
+       TEXT 'b_______'
+       TEXT '________'
+       TEXT '________'
+       TEXT 'c_______'
+       TEXT 'd_______'
+       TEXT '________'
+       TEXT 'e_______'
+       TEXT 'f_______'
+       TEXT '________'
+       TEXT ' _______'
+       TEXT '________'
+       BYTE >FE
+       BSS  7
+KEYL2E
+
+EXP2A  DATA 0,0
+       TEXT 'With a history, Wuhan is one of the most '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlong '
+       TEXT 'abcdef cheng '
+       TEXT 'is located in '
+       TEXT 'modern-day '
+       TEXT 'Huangpi District. During the Western Zhou, '
+       TEXT 'the E state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods.'
+EXP2B
+
+
 ****************************************
 
 * Interrupt routine to simulate key
@@ -317,7 +436,7 @@ KEYINT
        MOV  @KEYSTE,R1
        MOV  R0,R2
        AI   R2,8
-       CI   R0,KEYL1E
+       C    R0,@KEYEND
        JHE  KEYINR
 KEYIN1 CB   *R0,@UNDRLN
        JEQ  KEYIR2
@@ -344,6 +463,7 @@ KEYIR2 INC  R0
 * but let the INPUT routine worry about
 * that.
 KEYSRC DATA 0
+KEYEND DATA 0
 UNDRLN TEXT '_'
        EVEN
 
@@ -397,6 +517,19 @@ STRERR MOV  R3,R0
 STRMS  TEXT 'Test .... failed. '
        TEXT 'Strings do not match.'
 STRMS1 EVEN
+
+*
+* Allocate space for first keystream of
+* test.
+*
+FSTKS
+       LI   R0,32
+       BLWP @BUFALC
+       MOV  R0,@KEYSTB
+       MOV  R0,@KEYSTE
+       AI   R0,32
+       MOV  R0,@KEYSTX
+       RT
 
 ****************************************
 
