@@ -190,8 +190,7 @@ LISTMD TEXT 'INSTMD'
 * "With a 3,500-year-long HISTORY, Wuhan"
 TST1   MOV  R11,R12
 * Set position values
-       CLR  R0
-       MOVB R0,@INSTMD
+       CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
        CLR  @LININX
@@ -238,13 +237,13 @@ TST1A  CB   *R1+,*R2+
        BL   @COMPVL
 *
        MOV  @CHRPAX,R0
-       LI   R1,7+16
+       LI   R1,7+23
        LI   R2,LCRPAX
        LI   R3,1
        BL   @COMPVL
 *
        MOV  @CHRLIX,R0
-       LI   R1,7+16
+       LI   R1,7+23
        LI   R2,LCRLIX
        LI   R3,1
        BL   @COMPVL
@@ -253,7 +252,9 @@ TST1A  CB   *R1+,*R2+
        CLR  R1
        LI   R2,LWNOFF
        LI   R3,1
-       BLWP @COMPVL
+       BL   @COMPVL
+*
+       BL   @PSUCCS
 *
        B    *R12
 
@@ -319,15 +320,14 @@ EXP1B
 * Stop at character index 45.
 TST2   MOV  R11,R12
 * Set position values
-       CLR  R0
-       MOVB R0,@INSTMD
+       CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,1
        MOV  R0,@LININX
-       LI   R0,37
-       MOV  R0,@CHRPAX
        LI   R0,100
+       MOV  R0,@CHRPAX
+       LI   R0,37
        MOV  R0,@CHRLIX
        CLR  @WINOFF
 * Allocate space for key stream
@@ -348,10 +348,10 @@ TST2   MOV  R11,R12
        MOV  *R1,R1
 * Test paragraph contents
        AI   R1,4
-       LI   R2,EXP1A+4
+       LI   R2,EXP2A+4
 TST2A  CB   *R1+,*R2+
        JNE  ERR2A
-       CI   R2,EXP1B
+       CI   R2,EXP2B
        JL   TST2A
 * Test position values.
 * CHRPAX, CHRLIX, and WINOFF should have
@@ -381,7 +381,9 @@ TST2A  CB   *R1+,*R2+
        MOV  @WINOFF,R0
        LI   R1,20
        LI   R2,LWNOFF
-       BLWP @COMPVL
+       BL   @COMPVL
+*
+       BL   @PSUCCS
 *
        B    *R12
 
@@ -416,9 +418,9 @@ EXP2A  DATA 0,0
        TEXT 'metropolitan cities in China. Panlong '
        TEXT 'abcdef cheng '
        TEXT 'is located in '
-       TEXT 'modern-day '
-       TEXT 'Huangpi District. During the Western Zhou, '
-       TEXT 'the E state controlled the present-day '
+       TEXT 'modern-day Huangpi District. During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
        TEXT 'Wuchang area south of the Yangtze River. '
        TEXT 'After the conquest of the E state, the '
        TEXT 'present-day Wuhan area was controlled by the '
@@ -474,7 +476,7 @@ UNDRLN TEXT '_'
 * R1 - Expected value
 * R2 - Address of six byte string
 *      containing variable name
-* R3 - text number
+* R3 - test number
 COMPVL
        C    R0,R1
        JEQ  COMPRT
@@ -498,7 +500,9 @@ COMPVL
        LI   R1,COMPM3-COMPMS
        BLWP @PRINTL
 *
-COMPRT B    *R12
+       B    *R12
+*
+COMPRT RT
 *
 COMPMS TEXT 'Test .... failed. '
 COMPM1 TEXT 'Value in ...... is wrong. '
@@ -530,6 +534,18 @@ FSTKS
        AI   R0,32
        MOV  R0,@KEYSTX
        RT
+
+PSUCCS MOV  R3,R0
+       LI   R1,PSCCSM+5
+       BLWP @MAKETX
+       LI   R0,PSCCSM
+       LI   R1,PSCCSE-PSCCSM
+       BLWP @PRINTL
+       RT
+PSCCSM TEXT 'Test .... succeeded.'
+       EVEN
+PSCCSE
+
 
 ****************************************
 
