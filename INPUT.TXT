@@ -148,6 +148,16 @@ RPLTXT MOVB *R10,*R3
 *
        INC  @CHRPAX
        INC  @CHRLIX
+* Set window offset
+       LI   R1,20
+OFFST1 MOV  @CHRLIX,R2
+       S    @WINOFF,R2
+       CI   R2,40
+       JL   OFFST2
+       A    R1,@WINOFF
+       JMP  OFFST1
+OFFST2
+*
        B    @INPUT2
 
 * Overwrite text
