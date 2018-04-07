@@ -37,6 +37,8 @@ RUNTST BLWP @OPENF
        BL   @TST1
        BL   @TSTINT
        BL   @TST2
+       BL   @TSTINT
+       BL   @TST3
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -217,50 +219,41 @@ TST1   MOV  R11,R12
 * Test paragraph contents
        AI   R1,4
        LI   R2,EXP1A+4
-TST1A  CB   *R1+,*R2+
-       JNE  ERR1A
-       CI   R2,EXP1B
-       JL   TST1A
+       LI   R0,EXP1B
+       LI   R3,1
+       BL   @STRCMP
 * Test position values.
 * Only CHRPAX and CHRLIX should have
 * changed due to cursor moving.
        MOV  @PARINX,R0
        LI   R1,2
        LI   R2,LPRINX
-       LI   R3,1
        BL   @COMPVL
 *
        MOV  @LININX,R0
        CLR  R1
        LI   R2,LLNINX
-       LI   R3,1
        BL   @COMPVL
 *
        MOV  @CHRPAX,R0
        LI   R1,7+23
        LI   R2,LCRPAX
-       LI   R3,1
        BL   @COMPVL
 *
        MOV  @CHRLIX,R0
        LI   R1,7+23
        LI   R2,LCRLIX
-       LI   R3,1
        BL   @COMPVL
 *
        MOV  @WINOFF,R0
        CLR  R1
        LI   R2,LWNOFF
-       LI   R3,1
        BL   @COMPVL
 *
        BL   @PSUCCS
 *
        B    *R12
 
-*
-ERR1A  LI   R3,1
-       B    @STRERR
 
 * Pretend that "_" means there was no
 * input from the keyboard.
@@ -308,6 +301,7 @@ EXP1A DATA 0,0
       TEXT 'Chu state for the rest of the Western Zhou '
       TEXT 'and Eastern Zhou periods.'
 EXP1B
+      EVEN
 
 
 * Test 2
@@ -349,15 +343,12 @@ TST2   MOV  R11,R12
 * Test paragraph contents
        AI   R1,4
        LI   R2,EXP2A+4
-TST2A  CB   *R1+,*R2+
-       JNE  ERR2A
-       CI   R2,EXP2B
-       JL   TST2A
+       LI   R0,EXP2B
+       LI   R3,2
+       BL   @STRCMP
 * Test position values.
 * CHRPAX, CHRLIX, and WINOFF should have
 * increasd.
-       LI   R3,2
-*
        MOV  @PARINX,R0
        LI   R1,2
        LI   R2,LPRINX
@@ -387,9 +378,6 @@ TST2A  CB   *R1+,*R2+
 *
        B    *R12
 
-*
-ERR2A  LI   R3,2
-       B    @STRERR
 
 * Pretend that "_" means there was no
 * input from the keyboard.
@@ -426,7 +414,116 @@ EXP2A  DATA 0,0
        TEXT 'present-day Wuhan area was controlled by the '
        TEXT 'Chu state for the rest of the Western Zhou '
        TEXT 'and Eastern Zhou periods.'
-EXP2B
+EXP2B 
+       EVEN
+
+* Test 3
+* ------
+* User inserted enough new text such
+* that the cursor should move right to
+* the second horizontal window, but
+* this time the cursor should stop at
+* the left-most column of new window.
+* Type in the second line of paragraph.
+* Start at character index 37.
+* Stop at character index 40.
+TST3   MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,100
+       MOV  R0,@CHRPAX
+       LI   R0,37
+       MOV  R0,@CHRLIX
+       CLR  @WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL3
+       MOV  R0,@KEYSRC
+       LI   R0,KEYL3E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,EXP3A+4
+       LI   R0,EXP3B
+       LI   R3,3
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,1
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,103
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,40
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,20
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL3  TEXT '________'
+       TEXT ' _______'
+       TEXT '________'
+       TEXT '@_______'
+       TEXT ' _______'
+       TEXT '________'
+       TEXT '________'
+       BYTE >FE
+       BSS  7
+KEYL3E
+
+EXP3A  DATA 0,0
+       TEXT 'With a history, Wuhan is one of the most '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlong '
+       TEXT '@ cheng '
+       TEXT 'is located in '
+       TEXT 'modern-day Huangpi District. During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods.'
+EXP3B
+       EVEN
+
 
 
 ****************************************
@@ -509,8 +606,30 @@ COMPM1 TEXT 'Value in ...... is wrong. '
 COMPM2 TEXT 'Actual value .....'
 COMPM3 EVEN
 
-STRERR MOV  R3,R0
+
+*
+* Check that the strings match.
+*
+* Input:
+* R0 - end of text
+* R1
+* R2
+* R3 - test number
+STRCMP MOV  R2,R4
+STRCM1 CB   *R1+,*R2+
+       JNE  STRERR
+       C    R2,R0
+       JL   STRCM1
+       RT
+
+STRERR S    R4,R2
+*
+       MOV  R3,R0
        LI   R1,STRMS+5
+       BLWP @MAKETX
+*
+       MOV  R2,R0
+       LI   R1,STRMS2
        BLWP @MAKETX
 *
        LI   R0,STRMS
@@ -519,7 +638,8 @@ STRERR MOV  R3,R0
 *
        B    *R12
 STRMS  TEXT 'Test .... failed. '
-       TEXT 'Strings do not match.'
+       TEXT 'Strings do not match at index '
+STRMS2 TEXT '....'
 STRMS1 EVEN
 
 *
