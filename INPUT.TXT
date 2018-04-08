@@ -160,8 +160,8 @@ FWRDSP INC  @CHRPAX
        MOV  @PARINX,R1
        BLWP @ARYADR
        MOV  *R1,R1
-       C    *R1,@CHRPAX
-*       JH   FWRDS1
+       C    @CHRPAX,*R1
+       JH   FWRDS1
        JMP  FWRDRT
 * Move to next paragraph.
 FWRDS1 INC  @PARINX

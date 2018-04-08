@@ -60,6 +60,8 @@ RUNTST BLWP @OPENF
 * Forward space tests
        BL   @TSTINT
        BL   @TST10
+       BL   @TSTINT
+       BL   @TST11
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1040,8 +1042,8 @@ TST9   MOV  R11,R12
 *
        B    *R12
 
-* Test 9
-* ------
+* Test 10
+* -------
 * User pressed the backspace from the
 * beginning of the paragraph.
 TST10  MOV  R11,R12
@@ -1121,6 +1123,79 @@ KEYL10 BYTE FWDKEY
        BYTE >FE
        BSS  7
 KEY10E
+
+* Test 11
+* -------
+* User pressed the backspace from the
+* beginning of the paragraph.
+TST11  MOV  R11,R12
+* Set test number.
+       LI   R3,11
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,8
+       MOV  R0,@LININX
+       LI   R0,406
+       MOV  R0,@CHRPAX
+       LI   R0,8
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL10
+       MOV  R0,@KEYSRC
+       LI   R0,KEY10E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,3
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,0
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,0
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,0
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
 
 ****************************************
 
