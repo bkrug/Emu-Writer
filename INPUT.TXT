@@ -48,6 +48,8 @@ INPUT2 CB   *R10,@INSKEY
        JEQ  INSSWP
        CB   *R10,@BCKKEY
        JEQ  BACKSP
+       CB   *R10,@FWDKEY
+       JEQ  FWRDSP
 * Check if this was the end of a
 * unit test.
        CB   *R10,@ENDINP
@@ -148,6 +150,29 @@ BACKS1 DEC  @PARINX
 BACKS2 CLR  @CHRPAX
        CLR  @PARINX
 BACKRT B    @INPUT3
+
+*
+* Fordward space by one position
+*
+FWRDSP INC  @CHRPAX
+* See if we moved beyong paragraph end.
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       C    *R1,@CHRPAX
+*       JH   FWRDS1
+       JMP  FWRDRT
+* Move to next paragraph.
+FWRDS1 INC  @PARINX
+       C    @PARINX,*R0
+       JEQ  FWRDS2
+       CLR  @CHRPAX
+       JMP  FWRDRT
+* Apparently we reached end of document.
+FWRDS2 DEC  @PARINX
+       DEC  @CHRPAX
+FWRDRT B    @INPUT3
 
 * Reserve new key stream
 RSVKS
