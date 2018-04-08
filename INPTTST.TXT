@@ -866,7 +866,7 @@ TST7   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL7  TEXT ' _______'
+KEYL7  TEXT '________'
        BYTE >F0
        TEXT '_______'
        TEXT '________'

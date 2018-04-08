@@ -3,7 +3,7 @@
        DEF  USRISR
        DEF  DELKEY,INSKEY
        DEF  BCKKEY,FWDKEY,UPPKEY,DWNKEY
-       DEF  LF,CR
+       DEF  LF,CR,CHRMIN,CHRMAX
        DEF  SPACE,DASH,ENDINP,NOKEY
 
 * Values in this file are constants that
@@ -37,8 +37,10 @@ UPPKEY BYTE >0B
 DWNKEY
 LF     BYTE >0A
 CR     BYTE 13
+CHRMIN
 SPACE  TEXT ' '
 DASH   TEXT '-'
+CHRMAX BYTE >7E
 ENDINP BYTE >FE
 NOKEY  BYTE >FF
        EVEN

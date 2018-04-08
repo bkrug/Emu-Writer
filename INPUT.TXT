@@ -18,6 +18,7 @@
        REF  BLKUSE,USRISR,SIX
        REF  INSKEY,ENDINP
        REF  BCKKEY,FWDKEY,UPPKEY,DWNKEY
+       REF  CHRMIN,CHRMAX
 
 INPUT  DATA INPTWS,INPUT+4
        BL   @RSVKS
@@ -36,19 +37,26 @@ INPUT0 LIMI 2
        MOV  @OLDSTB,R12
 * Process the new keystrokes
 INPUT1 MOV  @OLDSTB,R10
+* Handle visible character key strokes
+       CB   *R10,@CHRMIN
+       JL   INPUT2
+       CB   *R10,@CHRMAX
+       JH   INPUT2
+       B    @ADDTXT
 *
-       CB   *R10,@INSKEY
+INPUT2 CB   *R10,@INSKEY
        JEQ  INSSWP
 * Check if this was the end of a
 * unit test.
        CB   *R10,@ENDINP
        JEQ  INPTRT
-* Handle visible character key strokes
-       B    @ADDTXT
+* If we got here, this keystroke is 
+* unrecognized. Skip it.
+INPUT3
 *
 * Are there more keystrokes to process?
 *
-INPUT2 LIMI 2
+       LIMI 2
        LIMI 0
        INC  @OLDSTB
        C    @OLDSTB,@OLDSTE
@@ -111,7 +119,7 @@ OFFST2
 INPTRT RTWP
 
 INSSWP INV  @INSTMD
-       JMP  INPUT2
+       JMP  INPUT3
 
 * Reserve new key stream
 RSVKS
@@ -214,6 +222,6 @@ RPLTXT MOVB *R10,*R3
 * Increase character indexes.
        INC  @CHRPAX
 *
-       B    @INPUT2
+       B    @INPUT3
 
        END
