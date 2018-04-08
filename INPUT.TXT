@@ -44,7 +44,9 @@ INPUT1 MOV  @OLDSTB,R10
        JEQ  INPTRT
 * Handle visible character key strokes
        B    @ADDTXT
+*
 * Are there more keystrokes to process?
+*
 INPUT2 LIMI 2
        LIMI 0
        INC  @OLDSTB
@@ -90,9 +92,9 @@ LNCLC2 S    R0,R2
        LI   R1,20
        MOV  @CHRLIX,R2
 OFFST0 C    R2,@WINOFF
-	   JHE  OFFST1
-	   S    R1,@WINOFF
-	   JMP  OFFST0
+       JHE  OFFST1
+       S    R1,@WINOFF
+       JMP  OFFST0
 OFFST1 MOV  @CHRLIX,R2
        S    @WINOFF,R2
        CI   R2,40
