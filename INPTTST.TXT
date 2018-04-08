@@ -17,7 +17,7 @@
 * constants
        REF  USRISR,SIX
 
-* Should equal keystroke for FCTN-2
+*
 INSKEY EQU  >04
 DELKEY EQU  >03
 FNCTN3 EQU  >07
@@ -28,6 +28,11 @@ FNCTN7 EQU  >01
 FNCTN8 EQU  >06
 FNCTN9 EQU  >0F
 FNCTN0 EQU  >BC
+*
+BCKKEY EQU  >08
+FWDKEY EQU  >09
+UPPKEY EQU  >0B
+DWNKEY EQU  >0A
 
 RUNTST BLWP @OPENF
 * Write notification on screen.
@@ -45,6 +50,8 @@ RUNTST BLWP @OPENF
        BL   @TST5
        BL   @TSTINT
        BL   @TST6
+       BL   @TSTINT
+       BL   @TST7
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -782,6 +789,92 @@ TST6   MOV  R11,R12
        LI   R3,6
 *
        B    @TST5A
+
+* Test 7
+* ------
+* Insert a character that the system
+* doesn't recognize. Output should not
+* be affected.
+TST7   MOV  R11,R12
+* Set test number.
+       LI   R3,7
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,2
+       MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL7
+       MOV  R0,@KEYSRC
+       LI   R0,KEYL7E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,0
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,2
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,2
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL7  TEXT ' _______'
+       BYTE >F0
+       TEXT '_______'
+       TEXT '________'
+       TEXT '________'
+       BYTE >FE
+       BSS  7
+KEYL7E
+
 
 ****************************************
 
