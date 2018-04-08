@@ -124,9 +124,30 @@ INPTRT RTWP
 INSSWP INV  @INSTMD
        JMP  INPUT3
 
+*
 * Backspace by one position
+*
 BACKSP DEC  @CHRPAX
-       B    @INPUT3
+       JLT  BACKS1
+       JMP  BACKRT
+* Backspace to the end of previous
+* paragraph.
+BACKS1 DEC  @PARINX
+       JLT  BACKS2
+* Find the length of the paragraph and
+* use that as the new character-within-
+* paragraph-index.
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       MOV  *R1,@CHRPAX
+       JMP  BACKRT
+* The cursor must already be at the
+* beginning of the document.
+BACKS2 CLR  @CHRPAX
+       CLR  @PARINX
+BACKRT B    @INPUT3
 
 * Reserve new key stream
 RSVKS

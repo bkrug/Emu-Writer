@@ -55,6 +55,8 @@ RUNTST BLWP @OPENF
 * Backspace tests
        BL   @TSTINT
        BL   @TST8
+       BL   @TSTINT
+       BL   @TST9
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -962,6 +964,78 @@ KEYL8  TEXT '________'
        BYTE >FE
        BSS  7
 KEYL8E
+
+* Test 9
+* ------
+* User pressed the backspace from the
+* beginning of the paragraph.
+TST9   MOV  R11,R12
+* Set test number.
+       LI   R3,9
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL8
+       MOV  R0,@KEYSRC
+       LI   R0,KEYL8E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,1
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,0
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,9
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,9
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
 
 ****************************************
 
