@@ -41,6 +41,8 @@ RUNTST BLWP @OPENF
        BL   @TST3
        BL   @TSTINT
        BL   @TST4
+       BL   @TSTINT
+       BL   @TST5
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -125,6 +127,7 @@ TSTIN1
 INTADR DATA PAR0A-PAR0,PAR0,PAR0-WRAP0,WRAP0
        DATA PAR1A-PAR1,PAR1,PAR1-WRAP1,WRAP1
        DATA PAR2A-PAR2,PAR2,PAR2-WRAP2,WRAP2
+       DATA PAR3A-PAR3,PAR3,PAR3-WRAP3,WRAP3
 INTADE
 
 ****************************************
@@ -169,6 +172,37 @@ PAR2A
        EVEN
 *3,500-year-long 
 *, an archaeological site associated with the Erligang culture,
+WRAP3  DATA 0,1
+PAR3   DATA PAR3A-PAR3-4,WRAP3
+       TEXT 'During the Han dynasty, Hanyang became a '
+       TEXT 'fairly busy port. '
+       TEXT 'The Battle of Xiakou in AD 203 and Battle '
+       TEXT 'of Jiangxia five '
+       TEXT 'years later were fought over control of '
+       TEXT 'Jiangxia Commandery '
+       TEXT '(present-day Xinzhou District in northeast '
+       TEXT 'Wuhan). In the '
+       TEXT 'winter of 208/9, one of the most famous '
+       TEXT 'battles in Chinese '
+       TEXT 'history and a central event in the Romance '
+       TEXT 'of the Three '
+       TEXT 'Kingdoms the Battle of Red Cliffs took '
+       TEXT 'place in the vicinity '
+       TEXT 'of the cliffs near Wuhan. Around that '
+       TEXT 'time, walls were built '
+       TEXT 'to protect Hanyang (AD 206) and '
+       TEXT 'Wuchang (AD 223). The latter '
+       TEXT 'event marks the foundation of Wuhan. '
+       TEXT 'In AD 223, the Yellow '
+       TEXT 'Crane Tower, one of the Four Great '
+       TEXT 'Towers of China, was '
+       TEXT 'constructed on the Wuchang side of the '
+       TEXT 'Yangtze River by '
+       TEXT 'order of Sun Quan, leader of the Eastern Wu. '
+       TEXT 'The tower '
+       TEXT 'become a sacred site of Taoism.'
+PAR3A
+       EVEN
 
 LKYSTB TEXT 'KEYSTB'
 LKYSTE TEXT 'KEYSTB'
@@ -543,7 +577,7 @@ TST4   MOV  R11,R12
        MOV  R0,@CHRPAX
        LI   R0,56
        MOV  R0,@CHRLIX
-	   LI   R0,20
+       LI   R0,20
        MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
@@ -626,6 +660,113 @@ EXP4A  DATA 0,0
        TEXT 'Chu state for the rest of the Western Zhou '
        TEXT 'and Eastern Zhou periods.'
 EXP4B
+       EVEN
+
+* Test 5
+* ------
+* User inserted some text at the end of
+* the paragraph.
+TST5   MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,7
+       MOV  R0,@LININX
+       LI   R0,406
+       MOV  R0,@CHRPAX
+       LI   R0,8
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL5
+       MOV  R0,@KEYSRC
+       LI   R0,KEYL5E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,EXP5A+4
+       LI   R0,EXP5B
+       LI   R3,5
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,7
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,421
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,23
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL5  TEXT ' _______'
+       TEXT 'During__'
+       TEXT '________'
+       TEXT ' _______'
+       TEXT '________'
+       TEXT '________'
+       TEXT 'the_____'
+       TEXT ' _______'
+       TEXT 'H_______'
+       TEXT '________'
+       TEXT 'a_______'
+       TEXT '________'
+       TEXT 'n_______'
+       BYTE >FE
+       BSS  7
+KEYL5E
+
+EXP5A  DATA 0,0
+       TEXT 'With a history, Wuhan is one of the most '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlongcheng '
+       TEXT 'is located in '
+       TEXT 'modern-day Huangpi District. During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods. During the Han'
+EXP5B
        EVEN
 
 ****************************************
