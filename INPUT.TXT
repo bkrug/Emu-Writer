@@ -46,6 +46,8 @@ INPUT1 MOV  @OLDSTB,R10
 *
 INPUT2 CB   *R10,@INSKEY
        JEQ  INSSWP
+       CB   *R10,@BCKKEY
+       JEQ  BACKSP
 * Check if this was the end of a
 * unit test.
        CB   *R10,@ENDINP
@@ -118,8 +120,13 @@ OFFST2
 
 INPTRT RTWP
 
+* Toggle insert/overwrite mode.
 INSSWP INV  @INSTMD
        JMP  INPUT3
+
+* Backspace by one position
+BACKSP DEC  @CHRPAX
+       B    @INPUT3
 
 * Reserve new key stream
 RSVKS
