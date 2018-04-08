@@ -136,9 +136,24 @@ ADDTXT
        MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
-* Decide if to insert or overwrite.
+* Is mode insert or overwrite?
        MOV  @INSTMD,R2
-       JNE  OVRWRT
+       JEQ  INSERT
+* R1 already contains address in
+* paragraph list.
+* If Overwrite position is at the end of
+* the paragraph, then act as if this
+* were insert mode.
+       MOV  *R1,R3
+       C    *R3,@CHRPAX
+       JEQ  INSERT
+* Overwrite text
+* R3 contains address of paragraph.
+* Set it to the address to overwrite
+* text at.
+       C    *R3+,*R3+
+       A    @CHRPAX,R3
+       JMP  RPLTXT
 * Check if there is space to insert a
 * new character.
 * Let R1 be the address in paragraph
@@ -149,7 +164,7 @@ ADDTXT
 * required.
 * Let R6 be the address in the
 * paragraph list.
-       MOV  R1,R6
+INSERT MOV  R1,R6
        MOV  *R6,R3
        MOV  R3,R4
        DECT R4
@@ -199,15 +214,5 @@ RPLTXT MOVB *R10,*R3
        INC  @CHRPAX
 *
        B    @INPUT2
-
-* Overwrite text
-* R1 already contains address in
-* paragraph list
-* Give R3 address within paragraph
-* to write text to.
-OVRWRT MOV  *R1,R3
-       C    *R3+,*R3+
-       A    @CHRPAX,R3
-       JMP  RPLTXT
 
        END

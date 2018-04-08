@@ -43,6 +43,8 @@ RUNTST BLWP @OPENF
        BL   @TST4
        BL   @TSTINT
        BL   @TST5
+       BL   @TSTINT
+       BL   @TST6
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -667,9 +669,11 @@ EXP4B
 * User inserted some text at the end of
 * the paragraph.
 TST5   MOV  R11,R12
+* Set test number.
+       LI   R3,5
 * Set position values
        CLR  @INSTMD
-       LI   R0,2
+TST5A  LI   R0,2
        MOV  R0,@PARINX
        LI   R0,7
        MOV  R0,@LININX
@@ -699,7 +703,6 @@ TST5   MOV  R11,R12
        AI   R1,4
        LI   R2,EXP5A+4
        LI   R0,EXP5B
-       LI   R3,5
        BL   @STRCMP
 * Test position values.
 * CHRPAX, CHRLIX, and WINOFF should have
@@ -768,6 +771,17 @@ EXP5A  DATA 0,0
        TEXT 'and Eastern Zhou periods. During the Han'
 EXP5B
        EVEN
+
+* Test 6
+* ------
+* User inserted added text at the end of
+* the paragraph in overwrite mode.
+TST6   MOV  R11,R12
+       SETO @INSTMD
+* Set test number.
+       LI   R3,6
+*
+       B    @TST5A
 
 ****************************************
 
