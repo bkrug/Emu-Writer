@@ -368,7 +368,7 @@ TST2   MOV  R11,R12
        BL   @COMPVL
 *
        MOV  @CHRLIX,R0
-       LI   R1,45
+       LI   R1,55
        LI   R2,LCRLIX
        BL   @COMPVL
 *
@@ -483,7 +483,7 @@ TST3   MOV  R11,R12
        BL   @COMPVL
 *
        MOV  @CHRLIX,R0
-       LI   R1,40
+       LI   R1,50
        LI   R2,LCRLIX
        BL   @COMPVL
 *
@@ -581,7 +581,7 @@ TST4   MOV  R11,R12
        BL   @COMPVL
 *
        MOV  @CHRPAX,R0
-       LI   R1,115
+       LI   R1,121
        LI   R2,LCRPAX
        BL   @COMPVL
 *
