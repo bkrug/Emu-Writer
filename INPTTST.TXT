@@ -33,6 +33,8 @@ BCKKEY EQU  >08
 FWDKEY EQU  >09
 UPPKEY EQU  >0B
 DWNKEY EQU  >0A
+*
+ENTER  EQU  >0D
 
 RUNTST BLWP @OPENF
 * Write notification on screen.
@@ -62,6 +64,9 @@ RUNTST BLWP @OPENF
        BL   @TST10
        BL   @TSTINT
        BL   @TST11
+* Enter-key tests
+       BL   @TSTINT
+       BL   @TST12
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1044,8 +1049,9 @@ TST9   MOV  R11,R12
 
 * Test 10
 * -------
-* User pressed the backspace from the
-* beginning of the paragraph.
+* User pressed the forward space onto
+* another line in the middle of the
+* paragraph.
 TST10  MOV  R11,R12
 * Set test number.
        LI   R3,10
@@ -1126,8 +1132,8 @@ KEY10E
 
 * Test 11
 * -------
-* User pressed the backspace from the
-* beginning of the paragraph.
+* User pressed the forward space onto
+* another paragraph.
 TST11  MOV  R11,R12
 * Set test number.
        LI   R3,11
@@ -1195,6 +1201,112 @@ TST11  MOV  R11,R12
        BL   @PSUCCS
 *
        B    *R12
+
+* Test 12
+* -------
+* User presses enter from the beginning
+* of a paragraph.
+TST12  MOV  R11,R12
+* Set test number.
+       LI   R3,12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL12
+       MOV  R0,@KEYSRC
+       LI   R0,KEY12E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of old paragraph
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Paragraph should be empty
+       MOV  *R1,R1
+       JNE  ERR12
+* Get address of new paragraph
+       MOV  @LINLST,R0
+       LI   R1,3
+       BLWP @ARYADR
+       MOV  *R1,R1
+* The new paragraph should be the same
+* as the original one
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,3
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,0
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,0
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,0
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL12 TEXT '________'
+       BYTE ENTER
+       TEXT '_______'
+       BYTE >FE
+       BSS  7
+KEY12E
+
+ERR12  MOV  R1,R0
+       LI   R1,ERR12N
+       BLWP @MAKETX
+*
+       LI   R0,ERR12M
+       LI   R1,ERR12O-ERR12M
+       BLWP @PRINTL
+*
+       B    *R12
+ERR12M TEXT 'Test 000C failed. '
+       TEXT 'The old paragraph is not empty: '
+ERR12N TEXT '....'
+ERR12O
+       EVEN
 
 
 ****************************************

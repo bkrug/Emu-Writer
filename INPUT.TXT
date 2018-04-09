@@ -16,8 +16,7 @@
 
 * constants
        REF  BLKUSE,USRISR,SIX
-       REF  INSKEY,ENDINP
-       REF  BCKKEY,FWDKEY,UPPKEY,DWNKEY
+       REF  ENDINP
        REF  CHRMIN,CHRMAX
 
 INPUT  DATA INPTWS,INPUT+4
@@ -39,17 +38,32 @@ INPUT0 LIMI 2
 INPUT1 MOV  @OLDSTB,R10
 * Handle visible character key strokes
        CB   *R10,@CHRMIN
-       JL   INPUT2
+       JL   KEYBRC
        CB   *R10,@CHRMAX
-       JH   INPUT2
+       JH   KEYBRC
        B    @ADDTXT
-*
-INPUT2 CB   *R10,@INSKEY
-       JEQ  INSSWP
-       CB   *R10,@BCKKEY
-       JEQ  BACKSP
-       CB   *R10,@FWDKEY
-       JEQ  FWRDSP
+* Branch to non-typing routine specified
+* by key code in R10
+KEYBRC LI   R0,ROUTKY
+       MOV  R0,R2
+KYBRC2 CB   *R10,*R0+
+       JEQ  KYBRC3
+       CI   R0,ROUTKE
+       JL   KYBRC2
+	   JMP  KYBRC4
+KYBRC3 DEC  R0
+       S    R2,R0
+* R0 now has index of routine
+       LI   R1,ROUTIN
+       SLA  R0,1
+       A    R0,R1
+       MOV  *R1,R1
+* R1 now has the address of the
+* desired routine.
+       B    *R1
+* If we got here, there is no routine
+* for the key in R10
+KYBRC4
 * Check if this was the end of a
 * unit test.
        CB   *R10,@ENDINP
@@ -120,6 +134,18 @@ OFFST2
        BLWP @BUFREE
        JMP  INPUT0
 
+INSKEY EQU  >04
+BCKKEY EQU  >08
+FWDKEY EQU  >09
+UPPKEY EQU  >0B
+DWNKEY EQU  >0A
+ENTER  EQU  >0D
+
+ROUTKY BYTE INSKEY,BCKKEY,FWDKEY,ENTER
+ROUTKE
+       EVEN
+ROUTIN DATA INSSWP,BACKSP,FWRDSP,ISENTR
+
 INPTRT RTWP
 
 * Toggle insert/overwrite mode.
@@ -173,6 +199,51 @@ FWRDS1 INC  @PARINX
 FWRDS2 DEC  @PARINX
        DEC  @CHRPAX
 FWRDRT B    @INPUT3
+
+*
+* Enter key pressed
+*
+ISENTR MOV  @CHRPAX,R0
+       JEQ  INSPAR
+* TODO: Break a paragraph in two.
+       B    @INPUT3
+* Insert an empty paragraph.
+INSPAR
+* Create space in paragraph list.
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYINS
+       CI   R0,>FFFF
+       JEQ  RTERR
+* Save addresses
+       MOV  R0,@LINLST
+       MOV  R1,R2
+* Allocate space for wraplist
+       LI   R0,1
+       BLWP @ARYALC
+       CI   R0,>FFFF
+       JEQ  RTERR
+* Save address
+       MOV  R0,R3
+* Allocate space for paragraph
+       LI   R0,4
+       BLWP @BUFALC
+       CI   R0,>FFFF
+       JEQ  RTERR
+* Store paragraph address at
+* paragraph list index address.
+       MOV  R0,*R2
+* Mark paragraph as empty
+       CLR  *R0
+* Store wrap list address in
+* paragraph header.
+       INCT R0
+       MOV  R3,*R0
+* The cursor is at the beginning of the
+* old paragraph.
+       INC  @PARINX
+*
+       B    @INPUT3
 
 * Reserve new key stream
 RSVKS
