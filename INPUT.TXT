@@ -50,7 +50,7 @@ KYBRC2 CB   *R10,*R0+
        JEQ  KYBRC3
        CI   R0,ROUTKE
        JL   KYBRC2
-	   JMP  KYBRC4
+       JMP  KYBRC4
 KYBRC3 DEC  R0
        S    R2,R0
 * R0 now has index of routine
@@ -203,12 +203,10 @@ FWRDRT B    @INPUT3
 *
 * Enter key pressed
 *
-ISENTR MOV  @CHRPAX,R0
-       JEQ  INSPAR
-* TODO: Break a paragraph in two.
-       B    @INPUT3
-* Insert an empty paragraph.
-INSPAR
+ISENTR
+*
+       INC  @PARINX
+* Break a paragraph in two.
 * Create space in paragraph list.
        MOV  @LINLST,R0
        MOV  @PARINX,R1
@@ -225,25 +223,43 @@ INSPAR
        JEQ  RTERR
 * Save address
        MOV  R0,R3
-* Allocate space for paragraph
-       LI   R0,4
+* Calculate length of new paragraph.
+       DECT R1
+       MOV  *R1,R1
+       MOV  *R1,R4
+       S    @CHRPAX,R4
+* Change length of old paragraph.
+       MOV  @CHRPAX,*R1
+* Allocate space for new paragraph
+       MOV  R4,R0
+       C    *R0+,*R0+
        BLWP @BUFALC
        CI   R0,>FFFF
        JEQ  RTERR
-* Store paragraph address at
-* paragraph list index address.
+       MOV  R0,R5
+* Put paragraph in list
        MOV  R0,*R2
-* Mark paragraph as empty
-       CLR  *R0
-* Store wrap list address in
-* paragraph header.
-       INCT R0
-       MOV  R3,*R0
-* The cursor is at the beginning of the
-* old paragraph.
-       INC  @PARINX
+* Set new paragraph length and wrap
+* list address
+       MOV  R4,*R5+
+       MOV  R3,*R5+
+* Copy part of old paragraph.
+* TODO: If you remove the JEQ command
+* the system will freeze for TST14.
+* Can't this logic be inside of BUFCPY?
+       MOV  R4,R2
+       JEQ  ENTR2
+       MOV  R1,R0
+       C    *R0+,*R0+
+       A    @CHRPAX,R0
+       MOV  R5,R1
+       BLWP @BUFCPY
+* Adjust CHRPAX
+* PARINX was incremented previously.
+ENTR2  CLR  @CHRPAX
 *
        B    @INPUT3
+
 
 * Reserve new key stream
 RSVKS

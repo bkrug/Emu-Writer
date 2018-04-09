@@ -67,6 +67,10 @@ RUNTST BLWP @OPENF
 * Enter-key tests
        BL   @TSTINT
        BL   @TST12
+       BL   @TSTINT
+       BL   @TST13
+       BL   @TSTINT
+       BL   @TST14
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1308,6 +1312,204 @@ ERR12N TEXT '....'
 ERR12O
        EVEN
 
+* Test 13
+* -------
+* User presses enter from the middle
+* of a paragraph.
+TST13  MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@LININX
+       LI   R0,40
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL12
+       MOV  R0,@KEYSRC
+       LI   R0,KEY12E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of earlier paragraph
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Set test number.
+       LI   R3,>1000+13
+* Test earlier paragraph
+       AI   R1,4
+       LI   R2,EXP13A
+       LI   R0,EXP13B
+       BL   @STRCMP
+* Get address of later paragraph
+       MOV  @LINLST,R0
+       LI   R1,3
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Set test number.
+       LI   R3,13
+* Test later paragraph
+       AI   R1,4
+       LI   R2,EXP13C
+       LI   R0,EXP13D
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,3
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,0
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,0
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,0
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+EXP13A TEXT 'With a history, Wuhan is one of the most '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlongcheng '
+       TEXT 'is located in '
+       TEXT 'modern-day Huangpi District. '
+EXP13B
+       EVEN
+EXP13C TEXT 'During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods.'
+EXP13D
+       EVEN
+
+* Test 14
+* -------
+* User presses enter from the beginning
+* of a paragraph.
+TST14  MOV  R11,R12
+* Set test number.
+       LI   R3,14
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,406
+       MOV  R0,@CHRPAX
+       LI   R0,8
+       MOV  R0,@LININX
+       LI   R0,8
+       MOV  R0,@CHRLIX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Allocate space for key stream
+       BL   @FSTKS
+* Set up interupt routine.
+       LI   R0,KEYINT
+       MOV  R0,@USRISR
+       LI   R0,KEYL12
+       MOV  R0,@KEYSRC
+       LI   R0,KEY12E
+       MOV  R0,@KEYEND
+* Run routine
+       BLWP @INPUT
+* Get address of new paragraph
+       MOV  @LINLST,R0
+       LI   R1,3
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Paragraph should be empty
+       MOV  *R1,R1
+       JNE  ERR14
+* Get address of old paragraph
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* The new paragraph should be the same
+* as the original one
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX, CHRLIX, and WINOFF should have
+* increasd.
+       MOV  @PARINX,R0
+       LI   R1,3
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @LININX,R0
+       LI   R1,0
+       LI   R2,LLNINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,0
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       MOV  @CHRLIX,R0
+       LI   R1,0
+       LI   R2,LCRLIX
+       BL   @COMPVL
+*
+       MOV  @WINOFF,R0
+       LI   R1,0
+       LI   R2,LWNOFF
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+ERR14  MOV  R1,R0
+       LI   R1,ERR14N
+       BLWP @MAKETX
+*
+       LI   R0,ERR14M
+       LI   R1,ERR14O-ERR14M
+       BLWP @PRINTL
+*
+       B    *R12
+ERR14M TEXT 'Test 000E failed. '
+       TEXT 'The old paragraph is not empty: '
+ERR14N TEXT '....'
+ERR14O
+       EVEN
+
 
 ****************************************
 
@@ -1394,9 +1596,11 @@ COMPM3 EVEN
 * Check that the strings match.
 *
 * Input:
-* R0 - end of text
-* R1
-* R2
+* R0 - end of expected contents
+* R1 - address of actual paragraph
+*      contents
+* R2 - address of expected paragraph
+*      contents
 * R3 - test number
 STRCMP MOV  R2,R4
 STRCM1 CB   *R1+,*R2+
