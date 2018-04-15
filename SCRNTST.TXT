@@ -1,7 +1,6 @@
        DEF  RUNTST,DSPTXT
-       DEF  MGNLST
 *
-       REF  LINLST,FMTLST
+       REF  LINLST,FMTLST,MGNLST
        REF  GETLIN
        REF  BUFINT,BUFALC,BUFREE,BUFCPY
        REF  MAKETX,PRINTL,OPENF,CLOSEF
@@ -20,10 +19,10 @@ RUNTST BLWP @OPENF
        MOV  R0,@LINLST
        LI   R0,FMT0
        MOV  R0,@FMTLST
+       LI   R0,MGN0
+       MOV  R0,@MGNLST
 * Create inverted characters
        BL   @CHRSET
-* Change the expected cursor strings.
-       BL   @RPLXSP
 * Write notification on screen.
        BL   @WRTST
 * Loop through every test.
@@ -35,7 +34,7 @@ LOOP   LIMI 2
        LIMI 0
        JMP  LOOP
 
-* We define LINLST,FMTLST,MGNLST here as
+* We define LINLST,FMTLST,MGN0 here as
 * mocks. They would be defined in a 
 * source file.
 
@@ -48,74 +47,77 @@ LOOP   LIMI 2
 *
 * This paragraph is indented in the
 * first line.
-LIN1A  BYTE 48
-       TEXT 'In physics, mass energy equivalence states '
+WRAP1  DATA 4,1,48,108,163,215
+LIN1   DATA 231,WRAP1
+LIN1A  TEXT 'In physics, mass energy equivalence states '
        TEXT 'that '
-LIN1B  BYTE 60
-       TEXT 'anything having mass has an equivalent amount '
+LIN1B  TEXT 'anything having mass has an equivalent amount '
        TEXT 'of energy and '
-LIN1C  BYTE 55
-       TEXT 'vice versa, with these fundamental quantities '
+LIN1C  TEXT 'vice versa, with these fundamental quantities '
        TEXT 'directly '
-LIN1D  BYTE 52
-       TEXT 'relating to one another by Albert Einstein,s '
+LIN1D  TEXT 'relating to one another by Albert Einstein,s '
        TEXT 'famous '
-LIN1E  BYTE 18
-       TEXT 'formulafootnote1'
-       BYTE 13,10
-LIN2   BYTE 13
-       TEXT 'E=mc2   H2O'
-       BYTE 13,10
+LIN1E  TEXT 'formulafootnote1'
+       EVEN
+
+WRAP2  DATA 0,1
+LIN2   DATA 11,WRAP2
+LIN2A  TEXT 'E=mc2   H2O'
+       EVEN
+
 * This paragraph has a hanging indent.
 * Word "Similiarly" is bold and
 * "having" is italic.
 * "corresponding" is underlined.
 * "c2" is italic with "2" superscript.
-LIN3A  BYTE 58
-       TEXT 'This formula states that the equivalent '
+WRAP3  DATA 5,1,58,112,160,215,267
+LIN3   DATA 178,WRAP3
+LIN3A  TEXT 'This formula states that the equivalent '
        TEXT 'energy (E) can be '
-LIN3B  BYTE 54
-       TEXT 'calculated as the mass (m) multiplied by the '
+LIN3B  TEXT 'calculated as the mass (m) multiplied by the '
        TEXT 'speed of '
-LIN3C  BYTE 48
-       TEXT 'light (c = about 3*108 m/s) squared. '
+LIN3C  TEXT 'light (c = about 3*108 m/s) squared. '
        TEXT 'Similarly, '
-LIN3D  BYTE 55
-       TEXT 'anything having energy exhibits a '
+LIN3D  TEXT 'anything having energy exhibits a '
        TEXT 'corresponding mass m '
-LIN3E  BYTE 52
-       TEXT 'given by its energy E divided by the speed '
+LIN3E  TEXT 'given by its energy E divided by the speed '
        TEXT 'of light '
-LIN3F  BYTE 13
-       TEXT 'squared c2.'
-       BYTE 13,10
-LIN4   BYTE 2
-       BYTE 13,10
-LIN5A  BYTE LIN5B-LIN5A-1
-       TEXT 'The American Legion was a British provincial '
+LIN3F  TEXT 'squared c2.'
+       EVEN
+
+WRAP4  DATA 0,1
+LIN4   DATA 0,WRAP4
+
+WRAP5  DATA 6,1,LIN5B-LIN5A
+       DATA LIN5C-LIN5B,LIN5D-LIN5C
+       DATA LIN5D-LIN5C,LIN5E-LIN5D
+       DATA LIN5F-LIN5E
+LIN5   DATA LIN5G-LIN5A,WRAP5
+LIN5A  TEXT 'The American Legion was a British provincial '
        TEXT 'militia '
-LIN5B  BYTE LIN5C-LIN5B-1
-       TEXT 'unit raised for Loyalist service late in the '
+LIN5B  TEXT 'unit raised for Loyalist service late in the '
        TEXT 'American '
-LIN5C  BYTE LIN5D-LIN5C-1
-       TEXT 'Revolutionary War by Benedict Arnold, the '
+LIN5C  TEXT 'Revolutionary War by Benedict Arnold, the '
        TEXT 'former Continental '
-LIN5D  BYTE LIN5E-LIN5D-1
-       TEXT 'Army general who had crossed over from the '
+LIN5D  TEXT 'Army general who had crossed over from the '
        TEXT 'Patriots to the '
-LIN5E  BYTE LIN5F-LIN5E-1
-       TEXT 'British. The unit was composed primarily of '
+LIN5E  TEXT 'British. The unit was composed primarily of '
        TEXT 'deserters from '
-LIN5F  BYTE LIN6-LIN5F-1
-       TEXT 'the Continental Army.'
-       BYTE 13,10
-LIN6   BYTE LIN7-LIN6-1
-       TEXT 'Regiment Formed'
-       BYTE 13,10
-LIN7   BYTE LIN8-LIN7-1
-       TEXT 'Another line of text'
-       BYTE 13,10
-LIN8   EVEN
+LIN5F  TEXT 'the Continental Army.'
+LIN5G
+       EVEN
+
+WRAP6  DATA 0,1
+LIN6   DATA LIN6B-LIN6A,WRAP6
+LIN6A  TEXT 'Regiment Formed'
+LIN6B
+       EVEN
+
+WRAP7  DATA 0,1
+LIN7   DATA LIN7B-LIN7A
+LIN7A  TEXT 'Another line of text'
+LIN7B
+       EVEN
 
 *
 * This is a list of pointers to every
@@ -125,15 +127,12 @@ LIN8   EVEN
 * different amounts of space and are not
 * stored in memory in order.
 *
-LINES  DATA 21
-       DATA LIN1A,LIN1B,LIN1C,LIN1D
-       DATA LIN1E
+LINES  DATA 7,1
+       DATA LIN1
        DATA LIN2
-       DATA LIN3A,LIN3B,LIN3C,LIN3D
-       DATA LIN3E,LIN3F
+       DATA LIN3
        DATA LIN4
-       DATA LIN5A,LIN5B,LIN5C,LIN5D
-       DATA LIN5E,LIN5F
+       DATA LIN5
        DATA LIN6
        DATA LIN7
 
@@ -155,50 +154,84 @@ LINES  DATA 21
 *
 * Bits 5 through 7 represent one of
 * six possible CPIs.
-FMT0   DATA 17,0
+BOLD   EQU  >80
+ITALIC EQU  >40
+UNDRLN EQU  >20
+SUPSCR EQU  >10
+SUBSCR EQU  >08
+CPI05  EQU  24
+CPI10  EQU  12
+CPI15  EQU  8
+*
+FMT0   DATA 17,3
 * Superscript
-       DATA 4
-       BYTE 7,>14
-       DATA 4
-       BYTE 16,>04
+       DATA 0,LIN1E-LIN1A+7
+       BYTE SUPSCR,0
+       DATA CPI10
+*
+       DATA 0,LIN1E-LIN1A+16
+       BYTE 0,0
+       DATA CPI10
 * Superscript
-       DATA 5
-       BYTE 4,>14
-       DATA 5
-       BYTE 5,>04
+       DATA 1,4
+       BYTE SUPSCR,0
+       DATA CPI10
+*
+       DATA 1,5
+       BYTE 0,0
+       DATA CPI10
 * Subscript
-       DATA 5
-       BYTE 9,>0C
-       DATA 5
-       BYTE 10,>04
+       DATA 1,9
+       BYTE SUBSCR,0
+       DATA CPI10
+*
+       DATA 1,10
+       BYTE 0,0
+       DATA CPI10
 * Bold
-       DATA 8
-       BYTE 37,>84
-       DATA 8
-       BYTE 46,>04
+       DATA 2,LIN3C-LIN3A+37
+       BYTE BOLD,0
+       DATA CPI10
+*
+       DATA 2,LIN3C-LIN3A+46
+       BYTE 0,0
+       DATA CPI10
 * Italic
-       DATA 9
-       BYTE 9,>44
-       DATA 9
-       BYTE 15,>04
+       DATA 2,LIN3D-LIN3A+9
+       BYTE ITALIC,0
+       DATA CPI10
+*
+       DATA 2,LIN3D-LIN3A+15
+       BYTE 0,0
+       DATA CPI10
 * Underline
-       DATA 9
-       BYTE 34,>24
-       DATA 9
-       BYTE 47,>04
+       DATA 2,LIN3D-LIN3A+34
+       BYTE UNDRLN,0
+       DATA CPI10
+*
+       DATA 2,LIN3D-LIN3A+47
+       BYTE 0,0
+       DATA CPI10
 * Italic, then superscript
-       DATA 11
-       BYTE 8,>44
-       DATA 11
-       BYTE 9,>54
-       DATA 11
-       BYTE 10,>04
+       DATA 2,LIN3F-LIN3A+8
+       BYTE ITALIC,0
+       DATA CPI10
+*
+       DATA 2,LIN3F-LIN3A+9
+       BYTE ITALIC+SUPSCR,0
+       DATA CPI10
+*
+       DATA 2,LIN3F-LIN3A+10
+       BYTE 0,0
+       DATA CPI10
 * 5 CPI
-       DATA 14
-       BYTE 6,>07
+       DATA 4,LIN5B-LIN5A+6
+       BYTE 0,0
+       DATA CPI05
 * 15 CPI
-       DATA 15
-       BYTE 7,>02
+       DATA 4,LIN5C-LIN5A+7
+       BYTE 0,0
+       DATA CPI15
 
 *
 * This is a list of all of the margins.
@@ -215,25 +248,25 @@ FMT0   DATA 17,0
 *  Byte 4 - (signed) indent
 *  Byte 5 - top/bottom margin combined
 *
-MGNLST DATA 6,0,0
-* Default is >1414,>2800
+MGN0   DATA 6,3
+* Default is >0000,>1414,>1414
 *
 * Indented half-inch,
 * Half-inch left/right margin
-       DATA 0,>0A0A,>280A
+       DATA 0,>000A,>0A0A,>1414
 * End Indented,
 * Top+Bottom margin 2.1 in.
-       DATA 5,>0A0A,>2A00
+       DATA 1,>0000,>0A0A,>1515
 * Hanging Indent half-inch
 * Justified
-       DATA 6,>8A0A,>2AF6
+       DATA 2,>80F6,>0A0A,>1515
 * Indented 7/10 inch
 * 1-inch left/right margins
-       DATA 12,>9414,>2A0E
+       DATA 3,>800E,>1414,>1515
 * Centered
-       DATA 19,>1494,>2A0E
+       DATA 5,>400E,>1414,>1515
 * Non-Justified
-       DATA 20,>1414,>2A0E
+       DATA 6,>000E,>1414,>1515
 
 * Users will see inverse images of
 * letters to represent changes in
@@ -275,26 +308,17 @@ MGNLST DATA 6,0,0
 DSP1A  BYTE >CC,>CD,>D2,>CD
        TEXT '     In physics, mass energy equivalence '
        TEXT 'states that '
-CUR1A  TEXT ' X XXXXXX                                    '
-       TEXT '            '
 DSP1B  TEXT 'anything having mass has an equivalent amount '
        TEXT 'of energy and '
-CUR1B  TEXT '                                              '
-       TEXT '              '
 DSP1C  TEXT 'vice versa, with these fundamental quantities '
        TEXT 'directly '
-CUR1C  TEXT '                                              '
-       TEXT '         '
 DSP1D  TEXT 'relating to one another by Albert Einstein,s '
        TEXT 'famous '
-CUR1D  TEXT '                                             '
-       TEXT '       '
 DSP1E  TEXT 'formula'
        BYTE >AB,>E2
        TEXT 'footnote1'
        BYTE >AB,>E5
        TEXT ' '
-CUR1E  TEXT '        X          X '
 DSP2   BYTE >C2,>CD
        TEXT 'E=mc'
        BYTE >AB,>E2
@@ -305,7 +329,6 @@ DSP2   BYTE >C2,>CD
        TEXT '2'
        BYTE >AD,>E5
        TEXT 'O '
-CUR2   TEXT ' X     X  X     X  X  '
 * This paragraph has a hanging indent.
 * Word "Similiarly" is bold and
 * "having" is italic.
@@ -314,19 +337,13 @@ CUR2   TEXT ' X     X  X     X  X  '
 DSP3A  BYTE >CA,>D5
        TEXT 'This formula states that the equivalent '
        TEXT 'energy (E) can be '
-CUR3A  TEXT ' X                                      '
-       TEXT '                    '
 DSP3B  TEXT '     calculated as the mass (m) multiplied by '
        TEXT 'the speed of '
-CUR3B  TEXT 'XXXXX                                         '
-       TEXT '             '
 DSP3C  TEXT '     light (c = about 3*108 m/s) squared. '
        BYTE >C2,>E2
        TEXT 'Similarly'
        BYTE >C2,>E5
        TEXT ', '
-CUR3C  TEXT 'XXXXX                                      X'
-       TEXT '          X  '
 DSP3D  TEXT '     anything '
        BYTE >C9,>E2
        TEXT 'having'
@@ -336,12 +353,8 @@ DSP3D  TEXT '     anything '
        TEXT 'corresponding'
        BYTE >D5,>E5
        TEXT ' mass m '
-CUR3D  TEXT 'XXXXX          X       X                    X'
-       TEXT '              X        '
 DSP3E  TEXT '     given by its energy E divided by the '
        TEXT 'speed of light '
-CUR3E  TEXT 'XXXXX                                     '
-       TEXT '               '
 DSP3F  TEXT '     squared '
        BYTE >C9,>E2
        TEXT 'c'
@@ -349,44 +362,29 @@ DSP3F  TEXT '     squared '
        TEXT '2'
        BYTE >C9,>E5,>AB,>E5
        TEXT '. '
-CUR3F  TEXT 'XXXXX         X  X  X X  '
 DSP4   BYTE >CC,>CD,>D2,>CD
        TEXT '        '
-CUR4   TEXT ' X XXXXXXXX '
 DSP5A  TEXT '       The American Legion was a British '
        TEXT 'provincial militia '
-CUR5A  TEXT 'XXXXXXX                                  '
-       TEXT '                   '
 DSP5B  TEXT 'unit r'
        BYTE >C3,>B0,>B5
        TEXT 'aised for Loyalist service late in the '
        TEXT 'American '
-CUR5B  TEXT '       XX                               '
-       TEXT '                 '
 DSP5C  TEXT 'Revolut'
        BYTE >C3,>B1,>B5
        TEXT 'ionary War by Benedict Arnold, the former '
        TEXT 'Continental '
-CUR5C  TEXT '        XX                                '
-       TEXT '                      '
 DSP5D  TEXT 'Army general who had crossed over from the '
        TEXT 'Patriots to the '
-CUR5D  TEXT '                                           '
-       TEXT '                '
 DSP5E  TEXT 'British. The unit was composed primarily of '
        TEXT 'deserters from '
-CUR5E  TEXT '                                            '
-       TEXT '               '
 DSP5F  TEXT 'the Continental Army. '
-CUR5F  TEXT '                      '
 * CPI is 15 at this point.
 * 7/10 inch indent should mean require 11 characters.
 DSP6   BYTE >C3,>CE
        TEXT '           Regiment Formed '
-CUR6   TEXT ' XXXXXXXXXXXX                '
 DSP7   BYTE >CC,>CA
        TEXT '           Another line of text '
-CUR7   TEXT ' XXXXXXXXXXXX                     '
 DSP8
 
 *
@@ -447,56 +445,6 @@ CHRST2 INV  *R5
        BLWP @VMBW
        RT
 
-*
-* Replace X with >FF and space with >00       
-*
-RPLXSP MOV  R11,R12
-       LI   R2,RPLDAT
-RPLXS2 MOV  *R2+,R0
-       MOV  *R2+,R1
-       BL   @RPLX2
-       CI   R2,RPLEND
-       JL   RPLXS2
-       MOV  R12,R11
-       RT
-
-RPLX2  CB   *R0,@BYTEX
-       JEQ  RPLX3
-       MOVB @BYTE0,*R0+
-       JMP  RPLX4
-RPLX3  MOVB @BYTEFF,*R0+
-RPLX4  DEC  R1
-       JNE  RPLX2
-       RT
-
-BYTEX  TEXT 'X'
-BYTESP TEXT ' '
-BYTE0  BYTE >00
-BYTEFF BYTE >FF
-
-RPLDAT DATA CUR1A,DSP1B-CUR1A
-       DATA CUR1B,DSP1C-CUR1B
-       DATA CUR1C,DSP1D-CUR1C
-       DATA CUR1D,DSP1E-CUR1D
-       DATA CUR1E,DSP2-CUR1E
-       DATA CUR2,DSP3A-CUR2
-       DATA CUR3A,DSP3B-CUR3A
-       DATA CUR3B,DSP3C-CUR3B
-       DATA CUR3C,DSP3D-CUR3C
-       DATA CUR3D,DSP3E-CUR3D
-       DATA CUR3E,DSP3F-CUR3E
-       DATA CUR3F,DSP4-CUR3F
-       DATA CUR4,DSP5A-CUR4
-       DATA CUR5A,DSP5B-CUR5A
-       DATA CUR5B,DSP5C-CUR5B
-       DATA CUR5C,DSP5D-CUR5C
-       DATA CUR5D,DSP5E-CUR5D
-       DATA CUR5E,DSP5F-CUR5E
-       DATA CUR5F,DSP6-CUR5F
-       DATA CUR6,DSP7-CUR6
-       DATA CUR7,DSP8-CUR7
-RPLEND
-
 * Write notification
 WRTST  LI   R0,STARTM
        LI   R1,ENDM-STARTM
@@ -518,7 +466,6 @@ ENDME  EVEN
 *
 TSTLP  CLR  R7
        LI   R8,EXPST1
-       LI   R9,EXPST2
        LI   R10,EXPLNG
        LI   R12,TSTNAM
 TSTLP1 MOV  R7,R0
@@ -531,17 +478,14 @@ TSTLP1 MOV  R7,R0
        BLWP @PRINTL
        RT
 * R0 Contains result string
-* R1 Contains cursor string
 * R2 Contains length
 TSTLP2 MOV  *R8,R3
-       MOV  *R9,R4
        MOV  *R10,R5
        MOV  R12,R6
        BLWP @MNTEST
 * Move to the next set of tests.
        INC  R7
        INCT R8
-       INCT R9
        INCT R10
        AI   R12,6
 * Free up the memory for previous test.
@@ -549,7 +493,7 @@ TSTLP2 MOV  *R8,R3
        MOV  R1,R0
        BLWP @BUFREE
 * Loop
-       CI   R8,EXPST2
+       CI   R8,EXPLNG
        JL   TSTLP1
        RT
 ALCMG  TEXT 'Could not allocate strings'
@@ -563,26 +507,20 @@ EXPST1 DATA DSP1A,DSP1B,DSP1C,DSP1D
        DATA DSP5A,DSP5B,DSP5C,DSP5D
        DATA DSP5E,DSP5F
        DATA DSP6,DSP7
-* Expected Cursor strings
-EXPST2 DATA CUR1A,CUR1B,CUR1C,CUR1D
-       DATA CUR1E,CUR2
-       DATA CUR3A,CUR3B,CUR3C,CUR3D
-       DATA CUR3E,CUR3F,CUR4
-       DATA CUR5A,CUR5B,CUR5C,CUR5D
-       DATA CUR5E,CUR5F
-       DATA CUR6,CUR7
 * Expected string lengths
-EXPLNG DATA CUR1A-DSP1A,CUR1B-DSP1B
-       DATA CUR1C-DSP1C,CUR1D-DSP1D
-       DATA CUR1E-DSP1E,CUR2-DSP2
-       DATA CUR3A-DSP3A,CUR3B-DSP3B
-       DATA CUR3C-DSP3C,CUR3D-DSP3D
-       DATA CUR3E-DSP3E,CUR3F-DSP3F
-       DATA CUR4-DSP4
-       DATA CUR5A-DSP5A,CUR5B-DSP5B
-       DATA CUR5C-DSP5C,CUR5D-DSP5D
-       DATA CUR5E-DSP5E,CUR5F-DSP5F
-       DATA CUR6-DSP6,CUR7-DSP7
+EXPLNG DATA DSP1B-DSP1A,DSP1C-DSP1B
+       DATA DSP1D-DSP1C,DSP1E-DSP1D
+       DATA DSP2-DSP1E
+       DATA DSP3A-DSP2
+       DATA DSP3B-DSP3A,DSP3C-DSP3B
+       DATA DSP3D-DSP3C,DSP3E-DSP3D
+       DATA DSP3F-DSP3E,DSP4-DSP3E
+       DATA DSP5A-DSP4
+       DATA DSP5B-DSP5A,DSP5C-DSP5B
+       DATA DSP5D-DSP5C,DSP5E-DSP5D
+       DATA DSP5F-DSP5E,DSP6-DSP5F
+       DATA DSP7-DSP6
+       DATA DSP8-DSP7
 * Test Names
 TSTNAM TEXT 'TST1A TST1B TST1C TST1D '
        TEXT 'TST1E TST2  '
@@ -596,17 +534,14 @@ TSTNAM TEXT 'TST1A TST1B TST1C TST1D '
 * Test results
 * Input:
 * R0 - Actual generated string
-* R1 - Actual generated cursor string
 * R2 - Actual length
 * R3 - Expected generated string
-* R4 - Expected generated cursor string
 * R5 - Expected length
 * R6 - Address of test name.
 MNWS   BSS  >20
 MNTEST DATA MNWS,MNTEST+4
        MOV  @4(13),R2
        MOV  @6(13),R3
-       MOV  @8(13),R4
        MOV  @10(13),R5
 * Compare string length
        C    R2,R5
@@ -618,13 +553,6 @@ MNTEST DATA MNWS,MNTEST+4
        BL   @STREQU
        MOV  R8,R8
        JNE  MF2
-* Compare cursor strings
-       MOV  R4,R8
-       MOV  @2(13),R9
-       MOV  R5,R10
-       BL   @STREQU
-       MOV  R8,R8
-       JNE  MF3
 * Test passed.
        MOV  @12(13),R6
        LI   R2,MPASS
@@ -663,24 +591,6 @@ MF2A   MOV  R3,R0
        SZC  @MXLGTH,R1
        BLWP @PRINTL
        MOV  *R13,R0
-       MOV  R2,R1
-       SZC  @MXLGTH,R1
-       BLWP @PRINTL
-       RTWP
-* Cursor strings failed.
-* SZC command ensures a length
-* no greater than >FF.
-MF3    MOV  @12(13),R0
-       LI   R1,6
-       BLWP @PRINTL
-       LI   R0,MFMSG2
-       LI   R1,MFMSG3-MFMSG2
-       BLWP @PRINTL
-       MOV  R4,R0
-       MOV  R5,R1
-       SZC  @MXLGTH,R1
-       BLWP @PRINTL
-       MOV  @2(13),R0
        MOV  R2,R1
        SZC  @MXLGTH,R1
        BLWP @PRINTL
@@ -751,7 +661,6 @@ DT1    MOV  R3,R0
 * R1 Contains cursor string
 * R2 Contains length
        MOV  R0,R5
-       MOV  R1,R6
 *
        MOV  R0,R1
        MOV  R4,R0
@@ -761,8 +670,6 @@ DT1    MOV  R3,R0
 DT2    BLWP @VMBW
 * Free old space
        LIMI 2
-       MOV  R6,R0
-       BLWP @BUFREE
        MOV  R5,R0
        BLWP @BUFREE
        LIMI 0

@@ -81,10 +81,10 @@
 * screen.
 *
 * Input:
-* R0 - line index
+* R0 - paragraph index
+* R1 - line index
 * Output:
 * R0 - address of created line
-* R1 - address of cursor description
 * R2 - length of created line
 *
 * R0 will contain >FFFF if we could not
