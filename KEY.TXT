@@ -36,7 +36,7 @@ RUNTST
 * running the program
        MOVB @NOKEY,@KEYPRS
 *
-LOOP   LIMI 2
+LOOP
        LIMI 0
 *
        CLR  R0
@@ -55,6 +55,11 @@ LOOP   LIMI 2
        LI   R0,>2E0
        LI   R2,8
        BLWP @VMBW
+*
+       LI   R0,>4000
+DELAY  DEC  R0
+       LIMI 2
+       JNE  DELAY
        JMP  LOOP
 
 * Use an interupt to record key presses
