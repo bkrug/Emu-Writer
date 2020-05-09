@@ -108,7 +108,10 @@ BUFEND
 * Address where the next keypress 
 * should be stored.
 BUFWRT DATA 0
-* Next address to read a keypress from
+* Next address to read a keypress from.
+* If the value here is equal to the
+* value in BUFWRT, then there are no
+* new characters to write.
 BUFRD  DATA 0
 
        END
