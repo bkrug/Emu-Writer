@@ -17,7 +17,8 @@
        DEF  WINOFF
        DEF  INSTMD
 * KEY.TXT
-       DEF  BUFLOC,TIMER,PREVKY
+       DEF  TIMER,PREVKY,KEYBUF
+	   DEF  BUFSTR,BUFEND,BUFWRT,BUFRD
 
 * Areas of memory that absolutely have
 * to be in RAM and could never be part
@@ -92,11 +93,22 @@ INSTMD DATA 0
        EVEN
 
 * KEY.TXT
-* Address where the next keypress 
-* should be stored.
-BUFLOC DATA 0
 * Time remaining before character repeat
 TIMER  DATA 0
-*
+* The previously detected key press.
+* Wait a while before letting this key
+* repeat.
 PREVKY BYTE 0
+* First address of key buffer
+BUFSTR
+* Buffer to store keypresses
+KEYBUF BSS  >20
+* First address after key buffer
+BUFEND 
+* Address where the next keypress 
+* should be stored.
+BUFWRT DATA 0
+* Next address to read a keypress from
+BUFRD  DATA 0
+
        END

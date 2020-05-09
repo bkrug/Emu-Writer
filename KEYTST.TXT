@@ -2,13 +2,15 @@
 *
        REF  VSBW,KSCAN,VMBW
 	   REF  KEYDVC,KEYPRS,USRISR
-	   REF  NOKEY,PREVKY,BUFLOC,TIMER
+	   REF  NOKEY,PREVKY,TIMER
 	   REF  KEYINT
-
+	   REF  BUFSTR,BUFEND,BUFWRT,BUFRD
+	   
 RUNTST
-* Define the buffer location
-       LI   R0,KEYBUF
-       MOV  R0,@BUFLOC
+* Define the buffer locations
+       LI   R0,BUFSTR
+       MOV  R0,@BUFWRT
+	   MOV  R0,@BUFRD
 * Define the interupt routine
        LI   R0,KEYINT
        MOV  R0,@USRISR
@@ -18,15 +20,32 @@ RUNTST
 * Ignore keys pressed before
 * running the program
        MOVB @NOKEY,@KEYPRS
+* Next position to record a keypress to
+       LI   R12,KEYREC
+* Delay to simulate a busy system
+       LI   R11,>40
 *
 LOOP
-       LIMI 0
-*
+* Copy keys from buffer to record
+KEYCPY C    @BUFRD,@BUFWRT
+	   JEQ  SCRNWR
+	   MOV  @BUFRD,R0
+	   MOVB *R0+,*R12+
+	   CI   R0,BUFEND
+	   JL   KEYCP1
+	   LI   R0,BUFSTR
+KEYCP1 MOV  R0,@BUFRD
+       JMP  KEYCPY
+* Disable interrupts before writing
+* to VDP
+SCRNWR LIMI 0
+* Write the buffer contents to Row 0
        CLR  R0
-       LI   R1,KEYBUF
-       LI   R2,>2E0
+       LI   R1,BUFSTR
+       LI   R2,BUFEND
+	   S    R1,R2
        BLWP @VMBW
-*
+* Write PREVKY and TIMER to Row 23
        MOVB @PREVKY,R0
        LI   R1,TIMHX+4
        BLWP @MAKETX
@@ -38,11 +57,19 @@ LOOP
        LI   R0,>2E0
        LI   R2,8
        BLWP @VMBW
-*
-       LI   R0,>4000
-DELAY  DEC  R0
+* Write recorded keys to the screen Row 1-22
+       LI   R0,>20
+	   LI   R1,KEYREC
+	   LI   R2,22*32
+	   BLWP @VMBW
+* Re-enable interrupts
        LIMI 2
-       JNE  DELAY
+* Wait until delay end before copying
+* keypresses from buffer to record.
+       DEC  R11
+	   JNE  SCRNWR
+* Delay to simulate a busy system
+       LI   R11,>40
        JMP  LOOP
 
 * Make Hexadecimal Text
@@ -96,7 +123,11 @@ CONVB  CI   R4,>0A00
 CNVB2  AI   R4,>3700
        RT
 
-KEYBUF BSS  >300
 TIMHX  TEXT 'ABCD.ABC'
+KEYREC TEXT 'We"re in the money. '
+       TEXT 'We"re in the money. '
+       TEXT 'We"ve got a lot of what it takes '
+	   TEXT 'to get alonggg.'
+       BSS  22*32
 
        END
