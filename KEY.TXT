@@ -1,6 +1,10 @@
        DEF  RUNTST
+	   DEF  KEYDVC,KEYPRS,USRISR
+	   DEF  NOKEY
+	   DEF  KEYINT
 *
        REF  VSBW,KSCAN,VMBW
+	   REF  BUFLOC,TIMER,PREVKY
 
 * Keyboard device to be checked
 KEYDVC EQU  >8374
@@ -12,55 +16,12 @@ KEYSTS EQU  >837C
 * defined service routine
 USRISR EQU  >83C4
 
-* Time remaining before character repeat
-TIMER  DATA 0
 * The delay before initial repeat
 WAIT1  DATA >18
 * The delay before additional repeats
 WAIT2  DATA >4
 
-BUFLOC DATA KEYBUF
-PREVKY BYTE 0
 NOKEY  BYTE >FF
-KEYBUF BSS  >300
-TIMHX  TEXT 'ABCD.ABC'
-
-RUNTST
-* Define the interupt routine
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
-* Specify whole keyboard
-       CLR  R0
-       MOVB R0,@KEYDVC
-* Ignore keys pressed before
-* running the program
-       MOVB @NOKEY,@KEYPRS
-*
-LOOP
-       LIMI 0
-*
-       CLR  R0
-       LI   R1,KEYBUF
-       LI   R2,>2E0
-       BLWP @VMBW
-*
-       MOVB @PREVKY,R0
-       LI   R1,TIMHX+4
-       BLWP @MAKETX
-*
-       MOV  @TIMER,R0
-       LI   R1,TIMHX
-       BLWP @MAKETX
-*
-       LI   R0,>2E0
-       LI   R2,8
-       BLWP @VMBW
-*
-       LI   R0,>4000
-DELAY  DEC  R0
-       LIMI 2
-       JNE  DELAY
-       JMP  LOOP
 
 * Use an interupt to record key presses
 * so that if the computer is working on
@@ -70,7 +31,7 @@ KEYINT BLWP @KSCAN
        CB   @KEYPRS,@NOKEY
        JNE  KEYDWN
        MOVB @KEYPRS,@PREVKY
-KEYEND RT
+       RT
 * A key has been pressed.
 KEYDWN CB   @KEYPRS,@PREVKY
        JNE  KEYNEW
@@ -83,60 +44,9 @@ KEYAGN MOV  @WAIT2,@TIMER
 KEYNEW MOV  @WAIT1,@TIMER
        MOVB @KEYPRS,@PREVKY
 * Happens regardless of repeat-status
+* TODO: Don't let the BUFLOC pass the buffer edge
 KEYALL MOV  @BUFLOC,R0
        MOVB @KEYPRS,*R0+
        MOV  R0,@BUFLOC
-       RT
-
-* Make Hexadecimal Text
-* ----------------------
-* R0: Word to convert
-* R1: Address of output text (4 bytes)
-MAKETX DATA WORKSP,MAKEP
-WORKSP BSS  >20
-STACK  BSS  >20
-MAKEP  LI   R12,STACK
-       MOV  *R13,R0
-       MOV  @2(R13),R1
-       BL   @MAKEHX
-       RTWP
-MAKEHX MOV  R11,*R12+
-       BL   @MAKEP1
-       SWPB R0
-       BL   @MAKEP1
-       SWPB R0
-* return
-       DECT R12
-       MOV  *R12,R11
-       RT
- 
-MAKEP1 MOV  R11,*R12+
-       MOV  R4,*R12+
-* High Nibble
-       MOVB R0,R4
-       SRL  R4,4
-       BL   @CONVB
-       MOVB R4,*R1
-       INC  R1
-* Low Nibble
-       MOVB R0,R4
-       SLA  R4,4
-       SRL  R4,4
-       BL   @CONVB
-       MOVB R4,*R1
-       INC  R1
-* Return
-       DECT R12
-       MOV  *R12,R4
-       DECT R12
-       MOV  *R12,R11
-       RT
-* Convert Byte to ASCII code
-CONVB  CI   R4,>0A00
-       JHE  CNVB2
-       AI   R4,>3000
-       RT
-CNVB2  AI   R4,>3700
-       RT
-
+KEYEND RT
        END

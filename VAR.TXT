@@ -16,6 +16,8 @@
        DEF  PARINX,LININX,CHRPAX,CHRLIX
        DEF  WINOFF
        DEF  INSTMD
+* KEY.TXT
+       DEF  BUFLOC,TIMER,PREVKY
 
 * Areas of memory that absolutely have
 * to be in RAM and could never be part
@@ -89,4 +91,12 @@ WINOFF DATA 0
 INSTMD DATA 0
        EVEN
 
+* KEY.TXT
+* Address where the next keypress 
+* should be stored.
+BUFLOC DATA 0
+* Time remaining before character repeat
+TIMER  DATA 0
+*
+PREVKY BYTE 0
        END
