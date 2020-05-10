@@ -39,6 +39,23 @@ ARRYTST.TXT - Array tests
 
 ARRYLOAD.TXT - Loads and runs array tests and their dependencies.
 
+### KEY
+
+KEY.TXT - contains a routine that takes input from the keyboard and places it in a key-press buffer.
+If some part of the program is processing data for a long time, a user's keystrokes will still be stored and processed.
+The routine is meant to be run from an interrupt.
+
+KEYTST.TXT - a demo of the routine in KEY.TXT.
+It displays the contents of the key-press buffer on the top row of the screen.
+On the rest of the screen it shows the contents being copied from the buffer to another area of memory.
+The demo uses a delay to simulate being busy.
+This demonstrates copying the key presses out of the buffer without loosing them every once in a while.
+
+### INPUT
+
+INPUT.TXT - a routine that reads the contents of the key-press buffer and processes different key strokes.
+This may include adding text to a string, or using an arrow key.
+
 ### VAR & CONST
 
 CONST.TXT - Stores some constant values that are shared by at least two source code files
@@ -46,3 +63,6 @@ CONST.TXT - Stores some constant values that are shared by at least two source c
 VAR.TXT - All areas of memory that can change should ideally be located here.
 If the finished program is small enough, then I can simulate a ROM cartridge for most of the code.
 But variables and workspaces will still need to be stored in the memory expansion RAM.
+
+MEMBUF.O - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
+This is a routine useful for storing things like strings.
