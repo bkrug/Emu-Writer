@@ -11,8 +11,6 @@
        DEF  SRCLIN,INDENT,CPI,NXTFMT
        DEF  DSPSTR,CURSTR
 * INPUT.TXT
-       DEF  KEYSTB,KEYSTE,KEYSTX
-	   DEF  OLDSTB,OLDSTE,OLDSTX
        DEF  PARINX,LININX,CHRPAX,CHRLIX
        DEF  WINOFF
        DEF  INSTMD
@@ -64,20 +62,6 @@ DSPSTR DATA 0
 CURSTR DATA 0
 
 * INPUT.TXT
-* Address of the beginning of the key
-* stream that the interupt is currently
-* allowed to write to.
-KEYSTB DATA 0
-* Address of the next available position
-* in the key stream.
-KEYSTE DATA 0
-* First address past the available
-* space for the key stream.
-KEYSTX DATA 0
-* Old addresses for key values
-OLDSTB DATA 0
-OLDSTE DATA 0
-OLDSTX DATA 0
 * Current Paragraph Index
 PARINX DATA 0
 * Line Index in Paragraph
@@ -111,7 +95,7 @@ BUFWRT DATA 0
 * Next address to read a keypress from.
 * If the value here is equal to the
 * value in BUFWRT, then there are no
-* new characters to write.
+* new characters to write.===
 BUFRD  DATA 0
 
        END

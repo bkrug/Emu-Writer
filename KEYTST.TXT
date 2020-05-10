@@ -23,7 +23,7 @@ RUNTST
 * Next position to record a keypress to
        LI   R12,KEYREC
 * Delay to simulate a busy system
-       LI   R11,>40
+       MOV  @BSYDLY,R11
 *
 LOOP
 * Copy keys from buffer to record
@@ -69,8 +69,10 @@ SCRNWR LIMI 0
        DEC  R11
 	   JNE  SCRNWR
 * Delay to simulate a busy system
-       LI   R11,>40
+       MOV  @BSYDLY,R11
        JMP  LOOP
+	   
+BSYDLY DATA >40
 
 * Make Hexadecimal Text
 * ----------------------

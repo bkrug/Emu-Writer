@@ -8,34 +8,27 @@
 
 * variables just for INPUT
        REF  INPTWS
-       REF  KEYSTB,KEYSTE,KEYSTX
-       REF  OLDSTB,OLDSTE,OLDSTX
        REF  PARINX,LININX,CHRPAX,CHRLIX
        REF  WINOFF
        REF  INSTMD
+	   REF  BUFSTR,BUFEND,BUFWRT,BUFRD
 
 * constants
        REF  BLKUSE,USRISR,SIX
        REF  ENDINP
        REF  CHRMIN,CHRMAX
+	   
+QUITTM DATA >500
+QUIT   RTWP
 
 INPUT  DATA INPTWS,INPUT+4
-       BL   @RSVKS
-* Loop that waits for user key input.
+* Wait for a new keypress
 INPUT0 LIMI 2
        LIMI 0
-       C    @KEYSTB,@KEYSTE
-       JEQ  INPUT0
-* Deallocate the old key buffer and
-* allocate a ne key buffer.
-       MOV  @KEYSTB,@OLDSTB
-       MOV  @KEYSTE,@OLDSTE
-       MOV  @KEYSTX,@OLDSTX
-       BL   @RSVKS
-* Record space to deallocate later.
-       MOV  @OLDSTB,R12
+KEYWT  C    @BUFRD,@BUFWRT
+	   JEQ  INPUT0
 * Process the new keystrokes
-INPUT1 MOV  @OLDSTB,R10
+INPUT1 MOV  @BUFRD,R10
 * Handle visible character key strokes
        CB   *R10,@CHRMIN
        JL   KEYBRC
@@ -74,13 +67,16 @@ INPUT3
 *
 * Are there more keystrokes to process?
 *
-       LIMI 2
-       LIMI 0
-       INC  @OLDSTB
-       C    @OLDSTB,@OLDSTE
-       JL   INPUT1
-* No, there are not
-* Wrap paragraph
+	   MOV  @BUFRD,R0
+	   INC  R0
+	   CI   R0,BUFEND
+	   JL   UPDBUF
+	   LI   R0,BUFSTR
+UPDBUF MOV  R0,@BUFRD
+       C    @BUFRD,@BUFWRT
+	   JNE  INPUT1
+* No, there are not.
+* Wrap paragraph.
        MOV  @PARINX,R0
        BLWP @WRAP
        CI   R0,>FFFF
@@ -128,10 +124,8 @@ OFFST1 MOV  @CHRLIX,R2
        JL   OFFST2
        A    R1,@WINOFF
        JMP  OFFST1
+*
 OFFST2
-* deallocate old key stream
-       MOV  R12,R0
-       BLWP @BUFREE
        JMP  INPUT0
 
 INSKEY EQU  >04
@@ -260,19 +254,6 @@ ENTR2  CLR  @CHRPAX
 *
        B    @INPUT3
 
-
-* Reserve new key stream
-RSVKS
-       LI   R0,32
-       BLWP @BUFALC
-       CI   R0,>FFFF
-       JEQ  RTERR
-       MOV  R0,@KEYSTB
-       MOV  R0,@KEYSTE
-       AI   R0,32
-       MOV  R0,@KEYSTX
-       RT
-
 * Somehow let the user know that there
 * is no remaining buffer space.
 RTERR  RTWP
@@ -353,8 +334,6 @@ ADDTX1
 ADDCPY MOVB *R5,*R4
        DEC  R4
        DEC  R5
-       LIMI 2
-       LIMI 0
        C    R5,R3
        JHE  ADDCPY
 * put keystroke in new space

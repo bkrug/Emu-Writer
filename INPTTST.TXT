@@ -7,15 +7,15 @@
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFINT,BUFCPY
+       REF  BUFSTR,BUFEND,BUFWRT,BUFRD       
 
 * variables just for INPUT
-       REF  KEYSTB,KEYSTE,KEYSTX
        REF  PARINX,LININX,CHRPAX,CHRLIX
        REF  WINOFF
        REF  INSTMD
 
 * constants
-       REF  USRISR,SIX
+       REF  USRISR
 
 *
 INSKEY EQU  >04
@@ -232,9 +232,6 @@ PAR3   DATA PAR3A-PAR3-4,WRAP3
 PAR3A
        EVEN
 
-LKYSTB TEXT 'KEYSTB'
-LKYSTE TEXT 'KEYSTB'
-LKYSTX TEXT 'KEYSTX'
 LPRINX TEXT 'PARINX'
 LLNINX TEXT 'LININX'
 LCRPAX TEXT 'CHRPAX'
@@ -1510,27 +1507,35 @@ ERR14N TEXT '....'
 ERR14O
        EVEN
 
-
 ****************************************
 
+TIMHX  TEXT 'wxyz'
 * Interrupt routine to simulate key
 * presses.
 KEYINT
        MOV  @KEYSRC,R0
-       MOV  @KEYSTE,R1
+       MOV  @BUFWRT,R1
        MOV  R0,R2
        AI   R2,8
        C    R0,@KEYEND
        JHE  KEYINR
 KEYIN1 CB   *R0,@UNDRLN
        JEQ  KEYIR2
-       C    R1,@KEYSTX
-       JHE  KEYINR
+* Copy to keypress buffer
        MOVB *R0+,*R1+
-       C    R0,R2
-       JL   KEYIN1
+* If the next position is past the
+* buffer end, move to the buffer start
+       CI   R1,BUFEND
+       JL   KEY1R3
+       LI   R1,BUFSTR
+* Update BUFWRT with the new buffer
+* position, unless this would cause
+* BUFWRT to equal BUFRD
+KEY1R3 C    R1,@BUFRD
+       JEQ  KEYINR
+       MOV  R1,@BUFWRT
+*
 KEYINR MOV  R0,@KEYSRC
-       MOV  R1,@KEYSTE
        RT
 KEYIR2 INC  R0
        JMP  KEYINR
@@ -1550,6 +1555,16 @@ KEYSRC DATA 0
 KEYEND DATA 0
 UNDRLN TEXT '_'
        EVEN
+
+*
+* Allocate space for first keystream of
+* test.
+*
+FSTKS
+       LI   R0,BUFSTR
+       MOV  R0,@BUFWRT
+       MOV  R0,@BUFRD
+       RT
 
 * Compare contents of R0 and R1.
 * Report if they don't match.
@@ -1628,19 +1643,6 @@ STRMS  TEXT 'Test .... failed. '
        TEXT 'Strings do not match at index '
 STRMS2 TEXT '....'
 STRMS1 EVEN
-
-*
-* Allocate space for first keystream of
-* test.
-*
-FSTKS
-       LI   R0,32
-       BLWP @BUFALC
-       MOV  R0,@KEYSTB
-       MOV  R0,@KEYSTE
-       AI   R0,32
-       MOV  R0,@KEYSTX
-       RT
 
 PSUCCS MOV  R3,R0
        LI   R1,PSCCSM+5
