@@ -1,10 +1,26 @@
        DEF  LTEST
-       REF  LOADER,VMBW
+       REF  LOADER,VMBW,VSBW
 
 * Use this program in order to load all
 * of the files needed to test SCRNWRT.
 * It will execute the SCRNWRT tests
 * automatically.
+
+FILES  DATA FILEN1,FILEN2,FILEN3,FILEN4
+       DATA FILEN5,FILEN6,FILEN7,FILEN8
+	   DATA LSTEND
+PDATAE
+FILEN1 TEXT 'DSK2.INPTTST.O'
+FILEN2 TEXT 'DSK2.TESTUTIL.O'
+FILEN3 TEXT 'DSK2.INPUT.O'
+FILEN4 TEXT 'DSK2.MEMBUF.O'
+FILEN5 TEXT 'DSK2.VAR.O'
+FILEN6 TEXT 'DSK2.CONST.O'
+FILEN7 TEXT 'DSK2.ARRAY.O'
+FILEN8 TEXT 'DSK2.WRAP.O'
+LSTEND TEXT ' '
+       EVEN
+	   
 
 PABBUF EQU  >1000
 PAB    EQU  >F80
@@ -17,55 +33,43 @@ PNTR   EQU  >8356
 * Byte 6-7 are not relevant
 * Byte 8 = status o file
 * Byte 9 = file name length
-PDATA1 DATA >0004,PABBUF,>5000,>0000,>000E
-FILEN1 TEXT 'DSK2.INPTTST.O '
-       BSS  7
-PDATA2 DATA >0004,PABBUF,>5000,>0000,>000F
-FILEN2 TEXT 'DSK2.TESTUTIL.O'
-       BSS  7
-PDATA3 DATA >0004,PABBUF,>5000,>0000,>000C
-FILEN3 TEXT 'DSK2.INPUT.O   '
-       BSS  7
-PDATA4 DATA >0004,PABBUF,>5000,>0000,>000D
-FILEN4 TEXT 'DSK2.MEMBUF.O  '
-       BSS  7
-PDATA5 DATA >0004,PABBUF,>5000,>0000,>000A
-FILEN5 TEXT 'DSK2.VAR.O     '
-       BSS  7
-PDATA6 DATA >0004,PABBUF,>5000,>0000,>000C
-FILEN6 TEXT 'DSK2.CONST.O   '
-       BSS  7
-PDATA7 DATA >0004,PABBUF,>5000,>0000,>000C
-FILEN7 TEXT 'DSK2.ARRAY.O   '
-       BSS  7
-PDATA8 DATA >0004,PABBUF,>5000,>0000,>000B
-FILEN8 TEXT 'DSK2.WRAP.O    '
-       BSS  7
-PDATAE
+PDATA  DATA >0004,PABBUF,>5000,>0000,>0000
 
-LDMSG  TEXT 'Loading INPTTST.O, TESTUTIL.O,  '
-       TEXT 'INPUT.O, MEMBUF.O, VAR.O,       '
-       TEXT 'ARRAY.O, CONST.O, WRAP.O        '
-LDMSGE
-
-LTEST  LI   R0,0
-       LI   R1,LDMSG
-       LI   R2,LDMSGE-LDMSG
+LTEST  
+* Store Screen position in R7
+       CLR  R7
+* Store file information in R3,R4, and R5
+       LI   R3,PAB+8
+       LI   R4,FILES
+* Write PAB header
+LTEST1 LI   R0,PAB
+       LI   R1,PDATA
+       LI   R2,10
        BLWP @VMBW
-* Write PAB to VDP
-       LI   R0,PAB
-       LI   R1,PDATA1
-       LI   R2,>20
-LTEST1 BLWP @VMBW
+* Write filename to screen
+       MOV  R7,R0
+       MOV  *R4+,R1
+	   MOV  *R4,R2
+	   S    R1,R2
+       BLWP @VMBW
+	   AI   R7,32
+* Write file name to PAB
+       LI   R0,PAB+10
+	   BLWP @VMBW
+* Write file length to PAB
+       LI   R0,PAB+9
+       MOV  R2,R1
+       SWPB R1
+       BLWP @VSBW
+*
        LI   R6,PAB+9
        MOV  R6,@PNTR
 * Load the assembled code
        BLWP @LOADER
 * If the Eqaul bit is set, report error
        JEQ  RPTERR
-* Update R1 so we can load the next file
-       A    R2,R1
-       CI   R1,PDATAE
+* See if we should run another file
+LTEST2 CI   R4,PDATAE-2
        JL   LTEST1
 * Enter the test program
        B    @RUNTST
@@ -77,28 +81,30 @@ ERRCD1 EVEN
 ERRFL  TEXT 'File: '
 ERRFL1
 *
-RPTERR MOV  R1,R3
+RPTERR
 * Add error code to message
        AI   R0,>3000
        MOVB R0,@ERRCD
 * Display error message
-       LI   R0,>60
+       MOV  R7,R0
        LI   R1,ERRMSG
        LI   R2,ERRCD1-ERRMSG
        BLWP @VMBW
 * Display particular file to fail
-       LI   R0,>80
+       AI   R0,>20
        LI   R1,ERRFL
        LI   R2,ERRFL1-ERRFL
        BLWP @VMBW
        A    R2,R0
-       MOV  R3,R1
-       AI   R1,>A
-       LI   R2,>10
+       MOV  R4,R1
+       AI   R1,10
+       MOV  @8(4),R2
        BLWP @VMBW
 JMP    LIMI 2
        LIMI 0
        JMP  JMP
+
+       TEXT 'LOOKHERE'
 *
 * First loaded program will be found here:
 RUNTST
