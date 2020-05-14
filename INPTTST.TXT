@@ -103,7 +103,7 @@ ENDME  EVEN
 TSTINT
 * Initialize buffer.
        LI   R0,SPACE
-       LI   R1,>2000
+       LI   R1,SPCEND-SPACE
        BLWP @BUFINT
 * Reserve space for margin and format
 * and paragraph list.
@@ -1658,7 +1658,7 @@ PSCCSE
 
 ****************************************
 
-SPACE  BSS  >2000
+SPACE  BSS  >800
 SPCEND
 
        END
