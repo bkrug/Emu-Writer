@@ -27,18 +27,6 @@ WRAPTST.TXT - unit tests for WRAP.TXT
 WRAPLOAD.TXT - loads WRAP.O, WRAPTST.O, and some other object code.
 After loading, use LTSEST to run.
 
-### ARRAY
-
-ARRAY.TXT - a set of routines for managing arrays in Assembly.
-All arrays have items whose size is a power of two (2,4,8,16, ...).
-The routines allow you to insert, add, or delete items.
-You can also get the address of an item with a given index.
-These routines depend upon MEMBUF.TXT
-
-ARRYTST.TXT - Array tests
-
-ARRYLOAD.TXT - Loads and runs array tests and their dependencies.
-
 ### KEY
 
 KEY.TXT - contains a routine that takes input from the keyboard and places it in a key-press buffer.
