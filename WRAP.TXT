@@ -4,7 +4,7 @@
        REF  BUFREE
        REF  ARYALC,ARYADD,ARYADR
 * Workspace
-       REF  WRAPSP
+       REF  WRAPWS
 * Constants
        REF  SPACE,DASH,SIX
        REF  FMTLEN,MGNLEN,PGWDTH
@@ -19,7 +19,7 @@
 * Output:
 * R0 - >FFFF implies an error.
 *
-WRAP   DATA WRAPSP,WRAP+4
+WRAP   DATA WRAPWS,WRAP+4
 *=======================================
 *
 * Figure out available line width based
