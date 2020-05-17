@@ -86,7 +86,7 @@ PREVKY BYTE 0
 * First address of key buffer
 KEYSTR
 * Buffer to store keypresses
-KEYBUF BSS  >20
+KEYBUF BSS  >10
 * First address after key buffer
 KEYEND 
 * Address where the next keypress 
