@@ -4,13 +4,13 @@
 	   REF  KEYDVC,KEYPRS,USRISR
 	   REF  NOKEY,PREVKY,TIMER
 	   REF  KEYINT
-	   REF  BUFSTR,BUFEND,BUFWRT,BUFRD
+	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 	   
 RUNTST
 * Define the buffer locations
-       LI   R0,BUFSTR
-       MOV  R0,@BUFWRT
-	   MOV  R0,@BUFRD
+       LI   R0,KEYSTR
+       MOV  R0,@KEYWRT
+	   MOV  R0,@KEYRD
 * Define the interupt routine
        LI   R0,KEYINT
        MOV  R0,@USRISR
@@ -27,22 +27,22 @@ RUNTST
 *
 LOOP
 * Copy keys from buffer to record
-KEYCPY C    @BUFRD,@BUFWRT
+KEYCPY C    @KEYRD,@KEYWRT
 	   JEQ  SCRNWR
-	   MOV  @BUFRD,R0
+	   MOV  @KEYRD,R0
 	   MOVB *R0+,*R12+
-	   CI   R0,BUFEND
+	   CI   R0,KEYEND
 	   JL   KEYCP1
-	   LI   R0,BUFSTR
-KEYCP1 MOV  R0,@BUFRD
+	   LI   R0,KEYSTR
+KEYCP1 MOV  R0,@KEYRD
        JMP  KEYCPY
 * Disable interrupts before writing
 * to VDP
 SCRNWR LIMI 0
 * Write the buffer contents to Row 0
        CLR  R0
-       LI   R1,BUFSTR
-       LI   R2,BUFEND
+       LI   R1,KEYSTR
+       LI   R2,KEYEND
 	   S    R1,R2
        BLWP @VMBW
 * Write PREVKY and TIMER to Row 23

@@ -16,7 +16,7 @@
        DEF  INSTMD
 * KEY.TXT
        DEF  TIMER,PREVKY,KEYBUF
-	   DEF  BUFSTR,BUFEND,BUFWRT,BUFRD
+	   DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
 
 * Areas of memory that absolutely have
 * to be in RAM and could never be part
@@ -84,18 +84,18 @@ TIMER  DATA 0
 * repeat.
 PREVKY BYTE 0
 * First address of key buffer
-BUFSTR
+KEYSTR
 * Buffer to store keypresses
 KEYBUF BSS  >20
 * First address after key buffer
-BUFEND 
+KEYEND 
 * Address where the next keypress 
 * should be stored.
-BUFWRT DATA 0
+KEYWRT DATA 0
 * Next address to read a keypress from.
 * If the value here is equal to the
-* value in BUFWRT, then there are no
+* value in KEYWRT, then there are no
 * new characters to write.===
-BUFRD  DATA 0
+KEYRD  DATA 0
 
        END

@@ -11,7 +11,7 @@
        REF  PARINX,LININX,CHRPAX,CHRLIX
        REF  WINOFF
        REF  INSTMD
-	   REF  BUFSTR,BUFEND,BUFWRT,BUFRD
+	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 
 * constants
        REF  BLKUSE,USRISR,SIX
@@ -25,10 +25,10 @@ INPUT  DATA INPTWS,INPUT+4
 * Wait for a new keypress
 INPUT0 LIMI 2
        LIMI 0
-KEYWT  C    @BUFRD,@BUFWRT
+KEYWT  C    @KEYRD,@KEYWRT
 	   JEQ  INPUT0
 * Process the new keystrokes
-INPUT1 MOV  @BUFRD,R10
+INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
        CB   *R10,@CHRMIN
        JL   KEYBRC
@@ -67,13 +67,13 @@ INPUT3
 *
 * Are there more keystrokes to process?
 *
-	   MOV  @BUFRD,R0
+	   MOV  @KEYRD,R0
 	   INC  R0
-	   CI   R0,BUFEND
+	   CI   R0,KEYEND
 	   JL   UPDBUF
-	   LI   R0,BUFSTR
-UPDBUF MOV  R0,@BUFRD
-       C    @BUFRD,@BUFWRT
+	   LI   R0,KEYSTR
+UPDBUF MOV  R0,@KEYRD
+       C    @KEYRD,@KEYWRT
 	   JNE  INPUT1
 * No, there are not.
 * Wrap paragraph.

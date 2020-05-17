@@ -7,7 +7,7 @@
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFINT,BUFCPY
-       REF  BUFSTR,BUFEND,BUFWRT,BUFRD       
+       REF  KEYSTR,KEYEND,KEYWRT,KEYRD       
 
 * variables just for INPUT
        REF  PARINX,LININX,CHRPAX,CHRLIX
@@ -270,7 +270,7 @@ TST1   MOV  R11,R12
        LI   R0,KEYL1
        MOV  R0,@KEYSRC
        LI   R0,KEYL1E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -394,7 +394,7 @@ TST2   MOV  R11,R12
        LI   R0,KEYL2
        MOV  R0,@KEYSRC
        LI   R0,KEYL2E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -509,7 +509,7 @@ TST3   MOV  R11,R12
        LI   R0,KEYL3
        MOV  R0,@KEYSRC
        LI   R0,KEYL3E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -612,7 +612,7 @@ TST4   MOV  R11,R12
        LI   R0,KEYL4
        MOV  R0,@KEYSRC
        LI   R0,KEYL4E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -714,7 +714,7 @@ TST5A  LI   R0,2
        LI   R0,KEYL5
        MOV  R0,@KEYSRC
        LI   R0,KEYL5E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -834,7 +834,7 @@ TST7   MOV  R11,R12
        LI   R0,KEYL7
        MOV  R0,@KEYSRC
        LI   R0,KEYL7E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -918,7 +918,7 @@ TST8   MOV  R11,R12
        LI   R0,KEYL8
        MOV  R0,@KEYSRC
        LI   R0,KEYL8E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -1003,7 +1003,7 @@ TST9   MOV  R11,R12
        LI   R0,KEYL8
        MOV  R0,@KEYSRC
        LI   R0,KEYL8E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -1076,7 +1076,7 @@ TST10  MOV  R11,R12
        LI   R0,KEYL10
        MOV  R0,@KEYSRC
        LI   R0,KEY10E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -1158,7 +1158,7 @@ TST11  MOV  R11,R12
        LI   R0,KEYL10
        MOV  R0,@KEYSRC
        LI   R0,KEY10E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -1230,7 +1230,7 @@ TST12  MOV  R11,R12
        LI   R0,KEYL12
        MOV  R0,@KEYSRC
        LI   R0,KEY12E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of old paragraph
@@ -1334,7 +1334,7 @@ TST13  MOV  R11,R12
        LI   R0,KEYL12
        MOV  R0,@KEYSRC
        LI   R0,KEY12E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of earlier paragraph
@@ -1438,7 +1438,7 @@ TST14  MOV  R11,R12
        LI   R0,KEYL12
        MOV  R0,@KEYSRC
        LI   R0,KEY12E
-       MOV  R0,@KEYEND
+       MOV  R0,@KEYSCE
 * Run routine
        BLWP @INPUT
 * Get address of new paragraph
@@ -1514,10 +1514,10 @@ TIMHX  TEXT 'wxyz'
 * presses.
 KEYINT
        MOV  @KEYSRC,R0
-       MOV  @BUFWRT,R1
+       MOV  @KEYWRT,R1
        MOV  R0,R2
        AI   R2,8
-       C    R0,@KEYEND
+       C    R0,@KEYSCE
        JHE  KEYINR
 KEYIN1 CB   *R0,@UNDRLN
        JEQ  KEYIR2
@@ -1525,15 +1525,15 @@ KEYIN1 CB   *R0,@UNDRLN
        MOVB *R0+,*R1+
 * If the next position is past the
 * buffer end, move to the buffer start
-       CI   R1,BUFEND
+       CI   R1,KEYEND
        JL   KEY1R3
-       LI   R1,BUFSTR
-* Update BUFWRT with the new buffer
+       LI   R1,KEYSTR
+* Update KEYWRT with the new buffer
 * position, unless this would cause
-* BUFWRT to equal BUFRD
-KEY1R3 C    R1,@BUFRD
+* KEYWRT to equal KEYRD
+KEY1R3 C    R1,@KEYRD
        JEQ  KEYINR
-       MOV  R1,@BUFWRT
+       MOV  R1,@KEYWRT
 *
 KEYINR MOV  R0,@KEYSRC
        RT
@@ -1552,7 +1552,7 @@ KEYIR2 INC  R0
 * but let the INPUT routine worry about
 * that.
 KEYSRC DATA 0
-KEYEND DATA 0
+KEYSCE DATA 0
 UNDRLN TEXT '_'
        EVEN
 
@@ -1561,9 +1561,9 @@ UNDRLN TEXT '_'
 * test.
 *
 FSTKS
-       LI   R0,BUFSTR
-       MOV  R0,@BUFWRT
-       MOV  R0,@BUFRD
+       LI   R0,KEYSTR
+       MOV  R0,@KEYWRT
+       MOV  R0,@KEYRD
        RT
 
 * Compare contents of R0 and R1.
