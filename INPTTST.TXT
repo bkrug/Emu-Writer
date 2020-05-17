@@ -319,21 +319,12 @@ TST1   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL1  TEXT '________'
-       TEXT '________'
-       TEXT '3_______'
+KEYL1  TEXT '3_______'
        TEXT ',_______'
-       TEXT '________'
-       TEXT '________'
-       TEXT '________'
        TEXT '500-ye__'
-       TEXT '________'
        TEXT 'ar-lo___'
        TEXT 'n_______'
-       TEXT '________'
        TEXT 'g ______'
-       TEXT '________'
-       TEXT '________'
        BYTE INSKEY
        TEXT '_______'
        TEXT 'H_______'
@@ -343,7 +334,6 @@ KEYL1  TEXT '________'
        TEXT 'O_______'
        TEXT 'R_______'
        TEXT 'Y_______'
-       TEXT '________'
        BYTE >FE
        BSS  7
 KEYL1E
@@ -443,21 +433,7 @@ TST2   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL2  TEXT '________'
-       TEXT ' _______'
-       TEXT '________'
-       TEXT 'a_______'
-       TEXT 'b_______'
-       TEXT '________'
-       TEXT '________'
-       TEXT 'c_______'
-       TEXT 'd_______'
-       TEXT '________'
-       TEXT 'e_______'
-       TEXT 'f_______'
-       TEXT '________'
-       TEXT ' _______'
-       TEXT '________'
+KEYL2  TEXT ' abcdef '
        BYTE >FE
        BSS  7
 KEYL2E
@@ -558,13 +534,7 @@ TST3   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL3  TEXT '________'
-       TEXT ' _______'
-       TEXT '________'
-       TEXT '@_______'
-       TEXT ' _______'
-       TEXT '________'
-       TEXT '________'
+KEYL3  TEXT ' @ _____'
        BYTE >FE
        BSS  7
 KEYL3E
@@ -661,12 +631,8 @@ TST4   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL4  TEXT '________'
-       TEXT 'essen___'
-       TEXT '________'
-       TEXT 'tially _'
-       TEXT '________'
-       TEXT '________'
+KEYL4  TEXT 'essentia'
+       TEXT 'lly ____'
        BYTE >FE
        BSS  7
 KEYL4E
@@ -762,19 +728,8 @@ TST5A  LI   R0,2
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL5  TEXT ' _______'
-       TEXT 'During__'
-       TEXT '________'
-       TEXT ' _______'
-       TEXT '________'
-       TEXT '________'
-       TEXT 'the_____'
-       TEXT ' _______'
-       TEXT 'H_______'
-       TEXT '________'
-       TEXT 'a_______'
-       TEXT '________'
-       TEXT 'n_______'
+KEYL5  TEXT ' During '
+       TEXT 'the Han_'
        BYTE >FE
        BSS  7
 KEYL5E
@@ -882,11 +837,8 @@ TST7   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL7  TEXT '________'
-       BYTE >F0
+KEYL7  BYTE >F0
        TEXT '_______'
-       TEXT '________'
-       TEXT '________'
        BYTE >FE
        BSS  7
 KEYL7E
@@ -966,12 +918,8 @@ TST8   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL8  TEXT '________'
-       TEXT '________'
-       BYTE BCKKEY
+KEYL8  BYTE BCKKEY
        TEXT '_______'
-       TEXT '________'
-       TEXT '________'
        BYTE >FE
        BSS  7
 KEYL8E
@@ -1125,8 +1073,6 @@ TST10  MOV  R11,R12
 * input from the keyboard.
 KEYL10 BYTE FWDKEY
        TEXT '_______'
-       TEXT '________'
-       TEXT '________'
        BYTE >FE
        BSS  7
 KEY10E
@@ -1287,8 +1233,7 @@ TST12  MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL12 TEXT '________'
-       BYTE ENTER
+KEYL12 BYTE ENTER
        TEXT '_______'
        BYTE >FE
        BSS  7
