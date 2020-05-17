@@ -2,7 +2,10 @@
 * Definitions in this file
 *
 * Register Workspaces
-       DEF  WRAPSP,SCRNWS,ARRYWS,INPTWS
+       DEF  WRAPSP,SCRNWS,INPTWS
+       DEF  ARRYWS,STRWS
+* Memory Chunk Buffer
+       DEF  BUFADR,BUFEND
 * Arrays
        DEF  LINLST,FMTLST,MGNLST
 * WRAP.TXT
@@ -26,6 +29,7 @@
 * Areas for workspace registers
 *
        TEXT 'WORKSPCE'
+STRWS  BSS  >20
 WRAPSP BSS  >20
 SCRNWS BSS  >20
 ARRYWS BSS  >20
@@ -42,6 +46,13 @@ LINLST DATA 0
 FMTLST DATA 0
 * Address of margin list
 MGNLST DATA 0
+
+* MEMBUF.O
+* holds block size
+* holds address of buffer
+BUFADR BSS  >2
+* holds first address after the buffer
+BUFEND BSS  >2
 
 * WRAP.TXT
 FMTEND DATA 0

@@ -1,4 +1,4 @@
-       DEF  BLKUSE,FMTLEN,MGNLEN,PGWDTH
+       DEF  FMTLEN,MGNLEN,PGWDTH
        DEF  SIX
        DEF  USRISR
        DEF  DELKEY
@@ -12,7 +12,8 @@
 * The left-most bit of a memory header
 * indicates if the memory chunk is in
 * use or not.
-BLKUSE DATA >8000
+* It is defined in MEMBUF.O
+* BLKUSE DATA >8000
 * Number of bytes in each entry of the
 * margin list.
 MGNLEN
