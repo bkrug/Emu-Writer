@@ -319,21 +319,11 @@ TST1   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL1  TEXT '3_______'
-       TEXT ',_______'
-       TEXT '500-ye__'
-       TEXT 'ar-lo___'
-       TEXT 'n_______'
-       TEXT 'g ______'
+KEYL1  TEXT '3,500-ye'
+       TEXT 'ar-long '
        BYTE INSKEY
        TEXT '_______'
-       TEXT 'H_______'
-       TEXT 'I_______'
-       TEXT 'S_______'
-       TEXT 'T_______'
-       TEXT 'O_______'
-       TEXT 'R_______'
-       TEXT 'Y_______'
+       TEXT 'HISTORY_'
        BYTE >FE
        BSS  7
 KEYL1E
