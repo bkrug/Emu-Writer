@@ -3,11 +3,14 @@
 * Update visual position indicators
        REF  POSUPD
 *
+       REF  LINLST
        REF  PARINX,CHRPAX
 	   REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
 
 TSTLST DATA TSTEND-TSTLST-2/8
+* Calculate LININX and CHRLIX
+* based on PARINX and CHRPAX
        DATA POS1
        TEXT 'POS1  '
 TSTEND
@@ -15,12 +18,18 @@ RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
 RSLTFE
        EVEN
+FAKEAD DATA >FFFE
  
 *
+* Calculate LININX and CHRLIX
+* based on PARINX and CHRPAX
 *
-POS1   LI   R0,2
+POS1   
+       LI   R0,POS1L
+	   MOV  R0,@LINLST
+       LI   R0,2
        MOV  R0,@PARINX
-	   LI   R0,78
+	   LI   R0,53
 	   MOV  R0,@CHRPAX
        BLWP @POSUPD
 *
@@ -29,12 +38,35 @@ POS1   LI   R0,2
 	   LI   R2,POS1MS
 	   LI   R3,POS1ME-POS1MS
        BLWP @AEQ
-	   LI   R0,18
+	   LI   R0,8
        MOV  @CHRLIX,R1
-	   LI   R2,POS1MS
-	   LI   R3,POS1ME-POS1MS
+	   LI   R2,POS1NS
+	   LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
-POS1MS TEXT 'posupd test failed.'
+POS1MS TEXT 'Incorrect index of line within paragraph.'
 POS1ME EVEN
+POS1NS TEXT 'Incorrect index of character within line.'
+POS1NE EVEN
+*Line List
+POS1L  DATA 4,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA POS1P
+       DATA FAKEAD
+POS1LE
+POS1P  DATA 45+41+45+46+33
+       DATA POS1W
+       TEXT 'The Phoenician alphabet is an alphabet (more '
+	   TEXT 'specifically, an abjad) consisting of 22 '
+	   TEXT 'consonant letters only, leaving vowel sounds '
+	   TEXT 'implicit, although certain late varieties use '
+	   TEXT 'matres lectionis for some vowels.'
+       EVEN
+POS1PE 
+POS1W  DATA 4,1
+       DATA 45
+	   DATA 45+41
+	   DATA 45+41+45
+       DATA 45+41+45+46
        END

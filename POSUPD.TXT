@@ -2,10 +2,38 @@
 *
        REF  POSUWS
 *
+       REF  LINLST
+       REF  ARYADR
        REF  PARINX,CHRPAX
 	   REF  LININX,CHRLIX
-       REF  WINOFF,WINPAR,WINLIN	   
-	   
+       REF  WINOFF,WINPAR,WINLIN
+
+       TEXT 'POSUPD'	   
 POSUPD DATA POSUWS,POSUPD+4
+* get address of current paragraph
+       MOV  @LINLST,R0
+	   C    *R0+,*R0+
+	   MOV  @PARINX,R1
+	   SLA  R1,1
+	   A    R0,R1
+	   MOV  *R1,R1
+* get wrap list first element address
+       MOV  @2(1),R2
+	   C    *R2+,*R2+
+* R3 = first line in paragraph
+* R4 = character within paragraph
+       CLR  R3
+       MOV  @CHRPAX,R4
+* Change R3 to current line in para
+* Change R4 to current char in line
+POS1   C    R4,*R2
+	   JL   POS2
+	   INC  R3
+	   S    *R2+,R4
+	   JMP  POS1
+*
+POS2   MOV  R3,@LININX
+       MOV  R4,@CHRLIX
        RTWP
+
        END
