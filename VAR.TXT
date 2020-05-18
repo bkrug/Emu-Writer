@@ -2,8 +2,8 @@
 * Definitions in this file
 *
 * Register Workspaces
-       DEF  WRAPWS,SCRNWS,INPTWS
        DEF  ARRYWS,STRWS
+       DEF  WRAPWS,SCRNWS,INPTWS,POSUWS
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
 * Arrays
@@ -14,9 +14,11 @@
        DEF  SRCLIN,INDENT,CPI,NXTFMT
        DEF  DSPSTR,CURSTR
 * INPUT.TXT
-       DEF  PARINX,LININX,CHRPAX,CHRLIX
-       DEF  WINOFF
+       DEF  PARINX,CHRPAX
        DEF  INSTMD
+* POSUPDT.TXT
+	   DEF  LININX,CHRLIX
+       DEF  WINOFF,WINPAR,WINLIN
 * KEY.TXT
        DEF  TIMER,PREVKY,KEYBUF
 	   DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
@@ -34,6 +36,7 @@ ARRYWS BSS  >20
 WRAPWS BSS  >20
 INPTWS BSS  >20
 SCRNWS BSS  >20
+POSUWS BSS  >20
 
 *
 * Areas for changeable values
@@ -75,17 +78,22 @@ CURSTR DATA 0
 * INPUT.TXT
 * Current Paragraph Index
 PARINX DATA 0
-* Line Index in Paragraph
-LININX DATA 0
 * Character Index in Paragraph
 CHRPAX DATA 0
-* Character Index in line
-CHRLIX DATA 0
-* Window offset
-WINOFF DATA 0
 * Insert Mode. 0 = insert, -1 = overwrit
 INSTMD DATA 0
-       EVEN
+
+* POSUPDT.TXT
+* Line Index in Paragraph
+LININX DATA 0
+* Character Index in line
+CHRLIX DATA 0
+* Window horizontal offset
+WINOFF DATA 0
+* First Paragraph on screen
+WINPAR DATA 0
+* First line of paragraph on screen
+WINLIN DATA 0
 
 * KEY.TXT
 * Time remaining before character repeat
