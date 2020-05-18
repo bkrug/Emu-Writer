@@ -1,0 +1,40 @@
+       DEF  TSTLST,RSLTFL
+       REF  AEQ
+* Update visual position indicators
+       REF  POSUPD
+*
+       REF  PARINX,CHRPAX
+	   REF  LININX,CHRLIX
+       REF  WINOFF,WINPAR,WINLIN
+
+TSTLST DATA TSTEND-TSTLST-2/8
+       DATA POS1
+       TEXT 'POS1  '
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK2.TESTRESULT.TXT'
+RSLTFE
+       EVEN
+ 
+*
+*
+POS1   LI   R0,2
+       MOV  R0,@PARINX
+	   LI   R0,78
+	   MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+	   LI   R0,1
+       MOV  @LININX,R1
+	   LI   R2,POS1MS
+	   LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+	   LI   R0,18
+       MOV  @CHRLIX,R1
+	   LI   R2,POS1MS
+	   LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       RT
+POS1MS TEXT 'posupd test failed.'
+POS1ME EVEN
+       END

@@ -1,0 +1,11 @@
+       DEF  POSUPD
+*
+       REF  POSUWS
+*
+       REF  PARINX,CHRPAX
+	   REF  LININX,CHRLIX
+       REF  WINOFF,WINPAR,WINLIN	   
+	   
+POSUPD DATA POSUWS,POSUPD+4
+       RTWP
+       END
