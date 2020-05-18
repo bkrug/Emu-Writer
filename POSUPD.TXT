@@ -17,7 +17,7 @@ POSUPD DATA POSUWS,POSUPD+4
 	   SLA  R1,1
 	   A    R0,R1
 	   MOV  *R1,R1
-* get wrap list first element address
+* R2 = addres of wrap list's first element
        MOV  @2(1),R2
 	   C    *R2+,*R2+
 * R3 = first line in paragraph
@@ -29,10 +29,16 @@ POSUPD DATA POSUWS,POSUPD+4
 POS1   C    R4,*R2
 	   JL   POS2
 	   INC  R3
-	   S    *R2+,R4
+	   INCT R2
 	   JMP  POS1
+* If cursor is not on first line,
+* subtract wrap position from R4
+POS2   MOV  R3,R3
+       JEQ  POS3
+	   DECT R2
+       S    *R2,R4
 *
-POS2   MOV  R3,@LININX
+POS3   MOV  R3,@LININX
        MOV  R4,@CHRLIX
        RTWP
 

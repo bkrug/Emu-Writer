@@ -23,6 +23,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * paragraph.
 	   DATA POS3
 	   TEXT 'POS3  '
+* Calculate LININX and CHRLIX
+* based on first paragraph in the
+* document.
+       DATA POS4
+       TEXT 'POS4  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -128,6 +133,54 @@ POS1P  DATA 45+41+45+46+33
        EVEN
 POS1PE 
 POS1W  DATA 4,1
+       DATA 45
+	   DATA 45+41
+	   DATA 45+41+45
+       DATA 45+41+45+46
+	   
+*
+* Calculate LININX and CHRLIX
+* based on first paragraph in the
+* document.
+*
+POS4
+       LI   R0,POS4L
+	   MOV  R0,@LINLST
+       LI   R0,0
+       MOV  R0,@PARINX
+	   LI   R0,90
+	   MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+	   LI   R0,2
+       MOV  @LININX,R1
+	   LI   R2,POS1MS
+	   LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+*
+	   LI   R0,4
+       MOV  @CHRLIX,R1
+	   LI   R2,POS1NS
+	   LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*Line List
+POS4L  DATA 3,1
+       DATA POS4P
+       DATA FAKEAD
+       DATA FAKEAD
+POS4LE
+POS4P  DATA 45+41+45+46+33
+       DATA POS4W
+       TEXT 'The Phoenician alphabet is an alphabet (more '
+	   TEXT 'specifically, an abjad) consisting of 22 '
+	   TEXT 'consonant letters only, leaving vowel sounds '
+	   TEXT 'implicit, although certain late varieties use '
+	   TEXT 'matres lectionis for some vowels.'
+       EVEN
+POS4PE 
+POS4W  DATA 4,1
        DATA 45
 	   DATA 45+41
 	   DATA 45+41+45
