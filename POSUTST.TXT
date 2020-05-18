@@ -13,6 +13,16 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * based on PARINX and CHRPAX
        DATA POS1
        TEXT 'POS1  '
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of
+* paragraph.
+       DATA POS2
+	   TEXT 'POS2  '
+* Calculate LININX and CHRLIX
+* when cursor is at the end of the 
+* paragraph.
+	   DATA POS3
+	   TEXT 'POS3  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -44,6 +54,59 @@ POS1
 	   LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
+	   
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of
+* paragraph.
+*
+POS2
+       LI   R0,POS1L
+	   MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+	   LI   R0,0
+	   MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+	   LI   R0,0
+       MOV  @LININX,R1
+	   LI   R2,POS1MS
+	   LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+	   LI   R0,0
+       MOV  @CHRLIX,R1
+	   LI   R2,POS1NS
+	   LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the end of the 
+* paragraph.
+*
+POS3
+       LI   R0,POS1L
+	   MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+	   LI   R0,53
+	   MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+	   LI   R0,1
+       MOV  @LININX,R1
+	   LI   R2,POS1MS
+	   LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+	   LI   R0,8
+       MOV  @CHRLIX,R1
+	   LI   R2,POS1NS
+	   LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+	   
 POS1MS TEXT 'Incorrect index of line within paragraph.'
 POS1ME EVEN
 POS1NS TEXT 'Incorrect index of character within line.'
