@@ -38,6 +38,24 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * document.
        DATA POS6
        TEXT 'POS6  '
+* Calculate LININX and CHRLIX
+* based on last paragraph in the
+* document.
+       DATA POS7
+       TEXT 'POS7  '
+* Calculate LININX and CHRLIX
+* based on only paragraph in the
+* document.
+       DATA POS8
+       TEXT 'POS8  '
+* Calculate LININX and CHRLIX
+* based on a one-line paragraph.
+       DATA POS9
+       TEXT 'POS9  '
+* Calculate LININX and CHRLIX
+* based on an empty paragraph.
+       DATA POSA
+       TEXT 'POSA  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -247,4 +265,181 @@ POS6W  DATA 4,1
        DATA 45+41
        DATA 45+41+45
        DATA 45+41+45+46
+       
+*
+* Calculate LININX and CHRLIX
+* based on last paragraph in the
+* document.
+*
+POS7
+       LI   R0,POS7L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,55
+       MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+       LI   R0,1
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+*
+       LI   R0,10
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*Line List
+POS7L  DATA 3,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA POS7P
+POS7LE
+POS7P  DATA 45+41+45+46+33
+       DATA POS7W
+       TEXT 'The Phoenician alphabet is an alphabet (more '
+       TEXT 'specifically, an abjad) consisting of 22 '
+       TEXT 'consonant letters only, leaving vowel sounds '
+       TEXT 'implicit, although certain late varieties use '
+       TEXT 'matres lectionis for some vowels.'
+       EVEN
+POS7PE
+POS7W  DATA 4,1
+       DATA 45
+       DATA 45+41
+       DATA 45+41+45
+       DATA 45+41+45+46
+       
+*
+* Calculate LININX and CHRLIX
+* based on only paragraph in the
+* document.
+*
+POS8
+       LI   R0,POS8L
+       MOV  R0,@LINLST
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,45+41+17
+       MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+       LI   R0,2
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+*
+       LI   R0,17
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*Line List
+POS8L  DATA 1,1
+       DATA POS8P
+POS8LE
+POS8P  DATA 45+41+45+46+33
+       DATA POS8W
+       TEXT 'The Phoenician alphabet is an alphabet (more '
+       TEXT 'specifically, an abjad) consisting of 22 '
+       TEXT 'consonant letters only, leaving vowel sounds '
+       TEXT 'implicit, although certain late varieties use '
+       TEXT 'matres lectionis for some vowels.'
+       EVEN
+POS8PE
+POS8W  DATA 4,1
+       DATA 45
+       DATA 45+41
+       DATA 45+41+45
+       DATA 45+41+45+46
+       
+*
+* Calculate LININX and CHRLIX
+* based on a one-line paragraph.
+*
+POS9
+       LI   R0,POS9L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,6
+       MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+       LI   R0,0
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,6
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+       
+*Line List
+POS9L  DATA 6,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA POS9P
+       DATA FAKEAD
+       DATA FAKEAD
+POS9LE
+POS9P  DATA 11
+       DATA POS9W
+       TEXT 'Jesus wept.'
+       EVEN
+POS9PE
+POS9W  DATA 0,1
+
+*
+* Calculate LININX and CHRLIX
+* based on an empty paragraph.
+*
+POSA
+       LI   R0,POSAL
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+       LI   R0,0
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,0
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+       
+*Line List
+POSAL  DATA 6,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA POSAP
+       DATA FAKEAD
+       DATA FAKEAD
+POSALE
+POSAP  DATA 11
+       DATA POSAW
+       TEXT ''
+       EVEN
+POSAPE
+POSAW  DATA 0,1
+
        END
