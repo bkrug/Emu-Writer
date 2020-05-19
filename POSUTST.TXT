@@ -5,7 +5,7 @@
 *
        REF  LINLST
        REF  PARINX,CHRPAX
-	   REF  LININX,CHRLIX
+       REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
 
 TSTLST DATA TSTEND-TSTLST-2/8
@@ -17,49 +17,59 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * when cursor is at the beginning of
 * paragraph.
        DATA POS2
-	   TEXT 'POS2  '
+       TEXT 'POS2  '
 * Calculate LININX and CHRLIX
-* when cursor is at the end of the 
+* when cursor is at the end of the
 * paragraph.
-	   DATA POS3
-	   TEXT 'POS3  '
+       DATA POS3
+       TEXT 'POS3  '
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line.
+       DATA POS4
+       TEXT 'POS4  '
+* Calculate LININX and CHRLIX
+* when cursor is at the end of a
+* line.
+       DATA POS5
+       TEXT 'POS5  '
 * Calculate LININX and CHRLIX
 * based on first paragraph in the
 * document.
-       DATA POS4
-       TEXT 'POS4  '
+       DATA POS6
+       TEXT 'POS6  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
 RSLTFE
        EVEN
 FAKEAD DATA >FFFE
- 
+
 *
 * Calculate LININX and CHRLIX
 * based on PARINX and CHRPAX
 *
-POS1   
+POS1
        LI   R0,POS1L
-	   MOV  R0,@LINLST
+       MOV  R0,@LINLST
        LI   R0,2
        MOV  R0,@PARINX
-	   LI   R0,53
-	   MOV  R0,@CHRPAX
+       LI   R0,53
+       MOV  R0,@CHRPAX
        BLWP @POSUPD
 *
-	   LI   R0,1
+       LI   R0,1
        MOV  @LININX,R1
-	   LI   R2,POS1MS
-	   LI   R3,POS1ME-POS1MS
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
        BLWP @AEQ
-	   LI   R0,8
+       LI   R0,8
        MOV  @CHRLIX,R1
-	   LI   R2,POS1NS
-	   LI   R3,POS1NE-POS1NS
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
-	   
+
 *
 * Calculate LININX and CHRLIX
 * when cursor is at the beginning of
@@ -67,51 +77,103 @@ POS1
 *
 POS2
        LI   R0,POS1L
-	   MOV  R0,@LINLST
+       MOV  R0,@LINLST
        LI   R0,2
        MOV  R0,@PARINX
-	   LI   R0,0
-	   MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@CHRPAX
        BLWP @POSUPD
 *
-	   LI   R0,0
+       LI   R0,0
        MOV  @LININX,R1
-	   LI   R2,POS1MS
-	   LI   R3,POS1ME-POS1MS
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
        BLWP @AEQ
-	   LI   R0,0
+       LI   R0,0
        MOV  @CHRLIX,R1
-	   LI   R2,POS1NS
-	   LI   R3,POS1NE-POS1NS
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
 
 *
 * Calculate LININX and CHRLIX
-* when cursor is at the end of the 
+* when cursor is at the end of the
 * paragraph.
 *
 POS3
        LI   R0,POS1L
-	   MOV  R0,@LINLST
+       MOV  R0,@LINLST
        LI   R0,2
        MOV  R0,@PARINX
-	   LI   R0,53
-	   MOV  R0,@CHRPAX
+       LI   R0,53
+       MOV  R0,@CHRPAX
        BLWP @POSUPD
 *
-	   LI   R0,1
+       LI   R0,1
        MOV  @LININX,R1
-	   LI   R2,POS1MS
-	   LI   R3,POS1ME-POS1MS
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
        BLWP @AEQ
-	   LI   R0,8
+       LI   R0,8
        MOV  @CHRLIX,R1
-	   LI   R2,POS1NS
-	   LI   R3,POS1NE-POS1NS
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
-	   
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line.
+*
+POS4
+       LI   R0,POS1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,45+41+45+46
+       MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+       LI   R0,4
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,0
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the end of a
+* line.
+*
+POS5
+       LI   R0,POS1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,45+41+45-1
+       MOV  R0,@CHRPAX
+       BLWP @POSUPD
+*
+       LI   R0,2
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,44
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
 POS1MS TEXT 'Incorrect index of line within paragraph.'
 POS1ME EVEN
 POS1NS TEXT 'Incorrect index of character within line.'
@@ -126,63 +188,63 @@ POS1LE
 POS1P  DATA 45+41+45+46+33
        DATA POS1W
        TEXT 'The Phoenician alphabet is an alphabet (more '
-	   TEXT 'specifically, an abjad) consisting of 22 '
-	   TEXT 'consonant letters only, leaving vowel sounds '
-	   TEXT 'implicit, although certain late varieties use '
-	   TEXT 'matres lectionis for some vowels.'
+       TEXT 'specifically, an abjad) consisting of 22 '
+       TEXT 'consonant letters only, leaving vowel sounds '
+       TEXT 'implicit, although certain late varieties use '
+       TEXT 'matres lectionis for some vowels.'
        EVEN
-POS1PE 
+POS1PE
 POS1W  DATA 4,1
        DATA 45
-	   DATA 45+41
-	   DATA 45+41+45
+       DATA 45+41
+       DATA 45+41+45
        DATA 45+41+45+46
-	   
+
 *
 * Calculate LININX and CHRLIX
 * based on first paragraph in the
 * document.
 *
-POS4
-       LI   R0,POS4L
-	   MOV  R0,@LINLST
+POS6
+       LI   R0,POS6L
+       MOV  R0,@LINLST
        LI   R0,0
        MOV  R0,@PARINX
-	   LI   R0,90
-	   MOV  R0,@CHRPAX
+       LI   R0,90
+       MOV  R0,@CHRPAX
        BLWP @POSUPD
 *
-	   LI   R0,2
+       LI   R0,2
        MOV  @LININX,R1
-	   LI   R2,POS1MS
-	   LI   R3,POS1ME-POS1MS
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
        BLWP @AEQ
 *
-	   LI   R0,4
+       LI   R0,4
        MOV  @CHRLIX,R1
-	   LI   R2,POS1NS
-	   LI   R3,POS1NE-POS1NS
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
 
 *Line List
-POS4L  DATA 3,1
-       DATA POS4P
+POS6L  DATA 3,1
+       DATA POS6P
        DATA FAKEAD
        DATA FAKEAD
-POS4LE
-POS4P  DATA 45+41+45+46+33
-       DATA POS4W
+POS6LE
+POS6P  DATA 45+41+45+46+33
+       DATA POS6W
        TEXT 'The Phoenician alphabet is an alphabet (more '
-	   TEXT 'specifically, an abjad) consisting of 22 '
-	   TEXT 'consonant letters only, leaving vowel sounds '
-	   TEXT 'implicit, although certain late varieties use '
-	   TEXT 'matres lectionis for some vowels.'
+       TEXT 'specifically, an abjad) consisting of 22 '
+       TEXT 'consonant letters only, leaving vowel sounds '
+       TEXT 'implicit, although certain late varieties use '
+       TEXT 'matres lectionis for some vowels.'
        EVEN
-POS4PE 
-POS4W  DATA 4,1
+POS6PE
+POS6W  DATA 4,1
        DATA 45
-	   DATA 45+41
-	   DATA 45+41+45
+       DATA 45+41
+       DATA 45+41+45
        DATA 45+41+45+46
        END
