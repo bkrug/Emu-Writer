@@ -56,6 +56,30 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * based on an empty paragraph.
        DATA POSA
        TEXT 'POSA  '
+* When CHRLIX is 12 and horizontal
+* offset is 0, offset should not change.
+       DATA HOF1
+       TEXT 'HOF1  '
+* When CHRLIX is 12 and horizontal
+* offset is 20, offset should move left.
+       DATA HOF2
+       TEXT 'HOF2  '
+* When CHRLIX is 12 and horizontal
+* offset is 40, offset should move left.
+       DATA HOF3
+       TEXT 'HOF3  '
+* When CHRLIX is 27 and horizontal
+* offset is 0, offset should not change.
+       DATA HOF4
+       TEXT 'HOF4  '
+* When CHRLIX is 27 and horizontal
+* offset is 20, offset should not change.
+       DATA HOF5
+       TEXT 'HOF5  '
+* When CHRLIX is 27 and horizontal
+* offset is 40, offset should move left.
+       DATA HOF6
+       TEXT 'HOF6  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -68,14 +92,16 @@ FAKEAD DATA >FFFE
 * based on PARINX and CHRPAX
 *
 POS1
+* Arrange
        LI   R0,POS1L
        MOV  R0,@LINLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,53
        MOV  R0,@CHRPAX
+* Act
        BLWP @POSUPD
-*
+* Assert
        LI   R0,1
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -442,4 +468,174 @@ POSAP  DATA 11
 POSAPE
 POSAW  DATA 0,1
 
+*
+* When CHRLIX is 12 and horizontal
+* offset is 0, offset should not change.
+*
+HOF1
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,112
+       MOV  R0,@CHRPAX
+	   LI   R0,0
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+       RT
+	   
+*
+* When CHRLIX is 12 and horizontal
+* offset is 20, offset should move left.
+*
+HOF2
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,112
+       MOV  R0,@CHRPAX
+	   LI   R0,20
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFLFT
+       LI   R3,OFLFTE-OFLFT
+       BLWP @AEQ
+       RT
+	   
+*
+* When CHRLIX is 12 and horizontal
+* offset is 40, offset should move left.
+*
+HOF3
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,112
+       MOV  R0,@CHRPAX
+	   LI   R0,40
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFLFT
+       LI   R3,OFLFTE-OFLFT
+       BLWP @AEQ
+       RT	   
+
+*
+* When CHRLIX is 27 and horizontal
+* offset is 0, offset should not change.
+*
+HOF4
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,127
+       MOV  R0,@CHRPAX
+	   LI   R0,0
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+       RT
+	   
+*
+* When CHRLIX is 27 and horizontal
+* offset is 20, offset should not change.
+*
+HOF5
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,127
+       MOV  R0,@CHRPAX
+	   LI   R0,20
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+       RT	   
+
+*
+* When CHRLIX is 27 and horizontal
+* offset is 40, offset should move left.
+*
+HOF6
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,127
+       MOV  R0,@CHRPAX
+	   LI   R0,40
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,OFLFT
+       LI   R3,OFLFTE-OFLFT
+       BLWP @AEQ
+       RT
+
+OFLFT  TEXT 'Horizontal offset should have moved left.'
+OFLFTE EVEN
+OFCNS  TEXT 'Horizontal offset should not have changed.'
+OFCNSE EVEN
+OFRGT  TEXT 'Horizontal offset should have moved right.'
+OFRGTE EVEN
+*Line List
+HOF1L  DATA 4,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA HOF1P
+       DATA FAKEAD
+HOF1LE
+HOF1P  DATA 100+73
+       DATA HOF1W
+       TEXT '++++5++++1++++5++++2++++5++++3'
+	   TEXT '++++5++++4++++5++++5++++5++++6'
+	   TEXT '++++5++++7++++5++++8++++5++++9'
+	   TEXT '++++5++++ '
+       TEXT 'Play-fighting is fun for many puppies '
+	   TEXT 'and helps them bond with other dogs.'
+       EVEN
+HOF1PE
+HOF1W  DATA 1,1
+       DATA 100
+	   
        END
