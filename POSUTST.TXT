@@ -80,6 +80,22 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * offset is 40, offset should move left.
        DATA HOF6
        TEXT 'HOF6  '
+* When CHRLIX is 66 and horizontal
+* offset is 0, offset should move right.
+       DATA HOF7
+       TEXT 'HOF7  '
+* When CHRLIX is 66 and horizontal
+* offset is 20, offset should move right.
+       DATA HOF8
+       TEXT 'HOF8  '
+* When CHRLIX is 66 and horizontal
+* offset is 40, offset should not move.
+       DATA HOF9
+       TEXT 'HOF9  '
+* When CHRLIX is 66 and horizontal
+* offset is 60, offset should not move.
+       DATA HOF10
+       TEXT 'HOF10 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -611,6 +627,102 @@ HOF6
        LI   R3,OFLFTE-OFLFT
        BLWP @AEQ
        RT
+
+*
+* When CHRLIX is 66 and horizontal
+* offset is 0, offset should move right.
+*
+HOF7
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,166
+       MOV  R0,@CHRPAX
+	   LI   R0,0
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,40
+       MOV  @WINOFF,R1
+       LI   R2,OFRGT
+       LI   R3,OFRGTE-OFRGT
+       BLWP @AEQ
+       RT
+
+*
+* When CHRLIX is 66 and horizontal
+* offset is 20, offset should move right.
+*
+HOF8
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,166
+       MOV  R0,@CHRPAX
+	   LI   R0,20
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,40
+       MOV  @WINOFF,R1
+       LI   R2,OFRGT
+       LI   R3,OFRGTE-OFRGT
+       BLWP @AEQ
+       RT
+
+*
+* When CHRLIX is 66 and horizontal
+* offset is 40, offset should not move.
+*
+HOF9
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,166
+       MOV  R0,@CHRPAX
+	   LI   R0,40
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,40
+       MOV  @WINOFF,R1
+       LI   R2,OFRGT
+       LI   R3,OFRGTE-OFRGT
+       BLWP @AEQ
+       RT
+	   
+*
+* When CHRLIX is 66 and horizontal
+* offset is 60, offset should not move.
+*
+HOF10
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,166
+       MOV  R0,@CHRPAX
+	   LI   R0,60
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,60
+       MOV  @WINOFF,R1
+       LI   R2,OFRGT
+       LI   R3,OFRGTE-OFRGT
+       BLWP @AEQ
+       RT	   
 
 OFLFT  TEXT 'Horizontal offset should have moved left.'
 OFLFTE EVEN
