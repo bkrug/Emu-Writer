@@ -18,7 +18,7 @@ POSUPD DATA POSUWS,POSUPD+4
 * Update LININX and CHRLIX
 *
 UPINDX
-* get address of current paragraph
+* Let R1 = address of current paragraph
        MOV  @LINLST,R0
 	   C    *R0+,*R0+
 	   MOV  @PARINX,R1
@@ -28,7 +28,7 @@ UPINDX
 * R2 = addres of wrap list's first element
        MOV  @2(1),R2
 	   C    *R2+,*R2+
-* R3 = first line in paragraph
+* R3 = index of first line in paragraph
 * R4 = character within paragraph
        CLR  R3
        MOV  @CHRPAX,R4

@@ -104,6 +104,78 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * offset is 20, offset should not move.
        DATA HOF12
        TEXT 'HOF12 '
+* Calculate relative document-line 
+* looking forwards within the same
+* paragraph
+
+* Calculate relative document-line
+* looking backwards within the same
+* paragraph
+
+* Calculate relative document-line
+* looking forwards between consecutive
+* paragraphs.
+
+* Calculate relative document-line
+* looking backwards between consecutive
+* paragraphs.
+
+* Calculate relative document-line
+* looking backwards between 
+* non-consecutive paragraphs.
+
+* Calculate relative document-line
+* looking forwards between 
+* non-consecutive paragraphs.
+
+* Calculate relative document-line
+* looking forwards from first line in
+* a paragraph.
+
+* Calculate relative document-line
+* looking backwards from first line in
+* a paragraph.
+
+* Calculate relative document-line
+* looking forwards from last line in
+* a paragraph.
+
+* Calculate relative document-line
+* looking backwards from last line in
+* a paragraph.
+
+* Look backwards beyond document start.
+
+* Look forwards past document end.
+
+* ---
+	   
+* When cursor is at earlier paragraph
+* than the screen's first paragraph, 
+* scroll up.
+
+* When cursor is at a later paragraph
+* than the screen, don't scroll up.
+
+* When the cursor and screen start at
+* the same paragraph, but the cursor is
+* on an earlier line, scroll up.
+
+* When the cursor and screen start at
+* the same paragraph, but the cursor is
+* on a later line, don't scroll up.
+
+* When the cursor and screen start at
+* the same paragraph and line,
+* don't scroll up.
+
+* ---
+
+* When cursor-21 lines points to a 
+* paragraph later than screen,
+* scroll down.
+
+
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
