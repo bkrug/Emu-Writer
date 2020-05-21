@@ -96,6 +96,14 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * offset is 60, offset should not move.
        DATA HOF10
        TEXT 'HOF10 '
+* When CHRLIX is 59 and horizontal
+* offset is 20, offset should not move.
+       DATA HOF11
+       TEXT 'HOF11 '
+* When CHRLIX is 20 and horizontal
+* offset is 20, offset should not move.
+       DATA HOF12
+       TEXT 'HOF12 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -695,8 +703,8 @@ HOF9
 * Assert
        LI   R0,40
        MOV  @WINOFF,R1
-       LI   R2,OFRGT
-       LI   R3,OFRGTE-OFRGT
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
        RT
 	   
@@ -719,10 +727,58 @@ HOF10
 * Assert
        LI   R0,60
        MOV  @WINOFF,R1
-       LI   R2,OFRGT
-       LI   R3,OFRGTE-OFRGT
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
-       RT	   
+       RT	
+
+*
+* When CHRLIX is 59 and horizontal
+* offset is 20, offset should not move.
+*
+HOF11
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,159
+       MOV  R0,@CHRPAX
+	   LI   R0,20
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+       RT		   
+
+*
+* When CHRLIX is 20 and horizontal
+* offset is 20, offset should not move.
+*
+HOF12
+* Arrange
+       LI   R0,HOF1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,120
+       MOV  R0,@CHRPAX
+	   LI   R0,20
+	   MOV  R0,@WINOFF
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+       RT		   
 
 OFLFT  TEXT 'Horizontal offset should have moved left.'
 OFLFTE EVEN
