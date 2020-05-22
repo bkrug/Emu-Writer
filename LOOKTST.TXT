@@ -73,16 +73,15 @@ ACTULN BSS  2
 *
 UP1
 * Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+* Act
 * Let R0 = paragraph index
 * Let R1 = line in paragraph index
 * Let R2 = number of lines up/down
-       LI   R0,UP1L
-       MOV  R0,@LINLST
-*
        LI   R0,2
        LI   R1,5
-	   LI   R2,-4
-* Act
+	   LI   R2,4
        BLWP @LOOKUP
 * Assert
        MOV  R0,@ACTUPA
