@@ -1,0 +1,132 @@
+       DEF  TSTLST,RSLTFL
+       REF  AEQ
+* Update visual position indicators
+       REF  LOOKUP
+*
+       REF  LINLST
+       REF  PARINX,CHRPAX
+       REF  LININX,CHRLIX
+       REF  WINOFF,WINPAR,WINLIN
+
+TSTLST DATA TSTEND-TSTLST-2/8
+* Calculate relative document-line
+* looking backwards within the same
+* paragraph
+       DATA UP1
+	   TEXT 'UP1   '
+* Calculate relative document-line
+* looking backwards between consecutive
+* paragraphs.
+
+* Calculate relative document-line
+* looking backwards between 
+* non-consecutive paragraphs.
+
+* Calculate relative document-line
+* looking backwards from first line in
+* a paragraph.
+
+* Calculate relative document-line
+* looking backwards from last line in
+* a paragraph.
+
+* Look backwards beyond document start.
+
+
+
+* Calculate relative document-line 
+* looking forwards within the same
+* paragraph
+
+* Calculate relative document-line
+* looking forwards between consecutive
+* paragraphs.
+
+* Calculate relative document-line
+* looking forwards between 
+* non-consecutive paragraphs.
+
+* Calculate relative document-line
+* looking forwards from first line in
+* a paragraph.
+
+* Calculate relative document-line
+* looking forwards from last line in
+* a paragraph.
+
+* Look forwards past document end.
+
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK2.TESTRESULT.TXT'
+RSLTFE
+       EVEN
+FAKEAD DATA >FFFE
+*
+ACTUPA BSS  2
+ACTULN BSS  2
+
+*
+* Calculate relative document-line
+* looking backwards within the same
+* paragraph
+*
+UP1
+* Arrange
+* Let R0 = paragraph index
+* Let R1 = line in paragraph index
+* Let R2 = number of lines up/down
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+*
+       LI   R0,2
+       LI   R1,5
+	   LI   R2,-4
+* Act
+       BLWP @LOOKUP
+* Assert
+       MOV  R0,@ACTUPA
+	   MOV  R1,@ACTULN
+*
+       LI   R0,2
+       MOV  @ACTUPA,R1
+       LI   R2,UPM1
+       LI   R3,UPM1E-UPM1
+       BLWP @AEQ
+*
+       LI   R0,1
+       MOV  @ACTULN,R1
+       LI   R2,UPM2
+       LI   R3,UPM2E-UPM2
+       BLWP @AEQ
+       RT
+
+
+UPM1   TEXT 'Paragraph wrong when looking '
+       TEXT 'backwards.'
+UPM1E  EVEN
+UPM2   TEXT 'Paragraph-line wrong when '
+       TEXT 'looking backwards.'
+UPM2E  EVEN
+*Line List
+UP1L   DATA 4,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA UP1P1
+       DATA FAKEAD
+UP1LE
+*A paragraph
+UP1P1  DATA 70+66+69+72+67+71+24
+       DATA UP1W1
+       TEXT 'In the beg...end.'
+       EVEN
+*A wrap list
+UP1W1  DATA 6,1
+       DATA 70
+	   DATA 70+66
+	   DATA 70+66+69
+	   DATA 70+66+69+72
+	   DATA 70+66+69+72+67
+	   DATA 70+66+69+72+67+71
+	   
+       END

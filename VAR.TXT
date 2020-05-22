@@ -2,7 +2,7 @@
 * Definitions in this file
 *
 * Register Workspaces
-       DEF  ARRYWS,STRWS
+       DEF  ARRYWS,STRWS,LOOKWS
        DEF  WRAPWS,SCRNWS,INPTWS,POSUWS
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
@@ -32,6 +32,7 @@
 *
        TEXT 'WORKSPCE'
 STRWS  BSS  >20
+LOOKWS
 ARRYWS BSS  >20
 WRAPWS BSS  >20
 INPTWS BSS  >20

@@ -104,50 +104,6 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * offset is 20, offset should not move.
        DATA HOF12
        TEXT 'HOF12 '
-* Calculate relative document-line 
-* looking forwards within the same
-* paragraph
-
-* Calculate relative document-line
-* looking backwards within the same
-* paragraph
-
-* Calculate relative document-line
-* looking forwards between consecutive
-* paragraphs.
-
-* Calculate relative document-line
-* looking backwards between consecutive
-* paragraphs.
-
-* Calculate relative document-line
-* looking backwards between 
-* non-consecutive paragraphs.
-
-* Calculate relative document-line
-* looking forwards between 
-* non-consecutive paragraphs.
-
-* Calculate relative document-line
-* looking forwards from first line in
-* a paragraph.
-
-* Calculate relative document-line
-* looking backwards from first line in
-* a paragraph.
-
-* Calculate relative document-line
-* looking forwards from last line in
-* a paragraph.
-
-* Calculate relative document-line
-* looking backwards from last line in
-* a paragraph.
-
-* Look backwards beyond document start.
-
-* Look forwards past document end.
-
 * ---
 	   
 * When cursor is at earlier paragraph

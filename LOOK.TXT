@@ -1,0 +1,15 @@
+       DEF  LOOKUP
+*
+       REF  LOOKWS
+*
+
+* Methods that look backwards or
+* forwards by an arbitrary number of
+* document lines. Given a paragraph and
+* paragraph-line, the routines can
+* determine which paragraph and
+* paragraph-line is 22 document-lines
+* earlier or behind.
+LOOKUP DATA LOOKWS,LOOKUP+4
+       RTWP
+	   END
