@@ -21,11 +21,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
 	   TEXT 'UP2   '
 * Calculate relative document-line
 * looking backwards from first line in
-* a paragraph.
+* a paragraph to last line in another.
 
 * Calculate relative document-line
 * looking backwards from last line in
-* a paragraph.
+* a paragraph to first line in another.
 
 * Look backwards beyond document start.
 
@@ -36,20 +36,16 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * paragraph
 
 * Calculate relative document-line
-* looking forwards between consecutive
-* paragraphs.
-
-* Calculate relative document-line
 * looking forwards between 
 * non-consecutive paragraphs.
 
 * Calculate relative document-line
 * looking forwards from first line in
-* a paragraph.
+* a paragraph to last line in another.
 
 * Calculate relative document-line
 * looking forwards from last line in
-* a paragraph.
+* a paragraph to first line in another.
 
 * Look forwards past document end.
 
