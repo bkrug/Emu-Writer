@@ -27,6 +27,7 @@
 *    index.
 * R1 contains the earlier paragraph-
 *    line index.
+       TEXT 'LOOKUP'
 LOOKUP DATA LOOKWS,LOOKUP+4
 * Let R0 be the paragraph index.
 * Let R1 be the paragraph-line index.
@@ -50,6 +51,9 @@ LOOKUP DATA LOOKWS,LOOKUP+4
 UPLOOP C    R3,R2
        JH   UPREDU
        JEQ  UPDONE
+* Move to the previous paragraph
+       DEC  R0
+       DECT R4
 * Let R5 be the address of a paragraph
        MOV  *R4,R5
 * Let R5 be the address of the wrap list
@@ -57,11 +61,9 @@ UPLOOP C    R3,R2
        MOV  *R5,R5
 * Let R5 be the number of paragraph-lines
        MOV  *R5,R5
+       INC  R5
 * Increase the line-count
        A    R5,R3
-* Move to the previous paragraph
-       DEC  R0
-       DECT R4
        JMP  UPLOOP
 
 UPREDU
