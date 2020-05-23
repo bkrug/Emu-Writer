@@ -28,7 +28,6 @@
 * R1 contains the earlier paragraph-
 *    line index.
 LOOKUP DATA LOOKWS,LOOKUP+4
-       RTWP
 * Let R0 be the paragraph index.
 * Let R1 be the paragraph-line index.
 * Let R2 be the number of lines we wish
