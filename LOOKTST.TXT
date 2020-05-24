@@ -22,11 +22,13 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Calculate relative document-line
 * looking backwards from first line in
 * a paragraph to last line in another.
-
+       DATA UP3
+	   TEXT 'UP3   '
 * Calculate relative document-line
 * looking backwards from last line in
 * a paragraph to first line in another.
-
+       DATA UP4
+	   TEXT 'UP4   '
 * Look backwards beyond document start.
 
 
@@ -154,6 +156,75 @@ UP2
        LI   R3,UPM2E-UPM2
        BLWP @AEQ
        RT
+	   
+*
+* Calculate relative document-line
+* looking backwards from first line in
+* a paragraph to last line in another.
+*
+UP3
+* Arrange
+       LI   R0,UP2L
+       MOV  R0,@LINLST
+* Act
+* Let R0 = paragraph index
+* Let R1 = line in paragraph index
+* Let R2 = number of lines up/down
+       LI   R0,3
+       LI   R1,0
+	   LI   R2,5
+       BLWP @LOOKUP
+* Assert
+       MOV  R0,@ACTUPA
+	   MOV  R1,@ACTULN
+*
+       LI   R0,1
+       MOV  @ACTUPA,R1
+       LI   R2,UPM1
+       LI   R3,UPM1E-UPM1
+       BLWP @AEQ
+*
+       LI   R0,6
+       MOV  @ACTULN,R1
+       LI   R2,UPM2
+       LI   R3,UPM2E-UPM2
+       BLWP @AEQ
+       RT
+	   
+*
+* Calculate relative document-line
+* looking backwards from last line in
+* a paragraph to first line in another.
+*
+UP4
+* Arrange
+       LI   R0,UP2L
+       MOV  R0,@LINLST
+* Act
+* Let R0 = paragraph index
+* Let R1 = line in paragraph index
+* Let R2 = number of lines up/down
+       LI   R0,3
+       LI   R1,5
+	   LI   R2,16
+       BLWP @LOOKUP
+* Assert
+       MOV  R0,@ACTUPA
+	   MOV  R1,@ACTULN
+*
+       LI   R0,1
+       MOV  @ACTUPA,R1
+       LI   R2,UPM1
+       LI   R3,UPM1E-UPM1
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @ACTULN,R1
+       LI   R2,UPM2
+       LI   R3,UPM2E-UPM2
+       BLWP @AEQ
+       RT
+	   
 *Line List
 UP2L   DATA 4,1
        DATA FAKEAD
