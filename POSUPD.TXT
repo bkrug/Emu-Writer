@@ -12,10 +12,15 @@
 POSUPD DATA POSUWS,POSUPD+4
        BL   @UPINDX
 	   BL   @UPWOFF
+       BL   @UPWTOP
        RTWP
 
 *
 * Update LININX and CHRLIX
+* That is, calculate the line index
+* within the current paragraph, and
+* the character index within the
+* current line.
 *
 UPINDX
 * Let R1 = address of current paragraph
@@ -25,8 +30,11 @@ UPINDX
 	   SLA  R1,1
 	   A    R0,R1
 	   MOV  *R1,R1
-* R2 = addres of wrap list's first element
+* R2 = addres of wrap list
+* R5 = index of last paragraph-line
        MOV  @2(1),R2
+	   MOV  *R2,R5
+* R2 = addres of wrap list's first element
 	   C    *R2+,*R2+
 * R3 = index of first line in paragraph
 * R4 = character within paragraph
@@ -36,6 +44,8 @@ UPINDX
 * Change R4 to current char in line
 POS1   C    R4,*R2
 	   JL   POS2
+	   C    R3,R5
+	   JEQ  POS2
 	   INC  R3
 	   INCT R2
 	   JMP  POS1
@@ -72,5 +82,29 @@ UPW2   C    @WINOFF,R0
        JMP  UPW2
 *
 UPW3   RT
+
+*
+* Scroll the window up or down based on
+* cursor paragraph and line
+*
+UPWTOP
+* Check if cursor is earlier in the 
+* document than the first line on the
+* screen or not.
+       C    @WINPAR,@PARINX
+       JL   UPTDWN
+	   JH   UPWUP
+       C    @WINLIN,@LININX
+	   JLE  UPTDWN
+* Cursor is earlier in the document
+* than the screen. Scroll the screen up.
+UPWUP  MOV  @PARINX,@WINPAR
+       MOV  @LININX,@WINLIN
+	   RT
+
+* Check if the cursor is later in the
+* document than the last line of the
+* screen.
+UPTDWN RT
 
        END
