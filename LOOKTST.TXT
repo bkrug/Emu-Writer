@@ -30,6 +30,8 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA UP4
 	   TEXT 'UP4   '
 * Look backwards beyond document start.
+       DATA UP5
+	   TEXT 'UP5   '
 
 
 
@@ -101,7 +103,11 @@ UPM1   TEXT 'Paragraph wrong when looking '
 UPM1E  EVEN
 UPM2   TEXT 'Paragraph-line wrong when '
        TEXT 'looking backwards.'
-UPM2E  EVEN
+UPM2E
+UPM3   TEXT 'Response should be -1 because '
+       TEXT 'the request looks past the '
+	   TEXT 'beginning of the document.'
+UPM3E  EVEN
 *Line List
 UP1L   DATA 4,1
        DATA FAKEAD
@@ -225,16 +231,47 @@ UP4
        BLWP @AEQ
        RT
 	   
+*
+* Look backwards beyond document start.
+*
+UP5
+* Arrange
+       LI   R0,UP2L
+       MOV  R0,@LINLST
+* Act
+* Let R0 = paragraph index
+* Let R1 = line in paragraph index
+* Let R2 = number of lines up/down
+       LI   R0,2
+       LI   R1,2
+	   LI   R2,22
+       BLWP @LOOKUP
+* Assert
+* Let R0 = expected
+* Let R1 = actual
+       MOV  R0,R1
+       LI   R0,>FFFF
+       LI   R2,UPM3
+       LI   R3,UPM3E-UPM3
+       BLWP @AEQ
+*
+       RT
+
+
 *Line List
 UP2L   DATA 4,1
-       DATA FAKEAD
+       DATA UP2P0
        DATA UP2P1
 	   DATA UP2P2
 	   DATA UP2P3
        DATA FAKEAD
        DATA FAKEAD
 UP2LE
-*paragraphS
+*paragraphs
+UP2P0  DATA 68+71+9
+       DATA UP2W0
+       TEXT 'In the beg...end.'
+       EVEN
 UP2P1  DATA 70+66+69+72+67+71+24
        DATA UP2W1
        TEXT 'In the beg...end.'
@@ -248,6 +285,9 @@ UP2P3  DATA 70+68+72+69+66
        TEXT 'In the beg...end.'
        EVEN
 *A wrap list
+UP2W0  DATA 2,1
+       DATA 68
+	   DATA 68+71
 UP2W1  DATA 6,1
        DATA 70
 	   DATA 70+66
