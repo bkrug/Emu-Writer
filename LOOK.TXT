@@ -52,9 +52,9 @@ UPLOOP C    R3,R2
        JH   UPREDU
        JEQ  UPDONE
 * Move to the previous paragraph
-* If moving past document-start, quit.
        DECT R4
        DEC  R0
+* If moving past document-start, quit.
 	   JLT  UPDONE
 * Let R5 be the address of a paragraph
        MOV  *R4,R5
