@@ -163,14 +163,6 @@ INTADE
 *
 ****************************************
 
-*Number of tests to run
-TSTCNT DATA 0
-
-PARL0  DATA 3,1
-       DATA PAR0
-       DATA PAR1
-       DATA PAR2
-
 WRAP0  DATA 0,1
 PAR0   DATA PAR0A-PAR0-4,WRAP0
        TEXT 'History'
@@ -246,7 +238,7 @@ LCRPAX TEXT 'CHRPAX'
 * some other text such that
 * "With a history, Wuhan"
 * became
-* "With a 3,500-year-long HISTORY, Wuhan"
+* "With a long HIStory, Wuhan"
 TST1   MOV  R11,R12
 * Set position values
        CLR  @INSTMD
@@ -285,7 +277,7 @@ TST1   MOV  R11,R12
        BL   @COMPVL
 *
        MOV  @CHRPAX,R0
-       LI   R1,7+23
+       LI   R1,7+12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
@@ -296,17 +288,15 @@ TST1   MOV  R11,R12
 
 * Pretend that "_" means there was no
 * input from the keyboard.
-KEYL1  TEXT '3,500-ye'
-       TEXT 'ar-long '
+KEYL1  TEXT 'long '
        BYTE INSKEY
-       TEXT '_______'
-       TEXT 'HISTORY_'
+       TEXT 'HISTORY___'
        BYTE >FE
        BSS  7
 KEYL1E
 
 EXP1A DATA 0,0
-      TEXT 'With a 3,500-year-long HISTORY, Wuhan is '
+      TEXT 'With a long HISTORY, Wuhan is '
       TEXT 'one of '
       TEXT 'the most '
       TEXT 'ancient and civilized metropolitan cities '
