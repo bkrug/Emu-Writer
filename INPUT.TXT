@@ -17,7 +17,9 @@
        REF  CHRMIN,CHRMAX
 
 INPUT  DATA INPTWS,INPTBG
+*
 * Process the new keystrokes
+*
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
        CB   *R10,@CHRMIN
@@ -48,15 +50,15 @@ KYBRC4
 * If we got here, this keystroke is 
 * unrecognized. Skip it.
 INPUT3
-*
-* Are there more keystrokes to process?
-*
+* Move position in key stream forwards
+* by one address.
        MOV  @KEYRD,R0
        INC  R0
        CI   R0,KEYEND
        JL   UPDBUF
        LI   R0,KEYSTR
 UPDBUF MOV  R0,@KEYRD
+* Are there more keystrokes to process?
 INPTBG C    @KEYRD,@KEYWRT
        JNE  INPUT1
 * No, there are not.

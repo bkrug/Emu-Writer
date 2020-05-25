@@ -50,7 +50,8 @@ RUNTST BLWP @OPENF
 * User inserted some text
        BL   @TSTINT
        BL   @TST3
-* User inserted some text
+* User inserted some text.
+* The key stream will wrap around.
        BL   @TSTINT
        BL   @TST4
 * User inserted some text at the end of 
@@ -479,8 +480,8 @@ EXP3B
 
 * Test 4
 * ------
-* User inserted some text that would have taken
-* the user down to the next line.
+* User inserted some text.
+* The key stream will wrap around.
 TST4   MOV  R11,R12
 * Set position values
        CLR  @INSTMD
@@ -488,10 +489,11 @@ TST4   MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,109
        MOV  R0,@CHRPAX
-* Copy test keypresses to stream
+* Copy test keypresses to stream.
+* The key steam will wrap around.
        LI   R0,KEYL4
        LI   R1,KEYL4E
-       CLR  R2
+       LI   R2,12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
