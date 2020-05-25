@@ -47,7 +47,9 @@ RUNTST BLWP @OPENF
 * User inserted some text
        BL   @TSTINT
        BL   @TST2
-* User inserted some text
+* User inserted some text and pressed
+* an arrow key. The arrow key is not
+* immediately processed.
        BL   @TSTINT
        BL   @TST3
 * User inserted some text.
@@ -406,14 +408,9 @@ EXP2B
 
 * Test 3
 * ------
-* User inserted enough new text such
-* that the cursor should move right to
-* the second horizontal window, but
-* this time the cursor should stop at
-* the left-most column of new window.
-* Type in the second line of paragraph.
-* Start at character index 37.
-* Stop at character index 40.
+* User inserted some text and pressed
+* an arrow key. The arrow key is not
+* immediately processed.
 TST3   MOV  R11,R12
 * Set position values
        CLR  @INSTMD
@@ -440,15 +437,16 @@ TST3   MOV  R11,R12
        LI   R3,3
        BL   @STRCMP
 * Test position values.
-* CHRPAX, should have
-* increasd.
+* CHRPAX should have increasd, but
+* only due to text inserts.
+* Forward keys should be ignored.
        MOV  @PARINX,R0
        LI   R1,2
        LI   R2,LPRINX
        BL   @COMPVL
 *
        MOV  @CHRPAX,R0
-       LI   R1,103
+       LI   R1,104
        LI   R2,LCRPAX
        BL   @COMPVL
 *
@@ -457,14 +455,15 @@ TST3   MOV  R11,R12
        B    *R12
 
 
-KEYL3  TEXT ' @ '
+KEYL3  TEXT ' :) '
+       BYTE FWDKEY,FWDKEY
 KEYL3E EVEN
 
 EXP3A  DATA 0,0
        TEXT 'With a history, Wuhan is one of the most '
        TEXT 'ancient and civilized '
        TEXT 'metropolitan cities in China. Panlong '
-       TEXT '@ cheng '
+       TEXT ':) cheng '
        TEXT 'is located in '
        TEXT 'modern-day Huangpi District. During the '
        TEXT 'Western Zhou, the E '
@@ -723,7 +722,6 @@ TST8   MOV  R11,R12
 *
        B    *R12
 
-* Pretend that "_" means there was no
 * input from the keyboard.
 KEYL8  BYTE BCKKEY
 KEYL8E

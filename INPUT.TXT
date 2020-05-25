@@ -8,7 +8,7 @@
 * variables just for INPUT
        REF  INPTWS
        REF  PARINX,CHRPAX
-       REF  INSTMD
+       REF  INSTMD,INPTMD
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 
 * constants
@@ -16,9 +16,23 @@
        REF  ENDINP
        REF  CHRMIN,CHRMAX
 
-INPUT  DATA INPTWS,INPTBG
+* Unspecified input mode
+MODENN EQU  0
+INPTNN DATA 0
+* Text input mode
+MODEXT EQU  1
+INPTXT DATA 1
+* Movement input mode
+MODEMV DATA 2
+INPTMV DATA 2
+
 *
 * Process the new keystrokes
+*
+INPUT  DATA INPTWS,INPUT+4
+* Reset the input mode to unspecified
+       CLR  @INPTMD
+	   JMP  INPTBG
 *
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -39,12 +53,23 @@ KYBRC2 CB   *R10,*R0+
 KYBRC3 DEC  R0
        S    R2,R0
 * R0 now has index of routine
+* Let R1 = address of desired routine
        LI   R1,ROUTIN
        SLA  R0,1
        A    R0,R1
        MOV  *R1,R1
-* R1 now has the address of the
-* desired routine.
+* Let R3 = acceptable input mode
+       LI   R3,EXPMOD
+	   A    R0,R3
+* Set Input mode if currently unset
+       C    @INPTMD,@INPTNN
+	   JNE  KYBRC5
+	   MOV  *R3,@INPTMD
+* If the next key is for different
+* input mode, leave routine
+KYBRC5 C    *R3,@INPTMD
+	   JNE   INPTRT
+* Branch to routine associated with key
        B    *R1
 KYBRC4
 * If we got here, this keystroke is 
@@ -75,6 +100,7 @@ ROUTKY BYTE INSKEY,BCKKEY,FWDKEY,ENTER
 ROUTKE
        EVEN
 ROUTIN DATA INSSWP,BACKSP,FWRDSP,ISENTR
+EXPMOD DATA MODEXT,MODEMV,MODEMV,MODEXT
 
 * Toggle insert/overwrite mode.
 INSSWP INV  @INSTMD
@@ -196,6 +222,13 @@ RTERR  RTWP
 * Put it in the buffer.
 * R10 hold address of next input key
 ADDTXT
+* If the input mode is movement keys,
+* leave the INPUT routine.
+       C    @INPTMD,@INPTMV
+	   JNE  ADDT1
+	   RTWP
+* Set the input mode to text
+ADDT1  MOV  @INPTXT,@INPTMD
 * Get paragraph address
        MOV  @LINLST,R0
        MOV  @PARINX,R1

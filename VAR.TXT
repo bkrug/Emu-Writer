@@ -15,7 +15,7 @@
        DEF  DSPSTR,CURSTR
 * INPUT.TXT
        DEF  PARINX,CHRPAX
-       DEF  INSTMD
+       DEF  INSTMD,INPTMD
 * POSUPD.TXT
 	   DEF  LININX,CHRLIX
        DEF  WINOFF,WINPAR,WINLIN
@@ -83,6 +83,9 @@ PARINX DATA 0
 CHRPAX DATA 0
 * Insert Mode. 0 = insert, -1 = overwrit
 INSTMD DATA 0
+* Input mode. 0 = unspecified,
+* 1 = text, 2 = movement
+INPTMD DATA 0
 
 * POSUPDT.TXT
 * Line Index in Paragraph
