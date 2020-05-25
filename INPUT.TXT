@@ -10,22 +10,19 @@
        REF  INPTWS
        REF  PARINX,CHRPAX
        REF  INSTMD
-	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
+       REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 
 * constants
        REF  BLKUSE,USRISR,SIX
        REF  ENDINP
        REF  CHRMIN,CHRMAX
-	   
-QUITTM DATA >500
-QUIT   RTWP
 
 INPUT  DATA INPTWS,INPUT+4
 * Wait for a new keypress
 INPUT0 LIMI 2
        LIMI 0
 KEYWT  C    @KEYRD,@KEYWRT
-	   JEQ  INPUT0
+       JEQ  INPUT0
 * Process the new keystrokes
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -66,14 +63,14 @@ INPUT3
 *
 * Are there more keystrokes to process?
 *
-	   MOV  @KEYRD,R0
-	   INC  R0
-	   CI   R0,KEYEND
-	   JL   UPDBUF
-	   LI   R0,KEYSTR
+       MOV  @KEYRD,R0
+       INC  R0
+       CI   R0,KEYEND
+       JL   UPDBUF
+       LI   R0,KEYSTR
 UPDBUF MOV  R0,@KEYRD
        C    @KEYRD,@KEYWRT
-	   JNE  INPUT1
+       JNE  INPUT1
 * No, there are not.
 * Wrap paragraph.
        MOV  @PARINX,R0
