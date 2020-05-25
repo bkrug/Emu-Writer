@@ -583,7 +583,7 @@ TST5A  LI   R0,2
        BL   @COMPVL
 *
        MOV  @CHRPAX,R0
-       LI   R1,421
+       LI   R1,420
        LI   R2,LCRPAX
        BL   @COMPVL
 *
@@ -593,7 +593,7 @@ TST5A  LI   R0,2
 
 
 * input from the keyboard.
-KEYL5  TEXT ' During the Han'
+KEYL5  TEXT ' During the Ha'
 KEYL5E EVEN
 
 EXP5A  DATA 0,0
@@ -608,7 +608,7 @@ EXP5A  DATA 0,0
        TEXT 'After the conquest of the E state, the '
        TEXT 'present-day Wuhan area was controlled by the '
        TEXT 'Chu state for the rest of the Western Zhou '
-       TEXT 'and Eastern Zhou periods. During the Han'
+       TEXT 'and Eastern Zhou periods. During the Ha'
 EXP5B
        EVEN
 
@@ -1152,15 +1152,19 @@ ERR14O
 * R1 = Address following last test key
 * R2 = Offset within key stream
 CPYKEY
-       AI   R2,KEYSTR
+* Prohibit keystreams longer than 14 bytes
+       CI   R2,14
+	   JL   CPY0
+	   LI   R2,14
+*
+CPY0   AI   R2,KEYSTR
        MOV  R2,@KEYRD
 CPYLP  MOVB *R0+,*R2+
-       C    R0,R1
-       JH   CPYRT
        CI   R2,KEYEND
-       JL   CPYLP
+       JL   CPY1
        LI   R2,KEYSTR
-       JMP  CPYLP
+CPY1   C    R0,R1
+       JL   CPYLP
 CPYRT
        MOV  R2,@KEYWRT
        RT
