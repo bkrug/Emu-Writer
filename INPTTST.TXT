@@ -87,6 +87,11 @@ RUNTST BLWP @OPENF
 * of paragraph.
        BL   @TSTINT
        BL   @TST11
+* User pressed forward space and a 
+* letter, but letter is not initially
+* processed.
+       BL   @TSTINT
+       BL   @TST15
 * ---
 * User presses enter from paragraph start
        BL   @TSTINT
@@ -97,6 +102,9 @@ RUNTST BLWP @OPENF
 * User presses enter from paragraph end
        BL   @TSTINT
        BL   @TST14
+* User presses enter and one letter, but
+* letter is not initially processed.
+
 * ---
 * Write notification on screen.
        BL   @WREND
@@ -872,6 +880,60 @@ TST11  MOV  R11,R12
        BL   @PSUCCS
 *
        B    *R12
+	   
+* Test 15
+* -------
+* User pressed the forward space and
+* a letter, but we leave the INPUT
+* routine before processing the letter.
+TST15  MOV  R11,R12
+* Set test number.
+       LI   R3,15
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,167
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL15
+       LI   R1,KEY15E
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX should have increasd,
+* but only due to arrow key.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,168
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* Pretend that "_" means there was no
+* input from the keyboard.
+KEYL15 BYTE FWDKEY
+       TEXT 'ab'
+KEY15E
 
 * Test 12
 * -------

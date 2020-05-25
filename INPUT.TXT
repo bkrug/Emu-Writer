@@ -222,15 +222,17 @@ RTERR  RTWP
 * Put it in the buffer.
 * R10 hold address of next input key
 ADDTXT
-* If the input mode is movement keys,
-* leave the INPUT routine.
-       C    @INPTMD,@INPTMV
+* Set input mode if currently unset
+       C    @INPTMD,@INPTNN
 	   JNE  ADDT1
+	   MOV  @INPTXT,@INPTMD
+* If the input mode is not text,
+* leave the INPUT routine.
+ADDT1  C    @INPTMD,@INPTXT
+	   JEQ  ADDT2
 	   RTWP
-* Set the input mode to text
-ADDT1  MOV  @INPTXT,@INPTMD
 * Get paragraph address
-       MOV  @LINLST,R0
+ADDT2  MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
 * Is mode insert or overwrite?
