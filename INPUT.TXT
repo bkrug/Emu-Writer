@@ -74,15 +74,7 @@ KYBRC5 C    *R3,@INPTMD
 KYBRC4
 * If we got here, this keystroke is 
 * unrecognized. Skip it.
-INPUT3
-* Move position in key stream forwards
-* by one address.
-       MOV  @KEYRD,R0
-       INC  R0
-       CI   R0,KEYEND
-       JL   UPDBUF
-       LI   R0,KEYSTR
-UPDBUF MOV  R0,@KEYRD
+INPUT3 BL   @INCKRD
 * Are there more keystrokes to process?
 INPTBG C    @KEYRD,@KEYWRT
        JNE  INPUT1
@@ -101,6 +93,16 @@ ROUTKE
        EVEN
 ROUTIN DATA INSSWP,BACKSP,FWRDSP,ISENTR
 EXPMOD DATA MODEXT,MODEMV,MODEMV,MODEXT
+
+* Move position in key stream forwards
+* by one address.
+INCKRD MOV  @KEYRD,R0
+       INC  R0
+       CI   R0,KEYEND
+       JL   UPDBUF
+       LI   R0,KEYSTR
+UPDBUF MOV  R0,@KEYRD
+       RT
 
 * Toggle insert/overwrite mode.
 INSSWP INV  @INSTMD
@@ -211,7 +213,10 @@ ISENTR
 * Adjust CHRPAX
 * PARINX was incremented previously.
 ENTR2  CLR  @CHRPAX
-*
+* We processed a key, so move KEYRD
+* to the next position before leaving
+* the INPUT routine.
+       BL   @INCKRD
        RTWP
 
 * Somehow let the user know that there

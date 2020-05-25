@@ -262,6 +262,7 @@ PAR3A
 
 LPRINX TEXT 'PARINX'
 LCRPAX TEXT 'CHRPAX'
+LKEYRD TEXT 'KEYRD '
 
 ****************************************
 *
@@ -1175,7 +1176,7 @@ TST16  MOV  R11,R12
 * Copy test keypresses to stream
        LI   R0,KEYL16
        LI   R1,KEY16E
-       LI   R2,3
+       CLR  R2
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
@@ -1209,6 +1210,14 @@ TST16  MOV  R11,R12
        LI   R1,0
        LI   R2,LCRPAX
        BL   @COMPVL
+* The Enter key was at the beginning of
+* the keystream. Keystream position
+* should have advanced one.
+       MOV  @KEYRD,R0
+       LI   R1,KEYSTR
+	   INC  R1
+	   LI   R2,LKEYRD
+	   BL   @COMPVL
 *
        BL   @PSUCCS
 *
