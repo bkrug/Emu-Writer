@@ -4,7 +4,6 @@
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFREE,BUFCPY
-       REF  WRAP
 
 * variables just for INPUT
        REF  INPTWS
@@ -72,12 +71,7 @@ UPDBUF MOV  R0,@KEYRD
        C    @KEYRD,@KEYWRT
        JNE  INPUT1
 * No, there are not.
-* Wrap paragraph.
-       MOV  @PARINX,R0
-       BLWP @WRAP
-       CI   R0,>FFFF
-       JEQ  INPTRT
-*
+* Wait for more keystrokes.
        JMP  INPUT0
 
 INSKEY EQU  >04
