@@ -94,10 +94,10 @@ UPWTOP
 * document than the first line on the
 * screen or not.
        C    @WINPAR,@PARINX
-       JL   UPTDWN
+       JL   CHKDWN
        JH   UPWUP
        C    @WINLIN,@LININX
-       JLE  UPTDWN
+       JLE  CHKDWN
 * Cursor is earlier in the document
 * than the screen. Scroll the screen up.
 UPWUP  MOV  @PARINX,@WINPAR
@@ -107,18 +107,28 @@ UPWUP  MOV  @PARINX,@WINPAR
 * Check if the cursor is later in the
 * document than the last line of the
 * screen.
-UPTDWN MOV  @PARINX,R0
+CHKDWN
+* If the cursor were at the bottom of
+* the screen, what paragraph and line
+* would be at the top of the screen?
+* Place the answer in R0 and R1.
+       MOV  @PARINX,R0
        MOV  @LININX,R1
 	   LI   R2,21
 	   BLWP @LOOKUP
-*
+* If that hypothetical paragraph and
+* line is later in the document than
+* the current Window-paragraph and
+* Window-line, then scroll down.
        C    @WINPAR,R0
        JL   UPWDWN
        JH   UPWRT
        C    @WINLIN,R1
        JHE  UPWRT
+* Scroll down.
 UPWDWN MOV  R0,@WINPAR
        MOV  R1,@WINLIN
+*
 UPWRT  RT
 
        END
