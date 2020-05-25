@@ -8,7 +8,7 @@
 
 * variables just for INPUT
        REF  INPTWS
-       REF  PARINX,LININX,CHRPAX,CHRLIX
+       REF  PARINX,CHRPAX
        REF  INSTMD
 	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 
@@ -80,34 +80,6 @@ UPDBUF MOV  R0,@KEYRD
        BLWP @WRAP
        CI   R0,>FFFF
        JEQ  INPTRT
-*
-* find new LININX and CHRLIX values
-*
-       MOV  @CHRPAX,R2
-       CLR  @LININX
-* Set R1 to address of wrap list's
-* first item and
-* Set R3 to wrap list length
-       MOV  @LINLST,R0
-       MOV  @PARINX,R1
-       BLWP @ARYADR
-       MOV  *R1,R1
-       INCT R1
-       MOV  *R1,R1
-       MOV  *R1,R3
-       C    *R1+,*R1+
-*
-       CLR  R0
-LNCLC1 C    @LININX,R3
-       JHE  LNCLC2
-       C    *R1,R2
-       JH   LNCLC2
-       MOV  *R1,R0
-       INCT R1
-       INC  @LININX
-       JMP  LNCLC1
-LNCLC2 S    R0,R2
-       MOV  R2,@CHRLIX
 *
        JMP  INPUT0
 
