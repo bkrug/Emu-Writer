@@ -1,8 +1,11 @@
        DEF  TSTLST,RSLTFL
+* Mock of code from LOOK.TXT
+       DEF  LOOKUP
+* Assert Routine
        REF  AEQ
 * Update visual position indicators
        REF  POSUPD
-*
+* Vars
        REF  LINLST
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
@@ -129,13 +132,32 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * don't scroll up.
        DATA WUP5
        TEXT 'WUP5  '
-
 * ---
-
 * When cursor-21 lines points to a 
 * paragraph later than screen,
 * scroll down.
-
+       DATA WDWN1
+       TEXT 'WDWN1 '
+* When cursor-21 lines points to a 
+* paragraph earlier than screen,
+* don't scroll down.
+       DATA WDWN2
+       TEXT 'WDWN2 '
+* When cursor-21 lines points to a 
+* the same paragraph and a later line
+* than the screen, scroll down.
+       DATA WDWN3
+       TEXT 'WDWN3 '
+* When cursor-21 lines points to a 
+* the same paragraph and a earlier line
+* than the screen, don't scroll down.
+       DATA WDWN4
+       TEXT 'WDWN4 '
+* When cursor-21 lines points to a 
+* the same paragraph and same line
+* as the screen, don't scroll down.
+       DATA WDWN5
+       TEXT 'WDWN5 '
 
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
@@ -297,7 +319,7 @@ POS1P  DATA 45+41+45+46+33
 POS1PE
 POS1PP DATA 44+40+28
        DATA POS1WB
-	   TEXT 'abc ... xyz'
+       TEXT 'abc ... xyz'
 POS1W  DATA 4,1
        DATA 45
        DATA 45+41
@@ -305,7 +327,7 @@ POS1W  DATA 4,1
        DATA 45+41+45+46
 POS1WB DATA 2,1
        DATA 44
-	   DATA 44+40
+       DATA 44+40
 
 *
 * Calculate LININX and CHRLIX
@@ -543,8 +565,8 @@ HOF1
        MOV  R0,@PARINX
        LI   R0,112
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
+       LI   R0,0
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -554,7 +576,7 @@ HOF1
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
        RT
-	   
+       
 *
 * When CHRLIX is 12 and horizontal
 * offset is 20, offset should move left.
@@ -567,8 +589,8 @@ HOF2
        MOV  R0,@PARINX
        LI   R0,112
        MOV  R0,@CHRPAX
-	   LI   R0,20
-	   MOV  R0,@WINOFF
+       LI   R0,20
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -578,7 +600,7 @@ HOF2
        LI   R3,OFLFTE-OFLFT
        BLWP @AEQ
        RT
-	   
+       
 *
 * When CHRLIX is 12 and horizontal
 * offset is 40, offset should move left.
@@ -591,8 +613,8 @@ HOF3
        MOV  R0,@PARINX
        LI   R0,112
        MOV  R0,@CHRPAX
-	   LI   R0,40
-	   MOV  R0,@WINOFF
+       LI   R0,40
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -601,7 +623,7 @@ HOF3
        LI   R2,OFLFT
        LI   R3,OFLFTE-OFLFT
        BLWP @AEQ
-       RT	   
+       RT       
 
 *
 * When CHRLIX is 27 and horizontal
@@ -615,8 +637,8 @@ HOF4
        MOV  R0,@PARINX
        LI   R0,127
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
+       LI   R0,0
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -626,7 +648,7 @@ HOF4
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
        RT
-	   
+       
 *
 * When CHRLIX is 27 and horizontal
 * offset is 20, offset should not change.
@@ -639,8 +661,8 @@ HOF5
        MOV  R0,@PARINX
        LI   R0,127
        MOV  R0,@CHRPAX
-	   LI   R0,20
-	   MOV  R0,@WINOFF
+       LI   R0,20
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -649,7 +671,7 @@ HOF5
        LI   R2,OFCNS
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
-       RT	   
+       RT       
 
 *
 * When CHRLIX is 27 and horizontal
@@ -663,8 +685,8 @@ HOF6
        MOV  R0,@PARINX
        LI   R0,127
        MOV  R0,@CHRPAX
-	   LI   R0,40
-	   MOV  R0,@WINOFF
+       LI   R0,40
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -687,8 +709,8 @@ HOF7
        MOV  R0,@PARINX
        LI   R0,166
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
+       LI   R0,0
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -711,8 +733,8 @@ HOF8
        MOV  R0,@PARINX
        LI   R0,166
        MOV  R0,@CHRPAX
-	   LI   R0,20
-	   MOV  R0,@WINOFF
+       LI   R0,20
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -735,8 +757,8 @@ HOF9
        MOV  R0,@PARINX
        LI   R0,166
        MOV  R0,@CHRPAX
-	   LI   R0,40
-	   MOV  R0,@WINOFF
+       LI   R0,40
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -746,7 +768,7 @@ HOF9
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
        RT
-	   
+       
 *
 * When CHRLIX is 66 and horizontal
 * offset is 60, offset should not move.
@@ -759,8 +781,8 @@ HOF10
        MOV  R0,@PARINX
        LI   R0,166
        MOV  R0,@CHRPAX
-	   LI   R0,60
-	   MOV  R0,@WINOFF
+       LI   R0,60
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -769,7 +791,7 @@ HOF10
        LI   R2,OFCNS
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
-       RT	
+       RT    
 
 *
 * When CHRLIX is 59 and horizontal
@@ -783,8 +805,8 @@ HOF11
        MOV  R0,@PARINX
        LI   R0,159
        MOV  R0,@CHRPAX
-	   LI   R0,20
-	   MOV  R0,@WINOFF
+       LI   R0,20
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -793,7 +815,7 @@ HOF11
        LI   R2,OFCNS
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
-       RT		   
+       RT           
 
 *
 * When CHRLIX is 20 and horizontal
@@ -807,8 +829,8 @@ HOF12
        MOV  R0,@PARINX
        LI   R0,120
        MOV  R0,@CHRPAX
-	   LI   R0,20
-	   MOV  R0,@WINOFF
+       LI   R0,20
+       MOV  R0,@WINOFF
 * Act
        BLWP @POSUPD
 * Assert
@@ -817,7 +839,7 @@ HOF12
        LI   R2,OFCNS
        LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
-       RT		   
+       RT           
 
 OFLFT  TEXT 'Horizontal offset should have moved left.'
 OFLFTE EVEN
@@ -835,11 +857,11 @@ HOF1LE
 HOF1P  DATA 100+73
        DATA HOF1W
        TEXT '++++5++++1++++5++++2++++5++++3'
-	   TEXT '++++5++++4++++5++++5++++5++++6'
-	   TEXT '++++5++++7++++5++++8++++5++++9'
-	   TEXT '++++5++++ '
+       TEXT '++++5++++4++++5++++5++++5++++6'
+       TEXT '++++5++++7++++5++++8++++5++++9'
+       TEXT '++++5++++ '
        TEXT 'Play-fighting is fun for many puppies '
-	   TEXT 'and helps them bond with other dogs.'
+       TEXT 'and helps them bond with other dogs.'
        EVEN
 HOF1PE
 HOF1W  DATA 1,1
@@ -859,12 +881,12 @@ WUP1
 * Line 3
        LI   R0,69+71+65+10
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
-	   LI   R0,3
-	   MOV  R0,@WINPAR
-	   LI   R0,0
-	   MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,3
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
 * Act
        BLWP @POSUPD
 * Assert
@@ -894,12 +916,12 @@ WUP2
 * Line 3
        LI   R0,69+71+65+10
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
-	   LI   R0,2
-	   MOV  R0,@WINPAR
-	   LI   R0,2
-	   MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN
 * Act
        BLWP @POSUPD
 * Assert
@@ -930,12 +952,12 @@ WUP3
 * Line Index 5
        LI   R0,70+66+69+72+67+3
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
-	   LI   R0,1
-	   MOV  R0,@WINPAR
-	   LI   R0,6
-	   MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,6
+       MOV  R0,@WINLIN
 * Act
        BLWP @POSUPD
 * Assert
@@ -966,12 +988,12 @@ WUP4
 * Line Index 5
        LI   R0,70+66+69+72+67+3
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
-	   LI   R0,1
-	   MOV  R0,@WINPAR
-	   LI   R0,4
-	   MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,4
+       MOV  R0,@WINLIN
 * Act
        BLWP @POSUPD
 * Assert
@@ -1002,12 +1024,12 @@ WUP5
 * Line Index 5
        LI   R0,70+66+69+72+67+3
        MOV  R0,@CHRPAX
-	   LI   R0,0
-	   MOV  R0,@WINOFF
-	   LI   R0,1
-	   MOV  R0,@WINPAR
-	   LI   R0,5
-	   MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,5
+       MOV  R0,@WINLIN
 * Act
        BLWP @POSUPD
 * Assert
@@ -1034,8 +1056,8 @@ WUPM2E
 UP1L   DATA 4,1
        DATA UP1P0
        DATA UP1P1
-	   DATA UP1P2
-	   DATA UP1P3
+       DATA UP1P2
+       DATA UP1P3
        DATA FAKEAD
        DATA FAKEAD
 UP1LE
@@ -1059,23 +1081,261 @@ UP1P3  DATA 70+68+72+69+66+4
 *A wrap list
 UP1W0  DATA 2,1
        DATA 68
-	   DATA 68+71
+       DATA 68+71
 UP1W1  DATA 6,1
        DATA 70
-	   DATA 70+66
-	   DATA 70+66+69
-	   DATA 70+66+69+72
-	   DATA 70+66+69+72+67
-	   DATA 70+66+69+72+67+71
+       DATA 70+66
+       DATA 70+66+69
+       DATA 70+66+69+72
+       DATA 70+66+69+72+67
+       DATA 70+66+69+72+67+71
 UP1W2  DATA 3,1
        DATA 69
-	   DATA 69+71
-	   DATA 69+71+65
+       DATA 69+71
+       DATA 69+71+65
 UP1W3  DATA 5,1
        DATA 70
-	   DATA 70+68
-	   DATA 70+68+72
-	   DATA 70+68+72+69
-	   DATA 70+68+72+69+66
-	   
+       DATA 70+68
+       DATA 70+68+72
+       DATA 70+68+72+69
+       DATA 70+68+72+69+66
+
+* Mock of LOOKUP
+MCKPAR DATA 0
+MCKLIN DATA 0
+LOOKWS BSS  >20
+LOOKUP DATA LOOKWS,LOOKUP+4
+* If current test did not specify
+* mock values, then just use currently
+* defined WINPAR and WINLIN, so that
+* no scroll down occurs.
+       MOV  @WINPAR,*R13
+       MOV  @WINLIN,@2(13)
+       MOV  @MCKPAR,@MCKPAR
+       JEQ  LOOKRT
+* Assert that the caller is looking
+* backwards by one screen.
+       LI   R0,21
+       MOV  @4(R13),R1
+       LI   R2,LOOKM
+       LI   R3,LOOKME-LOOKM
+       BLWP @AEQ
+* Pass mock return values
+       MOV  @MCKPAR,*R13
+       MOV  @MCKLIN,@2(13)
+* Reset mock values
+* Next test may not wish to mock this.
+       CLR  @MCKPAR
+       CLR  @MCKLIN
+LOOKRT RTWP
+*
+LOOKM  TEXT 'The caller should try to look '
+       TEXT 'back by 21 lines'
+LOOKME EVEN
+
+*
+* When cursor-21 lines points to a 
+* paragraph later than screen,
+* scroll down.
+*
+WDWN1  
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+* Pretend that this paragraph and line
+* are 21 lines before the cursor
+       LI   R0,2
+       MOV  R0,@MCKPAR
+       LI   R0,0
+       MOV  R0,@MCKLIN
+* Pretend that this is the first line
+* and paragraph on screen.
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN       
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,2
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+
+*
+* When cursor-21 lines points to a 
+* paragraph earlier than screen,
+* don't scroll down.
+*
+WDWN2
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+* Pretend that this paragraph and line
+* are 21 lines before the cursor
+       LI   R0,1
+       MOV  R0,@MCKPAR
+       LI   R0,2
+       MOV  R0,@MCKLIN
+* Pretend that this is the first line
+* and paragraph on screen.
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN       
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,2
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+
+*
+* When cursor-21 lines points to a 
+* the same paragraph and a later line
+* than the screen, scroll down.
+*
+WDWN3
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+* Pretend that this paragraph and line
+* are 21 lines before the cursor
+       LI   R0,1
+       MOV  R0,@MCKPAR
+       LI   R0,3
+       MOV  R0,@MCKLIN
+* Pretend that this is the first line
+* and paragraph on screen.
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,1
+       MOV  R0,@WINLIN       
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,1
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,3
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+
+*
+* When cursor-21 lines points to a 
+* the same paragraph and a earlier line
+* than the screen, don't scroll down.
+*
+WDWN4
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+* Pretend that this paragraph and line
+* are 21 lines before the cursor
+       LI   R0,0
+       MOV  R0,@MCKPAR
+       LI   R0,2
+       MOV  R0,@MCKLIN
+* Pretend that this is the first line
+* and paragraph on screen.
+       LI   R0,0
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN       
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,3
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+
+*
+* When cursor-21 lines points to a 
+* the same paragraph and same line
+* as the screen, don't scroll down.
+*
+WDWN5
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+* Pretend that this paragraph and line
+* are 21 lines before the cursor
+       LI   R0,1
+       MOV  R0,@MCKPAR
+       LI   R0,4
+       MOV  R0,@MCKLIN
+* Pretend that this is the first line
+* and paragraph on screen.
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,4
+       MOV  R0,@WINLIN       
+* Act
+       BLWP @POSUPD
+* Assert
+       LI   R0,1
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,4
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+       
        END

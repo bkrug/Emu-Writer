@@ -2,16 +2,18 @@
 *
        REF  POSUWS
 *
+       REF  LOOKUP
+*
        REF  LINLST
        REF  ARYADR
        REF  PARINX,CHRPAX
-	   REF  LININX,CHRLIX
+       REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
 
-       TEXT 'POSUPD'	   
+       TEXT 'POSUPD'       
 POSUPD DATA POSUWS,POSUPD+4
        BL   @UPINDX
-	   BL   @UPWOFF
+       BL   @UPWOFF
        BL   @UPWTOP
        RTWP
 
@@ -25,17 +27,17 @@ POSUPD DATA POSUWS,POSUPD+4
 UPINDX
 * Let R1 = address of current paragraph
        MOV  @LINLST,R0
-	   C    *R0+,*R0+
-	   MOV  @PARINX,R1
-	   SLA  R1,1
-	   A    R0,R1
-	   MOV  *R1,R1
+       C    *R0+,*R0+
+       MOV  @PARINX,R1
+       SLA  R1,1
+       A    R0,R1
+       MOV  *R1,R1
 * R2 = addres of wrap list
 * R5 = index of last paragraph-line
        MOV  @2(1),R2
-	   MOV  *R2,R5
+       MOV  *R2,R5
 * R2 = addres of wrap list's first element
-	   C    *R2+,*R2+
+       C    *R2+,*R2+
 * R3 = index of first line in paragraph
 * R4 = character within paragraph
        CLR  R3
@@ -43,22 +45,22 @@ UPINDX
 * Change R3 to current line in para
 * Change R4 to current char in line
 POS1   C    R4,*R2
-	   JL   POS2
-	   C    R3,R5
-	   JEQ  POS2
-	   INC  R3
-	   INCT R2
-	   JMP  POS1
+       JL   POS2
+       C    R3,R5
+       JEQ  POS2
+       INC  R3
+       INCT R2
+       JMP  POS1
 * If cursor is not on first line,
 * subtract wrap position from R4
 POS2   MOV  R3,R3
        JEQ  POS3
-	   DECT R2
+       DECT R2
        S    *R2,R4
 *
 POS3   MOV  R3,@LININX
        MOV  R4,@CHRLIX
-	   RT
+       RT
 
 *
 * Update Window horizontal offset.
@@ -69,16 +71,16 @@ UPWOFF
 * If window is to the right of the
 * cursor, move it left.
 UPW0   C    @WINOFF,@CHRLIX
-	   JLE  UPW1
-	   S    R1,@WINOFF   
-	   JMP  UPW0
+       JLE  UPW1
+       S    R1,@WINOFF   
+       JMP  UPW0
 * If window is to the left of the
 * cursor, move it right.
 UPW1   MOV  @CHRLIX,R0
        AI   R0,-40
 UPW2   C    @WINOFF,R0
-	   JGT  UPW3
-	   A    R1,@WINOFF
+       JGT  UPW3
+       A    R1,@WINOFF
        JMP  UPW2
 *
 UPW3   RT
@@ -93,18 +95,30 @@ UPWTOP
 * screen or not.
        C    @WINPAR,@PARINX
        JL   UPTDWN
-	   JH   UPWUP
+       JH   UPWUP
        C    @WINLIN,@LININX
-	   JLE  UPTDWN
+       JLE  UPTDWN
 * Cursor is earlier in the document
 * than the screen. Scroll the screen up.
 UPWUP  MOV  @PARINX,@WINPAR
        MOV  @LININX,@WINLIN
-	   RT
+       RT
 
 * Check if the cursor is later in the
 * document than the last line of the
 * screen.
-UPTDWN RT
+UPTDWN MOV  @PARINX,R0
+       MOV  @LININX,R1
+	   LI   R2,21
+	   BLWP @LOOKUP
+*
+       C    @WINPAR,R0
+       JL   UPWDWN
+       JH   UPWRT
+       C    @WINLIN,R1
+       JHE  UPWRT
+UPWDWN MOV  R0,@WINPAR
+       MOV  R1,@WINLIN
+UPWRT  RT
 
        END
