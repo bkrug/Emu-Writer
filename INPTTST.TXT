@@ -10,8 +10,7 @@
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD       
 
 * variables just for INPUT
-       REF  PARINX,LININX,CHRPAX,CHRLIX
-       REF  WINOFF
+       REF  PARINX,CHRPAX
        REF  INSTMD
 
 * constants
@@ -253,11 +252,8 @@ TST1   MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       CLR  @LININX
        LI   R0,7
        MOV  R0,@CHRPAX
-       MOV  R0,@CHRLIX
-       CLR  @WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -340,13 +336,8 @@ TST2   MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,1
-       MOV  R0,@LININX
        LI   R0,100
        MOV  R0,@CHRPAX
-       LI   R0,37
-       MOV  R0,@CHRLIX
-       CLR  @WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -370,7 +361,7 @@ TST2   MOV  R11,R12
        LI   R3,2
        BL   @STRCMP
 * Test position values.
-* CHRPAX, CHRLIX, and WINOFF should have
+* CHRPAX should have
 * increasd.
        MOV  @PARINX,R0
        LI   R1,2
@@ -426,13 +417,8 @@ TST3   MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,1
-       MOV  R0,@LININX
        LI   R0,100
        MOV  R0,@CHRPAX
-       LI   R0,37
-       MOV  R0,@CHRLIX
-       CLR  @WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -507,14 +493,8 @@ TST4   MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,1
-       MOV  R0,@LININX
        LI   R0,109
        MOV  R0,@CHRPAX
-       LI   R0,56
-       MOV  R0,@CHRLIX
-       LI   R0,20
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -590,14 +570,8 @@ TST5   MOV  R11,R12
        CLR  @INSTMD
 TST5A  LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,7
-       MOV  R0,@LININX
        LI   R0,406
        MOV  R0,@CHRPAX
-       LI   R0,8
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -684,14 +658,8 @@ TST7   MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,0
-       MOV  R0,@LININX
        LI   R0,2
        MOV  R0,@CHRPAX
-       LI   R0,2
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -749,14 +717,8 @@ TST8   MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,2
-       MOV  R0,@LININX
        LI   R0,129
        MOV  R0,@CHRPAX
-       LI   R0,20
-       MOV  R0,@CHRLIX
-       LI   R0,20
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -816,13 +778,7 @@ TST9   MOV  R11,R12
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,0
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -873,14 +829,8 @@ TST10  MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,2
-       MOV  R0,@LININX
        LI   R0,167
        MOV  R0,@CHRPAX
-       LI   R0,58
-       MOV  R0,@CHRLIX
-       LI   R0,20
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -938,14 +888,8 @@ TST11  MOV  R11,R12
        CLR  @INSTMD
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,8
-       MOV  R0,@LININX
        LI   R0,406
        MOV  R0,@CHRPAX
-       LI   R0,8
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -996,13 +940,7 @@ TST12  MOV  R11,R12
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,0
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -1085,12 +1023,6 @@ TST13  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,149
        MOV  R0,@CHRPAX
-       LI   R0,2
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
@@ -1174,12 +1106,6 @@ TST14  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,406
        MOV  R0,@CHRPAX
-       LI   R0,8
-       MOV  R0,@LININX
-       LI   R0,8
-       MOV  R0,@CHRLIX
-       LI   R0,0
-       MOV  R0,@WINOFF
 * Allocate space for key stream
        BL   @FSTKS
 * Set up interupt routine.
