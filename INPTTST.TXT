@@ -637,15 +637,11 @@ TST7   MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,2
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL7
-       MOV  R0,@KEYSRC
-       LI   R0,KEYL7E
-       MOV  R0,@KEYSCE
+       LI   R1,KEYL7E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -674,13 +670,8 @@ TST7   MOV  R11,R12
 *
        B    *R12
 
-
-* Pretend that "_" means there was no
 * input from the keyboard.
 KEYL7  BYTE >F0
-       TEXT '_______'
-       BYTE >FE
-       BSS  7
 KEYL7E
 
 * Test 8
@@ -696,15 +687,11 @@ TST8   MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,129
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL8
-       MOV  R0,@KEYSRC
-       LI   R0,KEYL8E
-       MOV  R0,@KEYSCE
+       LI   R1,KEYL8E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -734,13 +721,9 @@ TST8   MOV  R11,R12
 *
        B    *R12
 
-
 * Pretend that "_" means there was no
 * input from the keyboard.
 KEYL8  BYTE BCKKEY
-       TEXT '_______'
-       BYTE >FE
-       BSS  7
 KEYL8E
 
 * Test 9
@@ -756,15 +739,11 @@ TST9   MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL8
-       MOV  R0,@KEYSRC
-       LI   R0,KEYL8E
-       MOV  R0,@KEYSCE
+       LI   R1,KEYL8E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -808,15 +787,11 @@ TST10  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,167
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL10
-       MOV  R0,@KEYSRC
-       LI   R0,KEY10E
-       MOV  R0,@KEYSCE
+       LI   R1,KEY10E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -849,9 +824,6 @@ TST10  MOV  R11,R12
 * Pretend that "_" means there was no
 * input from the keyboard.
 KEYL10 BYTE FWDKEY
-       TEXT '_______'
-       BYTE >FE
-       BSS  7
 KEY10E
 
 * Test 11
@@ -867,15 +839,11 @@ TST11  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,406
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL10
-       MOV  R0,@KEYSRC
-       LI   R0,KEY10E
-       MOV  R0,@KEYSCE
+       LI   R1,KEY10E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of paragraph now
@@ -918,15 +886,11 @@ TST12  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL12
-       MOV  R0,@KEYSRC
-       LI   R0,KEY12E
-       MOV  R0,@KEYSCE
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of old paragraph
@@ -969,9 +933,6 @@ TST12  MOV  R11,R12
 * Pretend that "_" means there was no
 * input from the keyboard.
 KEYL12 BYTE ENTER
-       TEXT '_______'
-       BYTE >FE
-       BSS  7
 KEY12E
 
 ERR12  MOV  R1,R0
@@ -1000,15 +961,11 @@ TST13  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,149
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL12
-       MOV  R0,@KEYSRC
-       LI   R0,KEY12E
-       MOV  R0,@KEYSCE
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of earlier paragraph
@@ -1083,15 +1040,11 @@ TST14  MOV  R11,R12
        MOV  R0,@PARINX
        LI   R0,406
        MOV  R0,@CHRPAX
-* Allocate space for key stream
-       BL   @FSTKS
-* Set up interupt routine.
-       LI   R0,KEYINT
-       MOV  R0,@USRISR
+* Copy test keypresses to stream
        LI   R0,KEYL12
-       MOV  R0,@KEYSRC
-       LI   R0,KEY12E
-       MOV  R0,@KEYSCE
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
 * Run routine
        BLWP @INPUT
 * Get address of new paragraph
@@ -1169,61 +1122,6 @@ CPYRT
        MOV  R2,@KEYWRT
        RT
 
-* Interrupt routine to simulate key
-* presses.
-KEYINT
-       MOV  @KEYSRC,R0
-       MOV  @KEYWRT,R1
-       MOV  R0,R2
-       AI   R2,8
-       C    R0,@KEYSCE
-       JHE  KEYINR
-KEYIN1 CB   *R0,@UNDRLN
-       JEQ  KEYIR2
-* Copy to keypress buffer
-       MOVB *R0+,*R1+
-* If the next position is past the
-* buffer end, move to the buffer start
-       CI   R1,KEYEND
-       JL   KEY1R3
-       LI   R1,KEYSTR
-* Update KEYWRT with the new buffer
-* position, unless this would cause
-* KEYWRT to equal KEYRD
-KEY1R3 C    R1,@KEYRD
-       JEQ  KEYINR
-       MOV  R1,@KEYWRT
-*
-KEYINR MOV  R0,@KEYSRC
-       RT
-KEYIR2 INC  R0
-       JMP  KEYINR
-* Contains the address at which the next
-* simulated keystroke is found.
-* Every time the interupt routine is hit
-* take up to eight characters from the
-* position starting at this address.
-* At the end of the routine, the value
-* of KEYSRC should be 8 bytes higher
-* than when the routine started.
-* The 8-byte block that starts >FF
-* signals the end of simulated input,
-* but let the INPUT routine worry about
-* that.
-KEYSRC DATA 0
-KEYSCE DATA 0
-UNDRLN TEXT '_'
-       EVEN
-
-*
-* Allocate space for first keystream of
-* test.
-*
-FSTKS
-       LI   R0,KEYSTR
-       MOV  R0,@KEYWRT
-       MOV  R0,@KEYRD
-       RT
 
 * Compare contents of R0 and R1.
 * Report if they don't match.
