@@ -212,7 +212,7 @@ ISENTR
 * PARINX was incremented previously.
 ENTR2  CLR  @CHRPAX
 *
-       B    @INPUT3
+       RTWP
 
 * Somehow let the user know that there
 * is no remaining buffer space.

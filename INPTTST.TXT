@@ -104,7 +104,8 @@ RUNTST BLWP @OPENF
        BL   @TST14
 * User presses enter and one letter, but
 * letter is not initially processed.
-
+       BL   @TSTINT
+       BL   @TST16
 * ---
 * Write notification on screen.
        BL   @WREND
@@ -992,7 +993,6 @@ TST12  MOV  R11,R12
        B    *R12
 
 
-* Pretend that "_" means there was no
 * input from the keyboard.
 KEYL12 BYTE ENTER
 KEY12E
@@ -1129,8 +1129,7 @@ TST14  MOV  R11,R12
        LI   R0,PAR2A
        BL   @STRCMP
 * Test position values.
-* CHRPAX should have
-* increasd.
+* CHRPAX should point to paragraph start.
        MOV  @PARINX,R0
        LI   R1,3
        LI   R2,LPRINX
@@ -1159,6 +1158,82 @@ ERR14M TEXT 'Test 000E failed. '
 ERR14N TEXT '....'
 ERR14O
        EVEN
+	   
+* Test 16
+* -------
+* User presses enter and one letter, but
+* letter is not initially processed.
+TST16  MOV  R11,R12
+* Set test number.
+       LI   R3,16
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,406
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL16
+       LI   R1,KEY16E
+       LI   R2,3
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+* Get address of new paragraph
+       MOV  @LINLST,R0
+       LI   R1,3
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Paragraph should be empty
+       MOV  *R1,R1
+       JNE  ERR16
+* Get address of old paragraph
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* The new paragraph should be the same
+* as the original one
+       AI   R1,4
+       LI   R2,PAR2+4
+       LI   R0,PAR2A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX point to paragraph start.
+       MOV  @PARINX,R0
+       LI   R1,3
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,0
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+ERR16  MOV  R1,R0
+       LI   R1,ERR16N
+       BLWP @MAKETX
+*
+       LI   R0,ERR16M
+       LI   R1,ERR16O-ERR16M
+       BLWP @PRINTL
+*
+       B    *R12	   
+ERR16M TEXT 'Test 0010 failed. '
+       TEXT 'The old paragraph is not empty: '
+ERR16N TEXT '....'
+ERR16O
+
+* input from the keyboard.
+KEYL16 BYTE ENTER
+       TEXT 'xy'
+KEY16E
+       EVEN
+
 
 ****************************************
 
