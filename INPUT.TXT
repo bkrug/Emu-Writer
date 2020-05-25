@@ -16,10 +16,7 @@
        REF  ENDINP
        REF  CHRMIN,CHRMAX
 
-INPUT  DATA INPTWS,INPUT+4
-* Check for keys to process
-       C    @KEYRD,@KEYWRT
-       JEQ  INPTRT
+INPUT  DATA INPTWS,INPTBG
 * Process the new keystrokes
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -47,13 +44,7 @@ KYBRC3 DEC  R0
 * R1 now has the address of the
 * desired routine.
        B    *R1
-* If we got here, there is no routine
-* for the key in R10
 KYBRC4
-* Check if this was the end of a
-* unit test.
-       CB   *R10,@ENDINP
-       JEQ  INPTRT
 * If we got here, this keystroke is 
 * unrecognized. Skip it.
 INPUT3
@@ -66,7 +57,7 @@ INPUT3
        JL   UPDBUF
        LI   R0,KEYSTR
 UPDBUF MOV  R0,@KEYRD
-       C    @KEYRD,@KEYWRT
+INPTBG C    @KEYRD,@KEYWRT
        JNE  INPUT1
 * No, there are not.
 INPTRT RTWP
