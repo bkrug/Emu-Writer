@@ -17,11 +17,9 @@
        REF  CHRMIN,CHRMAX
 
 INPUT  DATA INPTWS,INPUT+4
-* Wait for a new keypress
-INPUT0 LIMI 2
-       LIMI 0
-KEYWT  C    @KEYRD,@KEYWRT
-       JEQ  INPUT0
+* Check for keys to process
+       C    @KEYRD,@KEYWRT
+       JEQ  INPTRT
 * Process the new keystrokes
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -71,9 +69,6 @@ UPDBUF MOV  R0,@KEYRD
        C    @KEYRD,@KEYWRT
        JNE  INPUT1
 * No, there are not.
-* Wait for more keystrokes.
-       JMP  INPUT0
-
 INPTRT RTWP
 
 INSKEY EQU  >04
