@@ -39,37 +39,62 @@ RUNTST BLWP @OPENF
 * Write notification on screen.
        BL   @WRTST
 * Run each test
+*
+* User inserted some text and overwrote
+* some other text
        BL   @TSTINT
        BL   @TST1
+* User inserted some text
        BL   @TSTINT
        BL   @TST2
+* User inserted some text
        BL   @TSTINT
        BL   @TST3
+* User inserted some text
        BL   @TSTINT
        BL   @TST4
+* User inserted some text at the end of 
+* a paragraph
        BL   @TSTINT
        BL   @TST5
+* User inserted some text at the end of 
+* a paragraph, while in overwrite mode
        BL   @TSTINT
        BL   @TST6
+* Insert a character that the system
+* doesn't recognize. Output should not
+* be affected.
        BL   @TSTINT
        BL   @TST7
-* Backspace tests
+* ---
+* User pressed the backspace from middle
+* of paragraph.
        BL   @TSTINT
        BL   @TST8
+* User pressed the backspace from start
+* of paragraph.
        BL   @TSTINT
        BL   @TST9
-* Forward space tests
+* ---
+* User pressed forward space from middle
+* of paragraph.
        BL   @TSTINT
        BL   @TST10
+* User pressed forward space from end
+* of paragraph.
        BL   @TSTINT
        BL   @TST11
-* Enter-key tests
+* ---
+* User presses enter from paragraph start
        BL   @TSTINT
        BL   @TST12
+* User presses enter from paragraph middle
        BL   @TSTINT
        BL   @TST13
+* User presses enter from paragraph end
        BL   @TSTINT
        BL   @TST14
+* ---
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1085,7 +1110,7 @@ EXP13D
 
 * Test 14
 * -------
-* User presses enter from the beginning
+* User presses enter from the end
 * of a paragraph.
 TST14  MOV  R11,R12
 * Set test number.
