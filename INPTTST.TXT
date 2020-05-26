@@ -14,7 +14,7 @@
        REF  INSTMD
 
 * constants
-       REF  USRISR
+       REF  STSTYP,STSENT,STSPAR,STSWIN
 
 *
 INSKEY EQU  >04
@@ -44,7 +44,8 @@ RUNTST BLWP @OPENF
 * some other text
        BL   @TSTINT
        BL   @TST1
-* User inserted some text
+* User inserted some text.
+* Outputs STSTYP set, STSENT reset.
        BL   @TSTINT
        BL   @TST2
 * User inserted some text and pressed
@@ -346,12 +347,8 @@ EXP1B
 
 * Test 2
 * ------
-* User inserted enough new text such
-* that the cursor should move right to
-* the second horizontal window.
-* Type in the second line of paragraph.
-* Start at character index 37.
-* Stop at character index 45.
+* User inserted some text.
+* Outputs STSTYP set, STSENT reset.
 TST2   MOV  R11,R12
 * Set position values
        CLR  @INSTMD
@@ -366,6 +363,8 @@ TST2   MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
+* Store document status
+       MOV  R0,R3
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
@@ -378,8 +377,7 @@ TST2   MOV  R11,R12
        LI   R3,2
        BL   @STRCMP
 * Test position values.
-* CHRPAX should have
-* increasd.
+* CHRPAX should have increasd.
        MOV  @PARINX,R0
        LI   R1,2
        LI   R2,LPRINX
@@ -389,11 +387,27 @@ TST2   MOV  R11,R12
        LI   R1,108
        LI   R2,LCRPAX
        BL   @COMPVL
+* Check document status bits in R3
+       COC  @STSTYP,R3
+       JNE  TST2A
+       LI   R0,TST2M
+       LI   R1,TST2ME-TST2M
+       BLWP @PRINTL
 *
-       BL   @PSUCCS
+TST2A  CZC  @STSENT,R3
+	   JNE  TST2B
+       LI   R0,TST2N
+       LI   R1,TST2NE-TST2N
+       BLWP @PRINTL
+*
+TST2B  BL   @PSUCCS
 *
        B    *R12
 
+TST2M  TEXT 'Text-Typed bit should have been set.'
+TST2ME
+TST2N  TEXT 'Enter-Pressed bit should not have been set.'
+TST2NE EVEN
 
 * input from the keyboard.
 KEYL2  TEXT ' abcdef '

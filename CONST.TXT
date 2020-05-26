@@ -1,6 +1,7 @@
        DEF  FMTLEN,MGNLEN,PGWDTH
        DEF  SIX
        DEF  USRISR
+       DEF  STSTYP,STSENT,STSPAR,STSWIN
        DEF  DELKEY
        DEF  LF,CR,CHRMIN,CHRMAX
        DEF  SPACE,DASH,ENDINP,NOKEY
@@ -27,6 +28,16 @@ PGWDTH DATA 8*120
 USRISR EQU  >83C4
 
 SIX    DATA 6
+
+* Document status codes
+* Text Typed
+STSTYP DATA >1
+* Enter Pressed
+STSENT DATA >2
+* Paragraph Lines Changed
+STSPAR DATA >4
+* Window Moved
+STSWIN DATA >8
 
 * ASCII codes
 DELKEY BYTE >03

@@ -15,6 +15,7 @@
        REF  BLKUSE,USRISR,SIX
        REF  ENDINP
        REF  CHRMIN,CHRMAX
+       REF  STSTYP,STSENT,STSPAR,STSWIN
 
 * Unspecified input mode
 MODENN EQU  0
@@ -33,6 +34,9 @@ INPUT  DATA INPTWS,INPUT+4
 * Reset the input mode to unspecified
        CLR  @INPTMD
 	   JMP  INPTBG
+* Reset Document-Status bits
+       SZC  @STSTYP,*R13
+	   SZC  @STSENT,*R13
 *
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -213,6 +217,8 @@ ISENTR
 * Adjust CHRPAX
 * PARINX was incremented previously.
 ENTR2  CLR  @CHRPAX
+* Set document-status bit
+       SOC  @STSENT,*R13
 * We processed a key, so move KEYRD
 * to the next position before leaving
 * the INPUT routine.
@@ -236,8 +242,10 @@ ADDTXT
 ADDT1  C    @INPTMD,@INPTXT
 	   JEQ  ADDT2
 	   RTWP
+* Set status bit
+ADDT2  SOC  @STSTYP,*R13
 * Get paragraph address
-ADDT2  MOV  @LINLST,R0
+       MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
 * Is mode insert or overwrite?
