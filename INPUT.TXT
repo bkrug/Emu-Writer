@@ -17,26 +17,22 @@
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSPAR,STSWIN
 
-* Unspecified input mode
-MODENN EQU  0
-INPTNN DATA 0
-* Text input mode
-MODEXT EQU  1
-INPTXT DATA 1
-* Movement input mode
-MODEMV DATA 2
-INPTMV DATA 2
-
 *
 * Process the new keystrokes
 *
+* Input: n/a
+* Output:
+* R0 - 
+*  bit 0-13 unchanged
+*  bit 14 is set -> enter was pressed
+*  bit 15 is set -> something was typed
 INPUT  DATA INPTWS,INPUT+4
-* Reset the input mode to unspecified
-       CLR  @INPTMD
-	   JMP  INPTBG
 * Reset Document-Status bits
        SZC  @STSTYP,*R13
 	   SZC  @STSENT,*R13
+* Reset the input mode to unspecified
+       CLR  @INPTMD
+	   JMP  INPTBG
 *
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -97,6 +93,19 @@ ROUTKE
        EVEN
 ROUTIN DATA INSSWP,BACKSP,FWRDSP,ISENTR
 EXPMOD DATA MODEXT,MODEMV,MODEMV,MODEXT
+
+* 
+* Input mode values
+*
+* Unspecified input mode
+MODENN EQU  0
+INPTNN DATA 0
+* Text input mode
+MODEXT EQU  1
+INPTXT DATA 1
+* Movement input mode
+MODEMV DATA 2
+INPTMV DATA 2
 
 * Move position in key stream forwards
 * by one address.
@@ -242,7 +251,7 @@ ADDTXT
 ADDT1  C    @INPTMD,@INPTXT
 	   JEQ  ADDT2
 	   RTWP
-* Set status bit
+* Set document status bit
 ADDT2  SOC  @STSTYP,*R13
 * Get paragraph address
        MOV  @LINLST,R0

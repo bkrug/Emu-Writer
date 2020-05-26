@@ -107,6 +107,10 @@ RUNTST BLWP @OPENF
 * letter is not initially processed.
        BL   @TSTINT
        BL   @TST16
+* User presses enter and nothing else.
+* Enter-Pressed status bit should be set.
+       BL   @TSTINT
+       BL   @TST17
 * ---
 * Write notification on screen.
        BL   @WREND
@@ -364,7 +368,7 @@ TST2   MOV  R11,R12
 * Run routine
        BLWP @INPUT
 * Store document status
-       MOV  R0,R3
+       MOV  R0,R5
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
@@ -387,18 +391,20 @@ TST2   MOV  R11,R12
        LI   R1,108
        LI   R2,LCRPAX
        BL   @COMPVL
-* Check document status bits in R3
-       COC  @STSTYP,R3
-       JNE  TST2A
+* Check document status bits in R5
+       COC  @STSTYP,R5
+       JEQ  TST2A
        LI   R0,TST2M
        LI   R1,TST2ME-TST2M
        BLWP @PRINTL
+	   B    *R12
 *
-TST2A  CZC  @STSENT,R3
-	   JNE  TST2B
+TST2A  CZC  @STSENT,R5
+	   JEQ  TST2B
        LI   R0,TST2N
        LI   R1,TST2NE-TST2N
        BLWP @PRINTL
+	   B    *R12
 *
 TST2B  BL   @PSUCCS
 *
@@ -1256,6 +1262,53 @@ KEYL16 BYTE ENTER
        TEXT 'xy'
 KEY16E
        EVEN
+
+
+* Test 17
+* -------
+* User presses enter and nothing else.
+* Enter-Pressed status bit should be set.
+TST17  MOV  R11,R12
+* Set test number.
+       LI   R3,17
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,231
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL12
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+* Store document status in R2
+       MOV  R0,R2
+* Check document status bits in R2
+       CZC  @STSTYP,R2
+       JEQ  TST17A
+       LI   R0,TST17M
+       LI   R1,TST17N-TST17M
+       BLWP @PRINTL
+	   B    *R12
+*
+TST17A COC  @STSENT,R2
+	   JEQ  TST17B
+       LI   R0,TST17O
+       LI   R1,TST17P-TST17O
+       BLWP @PRINTL
+	   B    *R12
+*
+TST17B BL   @PSUCCS
+*
+       B    *R12
+
+TST17M TEXT 'Text-Typed bit should not have been set.'
+TST17N
+TST17O TEXT 'Enter-Pressed bit should have been set.'
+TST17P EVEN
 
 
 ****************************************
