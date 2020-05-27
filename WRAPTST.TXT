@@ -1,301 +1,24 @@
-       DEF  RUNTST
+       DEF  TSTLST,RSLTFL
+       REF  AEQ,ANEQ,ABLCK
 *
        REF  WRAP,LINLST,FMTLST,MGNLST
-       REF  BUFINT,BUFALC,BUFREE,BUFCPY
-       REF  MAKETX,PRINTL,OPENF,CLOSEF
-       REF  ARYALC,ARYADD,ARYINS,ARYDEL
-       REF  VMBW
-
-RUNTST BLWP @OPENF
-* Initialize the memory buffer.
-       BL   @INTBUF
-* Write notification on screen.
-       BL   @WRTST
-* Loop through every test.
-       BL   @TSTLP
-* Write notification on screen.
-       BL   @WREND
-       BLWP @CLOSEF
-JMP    LIMI 2
-       LIMI 0
-       JMP  JMP
-
-* Write notification
-WRTST  LI   R0,STARTM
-       LI   R1,ENDM-STARTM
-       BLWP @PRINTL
-       RT
- 
-* Finished testing
-WREND  LI   R0,ENDM
-       LI   R1,4
-       BLWP @PRINTL
-       RT
-
-STARTM TEXT 'Testing'
-ENDM   TEXT 'Done'
-ENDME  EVEN
-
-*
-* Initialize buffer.
-*
-INTBUF LI   R0,SPACE
-       LI   R1,SPCEND-SPACE
-       BLWP @BUFINT
-       MOV  R0,R0
-       JEQ  INTBF2
-       LI   R0,INTMSG
-       LI   R1,INTMSE-INTMSG
-       BLWP @PRINTL
-       B    @JMP
-INTBF2 RT
-INTMSG TEXT 'Failed to initialize memory buffer.'
-INTMSE EVEN
-
-****************************************
-*
-* Main Test Loop.
-*
-****************************************
-
-TSTLP  MOV  R11,R12
-*
-       LI   R0,LINL0
-       MOV  R0,@LINLST
-       LI   R0,FMT0
-       MOV  R0,@FMTLST
-       LI   R0,MRGN0
-       MOV  R0,@MGNLST
-* Use R10 to track which test this is
-       CLR  R10
-* Copy each wrap list into the buffer.
-       BL   @CPYWRP
-* Loop through each test.
-TSTLP1
-* Wrap TEXT
-       MOV  R10,R0
-       BLWP @WRAP
-* Confirm routine did not report error.
-       CI   R0,>FFFF
-       JNE  TSTLP2
-       B    @LPERR3
-* Test Wrap List.
-TSTLP2
-       BL   @TSTLIN
-* Report which test this is
-       MOV  R10,R0
-       AI   R0,>31
-       SLA  R0,8
-       MOVB R0,@PASSMG
-       LI   R0,PASSMG
-       LI   R1,9
-       BLWP @PRINTL
-* One test is complete.
-* Run the next test
-       INC  R10
-       C    R10,@TSTCNT
-       JL   TSTLP1
-*
-       B    *R12
-
-PASSMG TEXT '. passed.'
+       REF  BUFINT,BUFALC,BUFCPY
+	   
+   
+TSTLST DATA TSTEND-TSTLST-2/8
+* Calculate relative document-line
+* looking backwards within the same
+* paragraph
+       DATA WRP1
+       TEXT 'WRP1  '
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK2.TESTRESULT.TXT'
+RSLTFE
        EVEN
+FAKEAD DATA >FFFE
 
-*
-* Copy wrap list into buffer.
-*
-* Also, store the address of copied
-* wrap list in the paragraph list.
-*
-* Input:
-* Output:
-CPYWRP MOV  @LINLST,R8
-* Store number of lists to copy in R3.
-       MOV  *R8,R3
-* Move R8 to address of next paragraph
-       C    *R8+,*R8+
-* Put address of address of paragraph's
-* wrap list in R7
-CPY1   MOV  *R8,R7
-       INCT R7
-* Put address of wrap list in R6
-       MOV  *R7,R6
-* Get byte size of Wrap List
-       MOV  *R6,R0
-       INCT R0
-       SLA  R0,1
-       MOV  R0,R2
-       BLWP @BUFALC
-* Copy wrap list
-       MOV  R0,R1
-       MOV  R6,R0
-       BLWP @BUFCPY
-* Store address of copied wrap list in
-* the paragraph header.
-       MOV  R1,*R7
-*
-       INCT R8
-       DEC  R3
-       JNE  CPY1
-       RT
-
-*
-* Test Wrap List results
-*
-TSTLIN 
-* Load address of actual wrap list into
-* R8
-       MOV  @LINLST,R8
-       C    *R8+,*R8+
-       A    R10,R8
-       A    R10,R8
-       MOV  *R8,R8
-       INCT R8
-       MOV  *R8,R8
-* Load address of expected wrap list in
-* R9
-       MOV  R10,R9
-       SLA  R9,1
-       AI   R9,EXPWRP
-       MOV  *R9,R9
-* Store number of items to test in R7
-       MOV  *R9,R7
-* Test length of wrap list array.
-       C    *R8+,*R9+
-       JNE  LPERR1
-* If expected line length is 0, then
-* this part of test is done.
-       MOV  R7,R7
-       JEQ  TSTLN2
-* Don't bother testing array bytes 2&3
-       C    *R8+,*R9+
-* Use R6 to derive index of failure
-       MOV  R8,R6
-* Test list contents
-TSTLN1 C    *R8+,*R9+
-       JNE  LPERR2
-       DEC  R7
-       JNE  TSTLN1
-TSTLN2 RT
-
-* Wrap List contains the wrong number of
-* entries
-LPERR1
-       LI   R1,LPER1M+5
-       BL   @WRTNAM
-*
-       DECT R8
-       MOV  *R8,R0
-       LI   R1,LPER1N-4
-       BLWP @MAKETX
-*
-       LI   R0,LPER1M
-       LI   R1,LPER1N-LPER1M
-       BLWP @PRINTL
-       B    *R12
-
-* Test line contains wrong number of 
-* characters.
-LPERR2
-* R8 was already advanced. Move backwards
-       DECT R8
-*
-       LI   R1,LPER2M+5
-       BL   @WRTNAM
-*
-       MOV  *R8,R0
-       LI   R1,LPER2O
-       BLWP @MAKETX
-*
-       MOV  R8,R0
-       S    R6,R0
-       SRL  R0,1
-       LI   R1,LPER2N
-       BLWP @MAKETX
-*
-       LI   R0,LPER2M
-       LI   R1,LPER2P-LPER2M
-       BLWP @PRINTL
-*
-       B    *R12
-
-LPERR3 
-       LI   R1,LPER3M+5
-       BL   @WRTNAM
-*
-       LI   R0,LPER3M
-       LI   R1,LPER3N-LPER3M
-       BLWP @PRINTL
-*
-       B    *R12
-
-LPER1M TEXT 'Test ...... failed. Wrong '
-       TEXT 'number of entries in the '
-       TEXT 'wrap list.  We see ....'
-LPER1N EVEN
-
-LPER2M TEXT 'Test ...... failed. Wrap '
-       TEXT 'list contents were wrong. '
-       TEXT 'See index '
-LPER2N TEXT '..... We see the value '
-LPER2O TEXT '.... there.'
-LPER2P EVEN
-
-LPER3M TEXT 'Test ...... failed. WRAP '
-       TEXT 'could not allocate space.'
-LPER3N EVEN
-
-WRTNAM
-* Copy test name.
-       LI   R0,TSTNAM
-       MOV  R10,R3
-       MPY  @SIX,R3
-       A    R4,R0
-       LI   R2,6
-       BLWP @BUFCPY
-       RT
-
-SPACE  BSS  >2000
-SPCEND
-
-****************************************
-*
-* Test data
-*
-****************************************
-
-*Number of tests to run
-TSTCNT DATA 11
-SIX    DATA 6
-
-*Expected Wrap Lists
-EXPWRP DATA WRPE1,WRPE2,WRPE3,WRPE4
-       DATA WRPE5,WRPE6,WRPE7,WRPE8
-       DATA WRPE9,WRPE10,WRPE11
-EXPWRE
-
-*Test names
-TSTNAM TEXT 'LIN1  LIN2  LIN3  LIN4  '
-       TEXT 'LIN5  LIN6  LIN7  LIN8  '
-       TEXT 'LIN9  LIN10 LIN11 '
-TSTNME
-
-
-*Line List
-LINL0  DATA 11,1
-       DATA LIN1A
-       DATA LIN2A
-       DATA LIN3A
-       DATA LIN4A
-       DATA LIN5A
-       DATA LIN6A
-       DATA LIN7A
-       DATA LIN8A
-       DATA LIN9A
-       DATA LIN10A
-       DATA LIN11A
-LINL0E
-
+* PARAGRAPH FORMAT
 *
 * Data Format:
 * Byte 0&1: Length of string (paragraph)
@@ -308,6 +31,13 @@ LINL0E
 * 12/120 inch wide. And spaces or line
 * endings are not included in text
 * length.
+*
+
+MNERR  TEXT 'No error should have been '
+       TEXT 'detected.'
+MNERRE
+MWRP   TEXT 'Wrap lists do not match '
+MWRPE  EVEN
 
 *
 * The entire paragraph will be
@@ -317,7 +47,57 @@ LINL0E
 * Assume a page width of eight inches
 * with two inch margins, no indent,
 * 10 CPI
-LIN1A  DATA 47+41+6
+*
+WRP1
+* Arrange
+       LI   R12,STACK
+	   MOV  R11,*R12+
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL1
+	   LI   R3,WRPE1-WRPL1
+	   LI   R4,PAR1A
+       BL   @CPYWRP
+*
+       LI   R0,PARL1
+	   MOV  R0,@LINLST
+	   LI   R0,FMT0
+	   MOV  R0,@FMTLST
+	   LI   R0,MRGN0
+	   MOV  R0,@MGNLST
+* Act
+       LI   R0,3
+	   BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+	   SETO R0
+	   LI   R2,MNERR
+	   LI   R3,MNERRE-MNERR
+	   BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE1
+	   MOV  @PAR1A+2,R1
+	   LI   R2,WRPE1E-WRPE1
+	   LI   R3,MWRP
+	   LI   R4,MWRPE-MWRP
+	   BLWP @ABLCK
+*
+       DECT R12
+	   MOV  *R12,R11
+       RT
+
+
+* Paragraph List
+PARL1  DATA 5,1
+       DATA FAKEAD
+	   DATA FAKEAD
+	   DATA FAKEAD
+       DATA PAR1A
+       DATA FAKEAD
+
+PAR1A  DATA 47+41+6
        DATA WRPL1
        TEXT 'Wuhan is the capital of Hubei province, '
        TEXT 'China, and is the most populous city in '
@@ -325,199 +105,8 @@ LIN1A  DATA 47+41+6
        EVEN
 WRPL1  DATA 2,1,47,47+41
 WRPE1  DATA 2,1,40,40+40
+WRPE1E
 
-*
-* The entire paragraph will be
-* re-wrapped. Some words will be brought
-* down to the next line, and a new line
-* will be created.
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* 10 CPI
-LIN2A  DATA 60+41+30
-       DATA WRPL2
-       TEXT 'It lies in the eastern Jianghan Plain on '
-       TEXT 'the middle reaches of the Yangtze River '
-       TEXT 'at the intersection of the Yangtze and '
-       TEXT 'Han rivers.'
-       EVEN
-WRPL2  DATA 2,1,60,60+41
-WRPE2  DATA 3,1,41,41+40,41+40+39
-
-
-*
-* The entire paragraph will be
-* re-wrapped. Some words will be brought
-* up to the first line.
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* 10 CPI
-LIN3A  DATA 19+32+39+32
-       DATA WRPL3
-       TEXT 'Arising out of the conglomeration of '
-       TEXT 'three cities, Wuchang, Hankou, and '
-       TEXT 'Hanyang, Wuhan is known as "China"s '
-       TEXT 'Thoroughfare".'
-       EVEN
-WRPL3  DATA 3,1,19,19+32,19+32+39
-WRPE3  DATA 3,1,37,37+35,37+35+36
-
-*
-* The entire paragraph will be
-* re-wrapped. Some words will be brought
-* up to the first line. The final line
-* of the paragraph will be removed.
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* 10 CPI
-LIN4A  DATA 29+36+36+35+7
-       DATA WRPL4
-       TEXT 'It is a major transportation '
-       TEXT 'hub, with dozens of railways, roads '
-       TEXT 'and expressways passing through the '
-       TEXT 'city and connecting to other major '
-       TEXT 'cities.'
-       EVEN
-WRPL4  DATA 4,1,29,29+36,29+36+36,29+36+36+35
-WRPE4  DATA 3,1,39,39+30,39+30+41
-
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* 12 CPI
-LIN5A  DATA 36+47+45
-       DATA WRPL5
-       TEXT 'Because of its key role in domestic '
-       TEXT 'transportation, Wuhan is sometimes referred '
-       TEXT 'to '
-       TEXT 'as "the Chicago of China" by foreign sources.'
-       EVEN
-WRPL5  DATA 4,1,36,36+44,36+44+11,36+44+11+11
-WRPE5  DATA 2,1,36,36+47
-
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* more than one CPI
-LIN6A  DATA >9E
-       DATA WRPL6
-       TEXT 'Holding sub-provincial status,[16] Wuhan is '
-       TEXT 'recognized as the political, '
-       TEXT 'economic, financial, '
-       TEXT 'cultural, '
-       TEXT 'educational and '
-       TEXT 'transportation '
-       TEXT 'center of central '
-       TEXT 'China.'
-       EVEN
-WRPL6  DATA 4,1,40,39,42,38
-WRPE6  DATA 7,1
-       DATA 44
-       DATA 44+29
-       DATA 44+29+21
-       DATA 44+29+21+10
-       DATA 44+29+21+10+16
-       DATA 44+29+21+10+16+15
-       DATA 44+29+21+10+16+15+18
-
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* 5 CPI
-LIN7A  DATA 36+47+45
-       DATA WRPL7
-       TEXT 'In 1927, Wuhan was '
-       TEXT 'briefly the capital '
-       TEXT 'of China under the '
-       TEXT 'left wing of the '
-       TEXT 'Kuomintang (KMT) '
-       TEXT 'government led by '
-       TEXT 'Wang Jingwei.'
-       EVEN
-WRPL7  DATA 2,1,40,39
-WRPE7  DATA 6,1
-       DATA 19
-       DATA 19+20
-       DATA 19+20+19
-       DATA 19+20+19+17
-       DATA 19+20+19+17+17
-       DATA 19+20+19+17+17+18
-
-*
-* Assume a page width of eight inches
-* with one inch margins, no indent,
-* 12 CPI
-LIN8A  DATA 62
-       DATA WRPL8
-       TEXT 'The city later served as the wartime '
-       TEXT 'capital of China in 1937.'
-       EVEN
-WRPL8  DATA 1,1,40
-WRPE8  DATA 0,1
-
-*
-* Assume a page width of eight inches
-* with one inch margins, no indent,
-* 12 CPI
-LIN9A  DATA 126
-       DATA WRPL9
-       TEXT 'The Wuhan Gymnasium held the 2011 FIBA Asia '
-       TEXT 'Championship and will be one '
-       TEXT 'of the venues for the 2019 FIBA '
-       TEXT 'Basketball World Cup.'
-       EVEN
-WRPL9  DATA 2,1,74,98
-WRPE9  DATA 1,1,73
-
-*
-* Assume a page width of eight inches
-* with two inch margins, 1 inch indent,
-* 12 CPI
-LIN10A DATA 297
-       DATA WRPL10
-       TEXT '"Wuhan" is derived from the pinyin '
-       TEXT 'romanization of the Standard Mandarin '
-       TEXT 'pronunciation of the name of the city '
-       TEXT '(Wu3han4). '
-       TEXT 'In 1926, the Northern Expedition reached the '
-       TEXT 'Wuhan area and decided to merge Hankou, '
-       TEXT 'Wuchang '
-       TEXT 'and Hanyang into one city in order to make a '
-       TEXT 'new capital for Nationalist China.'
-       EVEN
-WRPL10 DATA 2,1,74,98
-WRPE10 DATA 6,1
-       DATA 35
-       DATA 35+38
-       DATA 35+38+49
-       DATA 35+38+49+45
-       DATA 35+38+49+45+48
-       DATA 35+38+49+45+48+49
-
-*
-* Assume a page width of eight inches
-* with 2.5 inch margins,
-* 0.5 inch hanging indent,
-* 12 CPI
-LIN11A DATA 253
-       DATA WRPL11
-       TEXT 'The city was named Wuhan, which was '
-       TEXT 'later simplified (Wuhan). The '
-       TEXT '"Wu" in "Wuhan" is derived '
-       TEXT 'from the "Wu" in "Wuchang" '
-       TEXT '(literally prospering from '
-       TEXT 'military, regarding its '
-       TEXT 'logistics role of the military '
-       TEXT 'bases established before the '
-       TEXT 'Battle of Red Cliffs).'
-       EVEN
-WRPL11 DATA 2,1,74,98,148
-WRPE11 DATA 8,1
-       DATA 36,66,93,120
-       DATA 147,171,202,231
 
 FMT0   DATA 3,3
 * 12-Cpi at paragraph start
@@ -541,30 +130,35 @@ MRGN0  DATA 4,3
        DATA 10,>00F6,>3232,>1414
 MRGN0E
 
-HEXLIN BSS  >20
 *
-* Do a memory dump
+* Copy Wrap Address to buffer.
+* Register its location in
+* paragraph object.
+* Input:
+*  R2 - Wrap list source address
+*  R3 - length of wrap list
+*  R4 - address of paragraph
+* Output:
+*  R0-R2,R4 will change
+CPYWRP
+       LI   R0,SPACE
+       LI   R1,SPCEND-SPACE
+       BLWP @BUFINT
 *
-* R0 - starting address
-* R1 - dump size
-MEMDMP MOV  R0,R3
-       MOV  R0,R4
-       A    R1,R4
+       MOV  R3,R0
+	   BLWP @BUFALC
 *
-MEMD0  LI   R1,HEXLIN
-MEMD1  MOV  *R3+,R0
-       BLWP @MAKETX
-       AI   R1,4
-       CI   R1,HEXLIN+>20
-       JL   MEMD1
+       MOV  R0,R1
+	   MOV  R2,R0
+	   MOV  R3,R2
+	   BLWP @BUFCPY
+* Update paragraph object's wrap address
+       INCT R4
+	   MOV  R1,*R4
 *
-       MOV  R0,R5
-       LI   R0,HEXLIN
-       LI   R1,>20
-       BLWP @PRINTL
-       MOV  R5,R0
-*
-       C    R3,R4
-       JL   MEMD0
-       RT
+	   RT
+
+SPACE  BSS  >400
+SPCEND
+STACK  BSS  >80
        END

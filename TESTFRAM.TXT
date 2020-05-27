@@ -1,6 +1,6 @@
        DEF  RUNTST
        DEF  MAKETX,PRINTL
-       DEF  AEQ,ANEQ
+       DEF  AEQ,ANEQ,ABLCK
        REF  TSTLST,RSLTFL
        REF  VMBW,VMBR,VSBW,DSRLNK
 
@@ -469,5 +469,78 @@ RF
 * need to run extra assertions
 * in the same test.
        B    @TSTL20
-       
+
+********************************
+
+* Below is the parameter signature for
+* the block assert routine
+* R0: Address of Expected block
+* R1: Address of Actual block
+* R2: Length of expected block
+* R2: Address of fail message
+* R3: Length of fail message
+
+* Assert Blocks Are Identical
+* ----------------------
+* Return true if contents of two blocks
+* are equal. Displays first point where
+* they are different.
+ABLCK  DATA WORKSP,ABLCKP
+ABLMES TEXT 'Expected '
+ABLM1  BSS  >4
+       TEXT ' but actual '
+ABLM2  BSS  >4
+       TEXT ' at byte offset '
+ABLM3  BSS  >4
+       TEXT '.'
+ABLME  EVEN
+ABLCKP
+* Copy Parameters
+       BL   @COPYP
+* R5 = Current Byte
+       CLR  R5
+* Compare each 16-bit word
+AB1    C    *R0+,*R1+
+       JNE  ABFL
+	   INCT R5
+	   C    R5,R2
+	   JL   AB1
+* Report success
+       RTWP
+* Report Failure
+* Backtrack to unmatching bytes.
+ABFL   DECT R0
+	   DECT R1
+* 
+	   MOV  R1,R6
+* Convert values to Hexadecimal Text.
+* R0 already contains address of 
+* the expected value
+       MOV  *R0,R0
+	   LI   R1,ABLM1
+       BL   @MAKEHX
+* the actual value is copied from R6
+       MOV  *R6,R0
+       LI   R1,ABLM2
+       BL   @MAKEHX
+* 
+       MOV  R5,R0
+	   LI   R1,ABLM3
+	   BL   @MAKEHX
+* Display standard failure message
+       LI   R0,ABLMES
+       LI   R1,ABLME-ABLMES
+       BL   @SCRLPT
+* Display user-defined failure message
+       MOV  @6(13),R0
+       MOV  @8(13),R1
+	   CI   R1,>200
+	   JL   AB2
+	   LI   R1,>200
+AB2    BL   @SCRLPT
+* Don't return to the test being run. No
+* need to run extra assertions
+* in the same test.
+       B    @TSTL20
+      
        END       
