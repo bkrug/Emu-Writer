@@ -4,7 +4,7 @@
        REF  WRAP,LINLST,FMTLST,MGNLST
        REF  BUFINT,BUFALC,BUFCPY
 	   
-   
+
 TSTLST DATA TSTEND-TSTLST-2/8
 * Calculate relative document-line
 * looking backwards within the same
@@ -16,7 +16,6 @@ RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
 RSLTFE
        EVEN
-FAKEAD DATA >FFFE
 
 * PARAGRAPH FORMAT
 *
@@ -38,6 +37,7 @@ MNERR  TEXT 'No error should have been '
 MNERRE
 MWRP   TEXT 'Wrap lists do not match '
 MWRPE  EVEN
+FAKEAD DATA >FFFE
 
 *
 * The entire paragraph will be
