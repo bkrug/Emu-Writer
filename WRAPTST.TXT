@@ -3,14 +3,15 @@
 *
        REF  WRAP,LINLST,FMTLST,MGNLST
        REF  BUFINT,BUFALC,BUFCPY
-	   
+       
 
 TSTLST DATA TSTEND-TSTLST-2/8
-* Calculate relative document-line
-* looking backwards within the same
-* paragraph
        DATA WRP1
        TEXT 'WRP1  '
+       DATA WRP2
+       TEXT 'WRP2  '
+       DATA WRP3
+       TEXT 'WRP3  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -51,39 +52,39 @@ FAKEAD DATA >FFFE
 WRP1
 * Arrange
        LI   R12,STACK
-	   DECT R12
-	   MOV  R11,*R12
+       DECT R12
+       MOV  R11,*R12
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
        LI   R2,WRPL1
-	   LI   R3,WRPE1-WRPL1
-	   LI   R4,PAR1A
+       LI   R3,WRPE1-WRPL1
+       LI   R4,PAR1A
        BL   @CPYWRP
 *
        LI   R0,PARL1
-	   MOV  R0,@LINLST
-	   LI   R0,FMT1
-	   MOV  R0,@FMTLST
-	   LI   R0,MRGN1
-	   MOV  R0,@MGNLST
+       MOV  R0,@LINLST
+       LI   R0,FMT1
+       MOV  R0,@FMTLST
+       LI   R0,MRGN1
+       MOV  R0,@MGNLST
 * Act
        LI   R0,0
-	   BLWP @WRAP
+       BLWP @WRAP
 * Assert
 *  No error should be detected
        MOV  R0,R1
-	   SETO R0
-	   LI   R2,MNERR
-	   LI   R3,MNERRE-MNERR
-	   BLWP @ANEQ
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
 *  Wrap list should match expected
        LI   R0,WRPE1
-	   MOV  @PAR1A+2,R1
-	   LI   R2,WRPE1E-WRPE1
-	   LI   R3,MWRP
-	   LI   R4,MWRPE-MWRP
-	   BLWP @ABLCK
+       MOV  @PAR1A+2,R1
+       LI   R2,WRPE1E-WRPE1
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
 *
        MOV  *R12+,R11
        RT
@@ -93,8 +94,8 @@ WRP1
 PARL1  DATA 5,1
        DATA PAR1A
        DATA FAKEAD
-	   DATA FAKEAD
-	   DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
        DATA FAKEAD
 
 PAR1A  DATA 47+41+6
@@ -110,6 +111,151 @@ WRPE1E
 FMT1   DATA 0,3
 
 MRGN1  DATA 1,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+
+*
+* The entire paragraph will be
+* re-wrapped. Some words will be brought
+* down to the next line, and a new line
+* will be created.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+*
+WRP2
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL2
+       LI   R3,WRPE2-WRPL2
+       LI   R4,PAR2A
+       BL   @CPYWRP
+*
+       LI   R0,PARL2
+       MOV  R0,@LINLST
+       LI   R0,FMT2
+       MOV  R0,@FMTLST
+       LI   R0,MRGN2
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,1
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE2
+       MOV  @PAR2A+2,R1
+       LI   R2,WRPE2E-WRPE2
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+* Paragraph List
+PARL2  DATA 3,1
+       DATA FAKEAD
+       DATA PAR2A
+       DATA FAKEAD
+
+PAR2A  DATA 60+41+30
+       DATA WRPL2
+       TEXT 'It lies in the eastern Jianghan Plain on '
+       TEXT 'the middle reaches of the Yangtze River '
+       TEXT 'at the intersection of the Yangtze and '
+       TEXT 'Han rivers.'
+       EVEN
+WRPL2  DATA 2,1,60,60+41
+WRPE2  DATA 3,1,41,41+40,41+40+39
+WRPE2E
+
+FMT2   DATA 0,3
+
+MRGN2  DATA 1,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+	   
+*
+* The entire paragraph will be
+* re-wrapped. Some words will be brought
+* up to the first line.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+*
+WRP3
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL3
+       LI   R3,WRPE3-WRPL3
+       LI   R4,PAR3A
+       BL   @CPYWRP
+*
+       LI   R0,PARL3
+       MOV  R0,@LINLST
+       LI   R0,FMT3
+       MOV  R0,@FMTLST
+       LI   R0,MRGN3
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,2
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE3
+       MOV  @PAR3A+2,R1
+       LI   R2,WRPE3E-WRPE3
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL3  DATA 4,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR3A
+       DATA FAKEAD
+
+PAR3A  DATA 19+32+39+32
+       DATA WRPL3
+       TEXT 'Arising out of the conglomeration of '
+       TEXT 'three cities, Wuchang, Hankou, and '
+       TEXT 'Hanyang, Wuhan is known as "China"s '
+       TEXT 'Thoroughfare".'
+       EVEN
+WRPL3  DATA 3,1,19,19+32,19+32+39
+WRPE3  DATA 3,1,37,37+35,37+35+36
+WRPE3E
+
+FMT3   DATA 0,3
+
+MRGN3  DATA 1,3
 * 2-inch margins
        DATA 0,>0000,>2828,>1414
 
@@ -154,17 +300,17 @@ CPYWRP
        BLWP @BUFINT
 *
        MOV  R3,R0
-	   BLWP @BUFALC
+       BLWP @BUFALC
 *
        MOV  R0,R1
-	   MOV  R2,R0
-	   MOV  R3,R2
-	   BLWP @BUFCPY
+       MOV  R2,R0
+       MOV  R3,R2
+       BLWP @BUFCPY
 * Update paragraph object's wrap address
        INCT R4
-	   MOV  R1,*R4
+       MOV  R1,*R4
 *
-	   RT
+       RT
 
 SPACE  BSS  >400
 SPCEND
