@@ -24,6 +24,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'WRP8  '
        DATA WRP9
        TEXT 'WRP9  '
+       DATA WRP10
+       TEXT 'WRP10 '
+       DATA WRP11
+       TEXT 'WRP11 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -767,7 +771,204 @@ FMT9   DATA 3,3
 * 12-Cpi at paragraph start
        DATA 7,0,0,10
 
-MRGN9  DATA 3,3
+MRGN9  DATA 4,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+* 2-inch margins, 1-inch indent
+       DATA 9,>0014,>2828,>1414
+* 2.5-inch margins,
+* 0.5-inch hanging indent
+       DATA 10,>00F6,>3232,>1414
+
+*
+* Assume a page width of eight inches
+* with two inch margins, 1 inch indent,
+* 12 CPI
+*
+WRP10
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL10
+       LI   R3,WRE10E-WRPL10
+       LI   R4,PAR10A
+       BL   @CPYWRP
+*
+       LI   R0,PARL10
+       MOV  R0,@LINLST
+       LI   R0,FMT10
+       MOV  R0,@FMTLST
+       LI   R0,MRGN10
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,9
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE10
+       MOV  @PAR10A+2,R1
+       LI   R2,WRE10E-WRPE10
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL10 DATA 11,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR10A
+       DATA FAKEAD
+
+PAR10A DATA 297
+       DATA WRPL10
+       TEXT '"Wuhan" is derived from the pinyin '
+       TEXT 'romanization of the Standard Mandarin '
+       TEXT 'pronunciation of the name of the city '
+       TEXT '(Wu3han4). '
+       TEXT 'In 1926, the Northern Expedition reached the '
+       TEXT 'Wuhan area and decided to merge Hankou, '
+       TEXT 'Wuchang '
+       TEXT 'and Hanyang into one city in order to make a '
+       TEXT 'new capital for Nationalist China.'
+       EVEN
+WRPL10 DATA 2,1,74,98
+WRPE10 DATA 6,1
+       DATA 35
+       DATA 35+38
+       DATA 35+38+49
+       DATA 35+38+49+45
+       DATA 35+38+49+45+48
+       DATA 35+38+49+45+48+49
+WRE10E
+
+FMT10  DATA 3,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+* 5-Cpi in middle of second line of 
+* paragraph
+       DATA 5,64,0,24
+* 12-Cpi at paragraph start
+       DATA 7,0,0,10
+
+MRGN10 DATA 4,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+* 2-inch margins, 1-inch indent
+       DATA 9,>0014,>2828,>1414
+* 2.5-inch margins,
+* 0.5-inch hanging indent
+       DATA 10,>00F6,>3232,>1414
+
+*
+* Assume a page width of eight inches
+* with 2.5 inch margins,
+* 0.5 inch hanging indent,
+* 12 CPI
+*
+WRP11
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL11
+       LI   R3,WRE11E-WRPL11
+       LI   R4,PAR11A
+       BL   @CPYWRP
+*
+       LI   R0,PARL11
+       MOV  R0,@LINLST
+       LI   R0,FMT11
+       MOV  R0,@FMTLST
+       LI   R0,MRGN11
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,10
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE11
+       MOV  @PAR11A+2,R1
+       LI   R2,WRE11E-WRPE11
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL11 DATA 11,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR11A
+
+PAR11A DATA 253
+       DATA WRPL11
+       TEXT 'The city was named Wuhan, which was '
+       TEXT 'later simplified (Wuhan). The '
+       TEXT '"Wu" in "Wuhan" is derived '
+       TEXT 'from the "Wu" in "Wuchang" '
+       TEXT '(literally prospering from '
+       TEXT 'military, regarding its '
+       TEXT 'logistics role of the military '
+       TEXT 'bases established before the '
+       TEXT 'Battle of Red Cliffs).'
+       EVEN
+WRPL11 DATA 2,1,74,98,148
+WRPE11 DATA 8,1
+       DATA 36,66,93,120
+       DATA 147,171,202,231
+WRE11E
+
+FMT11  DATA 3,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+* 5-Cpi in middle of second line of 
+* paragraph
+       DATA 5,64,0,24
+* 12-Cpi at paragraph start
+       DATA 7,0,0,10
+
+MRGN11 DATA 4,3
 * 2-inch margins
        DATA 0,>0000,>2828,>1414
 * 1-inch margins
