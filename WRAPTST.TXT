@@ -20,6 +20,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'WRP6  '
        DATA WRP7
        TEXT 'WRP7  '
+       DATA WRP8
+       TEXT 'WRP8  '
+       DATA WRP9
+       TEXT 'WRP9  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -604,10 +608,71 @@ MRGN7  DATA 3,3
 * 2-inch margins, 1-inch indent
        DATA 9,>0014,>2828,>1414
 
-********
+*
+* Assume a page width of eight inches
+* with one inch margins, no indent,
+* 12 CPI
+*
+WRP8
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL8
+       LI   R3,WRPE8-WRPL8
+       LI   R4,PAR8A
+       BL   @CPYWRP
+*
+       LI   R0,PARL8
+       MOV  R0,@LINLST
+       LI   R0,FMT8
+       MOV  R0,@FMTLST
+       LI   R0,MRGN8
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,7
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE8
+       MOV  @PAR8A+2,R1
+       LI   R2,WRPE8E-WRPE8
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
 
+PARL8  DATA 8,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR8A
 
-FMT0   DATA 3,3
+PAR8A  DATA 62
+       DATA WRPL8
+       TEXT 'The city later served as the wartime '
+       TEXT 'capital of China in 1937.'
+       EVEN
+WRPL8  DATA 1,1,40
+WRPE8  DATA 0,1
+WRPE8E
+
+FMT8   DATA 3,3
 * 12-Cpi at paragraph start
        DATA 4,0,0,10
 * 5-Cpi in middle of second line of 
@@ -615,9 +680,94 @@ FMT0   DATA 3,3
        DATA 5,64,0,24
 * 12-Cpi at paragraph start
        DATA 7,0,0,10
-FMT0E
 
-MRGN0  DATA 4,3
+MRGN8  DATA 3,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+* 2-inch margins, 1-inch indent
+       DATA 9,>0014,>2828,>1414
+
+*
+* Assume a page width of eight inches
+* with one inch margins, no indent,
+* 12 CPI
+*
+WRP9
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL9
+       LI   R3,WRPE9-WRPL9
+       LI   R4,PAR9A
+       BL   @CPYWRP
+*
+       LI   R0,PARL9
+       MOV  R0,@LINLST
+       LI   R0,FMT9
+       MOV  R0,@FMTLST
+       LI   R0,MRGN9
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,8
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE9
+       MOV  @PAR9A+2,R1
+       LI   R2,WRPE9E-WRPE9
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL9  DATA 11,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR9A
+       DATA FAKEAD
+       DATA FAKEAD
+
+PAR9A  DATA 126
+       DATA WRPL9
+       TEXT 'The Wuhan Gymnasium held the 2011 FIBA Asia '
+       TEXT 'Championship and will be one '
+       TEXT 'of the venues for the 2019 FIBA '
+       TEXT 'Basketball World Cup.'
+       EVEN
+WRPL9  DATA 2,1,74,98
+WRPE9  DATA 1,1,73
+WRPE9E
+
+FMT9   DATA 3,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+* 5-Cpi in middle of second line of 
+* paragraph
+       DATA 5,64,0,24
+* 12-Cpi at paragraph start
+       DATA 7,0,0,10
+
+MRGN9  DATA 3,3
 * 2-inch margins
        DATA 0,>0000,>2828,>1414
 * 1-inch margins
@@ -627,7 +777,8 @@ MRGN0  DATA 4,3
 * 2.5-inch margins,
 * 0.5-inch hanging indent
        DATA 10,>00F6,>3232,>1414
-MRGN0E
+
+********
 
 *
 * Copy Wrap Address to buffer.
