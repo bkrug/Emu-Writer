@@ -51,7 +51,8 @@ FAKEAD DATA >FFFE
 WRP1
 * Arrange
        LI   R12,STACK
-	   MOV  R11,*R12+
+	   DECT R12
+	   MOV  R11,*R12
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -62,12 +63,12 @@ WRP1
 *
        LI   R0,PARL1
 	   MOV  R0,@LINLST
-	   LI   R0,FMT0
+	   LI   R0,FMT1
 	   MOV  R0,@FMTLST
-	   LI   R0,MRGN0
+	   LI   R0,MRGN1
 	   MOV  R0,@MGNLST
 * Act
-       LI   R0,3
+       LI   R0,0
 	   BLWP @WRAP
 * Assert
 *  No error should be detected
@@ -84,17 +85,16 @@ WRP1
 	   LI   R4,MWRPE-MWRP
 	   BLWP @ABLCK
 *
-       DECT R12
-	   MOV  *R12,R11
+       MOV  *R12+,R11
        RT
 
 
 * Paragraph List
 PARL1  DATA 5,1
+       DATA PAR1A
        DATA FAKEAD
 	   DATA FAKEAD
 	   DATA FAKEAD
-       DATA PAR1A
        DATA FAKEAD
 
 PAR1A  DATA 47+41+6
@@ -106,6 +106,14 @@ PAR1A  DATA 47+41+6
 WRPL1  DATA 2,1,47,47+41
 WRPE1  DATA 2,1,40,40+40
 WRPE1E
+
+FMT1   DATA 0,3
+
+MRGN1  DATA 1,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+
+********
 
 
 FMT0   DATA 3,3
@@ -160,5 +168,6 @@ CPYWRP
 
 SPACE  BSS  >400
 SPCEND
-STACK  BSS  >80
+STACKS BSS  >10
+STACK
        END
