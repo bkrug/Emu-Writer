@@ -16,6 +16,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'WRP4  '
        DATA WRP5
        TEXT 'WRP5  '
+       DATA WRP6
+       TEXT 'WRP6  '
+       DATA WRP7
+       TEXT 'WRP7  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -417,6 +421,188 @@ MRGN5  DATA 2,3
        DATA 0,>0000,>2828,>1414
 * 1-inch margins
        DATA 7,>0000,>1414,>1414
+
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* more than one CPI
+*
+WRP6
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL6
+       LI   R3,WRPE6-WRPL6
+       LI   R4,PAR6A
+       BL   @CPYWRP
+*
+       LI   R0,PARL6
+       MOV  R0,@LINLST
+       LI   R0,FMT6
+       MOV  R0,@FMTLST
+       LI   R0,MRGN6
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,5
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE6
+       MOV  @PAR6A+2,R1
+       LI   R2,WRPE6E-WRPE6
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL6  DATA 8,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR6A
+       DATA FAKEAD
+       DATA FAKEAD
+
+PAR6A  DATA >9E
+       DATA WRPL6
+       TEXT 'Holding sub-provincial status,[16] Wuhan is '
+       TEXT 'recognized as the political, '
+       TEXT 'economic, financial, '
+       TEXT 'cultural, '
+       TEXT 'educational and '
+       TEXT 'transportation '
+       TEXT 'center of central '
+       TEXT 'China.'
+       EVEN
+WRPL6  DATA 4,1,40,39,42,38
+WRPE6  DATA 7,1
+       DATA 44
+       DATA 44+29
+       DATA 44+29+21
+       DATA 44+29+21+10
+       DATA 44+29+21+10+16
+       DATA 44+29+21+10+16+15
+       DATA 44+29+21+10+16+15+18
+WRPE6E
+
+FMT6   DATA 2,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+* 5-Cpi in middle of second line of 
+* paragraph
+       DATA 5,64,0,24
+
+MRGN6  DATA 3,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+* 2-inch margins, 1-inch indent
+       DATA 9,>0014,>2828,>1414
+
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 5 CPI
+*
+WRP7
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL7
+       LI   R3,WRPE7-WRPL7
+       LI   R4,PAR7A
+       BL   @CPYWRP
+*
+       LI   R0,PARL7
+       MOV  R0,@LINLST
+       LI   R0,FMT7
+       MOV  R0,@FMTLST
+       LI   R0,MRGN7
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,6
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE7
+       MOV  @PAR7A+2,R1
+       LI   R2,WRPE7E-WRPE7
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL7  DATA 8,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR7A
+       DATA FAKEAD
+
+PAR7A  DATA 36+47+45
+       DATA WRPL7
+       TEXT 'In 1927, Wuhan was '
+       TEXT 'briefly the capital '
+       TEXT 'of China under the '
+       TEXT 'left wing of the '
+       TEXT 'Kuomintang (KMT) '
+       TEXT 'government led by '
+       TEXT 'Wang Jingwei.'
+       EVEN
+WRPL7  DATA 2,1,40,39
+WRPE7  DATA 6,1
+       DATA 19
+       DATA 19+20
+       DATA 19+20+19
+       DATA 19+20+19+17
+       DATA 19+20+19+17+17
+       DATA 19+20+19+17+17+18
+WRPE7E
+
+FMT7   DATA 2,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+* 5-Cpi in middle of second line of 
+* paragraph
+       DATA 5,64,0,24
+
+MRGN7  DATA 3,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+* 2-inch margins, 1-inch indent
+       DATA 9,>0014,>2828,>1414
 
 ********
 
