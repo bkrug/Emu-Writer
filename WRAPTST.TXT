@@ -12,6 +12,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'WRP2  '
        DATA WRP3
        TEXT 'WRP3  '
+       DATA WRP4
+       TEXT 'WRP4  '
+       DATA WRP5
+       TEXT 'WRP5  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -258,6 +262,161 @@ FMT3   DATA 0,3
 MRGN3  DATA 1,3
 * 2-inch margins
        DATA 0,>0000,>2828,>1414
+
+*
+* The entire paragraph will be
+* re-wrapped. Some words will be brought
+* up to the first line. The final line
+* of the paragraph will be removed.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+WRP4
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL4
+       LI   R3,WRPE4-WRPL4
+       LI   R4,PAR4A
+       BL   @CPYWRP
+*
+       LI   R0,PARL4
+       MOV  R0,@LINLST
+       LI   R0,FMT4
+       MOV  R0,@FMTLST
+       LI   R0,MRGN4
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,3
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE4
+       MOV  @PAR4A+2,R1
+       LI   R2,WRPE4E-WRPE4
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL4  DATA 6,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR4A
+       DATA FAKEAD
+       DATA FAKEAD
+
+PAR4A  DATA 29+36+36+35+7
+       DATA WRPL4
+       TEXT 'It is a major transportation '
+       TEXT 'hub, with dozens of railways, roads '
+       TEXT 'and expressways passing through the '
+       TEXT 'city and connecting to other major '
+       TEXT 'cities.'
+       EVEN
+WRPL4  DATA 4,1,29,29+36,29+36+36,29+36+36+35
+WRPE4  DATA 3,1,39,39+30,39+30+41
+WRPE4E
+
+FMT4   DATA 1,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+
+MRGN4  DATA 2,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
+
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 12 CPI
+*
+WRP5
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL5
+       LI   R3,WRPE5-WRPL5
+       LI   R4,PAR5A
+       BL   @CPYWRP
+*
+       LI   R0,PARL5
+       MOV  R0,@LINLST
+       LI   R0,FMT5
+       MOV  R0,@FMTLST
+       LI   R0,MRGN5
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,4
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+       MOV  R0,R1
+       SETO R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @ANEQ
+*  Wrap list should match expected
+       LI   R0,WRPE5
+       MOV  @PAR5A+2,R1
+       LI   R2,WRPE5E-WRPE5
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL5  DATA 8,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR5A
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+
+PAR5A  DATA 36+47+45
+       DATA WRPL5
+       TEXT 'Because of its key role in domestic '
+       TEXT 'transportation, Wuhan is sometimes referred '
+       TEXT 'to '
+       TEXT 'as "the Chicago of China" by foreign sources.'
+       EVEN
+WRPL5  DATA 4,1,36,36+44,36+44+11,36+44+11+11
+WRPE5  DATA 2,1,36,36+47
+WRPE5E
+
+FMT5   DATA 1,3
+* 12-Cpi at paragraph start
+       DATA 4,0,0,10
+
+MRGN5  DATA 2,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
+* 1-inch margins
+       DATA 7,>0000,>1414,>1414
 
 ********
 
