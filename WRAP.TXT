@@ -8,6 +8,7 @@
 * Constants
        REF  SPACE,DASH,SIX
        REF  FMTLEN,MGNLEN,PGWDTH
+	   REF  ERRMEM,STSPAR
 * Variables
        REF  FMTEND,MGNEND,LNWDT1,LNWDTH
 
@@ -16,8 +17,9 @@
 *
 * Input:
 * R0 - Line index. Wrap from here.
+* R1 - Document Staus
 * Output:
-* R0 - >FFFF implies an error.
+* R1 - Document Status
 *
 WRAP   DATA WRAPWS,WRAP+4
 *=======================================
@@ -284,15 +286,23 @@ WRP5
 *=======================================
 * Change R5 from paragraph text address
 * to pointer to paragraph's wrap list.
-       AI   R5,-2
+       DECT R5
+* Compare line count in old wrap list
+* to new wrap list.
+* Let R7 = address of old wrap list
+       MOV  *R5,R7
+	   C    *R7,*R6
+	   JEQ  WRP6
+	   SOC  @STSPAR,@2(13)
 * Deallocate old wrap list.
-       MOV  *R5,R0
+WRP6   MOV  *R5,R0
        BLWP @BUFREE
 * Register new wrap list with paragraph
        MOV  R6,*R5
        RTWP
 
-WRPERR MOV  R0,*R13
+WRPERR SOC  @ERRMEM,@2(13)
+       SETO *R13
        RTWP
 
        END

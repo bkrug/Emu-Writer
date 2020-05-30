@@ -2,6 +2,7 @@
        DEF  SIX
        DEF  USRISR
        DEF  STSTYP,STSENT,STSPAR,STSWIN
+       DEF  ERRMEM
        DEF  DELKEY
        DEF  LF,CR,CHRMIN,CHRMAX
        DEF  SPACE,DASH,ENDINP,NOKEY
@@ -38,6 +39,8 @@ STSENT DATA >2
 STSPAR DATA >4
 * Window Moved
 STSWIN DATA >8
+* Insufficient Memory Error
+ERRMEM DATA >8000
 
 * ASCII codes
 DELKEY BYTE >03

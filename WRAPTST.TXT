@@ -3,7 +3,8 @@
 *
        REF  WRAP,LINLST,FMTLST,MGNLST
        REF  BUFINT,BUFALC,BUFCPY
-       
+       REF  STSPAR,ERRMEM
+
 
 TSTLST DATA TSTEND-TSTLST-2/8
        DATA WRP1
@@ -54,6 +55,12 @@ MNERR  TEXT 'No error should have been '
 MNERRE
 MWRP   TEXT 'Wrap lists do not match '
 MWRPE  EVEN
+MPARC  TEXT 'Number of paragraph lines '
+       TEXT 'should have changed.'
+MPARCE
+MPAR   TEXT 'Number of paragraph lines '
+       TEXT 'should not have changed.'
+MPARE
 FAKEAD DATA >FFFE
 
 *
@@ -86,14 +93,22 @@ WRP1
        MOV  R0,@MGNLST
 * Act
        LI   R0,0
+	   LI   R1,0
        BLWP @WRAP
 * Assert
 *  No error should be detected
-       MOV  R0,R1
-       SETO R0
+* R1 contains document status
+       MOV  @ERRMEM,R0
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
-       BLWP @ANEQ
+       BLWP @AZC
+* Document status reports linecount is
+* unchanged
+* R1 contains document status
+       MOV  @STSPAR,R0
+       LI   R2,MPARC
+       LI   R3,MPARCE-MPARC
+       BLWP @AZC
 *  Wrap list should match expected
        LI   R0,WRPE1
        MOV  @PAR1A+2,R1
@@ -161,14 +176,21 @@ WRP2
        MOV  R0,@MGNLST
 * Act
        LI   R0,1
+       LI   R1,0
        BLWP @WRAP
 * Assert
-*  No error should be detected
-       MOV  R0,R1
-       SETO R0
+* R1 contains document status
+       MOV  @ERRMEM,R0
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
-       BLWP @ANEQ
+       BLWP @AZC
+* Document status reports line count
+* changed
+* R1 contains document status
+       MOV  @STSPAR,R0
+       LI   R2,MPARC
+       LI   R3,MPARCE-MPARC
+       BLWP @AOC
 *  Wrap list should match expected
        LI   R0,WRPE2
        MOV  @PAR2A+2,R1
