@@ -2,9 +2,11 @@
 * Mock of code from LOOK.TXT
        DEF  LOOKUP
 * Assert Routine
-       REF  AEQ
+       REF  AEQ,AZC,AOC
 * Update visual position indicators
        REF  POSUPD
+* Document Status
+       REF  STSWIN
 * Vars
        REF  LINLST
        REF  PARINX,CHRPAX
@@ -179,6 +181,7 @@ POS1
        LI   R0,53
        MOV  R0,@CHRPAX
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
        LI   R0,1
@@ -205,8 +208,10 @@ POS2
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,0
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -231,8 +236,10 @@ POS3
        MOV  R0,@PARINX
        LI   R0,45+41+45+46+33-1
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,4
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -257,8 +264,10 @@ POS4
        MOV  R0,@PARINX
        LI   R0,45+41+45+46
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,4
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -283,8 +292,10 @@ POS5
        MOV  R0,@PARINX
        LI   R0,45+41+45-1
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,2
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -341,8 +352,10 @@ POS6
        MOV  R0,@PARINX
        LI   R0,90
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,2
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -389,8 +402,10 @@ POS7
        MOV  R0,@PARINX
        LI   R0,55
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,1
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -437,8 +452,10 @@ POS8
        MOV  R0,@PARINX
        LI   R0,45+41+17
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,2
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -482,8 +499,10 @@ POS9
        MOV  R0,@PARINX
        LI   R0,6
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,0
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -523,8 +542,10 @@ POSA
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
+* Act
+       CLR  R0
        BLWP @POSUPD
-*
+* Assert
        LI   R0,0
        MOV  @LININX,R1
        LI   R2,POS1MS
@@ -568,8 +589,17 @@ HOF1
        LI   R0,0
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,0
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -592,8 +622,16 @@ HOF2
        LI   R0,20
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,0
        MOV  @WINOFF,R1
        LI   R2,OFLFT
@@ -616,8 +654,16 @@ HOF3
        LI   R0,40
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,0
        MOV  @WINOFF,R1
        LI   R2,OFLFT
@@ -640,8 +686,17 @@ HOF4
        LI   R0,0
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,0
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -664,8 +719,17 @@ HOF5
        LI   R0,20
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,20
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -688,8 +752,16 @@ HOF6
        LI   R0,40
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,20
        MOV  @WINOFF,R1
        LI   R2,OFLFT
@@ -712,8 +784,16 @@ HOF7
        LI   R0,0
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,40
        MOV  @WINOFF,R1
        LI   R2,OFRGT
@@ -736,8 +816,16 @@ HOF8
        LI   R0,20
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,40
        MOV  @WINOFF,R1
        LI   R2,OFRGT
@@ -760,8 +848,17 @@ HOF9
        LI   R0,40
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,40
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -784,8 +881,17 @@ HOF10
        LI   R0,60
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,60
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -808,8 +914,17 @@ HOF11
        LI   R0,20
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,20
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -832,8 +947,17 @@ HOF12
        LI   R0,20
        MOV  R0,@WINOFF
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,20
        MOV  @WINOFF,R1
        LI   R2,OFCNS
@@ -842,11 +966,16 @@ HOF12
        RT           
 
 OFLFT  TEXT 'Horizontal offset should have moved left.'
-OFLFTE EVEN
+OFLFTE 
 OFCNS  TEXT 'Horizontal offset should not have changed.'
-OFCNSE EVEN
+OFCNSE 
 OFRGT  TEXT 'Horizontal offset should have moved right.'
-OFRGTE EVEN
+OFRGTE 
+MWINM  TEXT 'Window should not have moved.'
+MWINME
+MWINN  TEXT 'Window should have moved.'
+MWINNE EVEN
+
 *Line List
 HOF1L  DATA 4,1
        DATA FAKEAD
@@ -888,8 +1017,16 @@ WUP1
        LI   R0,0
        MOV  R0,@WINLIN
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,2
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -923,8 +1060,17 @@ WUP2
        LI   R0,2
        MOV  R0,@WINLIN
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,2
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -959,8 +1105,16 @@ WUP3
        LI   R0,6
        MOV  R0,@WINLIN
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,1
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -995,8 +1149,17 @@ WUP4
        LI   R0,4
        MOV  R0,@WINLIN
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,1
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -1031,8 +1194,17 @@ WUP5
        LI   R0,5
        MOV  R0,@WINLIN
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,1
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -1159,8 +1331,16 @@ WDWN1
        LI   R0,2
        MOV  R0,@WINLIN       
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,2
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -1200,8 +1380,17 @@ WDWN2
        LI   R0,0
        MOV  R0,@WINLIN       
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,2
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -1241,8 +1430,16 @@ WDWN3
        LI   R0,1
        MOV  R0,@WINLIN       
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
        LI   R0,1
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -1282,8 +1479,17 @@ WDWN4
        LI   R0,3
        MOV  R0,@WINLIN       
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,0
        MOV  @WINPAR,R1
        LI   R2,WUPM1
@@ -1323,8 +1529,17 @@ WDWN5
        LI   R0,4
        MOV  R0,@WINLIN       
 * Act
+       CLR  R0
        BLWP @POSUPD
 * Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
        LI   R0,1
        MOV  @WINPAR,R1
        LI   R2,WUPM1
