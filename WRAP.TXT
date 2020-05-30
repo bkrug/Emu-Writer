@@ -302,7 +302,6 @@ WRP6   MOV  *R5,R0
        RTWP
 
 WRPERR SOC  @ERRMEM,@2(13)
-       SETO *R13
        RTWP
 
        END
