@@ -1,7 +1,26 @@
+* Program entry point
        DEF  RUNTST
-       DEF  MAKETX,PRINTL
-       DEF  AEQ,ANEQ,ABLCK
-       REF  TSTLST,RSLTFL
+* Creates HEX value as text string
+       DEF  MAKETX
+* Prints text at screen bottom
+	   DEF  PRINTL
+*******
+* Assert block contents are equal
+	   DEF  ABLCK
+* Assert Ones Corresponding, Zeros Corresponding
+	   DEF  AOC,AZC
+* Assert Words Equal, Words Not Equal
+       DEF  AEQ,ANEQ
+
+*******
+* List of test routines
+* First word: Number of tests
+* Next word: address of first test
+* Next 6 bytes: ASCII name of test
+       REF  TSTLST
+* Name of results output file
+	   REF  RSLTFL
+*
        REF  VMBW,VMBR,VSBW,DSRLNK
 
 RUNTST B    @RUNT
@@ -437,7 +456,71 @@ AB2    BL   @SCRLPT
 * need to run extra assertions
 * in the same test.
        B    @TSTL20
-      
+
+* Assert Ones Corresponding
+* ----------------------
+* R0: Bits expected to be set
+* R1: Actual value
+* R2: Address of fail message
+* R3: Length of fail message
+* Assert Words Are Equal
+* ----------------------
+* Return true if ones in R2
+* are also set in R3. Displays 
+* their contents if not true.
+AOC    DATA WORKSP,AOCP
+AOCMES TEXT 'A: '
+AOCM1  BSS  >4
+       TEXT ' B: '
+AOCM2  BSS  >4
+       TEXT ' Ones in A should have '
+	   TEXT ' corresponding ones in B.'
+AOCME  EVEN
+AOCP
+* Copy Parameters
+       BL   @COPYP
+* Output Test Name
+       COC  R0,R1
+       JEQ  AOCS
+* Report failure
+       BL   @RF
+       DATA AOCM1,AOCM2
+       DATA AOCMES,AOCME-AOCMES
+* Report success
+AOCS   RTWP
+
+* Assert Zeros Corresponding
+* ----------------------
+* R0: Bits expected to be reset
+* R1: Actual value
+* R2: Address of fail message
+* R3: Length of fail message
+* Assert Words Are Equal
+* ----------------------
+* Return true if ones in R2 have 
+* corresponding zeros in R3.
+* Displays ther contents otherwise.
+AZC    DATA WORKSP,AZCP
+AZCMES TEXT 'A: '
+AZCM1  BSS  >4
+       TEXT ' B: '
+AZCM2  BSS  >4
+       TEXT ' Ones in A should have '
+	   TEXT ' corresponding zeros in B.'
+AZCME  EVEN
+AZCP
+* Copy Parameters
+       BL   @COPYP
+* Output Test Name
+       CZC  R0,R1
+       JEQ  AZCS
+* Report failure
+       BL   @RF
+       DATA AZCM1,AZCM2
+       DATA AZCMES,AZCME-AZCMES
+* Report success
+AZCS   RTWP
+
 * Assert Words are Equal
 * ----------------------
 * R0: Expected value
