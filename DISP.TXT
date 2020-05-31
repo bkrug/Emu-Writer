@@ -30,6 +30,7 @@ DISP   DATA DISPWS,DISP+4
 	   MOV  R0,R3
 	   MOV  *R5+,R6
 	   INCT R5
+* TODO: figure out how many lines to skip
 * Set VDP write address
        LI   R0,10*40
 	   BL   @VDPADR
