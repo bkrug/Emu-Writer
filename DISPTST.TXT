@@ -53,8 +53,8 @@ DSP1
        SOC  @STSTYP,R0
        BLWP @DISP
 * Assert
-       LI   R0,FKSCRN
-       LI   R1,SCRN1
+       LI   R0,SCRN1
+       LI   R1,FKSCRN
        LI   R2,24*40
        LI   R3,MSCNW
        LI   R4,MSCNWE-MSCNW
@@ -93,35 +93,35 @@ PAR1D  DATA -1
        TEXT '...'
        EVEN
 WRP4A  DATA 5,1,-1,-1,-1,-1,-1
-PAR1E  DATA 467
+PAR1E  DATA 468
        DATA WRP5A
        TEXT 'Marcus Mosiah Garvey Jr. ONH '
-       TEXT '(17 August 1887 – 10 June 1940) '
+       TEXT '(17 August 1887 to 10 June 1940) '
        TEXT 'was a Jamaican political activist, '
        TEXT 'publisher, journalist, '
        TEXT 'entrepreneur, and orator. He was the '
        TEXT 'founder and first '
-       TEXT 'President-General of the Universal '
+       TEXT 'President_General of the Universal '
        TEXT 'Negro Improvement '
        TEXT 'Association and African Communities '
-       TEXT 'League (UNIA-ACL, '
+       TEXT 'League (UNIA_ACL, '
        TEXT 'commonly known as UNIA), through which '
        TEXT 'he declared himself '
        TEXT 'Provisional President of Africa. '
        TEXT 'Ideologically a black '
-       TEXT 'nationalist and Pan-Africanist, his '
+       TEXT 'nationalist and Pan_Africanist, his '
        TEXT 'ideas came to be known '
        TEXT 'as Garveyism.'
        EVEN
 WRP5A  DATA 8,1
-       DATA 61
-       DATA 61+58
-       DATA 61+58+55
-       DATA 61+58+55+53
-       DATA 61+58+55+53+54
-       DATA 61+58+55+53+54+59
-       DATA 61+58+55+53+54+59+55
-       DATA 61+58+55+53+54+59+55+59       
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
 PAR1F  DATA -1
        DATA WRP6A
        TEXT '...'
@@ -142,11 +142,11 @@ SCRN1
        TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
        TEXT 'was a Jamaican political activist, publi'
        TEXT 'entrepreneur, and orator. He was the fou'
-       TEXT 'President-General of the Universal Negro'
+       TEXT 'President_General of the Universal Negro'
        TEXT 'Association and African Communities Leag'
        TEXT 'commonly known as UNIA), through which h'
        TEXT 'Provisional President of Africa. Ideolog'
-       TEXT 'nationalist and Pan-Africanist, his idea'
+       TEXT 'nationalist and Pan_Africanist, his idea'
        TEXT 'as Garveyism.                           '
        TEXT '                                        '
        TEXT '                                        '
@@ -216,7 +216,7 @@ VDPWRT
 * Write to fake VDP RAM
 WDPW1  MOVB *R0+,*R2+
        DEC  R1
-       JL   WDPW1
+       JH   WDPW1
 * Update next write position
        MOV  R2,@VADR
 *

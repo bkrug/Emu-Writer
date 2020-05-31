@@ -2,8 +2,9 @@
 * Definitions in this file
 *
 * Register Workspaces
-       DEF  ARRYWS,STRWS,LOOKWS
-       DEF  WRAPWS,SCRNWS,INPTWS,POSUWS
+       DEF  STRWS
+       DEF  LOOKWS,ARRYWS
+       DEF  WRAPWS,INPTWS,POSUWS,DISPWS,SCRNWS
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
 * Arrays
@@ -34,10 +35,11 @@
 STRWS  BSS  >20
 LOOKWS
 ARRYWS BSS  >20
-WRAPWS BSS  >20
-INPTWS BSS  >20
+WRAPWS
+INPTWS
+POSUWS
+DISPWS
 SCRNWS BSS  >20
-POSUWS BSS  >20
 
 *
 * Areas for changeable values

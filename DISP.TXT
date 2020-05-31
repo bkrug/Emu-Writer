@@ -1,0 +1,63 @@
+       DEF  DISP
+* Mocked methods
+       REF  VDPADR,VDPWRT
+*
+       REF  DISPWS
+       REF  LINLST,FMTLST,MGNLST
+       REF  PARINX
+       REF  WINOFF,WINPAR,WINLIN
+       REF  STSTYP,STSENT,STSPAR,STSWIN
+       REF  ERRMEM
+
+SPACE  TEXT '                                    '
+SCRNWD EQU  40
+
+       TEXT 'DISP'
+DISP   DATA DISPWS,DISP+4
+* Get address of paragraph index
+	   MOV  @PARINX,R0
+	   SLA  R0,1
+       A    @LINLST,R0
+	   C    *R0+,*R0+
+* Get address of paragraph
+       MOV  *R0,R0
+* Let R3 = address of text
+* Let R4 = length of paragraph
+* Let R5 = address of first wrap list
+* Let R6 = length of wrap list
+       MOV  *R0+,R4
+	   MOV  *R0+,R5
+	   MOV  R0,R3
+	   MOV  *R5+,R6
+	   INCT R5
+* Set VDP write address
+       LI   R0,10*40
+	   BL   @VDPADR
+* Skip a step for first paragraph line
+       CLR  R0
+	   JMP  DISP6
+* Write a row of text
+DISP5  MOV  *R5+,R0
+DISP6  A    R3,R0
+       LI   R1,SCRNWD
+       BL   @VDPWRT
+*
+       DEC  R6
+       JH   DISP5
+* Let R4 = length of last line
+       S    *R5,R4
+* Write last row's text.
+       MOV  *R5,R0
+	   A    R3,R0
+       MOV  R4,R1
+       BL   @VDPWRT
+* Write trailing spaces
+	   MOV  R4,R1
+       NEG  R1
+       AI   R1,SCRNWD
+       LI   R0,SPACE
+       BL   @VDPWRT
+*
+       RTWP
+	   
+       END
