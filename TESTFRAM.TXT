@@ -11,6 +11,8 @@
 	   DEF  AOC,AZC
 * Assert Words Equal, Words Not Equal
        DEF  AEQ,ANEQ
+* Assert Word Logical Low
+       DEF  AL
 
 *******
 * List of test routines
@@ -175,7 +177,12 @@ PRINTP LI   R12,STACK
        RTWP
 
 SCRLPT MOV  R11,*R12+
-       BL   @WRITEF
+* If text length > 23*32, limit it.
+       CI   R1,23*32
+	   JLE  SCROL0
+	   LI   R1,23*32
+*
+SCROL0 BL   @WRITEF
        BL   @SCRLP
        DECT R12
        MOV  *R12,R11
@@ -474,7 +481,7 @@ AOCM1  BSS  >4
        TEXT ' B: '
 AOCM2  BSS  >4
        TEXT ' Ones in A should have '
-	   TEXT ' corresponding ones in B.'
+	   TEXT 'corresponding ones in B.'
 AOCME  EVEN
 AOCP
 * Copy Parameters
@@ -506,7 +513,7 @@ AZCM1  BSS  >4
        TEXT ' B: '
 AZCM2  BSS  >4
        TEXT ' Ones in A should have '
-	   TEXT ' corresponding zeros in B.'
+	   TEXT 'corresponding zeros in B.'
 AZCME  EVEN
 AZCP
 * Copy Parameters
@@ -577,6 +584,30 @@ ANEQP
        DATA ANEQM,ANEQME-ANEQM
 * Report success
 ANEQS  RTWP
+
+* Assert Words Logical Low
+* --------------------------
+* Passes assert if contents of 'actual'
+* is unsigned less than 'expected'.
+AL     DATA WORKSP,ALP
+ALM    TEXT 'Expected '
+ALM1   BSS   >4
+       TEXT ' to be unsigned less than '
+ALM2   BSS  >4
+       TEXT '.'
+ALME   EVEN
+ALP
+* Copy Parameters
+       BL   @COPYP
+* Output Test Name
+       C    R0,R1
+       JL   ALS
+* Report failure
+       BL   @RF
+       DATA ALM1,ALM2
+       DATA ALM,ALME-ALM
+* Report success
+ALS    RTWP
 
 * Routines shared by assert
 * routines.

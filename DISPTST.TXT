@@ -2,7 +2,8 @@
 * Mocked methods
        DEF  VDPADR,VDPWRT
 *
-       REF  ABLCK,AOC,AZC,AEQ,ANEQ
+       REF  ABLCK,AOC,AZC
+       REF  AEQ,ANEQ,AL
        REF  DISP,LINLST,FMTLST,MGNLST
        REF  PARINX
        REF  WINOFF,WINPAR,WINLIN
@@ -11,10 +12,15 @@
 
 
 TSTLST DATA TSTEND-TSTLST-2/8
+* One paragraph. Middle Screen.
        DATA DSP1
        TEXT 'DSP1  '
+* One paragraph. Top Screen.
        DATA DSP2
        TEXT 'DSP2  '
+* One paragraph. Bottom Screen.
+       DATA DSP3
+       TEXT 'DSP3  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -289,6 +295,140 @@ SCRN2  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
 
+*
+* Only should redraw the current
+* paragraph, which is at the bottom of
+* the screen. The last three lines are
+* cut off.
+*
+DSP3
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL3
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,14
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN3
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL3  DATA 6,1
+       DATA PAR3A
+       DATA PAR3B
+       DATA PAR3C
+       DATA PAR3D
+       DATA PAR3E
+       DATA PAR3F
+
+PAR3A  DATA -1
+       DATA WRP3A
+       TEXT '...'
+       EVEN
+WRP3A  DATA 3,1,-1,-1,-1
+PAR3B  DATA -1
+       DATA WRP3B
+       TEXT '...'
+       EVEN
+WRP3B  DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR3C  DATA -1
+       DATA WRP3C
+       TEXT '...'
+       EVEN
+WRP3C  DATA 5,1,-1,-1,-1,-1,-1
+PAR3D  DATA -1
+       DATA WRP3D
+       TEXT '...'
+       EVEN
+WRP3D  DATA 5,1,-1,-1,-1,-1,-1
+PAR3E  DATA 468
+       DATA WRP3E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP3E  DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR3F  DATA -1
+       DATA WRP3F
+       TEXT '...'
+       EVEN
+WRP3F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN3  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+
 ********
 
 MSCNW  TEXT 'Screen contents are wrong'
@@ -349,7 +489,9 @@ VDPWRT
 * Get fake VDP address
        MOV  @VADR,R2
 * Write to fake VDP RAM
-WDPW1  MOVB *R0+,*R2+
+WDPW1  CI   R2,SCRNED
+       JHE  WDPWER
+       MOVB *R0+,*R2+
        DEC  R1
        JH   WDPW1
 * Update next write position
@@ -357,5 +499,14 @@ WDPW1  MOVB *R0+,*R2+
 *
        MOV  @SAVER2,R2
        RT
+WDPWER LI   R0,SCRNED
+       MOV  R2,R1
+	   LI   R2,WDPWM
+	   LI   R3,WDPWME-WDPWM
+	   BLWP @AL
+	   RT
+WDPWM  TEXT 'Routine attempted to write past '
+       TEXT 'end of the screen.'
+WDPWME
 
        END
