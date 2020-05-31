@@ -27,6 +27,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * One-long-line paragraph.
        DATA DSP5
        TEXT 'DSP5  '
+* One paragraph. 
+* Last line longer than screen.
+       DATA DSP6
+       TEXT 'DSP6  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -611,6 +615,7 @@ PAR5C  DATA -1
        EVEN
 WRP5C  DATA 5,1,-1,-1,-1,-1,-1
 PAR5D  DATA 63
+
        DATA WRP5D
        TEXT 'SpaceX Nasa Mission: Astronaut capsule '
        TEXT 'docks with space station'
@@ -647,6 +652,132 @@ SCRN5  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT 'SpaceX Nasa Mission: Astronaut capsule d'
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+*
+* Only redraw one paragraph.
+* It's in the middle of the screen,
+* and the last line is longer than
+* the screen-width.
+*
+DSP6
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL6
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN6
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL6  DATA 6,1
+       DATA PAR6A
+       DATA PAR6B
+       DATA PAR6C
+       DATA PAR6D
+       DATA PAR6E
+       DATA PAR6F
+
+PAR6A  DATA -1
+       DATA WRP6A
+       TEXT '...'
+       EVEN
+WRP6A  DATA 3,1,-1,-1,-1
+PAR6B  DATA -1
+       DATA WRP6B
+       TEXT '...'
+       EVEN
+WRP6B  DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR6C  DATA -1
+       DATA WRP6C
+       TEXT '...'
+       EVEN
+WRP6C  DATA 5,1,-1,-1,-1,-1,-1
+PAR6D  DATA -1
+       DATA WRP6D
+       TEXT '...'
+       EVEN
+WRP6D  DATA 5,1,-1,-1,-1,-1,-1
+PAR6E  DATA 468
+       DATA WRP6E
+       TEXT 'Babylon was the capital city of '
+	   TEXT 'Babylonia, a kingdom in '
+       TEXT 'ancient Mesopotamia, between the 18th '
+	   TEXT 'and 6th centuries BC. '
+       TEXT 'It was built along the left and right '
+	   TEXT 'banks of the Euphrates '
+       TEXT 'river with steep embankments to contain '
+	   TEXT 'the river,s seasonal '
+       TEXT 'floods. Babylon was originally a small '
+	   TEXT 'Akkadian town dating '
+       TEXT 'from the period of the Akkadian Empire '
+	   TEXT 'c. 2300 BC'
+       EVEN
+WRP6E  DATA 5,1
+       DATA 56
+       DATA 56+60
+       DATA 56+60+61
+       DATA 56+60+61+61
+       DATA 56+60+61+61+60
+PAR6F  DATA -1
+       DATA WRP6F
+       TEXT '...'
+       EVEN
+WRP6F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN6  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Babylon was the capital city of Babyloni'
+       TEXT 'ancient Mesopotamia, between the 18th an'
+       TEXT 'It was built along the left and right ba'
+       TEXT 'river with steep embankments to contain '
+       TEXT 'floods. Babylon was originally a small A'
+       TEXT 'from the period of the Akkadian Empire c'
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
