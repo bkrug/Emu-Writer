@@ -131,7 +131,7 @@ DISP8  INC  R10
 *
 DISP9  RTWP
 
-* Write sole paragraph.
+* Write one-line paragraph.
 DISP10 MOV  R3,R0
 * Let R4 be the lesser of these:
 * - length of paragraph

@@ -24,6 +24,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * One-short-line paragraph.
        DATA DSP4
        TEXT 'DSP4  '
+* One-long-line paragraph.
+       DATA DSP5
+       TEXT 'DSP5  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -539,6 +542,115 @@ SCRN4  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
+       
+*
+* Redraw only the current paragraph.
+* It has one line, longer than screen-
+* width, in the middle of the screen.
+*
+DSP5
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL5
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN5
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL5  DATA 6,1
+       DATA PAR5A
+       DATA PAR5B
+       DATA PAR5C
+       DATA PAR5D
+       DATA PAR5E
+       DATA PAR5F
+
+PAR5A  DATA -1
+       DATA WRP5A
+       TEXT '...'
+       EVEN
+WRP5A  DATA 9,1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR5B  DATA -1
+       DATA WRP5B
+       TEXT '...'
+       EVEN
+WRP5B  DATA 10,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR5C  DATA -1
+       DATA WRP5C
+       TEXT '...'
+       EVEN
+WRP5C  DATA 5,1,-1,-1,-1,-1,-1
+PAR5D  DATA 63
+       DATA WRP5D
+       TEXT 'SpaceX Nasa Mission: Astronaut capsule '
+       TEXT 'docks with space station'
+       EVEN
+WRP5D  DATA 0,1
+PAR5E  DATA -1
+       DATA WRP5E
+       TEXT '...'
+       EVEN
+WRP5E  DATA 8,1,-1,-1,-1,-1,-1,-1,-1,-1   
+PAR5F  DATA -1
+       DATA WRP5F
+       TEXT '...'
+       EVEN
+WRP5F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN5  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'SpaceX Nasa Mission: Astronaut capsule d'
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
 
 ********
 
@@ -612,10 +724,10 @@ WDPW1  CI   R2,SCRNED
        RT
 WDPWER LI   R0,SCRNED
        MOV  R2,R1
-	   LI   R2,WDPWM
-	   LI   R3,WDPWME-WDPWM
-	   BLWP @AL
-	   RT
+       LI   R2,WDPWM
+       LI   R3,WDPWME-WDPWM
+       BLWP @AL
+       RT
 WDPWM  TEXT 'Routine attempted to write past '
        TEXT 'end of the screen.'
 WDPWME
