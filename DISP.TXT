@@ -11,14 +11,54 @@
 
 SPACE  TEXT '                                    '
 SCRNWD EQU  40
+FORTY  DATA 40
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4
+*
+* Calculate the number of rows at the
+* top of the screen that don't need to
+* be rewritten. Put the result in R2.
+*
+       MOV  @WINPAR,R1
+* Let R2 total screen rows to skip
+       MOV  @WINLIN,R2
+       NEG  R2
+* Let R0 = paragraph address
+DISP3  MOV  R1,R0
+       BL   @PARADR
+* Let R0 = wrap list address
+       INCT R0
+       MOV  *R0,R0
+* Add paragraph length to row count
+       A    *R0,R2
+       INC  R2
+* Keep going until we reach the
+* cursor's paragraph
+       INC  R1
+       C    R1,@PARINX
+       JL   DISP3
+       
+*
+* Set VDP write address so that the
+* routine can redraw the current
+* paragraph.
+*
+* Let R0 = R2 * screen width
+       MPY  @FORTY,R2
+       MOV  R3,R0
+* Set VDP write address
+       BL   @VDPADR
+       
+*
+* Redraw the rows for one paragraph of
+* text.
+*
 * Get address of paragraph index
-	   MOV  @PARINX,R0
-	   SLA  R0,1
+       MOV  @PARINX,R0
+       SLA  R0,1
        A    @LINLST,R0
-	   C    *R0+,*R0+
+       C    *R0+,*R0+
 * Get address of paragraph
        MOV  *R0,R0
 * Let R3 = address of text
@@ -26,17 +66,13 @@ DISP   DATA DISPWS,DISP+4
 * Let R5 = address of first wrap list
 * Let R6 = length of wrap list
        MOV  *R0+,R4
-	   MOV  *R0+,R5
-	   MOV  R0,R3
-	   MOV  *R5+,R6
-	   INCT R5
-* TODO: figure out how many lines to skip
-* Set VDP write address
-       LI   R0,10*40
-	   BL   @VDPADR
+       MOV  *R0+,R5
+       MOV  R0,R3
+       MOV  *R5+,R6
+       INCT R5
 * Skip a step for first paragraph line
        CLR  R0
-	   JMP  DISP6
+       JMP  DISP6
 * Write a row of text
 DISP5  MOV  *R5+,R0
 DISP6  A    R3,R0
@@ -49,16 +85,29 @@ DISP6  A    R3,R0
        S    *R5,R4
 * Write last row's text.
        MOV  *R5,R0
-	   A    R3,R0
+       A    R3,R0
        MOV  R4,R1
        BL   @VDPWRT
 * Write trailing spaces
-	   MOV  R4,R1
+       MOV  R4,R1
        NEG  R1
        AI   R1,SCRNWD
        LI   R0,SPACE
        BL   @VDPWRT
 *
        RTWP
-	   
+
+*
+* Get paragraph address from index
+*
+* Input:
+* R0 - paragraph index
+* Output:
+* R0 - paragraph address
+PARADR SLA  R0,1
+       A    @LINLST,R0
+       C    *R0+,*R0+
+       MOV  *R0,R0
+       RT
+
        END

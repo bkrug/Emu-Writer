@@ -77,24 +77,24 @@ PAR1A  DATA -1
        EVEN
 WRP1A  DATA 3,1,-1,-1,-1
 PAR1B  DATA -1
-       DATA WRP2A
+       DATA WRP1B
        TEXT '...'
        EVEN
-WRP2A  DATA 17,1
+WRP1B  DATA 17,1
        DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
        DATA -1,-1,-1,-1,-1,-1,-1,-1
 PAR1C  DATA -1
-       DATA WRP3A
+       DATA WRP1C
        TEXT '...'
        EVEN
-WRP3A  DATA 5,1,-1,-1,-1,-1,-1
+WRP1C  DATA 5,1,-1,-1,-1,-1,-1
 PAR1D  DATA -1
-       DATA WRP4A
+       DATA WRP1D
        TEXT '...'
        EVEN
-WRP4A  DATA 5,1,-1,-1,-1,-1,-1
+WRP1D  DATA 5,1,-1,-1,-1,-1,-1
 PAR1E  DATA 468
-       DATA WRP5A
+       DATA WRP1E
        TEXT 'Marcus Mosiah Garvey Jr. ONH '
        TEXT '(17 August 1887 to 10 June 1940) '
        TEXT 'was a Jamaican political activist, '
@@ -113,7 +113,7 @@ PAR1E  DATA 468
        TEXT 'ideas came to be known '
        TEXT 'as Garveyism.'
        EVEN
-WRP5A  DATA 8,1
+WRP1E  DATA 8,1
        DATA 62
        DATA 62+58
        DATA 62+58+55
@@ -123,14 +123,12 @@ WRP5A  DATA 8,1
        DATA 62+58+55+53+54+59+55
        DATA 62+58+55+53+54+59+55+59       
 PAR1F  DATA -1
-       DATA WRP6A
+       DATA WRP1F
        TEXT '...'
        EVEN
-WRP6A  DATA 6,1,-1,-1,-1,-1,-1
+WRP1F  DATA 6,1,-1,-1,-1,-1,-1
 
-SCRN1
-       TEXT '                                        '
-       TEXT '                                        '
+SCRN1  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
@@ -148,6 +146,7 @@ SCRN1
        TEXT 'Provisional President of Africa. Ideolog'
        TEXT 'nationalist and Pan_Africanist, his idea'
        TEXT 'as Garveyism.                           '
+       TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
