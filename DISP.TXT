@@ -9,7 +9,7 @@
        REF  STSTYP,STSENT,STSPAR,STSWIN
        REF  ERRMEM
 
-SPACE  TEXT '                                    '
+SPACE  TEXT '                                        '
 SCRNWD EQU  40
 FORTY  DATA 40
 
@@ -96,12 +96,29 @@ DISP4  MOV  @PARINX,R3
 	   A    R2,R5
 * Write a row of text
 DISP5  MOV  *R5,R0
+       CLR  R1
+       S    *R5,R1
 DISP6  INCT R5
        A    R3,R0
-       LI   R1,SCRNWD
+	   A    @WINOFF,R0
+	   A    *R5,R1
+	   S    @WINOFF,R1
+	   JGT  DISP6A
+	   CLR  R1
+DISP6A CI   R1,SCRNWD
+       JLE  DISP6B
+	   LI   R1,SCRNWD
+DISP6B MOV  R1,R7
        BL   @VDPWRT
+* Write trailing spaces
+       MOV  R7,R1
+	   NEG  R1
+	   AI   R1,SCRNWD
+	   JEQ  DISP6C
+	   LI   R0,SPACE
+	   BL   @VDPWRT
 * Track screen-row
-       INC  R10
+DISP6C INC  R10
 	   CI   R10,24
 	   JHE  DISP9
 * Check if this is last paragraph-line
@@ -111,12 +128,16 @@ DISP6  INCT R5
 * - length of last line
 * - screen width
        S    *R5,R4
-       CI   R4,SCRNWD
+	   S    @WINOFF,R4
+	   JGT  DISP6D
+	   CLR  R4
+DISP6D CI   R4,SCRNWD
 	   JLE  DISP7
        LI   R4,SCRNWD
 * Write last row's text.
 DISP7  MOV  *R5,R0
        A    R3,R0
+	   A    @WINOFF,R0
        MOV  R4,R1
        BL   @VDPWRT
 * Track screen-row

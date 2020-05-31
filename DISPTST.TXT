@@ -10,6 +10,12 @@
        REF  STSTYP,STSENT,STSPAR,STSWIN
        REF  ERRMEM
 
+*
+* Simulated screen
+*
+       TEXT 'SIMULATED SCREEN'
+MKSCRN BSS  24*40
+SCRNED
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * One paragraph. Middle Screen.
@@ -31,6 +37,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Last line longer than screen.
        DATA DSP6
        TEXT 'DSP6  '
+* One paragraph with horizontal offset.
+       DATA DSP7
+       TEXT 'DSP7  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -783,16 +792,143 @@ SCRN6  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
 
+*
+* Redraw one paragraph.
+* Middle of screen.
+* Horizontal offset of 20.
+*
+DSP7
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL7
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,20
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN7
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL7  DATA 6,1
+       DATA PAR7A
+       DATA PAR7B
+       DATA PAR7C
+       DATA PAR7D
+       DATA PAR7E
+       DATA PAR7F
+
+PAR7A  DATA -1
+       DATA WRP7A
+       TEXT '...'
+       EVEN
+WRP7A  DATA 3,1,-1,-1,-1
+PAR7B  DATA -1
+       DATA WRP7B
+       TEXT '...'
+       EVEN
+WRP7B  DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR7C  DATA -1
+       DATA WRP7C
+       TEXT '...'
+       EVEN
+WRP7C  DATA 5,1,-1,-1,-1,-1,-1
+PAR7D  DATA -1
+       DATA WRP7D
+       TEXT '...'
+       EVEN
+WRP7D  DATA 5,1,-1,-1,-1,-1,-1
+PAR7E  DATA 468
+       DATA WRP7E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP7E  DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR7F  DATA -1
+       DATA WRP7F
+       TEXT '...'
+       EVEN
+WRP7F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN7  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT ' Jr. ONH (17 August 1887 to 10 June 1940'
+       TEXT 'ical activist, publisher, journalist,   '
+       TEXT 'ator. He was the founder and first      '
+       TEXT ' the Universal Negro Improvement        '
+       TEXT 'can Communities League (UNIA_ACL,       '
+       TEXT 'IA), through which he declared himself  '
+       TEXT 't of Africa. Ideologically a black      '
+       TEXT 'Africanist, his ideas came to be known  '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
 ********
 
 MSCNW  TEXT 'Screen contents are wrong'
 MSCNWE EVEN
-
-*
-* Simulated screen
-*
-MKSCRN BSS  24*40
-SCRNED
 
 *
 * Clear simulated screen
@@ -842,6 +978,9 @@ VDPWRT
        MOV  R2,@SAVER2
 * Get fake VDP address
        MOV  @VADR,R2
+*
+       MOV  R1,R1
+       JEQ  WDPWED	   
 * Write to fake VDP RAM
 WDPW1  CI   R2,SCRNED
        JHE  WDPWER
@@ -852,7 +991,7 @@ WDPW1  CI   R2,SCRNED
        MOV  R2,@VADR
 *
        MOV  @SAVER2,R2
-       RT
+WDPWED RT
 WDPWER LI   R0,SCRNED
        MOV  R2,R1
        LI   R2,WDPWM
