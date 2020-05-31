@@ -34,14 +34,14 @@ DISP   DATA DISPWS,DISP+4
 * Let R2 total screen rows to skip
        MOV  @WINLIN,R2
        NEG  R2
-* Let R0 = paragraph address
-DISP2  MOV  R1,R0
+* Let R3 = paragraph address
+DISP2  MOV  R1,R3
        BL   @PARADR
-* Let R0 = wrap list address
-       INCT R0
-       MOV  *R0,R0
+* Let R3 = wrap list address
+       INCT R3
+       MOV  *R3,R3
 * Add paragraph length to row count
-       A    *R0,R2
+       A    *R3,R2
        INC  R2
 * Keep going until we reach the
 * cursor's paragraph
@@ -64,20 +64,19 @@ DISP2  MOV  R1,R0
 * Redraw the rows for one paragraph of
 * text.
 *
-* Let R0 = address of cursor's paragraph
-DISP3  MOV  @PARINX,R0
-       BL   @PARADR
 * Let R2 = starting paragraph-line
-       CLR  R2
+DISP3  CLR  R2
        C    @WINPAR,@PARINX
 	   JNE  DISP4
        MOV  @WINLIN,R2
+* Let R3 = address of cursor's paragraph
+DISP4  MOV  @PARINX,R3
+       BL   @PARADR
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph
 * Let R5 = address two bytes prior to
 *          wrap list's first element
 * Let R6 = length of wrap list
-DISP4  MOV  R0,R3
        MOV  *R3+,R4
        MOV  *R3+,R5
        MOV  *R5+,R6
@@ -125,13 +124,13 @@ DISP9  RTWP
 * Get paragraph address from index
 *
 * Input:
-* R0 - paragraph index
+* R3 - paragraph index
 * Output:
-* R0 - paragraph address
-PARADR SLA  R0,1
-       A    @LINLST,R0
-       C    *R0+,*R0+
-       MOV  *R0,R0
+* R3 - paragraph address
+PARADR SLA  R3,1
+       A    @LINLST,R3
+       C    *R3+,*R3+
+       MOV  *R3,R3
        RT
 
        END
