@@ -67,44 +67,42 @@ DISP2  MOV  R1,R0
 * Let R0 = address of cursor's paragraph
 DISP3  MOV  @PARINX,R0
        BL   @PARADR
+* Let R2 = starting paragraph-line
+       CLR  R2
+       C    @WINPAR,@PARINX
+	   JNE  DISP4
+       MOV  @WINLIN,R2
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph
-* Let R5 = address of wrap list's first element
+* Let R5 = address two bytes prior to
+*          wrap list's first element
 * Let R6 = length of wrap list
-       MOV  R0,R3
+DISP4  MOV  R0,R3
        MOV  *R3+,R4
        MOV  *R3+,R5
        MOV  *R5+,R6
-       INCT R5
-* Check if paragraph is at screen top.
-       C    @WINPAR,@PARINX
-	   JEQ  DISP4
-* If no, then skip a step for the
-* first paragraph-line
-       CLR  R0
-       JMP  DISP6
-* If paragraph is at top of screen,
-* skip a few paragraph-lines.
-* Decrease R6 by WINLIN.
-* R5 should skip a number of wrap
-* elements equaling WINLIN-1.
-DISP4  MOV  @WINLIN,R1
-	   S    R1,R6
-       DEC  R1
-	   JLT  DISP6
-	   A    R1,R5
-	   A    R1,R5
+* If starting with first paragraph-line,
+* skip a step.
+       MOV  R2,R0
+	   JEQ  DISP6
+* Adjust R5 and R6 based on the 
+* starting paragraph-line.
+       S    R2,R6
+	   A    R2,R5
+	   A    R2,R5
 * Write a row of text
-DISP5  MOV  *R5+,R0
-DISP6  A    R3,R0
+DISP5  MOV  *R5,R0
+DISP6  INCT R5
+       A    R3,R0
        LI   R1,SCRNWD
        BL   @VDPWRT
 * Check if this is last paragraph-line
        DEC  R6
        JH   DISP5
-* Let R4 = length of last paragraph-line
+* Let R4 be the lesser of these:
+* - length of last line
+* - screen width
        S    *R5,R4
-* Let R4 = max(current value, screen width)
        CI   R4,SCRNWD
 	   JLE  DISP7
        LI   R4,SCRNWD
