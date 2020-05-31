@@ -82,6 +82,9 @@ DISP4  MOV  @PARINX,R3
        MOV  *R3+,R4
        MOV  *R3+,R5
        MOV  *R5+,R6
+* If paragraph has only one line, use
+* different algorithm.
+       JEQ  DISP10
 * If starting with first paragraph-line,
 * ignore wrap list for one cycle.
        MOV  R2,R0
@@ -116,6 +119,8 @@ DISP7  MOV  *R5,R0
        A    R3,R0
        MOV  R4,R1
        BL   @VDPWRT
+* Track screen-row
+DISP8  INC  R10
 * Write trailing spaces
        MOV  R4,R1
        NEG  R1
@@ -125,6 +130,21 @@ DISP7  MOV  *R5,R0
        BL   @VDPWRT
 *
 DISP9  RTWP
+
+* Write sole paragraph.
+DISP10 MOV  R3,R0
+* Let R4 be the lesser of these:
+* - length of paragraph
+* - screen width
+       CI   R4,SCRNWD
+	   JLE  DISP11
+	   LI   R4,SCRNWD
+* Write line
+DISP11 MOV  R4,R1
+       BL   @VDPWRT
+* Track screen-row and write trailing
+* spaces.
+	   JMP  DISP8
 
 *
 * Get paragraph address from index

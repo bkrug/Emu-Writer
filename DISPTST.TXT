@@ -21,6 +21,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * One paragraph. Bottom Screen.
        DATA DSP3
        TEXT 'DSP3  '
+* One-short-line paragraph.
+       DATA DSP4
+       TEXT 'DSP4  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -428,6 +431,114 @@ SCRN3  TEXT '                                        '
        TEXT 'President_General of the Universal Negro'
        TEXT 'Association and African Communities Leag'
        TEXT 'commonly known as UNIA), through which h'
+
+*
+* Redraw only the current paragraph.
+* It has one line, shorter than screen-
+* width, in the middle of the screen.
+*
+DSP4
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL4
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN4
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL4  DATA 6,1
+       DATA PAR4A
+       DATA PAR4B
+       DATA PAR4C
+       DATA PAR4D
+       DATA PAR4E
+       DATA PAR4F
+
+PAR4A  DATA -1
+       DATA WRP4A
+       TEXT '...'
+       EVEN
+WRP4A  DATA 9,1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR4B  DATA -1
+       DATA WRP4B
+       TEXT '...'
+       EVEN
+WRP4B  DATA 10,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR4C  DATA -1
+       DATA WRP4C
+       TEXT '...'
+       EVEN
+WRP4C  DATA 5,1,-1,-1,-1,-1,-1
+PAR4D  DATA 13
+       DATA WRP4D
+       TEXT 'Good morning.'
+       EVEN
+WRP4D  DATA 0,1
+PAR4E  DATA -1
+       DATA WRP4E
+       TEXT '...'
+       EVEN
+WRP4E  DATA 8,1,-1,-1,-1,-1,-1,-1,-1,-1   
+PAR4F  DATA -1
+       DATA WRP4F
+       TEXT '...'
+       EVEN
+WRP4F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN4  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Good morning.                           '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
 
 ********
 
