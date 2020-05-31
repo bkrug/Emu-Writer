@@ -49,6 +49,7 @@ DISP2  MOV  R1,R3
 * Skip two rows that are reserved for
 * document information.
 DISP3  INCT R2
+       MOV  R2,R10
        
 *
 * Set VDP write address so that the
@@ -96,6 +97,10 @@ DISP6  INCT R5
        A    R3,R0
        LI   R1,SCRNWD
        BL   @VDPWRT
+* Track screen-row
+       INC  R10
+	   CI   R10,24
+	   JHE  DISP9
 * Check if this is last paragraph-line
        DEC  R6
        JH   DISP5
