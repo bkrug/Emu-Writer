@@ -40,6 +40,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * One paragraph with horizontal offset.
        DATA DSP7
        TEXT 'DSP7  '
+* One-line paragraph with horizontal offset.
+       DATA DSP8
+       TEXT 'DSP8  '	   
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -624,7 +627,6 @@ PAR5C  DATA -1
        EVEN
 WRP5C  DATA 5,1,-1,-1,-1,-1,-1
 PAR5D  DATA 63
-
        DATA WRP5D
        TEXT 'SpaceX Nasa Mission: Astronaut capsule '
        TEXT 'docks with space station'
@@ -920,6 +922,115 @@ SCRN7  TEXT '                                        '
        TEXT 't of Africa. Ideologically a black      '
        TEXT 'Africanist, his ideas came to be known  '
        TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+*
+* Redraw only the current paragraph.
+* It has one line, longer than screen-
+* width, in the middle of the screen.
+*
+DSP8
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL8
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN8
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL8  DATA 6,1
+       DATA PAR8A
+       DATA PAR8B
+       DATA PAR8C
+       DATA PAR8D
+       DATA PAR8E
+       DATA PAR8F
+
+PAR8A  DATA -1
+       DATA WRP8A
+       TEXT '...'
+       EVEN
+WRP8A  DATA 9,1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR8B  DATA -1
+       DATA WRP8B
+       TEXT '...'
+       EVEN
+WRP8B  DATA 10,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR8C  DATA -1
+       DATA WRP8C
+       TEXT '...'
+       EVEN
+WRP8C  DATA 5,1,-1,-1,-1,-1,-1
+PAR8D  DATA 63
+       DATA WRP8D
+       TEXT 'SpaceX Nasa Mission: Astronaut capsule '
+       TEXT 'docks with space station'
+       EVEN
+WRP8D  DATA 0,1
+PAR8E  DATA -1
+       DATA WRP8E
+       TEXT '...'
+       EVEN
+WRP8E  DATA 8,1,-1,-1,-1,-1,-1,-1,-1,-1   
+PAR8F  DATA -1
+       DATA WRP8F
+       TEXT '...'
+       EVEN
+WRP8F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN8  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'ocks with space station                 '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '

@@ -125,7 +125,7 @@ DISP6C INC  R10
        DEC  R6
        JH   DISP5
 * Let R4 be the lesser of these:
-* - length of last line
+* - length of last line minus window offset
 * - screen width
        S    *R5,R4
 	   S    @WINOFF,R4
@@ -154,14 +154,18 @@ DISP9  RTWP
 
 * Write one-line paragraph.
 DISP10 MOV  R3,R0
-* Let R4 be the lesser of these:
-* - length of paragraph
-* - screen width
-       CI   R4,SCRNWD
-	   JLE  DISP11
+       A    @WINOFF,R0
+* Let R4 be the length of paragraph 
+* minus window offset, but between
+* 0 and 40
+       S    @WINOFF,R4
+	   JGT  DISP11
+	   CLR  R4
+DISP11 CI   R4,SCRNWD
+	   JLE  DISP12
 	   LI   R4,SCRNWD
 * Write line
-DISP11 MOV  R4,R1
+DISP12 MOV  R4,R1
        BL   @VDPWRT
 * Track screen-row and write trailing
 * spaces.
