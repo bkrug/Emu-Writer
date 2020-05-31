@@ -54,20 +54,16 @@ DISP3  MOV  R1,R0
 * Redraw the rows for one paragraph of
 * text.
 *
-* Get address of paragraph index
+* Let R0 = address of cursor's paragraph
        MOV  @PARINX,R0
-       SLA  R0,1
-       A    @LINLST,R0
-       C    *R0+,*R0+
-* Get address of paragraph
-       MOV  *R0,R0
-* Let R3 = address of text
+       BL   @PARADR
+* Let R3 = address of paragraph text
 * Let R4 = length of paragraph
-* Let R5 = address of first wrap list
+* Let R5 = address of wrap list's first element
 * Let R6 = length of wrap list
-       MOV  *R0+,R4
-       MOV  *R0+,R5
        MOV  R0,R3
+       MOV  *R3+,R4
+       MOV  *R3+,R5
        MOV  *R5+,R6
        INCT R5
 * Skip a step for first paragraph line
@@ -81,10 +77,14 @@ DISP6  A    R3,R0
 *
        DEC  R6
        JH   DISP5
-* Let R4 = length of last line
+* Let R4 = length of last paragraph-line
        S    *R5,R4
+* Let R4 = max(current value, screen width)
+       CI   R4,SCRNWD
+	   JLE  DISP7
+       LI   R4,SCRNWD
 * Write last row's text.
-       MOV  *R5,R0
+DISP7  MOV  *R5,R0
        A    R3,R0
        MOV  R4,R1
        BL   @VDPWRT
@@ -92,10 +92,11 @@ DISP6  A    R3,R0
        MOV  R4,R1
        NEG  R1
        AI   R1,SCRNWD
+	   JEQ  DISP9
        LI   R0,SPACE
        BL   @VDPWRT
 *
-       RTWP
+DISP9  RTWP
 
 *
 * Get paragraph address from index
