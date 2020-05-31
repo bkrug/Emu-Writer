@@ -1,0 +1,226 @@
+       DEF  TSTLST,RSLTFL
+* Mocked methods
+       DEF  VDPADR,VDPWRT
+*
+       REF  ABLCK,AOC,AZC,AEQ,ANEQ
+       REF  DISP,LINLST,FMTLST,MGNLST
+       REF  PARINX
+       REF  WINOFF,WINPAR,WINLIN
+       REF  STSTYP,STSENT,STSPAR,STSWIN
+       REF  ERRMEM
+
+
+TSTLST DATA TSTEND-TSTLST-2/8
+       DATA DSP1
+       TEXT 'DSP1  '
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK2.TESTRESULT.TXT'
+RSLTFE
+       EVEN
+
+FAKEAD DATA >FFFE
+
+*
+* Only should redraw the current
+* paragraph. Draw the left most portion
+*
+DSP1
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL1
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,FKSCRN
+       LI   R1,SCRN1
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL1  DATA 6,1
+       DATA PAR1A
+       DATA PAR1B
+       DATA PAR1C
+       DATA PAR1D
+       DATA PAR1E
+       DATA PAR1F
+
+PAR1A  DATA -1
+       DATA WRP1A
+       TEXT '...'
+       EVEN
+WRP1A  DATA 3,1,-1,-1,-1
+PAR1B  DATA -1
+       DATA WRP2A
+       TEXT '...'
+       EVEN
+WRP2A  DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR1C  DATA -1
+       DATA WRP3A
+       TEXT '...'
+       EVEN
+WRP3A  DATA 5,1,-1,-1,-1,-1,-1
+PAR1D  DATA -1
+       DATA WRP4A
+       TEXT '...'
+       EVEN
+WRP4A  DATA 5,1,-1,-1,-1,-1,-1
+PAR1E  DATA 467
+       DATA WRP5A
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 – 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President-General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA-ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan-Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP5A  DATA 8,1
+       DATA 61
+       DATA 61+58
+       DATA 61+58+55
+       DATA 61+58+55+53
+       DATA 61+58+55+53+54
+       DATA 61+58+55+53+54+59
+       DATA 61+58+55+53+54+59+55
+       DATA 61+58+55+53+54+59+55+59       
+PAR1F  DATA -1
+       DATA WRP6A
+       TEXT '...'
+       EVEN
+WRP6A  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN1
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President-General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan-Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+********
+
+MSCNW  TEXT 'Screen contents are wrong'
+MSCNWE EVEN
+
+*
+* Simulated screen
+*
+FKSCRN BSS  24*40
+SCRNED
+
+*
+* Clear simulated screen
+*
+CLRVDP
+       LI   R0,FKSCRN
+       LI   R1,>2020
+CLRV1  MOV  R1,*R0+
+       CI   R0,SCRNED
+       JL   CLRV1
+       RT
+
+* VDP Address
+VADR   DATA 0
+
+STACKS BSS  >10
+STACK
+
+* ------------------------
+* Mocked methods
+*
+
+*
+* Set VDP write address 
+*
+* Input:
+* R0 - VDP address
+SAVER0 DATA 0
+VDPADR MOV  R0,@SAVER0
+       AI   R0,FKSCRN
+       MOV  R0,@VADR
+       MOV  @SAVER0,R0
+       RT
+
+*
+* Write multiple bytes to VDP
+*
+* Input:
+* R0 - Address of text to copy
+* R1 - Number of bytes
+* Output:
+* R0 - original value + R1's value
+* R1 - 0
+SAVER2 DATA 0
+VDPWRT
+* Save R2 incase caller needs it later
+       MOV  R2,@SAVER2
+* Get fake VDP address
+       MOV  @VADR,R2
+* Write to fake VDP RAM
+WDPW1  MOVB *R0+,*R2+
+       DEC  R1
+       JL   WDPW1
+* Update next write position
+       MOV  R2,@VADR
+*
+       MOV  @SAVER2,R2
+       RT
+
+       END

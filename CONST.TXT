@@ -35,7 +35,7 @@ SIX    DATA 6
 STSTYP DATA >1
 * Enter Pressed
 STSENT DATA >2
-* Paragraph Lines Changed
+* Paragraph Line Count Changed
 STSPAR DATA >4
 * Window Moved
 STSWIN DATA >8
