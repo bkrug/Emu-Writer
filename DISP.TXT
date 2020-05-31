@@ -112,10 +112,7 @@ DISP6B MOV  R1,R7
        BL   @VDPWRT
 * Write trailing spaces
        MOV  R7,R1
-	   NEG  R1
-	   AI   R1,SCRNWD
-	   JEQ  DISP6C
-	   LI   R0,SPACE
+       BL   @PWHITE
 	   BL   @VDPWRT
 * Track screen-row
 DISP6C INC  R10
@@ -125,8 +122,7 @@ DISP6C INC  R10
        DEC  R6
        JH   DISP5
 * Let R4 be the lesser of these:
-* - length of last line minus window offset
-* - screen width
+* - length of last line minus window offset* - screen width
        S    *R5,R4
 	   S    @WINOFF,R4
 	   JGT  DISP6D
@@ -144,10 +140,7 @@ DISP7  MOV  *R5,R0
 DISP8  INC  R10
 * Write trailing spaces
        MOV  R4,R1
-       NEG  R1
-       AI   R1,SCRNWD
-	   JEQ  DISP9
-       LI   R0,SPACE
+	   BL   @PWHITE
        BL   @VDPWRT
 *
 DISP9  RTWP
@@ -182,6 +175,19 @@ PARADR SLA  R3,1
        A    @LINLST,R3
        C    *R3+,*R3+
        MOV  *R3,R3
+       RT
+	   
+*
+* Set parameters for writing whitespace
+*
+* Input:
+* R1 - characters already written to
+*      the current row.
+* Output:
+* R0, R1
+PWHITE NEG  R1
+       AI   R1,SCRNWD
+       LI   R0,SPACE
        RT
 
        END
