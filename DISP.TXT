@@ -17,18 +17,16 @@ FORTY  DATA 40
 DISP   DATA DISPWS,DISP+4
 
 *
-* If cursor's paragraph is at top of
-* screen, then set VDP address to 0.
-*
-       CLR  R0
-       BL   @VDPADR
-       C    @WINPAR,@PARINX
-	   JEQ  DISP3
-
-*
 * Calculate the number of rows at the
 * top of the screen that don't need to
 * be rewritten. Put the result in R2.
+*
+* If cursor's paragraph is at top of
+* screen, then set VDP address to the
+* first document row.
+       CLR  R2
+       C    @WINPAR,@PARINX
+	   JEQ  DISP3
 *
        MOV  @WINPAR,R1
 * Let R2 total screen rows to skip
@@ -48,6 +46,9 @@ DISP2  MOV  R1,R3
        INC  R1
        C    R1,@PARINX
        JL   DISP2
+* Skip two rows that are reserved for
+* document information.
+DISP3  INCT R2
        
 *
 * Set VDP write address so that the
@@ -65,7 +66,7 @@ DISP2  MOV  R1,R3
 * text.
 *
 * Let R2 = starting paragraph-line
-DISP3  CLR  R2
+       CLR  R2
        C    @WINPAR,@PARINX
 	   JNE  DISP4
        MOV  @WINLIN,R2
