@@ -15,6 +15,16 @@ FORTY  DATA 40
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4
+
+*
+* If cursor's paragraph is at top of
+* screen, then set VDP address to 0.
+*
+       CLR  R0
+       BL   @VDPADR
+       C    @WINPAR,@PARINX
+	   JEQ  DISP3
+
 *
 * Calculate the number of rows at the
 * top of the screen that don't need to
@@ -25,7 +35,7 @@ DISP   DATA DISPWS,DISP+4
        MOV  @WINLIN,R2
        NEG  R2
 * Let R0 = paragraph address
-DISP3  MOV  R1,R0
+DISP2  MOV  R1,R0
        BL   @PARADR
 * Let R0 = wrap list address
        INCT R0
@@ -37,7 +47,7 @@ DISP3  MOV  R1,R0
 * cursor's paragraph
        INC  R1
        C    R1,@PARINX
-       JL   DISP3
+       JL   DISP2
        
 *
 * Set VDP write address so that the
@@ -55,7 +65,7 @@ DISP3  MOV  R1,R0
 * text.
 *
 * Let R0 = address of cursor's paragraph
-       MOV  @PARINX,R0
+DISP3  MOV  @PARINX,R0
        BL   @PARADR
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph
@@ -66,15 +76,30 @@ DISP3  MOV  R1,R0
        MOV  *R3+,R5
        MOV  *R5+,R6
        INCT R5
-* Skip a step for first paragraph line
+* Check if paragraph is at screen top.
+       C    @WINPAR,@PARINX
+	   JEQ  DISP4
+* If no, then skip a step for the
+* first paragraph-line
        CLR  R0
        JMP  DISP6
+* If paragraph is at top of screen,
+* skip a few paragraph-lines.
+* Decrease R6 by WINLIN.
+* R5 should skip a number of wrap
+* elements equaling WINLIN-1.
+DISP4  MOV  @WINLIN,R1
+	   S    R1,R6
+       DEC  R1
+	   JLT  DISP6
+	   A    R1,R5
+	   A    R1,R5
 * Write a row of text
 DISP5  MOV  *R5+,R0
 DISP6  A    R3,R0
        LI   R1,SCRNWD
        BL   @VDPWRT
-*
+* Check if this is last paragraph-line
        DEC  R6
        JH   DISP5
 * Let R4 = length of last paragraph-line

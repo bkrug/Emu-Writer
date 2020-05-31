@@ -13,6 +13,8 @@
 TSTLST DATA TSTEND-TSTLST-2/8
        DATA DSP1
        TEXT 'DSP1  '
+       DATA DSP2
+       TEXT 'DSP2  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -23,7 +25,8 @@ FAKEAD DATA >FFFE
 
 *
 * Only should redraw the current
-* paragraph. Draw the left most portion
+* paragraph, which is in middle of the
+* screen. Draw the left most portion.
 *
 DSP1
 * Arrange
@@ -54,7 +57,7 @@ DSP1
        BLWP @DISP
 * Assert
        LI   R0,SCRN1
-       LI   R1,FKSCRN
+       LI   R1,MKSCRN
        LI   R2,24*40
        LI   R3,MSCNW
        LI   R4,MSCNWE-MSCNW
@@ -153,6 +156,139 @@ SCRN1  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
 
+*
+* Only should redraw the current
+* paragraph, which is at top of the
+* screen. Draw the left most portion.
+*
+DSP2
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is at the top of scren.
+       LI   R0,PARL2
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,4
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN2
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL2  DATA 6,1
+       DATA PAR2A
+       DATA PAR2B
+       DATA PAR2C
+       DATA PAR2D
+       DATA PAR2E
+       DATA PAR2F
+
+PAR2A  DATA -1
+       DATA WRP2A
+       TEXT '...'
+       EVEN
+WRP2A  DATA 3,1,-1,-1,-1
+PAR2B  DATA -1
+       DATA WRP2B
+       TEXT '...'
+       EVEN
+WRP2B  DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR2C  DATA -1
+       DATA WRP2C
+       TEXT '...'
+       EVEN
+WRP2C  DATA 5,1,-1,-1,-1,-1,-1
+PAR2D  DATA -1
+       DATA WRP2D
+       TEXT '...'
+       EVEN
+WRP2D  DATA 5,1,-1,-1,-1,-1,-1
+PAR2E  DATA 468
+       DATA WRP2E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP2E  DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR2F  DATA -1
+       DATA WRP2F
+       TEXT '...'
+       EVEN
+WRP2F  DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN2  TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
 ********
 
 MSCNW  TEXT 'Screen contents are wrong'
@@ -161,14 +297,14 @@ MSCNWE EVEN
 *
 * Simulated screen
 *
-FKSCRN BSS  24*40
+MKSCRN BSS  24*40
 SCRNED
 
 *
 * Clear simulated screen
 *
 CLRVDP
-       LI   R0,FKSCRN
+       LI   R0,MKSCRN
        LI   R1,>2020
 CLRV1  MOV  R1,*R0+
        CI   R0,SCRNED
@@ -192,7 +328,7 @@ STACK
 * R0 - VDP address
 SAVER0 DATA 0
 VDPADR MOV  R0,@SAVER0
-       AI   R0,FKSCRN
+       AI   R0,MKSCRN
        MOV  R0,@VADR
        MOV  @SAVER0,R0
        RT
