@@ -81,7 +81,7 @@ DISP4  MOV  @PARINX,R3
        MOV  *R3+,R5
        MOV  *R5+,R6
 * If starting with first paragraph-line,
-* skip a step.
+* ignore wrap list for one cycle.
        MOV  R2,R0
 	   JEQ  DISP6
 * Adjust R5 and R6 based on the 
