@@ -90,9 +90,7 @@ DISP4  MOV  @PARINX,R3
        MOV  R2,R0
 	   JNE  DISP4B
 * Write first line of paragraph
-	   BL   @PFSTLN
-       MOV  R1,R7
-       BL   @VDPWRT
+	   BL   @WRTFST
 	   JMP  DISP6
 * Adjust R5 and R6 based on the 
 * starting paragraph-line.
@@ -100,39 +98,23 @@ DISP4B S    R2,R6
 	   A    R2,R5
 	   A    R2,R5
 * Write a row of text
-DISP5  BL   @PMIDLN
-       MOV  R1,R7
-       BL   @VDPWRT
-* Write trailing spaces
-DISP6  MOV  R7,R1
-       BL   @PWHITE
-	   BL   @VDPWRT
+DISP5  BL   @WRTMID
 * Track screen-row
-       INC  R10
+DISP6  INC  R10
 	   CI   R10,24
 	   JHE  DISP9
 * Check if this is last paragraph-line
        DEC  R6
        JH   DISP5
 * Write the last line
-       BL   @PLSTLN
-       MOV  R1,R7
-       BL   @VDPWRT
-* Write trailing spaces
-DISP8  MOV  R7,R1
-	   BL   @PWHITE
-       BL   @VDPWRT
+       BL   @WRTLST
 * Track screen-row
-       INC  R10
+DISP8  INC  R10
 *
 DISP9  RTWP
 
 * Write one-line paragraph.
-DISP10 BL   @PONELN
-       MOV  R1,R7
-       BL   @VDPWRT
-* Track screen-row and write trailing
-* spaces.
+DISP10 BL   @WRTONE
 	   JMP  DISP8
 
 *
@@ -147,6 +129,78 @@ PARADR SLA  R3,1
        C    *R3+,*R3+
        MOV  *R3,R3
        RT
+
+*
+* WRTFST
+* Write first line within a paragraph
+*
+* Input:
+* R3,R4,R5
+WRTFST MOV  R11,R12
+* Write text
+       BL   @PFSTLN
+       MOV  R1,R7
+       BL   @VDPWRT
+* Write trailing spaces
+       MOV  R7,R1
+       BL   @PWHITE
+	   BL   @VDPWRT
+*
+	   B    *R12
+
+*
+* WRTMID
+* Write one line within a paragraph
+*
+* Input:
+* R3,R4,R5
+WRTMID MOV  R11,R12
+* Write text
+       BL   @PMIDLN
+       MOV  R1,R7
+       BL   @VDPWRT
+* Write trailing spaces
+       MOV  R7,R1
+       BL   @PWHITE
+	   BL   @VDPWRT
+*
+	   B    *R12
+
+*
+* WRTLST
+* Write last line within a paragraph
+*
+* Input:
+* R3,R4,R5
+WRTLST MOV  R11,R12
+* Write text
+       BL   @PLSTLN
+       MOV  R1,R7
+       BL   @VDPWRT
+* Write trailing spaces
+       MOV  R7,R1
+	   BL   @PWHITE
+       BL   @VDPWRT
+*
+       B    *R12
+	   
+*
+* WRTONE
+* Write a one line paragraph
+*
+* Input:
+* R3,R4,R5
+WRTONE MOV  R11,R12
+* Write text
+       BL   @PONELN
+       MOV  R1,R7
+       BL   @VDPWRT
+* Write trailing spaces
+       MOV  R7,R1
+	   BL   @PWHITE
+       BL   @VDPWRT
+*
+       B    *R12
 
 *
 * PFSTLN
