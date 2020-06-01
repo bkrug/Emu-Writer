@@ -88,77 +88,48 @@ DISP4  MOV  @PARINX,R3
 * If starting with first paragraph-line,
 * ignore wrap list for one cycle.
        MOV  R2,R0
-	   JEQ  DISP6
+	   JNE  DISP4B
+* Write first line of paragraph
+	   BL   @PFSTLN
+       MOV  R1,R7
+       BL   @VDPWRT
+	   JMP  DISP6
 * Adjust R5 and R6 based on the 
 * starting paragraph-line.
-       S    R2,R6
+DISP4B S    R2,R6
 	   A    R2,R5
 	   A    R2,R5
 * Write a row of text
-DISP5  MOV  *R5,R0
-       CLR  R1
-       S    *R5,R1
-DISP6  INCT R5
-       A    R3,R0
-	   A    @WINOFF,R0
-	   A    *R5,R1
-	   S    @WINOFF,R1
-	   JGT  DISP6A
-	   CLR  R1
-DISP6A CI   R1,SCRNWD
-       JLE  DISP6B
-	   LI   R1,SCRNWD
-DISP6B MOV  R1,R7
+DISP5  BL   @PMIDLN
+       MOV  R1,R7
        BL   @VDPWRT
 * Write trailing spaces
-       MOV  R7,R1
+DISP6  MOV  R7,R1
        BL   @PWHITE
 	   BL   @VDPWRT
 * Track screen-row
-DISP6C INC  R10
+       INC  R10
 	   CI   R10,24
 	   JHE  DISP9
 * Check if this is last paragraph-line
        DEC  R6
        JH   DISP5
-* Let R4 be the lesser of these:
-* - length of last line minus window offset* - screen width
-       S    *R5,R4
-	   S    @WINOFF,R4
-	   JGT  DISP6D
-	   CLR  R4
-DISP6D CI   R4,SCRNWD
-	   JLE  DISP7
-       LI   R4,SCRNWD
-* Write last row's text.
-DISP7  MOV  *R5,R0
-       A    R3,R0
-	   A    @WINOFF,R0
-       MOV  R4,R1
+* Write the last line
+       BL   @PLSTLN
+       MOV  R1,R7
        BL   @VDPWRT
-* Track screen-row
-DISP8  INC  R10
 * Write trailing spaces
-       MOV  R4,R1
+DISP8  MOV  R7,R1
 	   BL   @PWHITE
        BL   @VDPWRT
+* Track screen-row
+       INC  R10
 *
 DISP9  RTWP
 
 * Write one-line paragraph.
-DISP10 MOV  R3,R0
-       A    @WINOFF,R0
-* Let R4 be the length of paragraph 
-* minus window offset, but between
-* 0 and 40
-       S    @WINOFF,R4
-	   JGT  DISP11
-	   CLR  R4
-DISP11 CI   R4,SCRNWD
-	   JLE  DISP12
-	   LI   R4,SCRNWD
-* Write line
-DISP12 MOV  R4,R1
+DISP10 BL   @PONELN
+       MOV  R1,R7
        BL   @VDPWRT
 * Track screen-row and write trailing
 * spaces.
@@ -176,7 +147,102 @@ PARADR SLA  R3,1
        C    *R3+,*R3+
        MOV  *R3,R3
        RT
+
+*
+* PFSTLN
+* Set parameters for writing a first
+* line of a multiline paragraph
+*
+* Input: 
+*  R5 - wrap list element address
+*  R3 - paragraph text address
+* Output:
+* R0, R1, R5
+PFSTLN CLR  R0
+       JMP  PMLN0	  
+	  
+*
+* PMIDLN
+* Set parameters for writing a
+* non-first and non-last line of
+* a multiline paragraph
+*
+* Input: 
+*  R5 - wrap list element address
+*  R3 - paragraph text address
+* Output:
+* R0, R1, R5
+PMIDLN MOV  *R5,R0
+       CLR  R1
+       S    *R5,R1
+PMLN0  INCT R5
+       A    R3,R0
+	   A    @WINOFF,R0
+	   A    *R5,R1
+	   S    @WINOFF,R1
+	   JGT  PMLN1
+	   CLR  R1
+PMLN1  CI   R1,SCRNWD
+       JLE  PMLN2
+	   LI   R1,SCRNWD
+PMLN2
+       RT
+
+*
+* PLSTLN
+* Set parameters for writing a last
+* line of a mulitline paragraph
+*
+* Input: 
+*  R3 - paragraph text address
+*  R4 - length or paragraph
+*  R5 - wrap list element address
+* Output:
+* R0, R1, R5
+*
+* Let R1 be the length of last line 
+* minus window offset, but between 0
+* and 40
+PLSTLN MOV  R4,R1
+       S    *R5,R1
+	   S    @WINOFF,R1
+	   JGT  PLLN1
+	   CLR  R1
+PLLN1  CI   R1,SCRNWD
+	   JLE  PLLN2
+       LI   R1,SCRNWD
+* Write last row's text.
+PLLN2  MOV  *R5,R0
+       A    R3,R0
+	   A    @WINOFF,R0
+	   RT
 	   
+*
+* PONELN
+* Set parameters for writing a one line
+* paragraph
+*
+* Input:
+*  R3 - paragraph text address
+*  R4 - length or paragraph
+* Output:
+* R0, R1
+PONELN MOV  R3,R0
+       A    @WINOFF,R0
+* Let R4 be the length of paragraph 
+* minus window offset, but between
+* 0 and 40
+       MOV  R4,R1
+       S    @WINOFF,R1
+	   JGT  POLN1
+	   CLR  R1
+POLN1  CI   R1,SCRNWD
+	   JLE  POLN2
+	   LI   R1,SCRNWD
+* Write line
+POLN2
+       RT
+
 *
 * Set parameters for writing whitespace
 *
