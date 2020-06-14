@@ -9,7 +9,6 @@
        REF  STSTYP,STSENT,STSPAR,STSWIN
        REF  ERRMEM
 
-SPACE  TEXT '                                        '
 SCRNWD EQU  40
 FORTY  DATA 40
 

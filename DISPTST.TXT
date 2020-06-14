@@ -42,7 +42,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'DSP7  '
 * One-line paragraph with horizontal offset.
        DATA DSP8
-       TEXT 'DSP8  '	   
+       TEXT 'DSP8  '
+* Current paragraph has changed line-
+* count. Update screen contents below
+* the screen.
+       DATA DSP9
+       TEXT 'DSP9  '	   
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -745,17 +750,17 @@ WRP6D  DATA 5,1,-1,-1,-1,-1,-1
 PAR6E  DATA 468
        DATA WRP6E
        TEXT 'Babylon was the capital city of '
-	   TEXT 'Babylonia, a kingdom in '
+       TEXT 'Babylonia, a kingdom in '
        TEXT 'ancient Mesopotamia, between the 18th '
-	   TEXT 'and 6th centuries BC. '
+       TEXT 'and 6th centuries BC. '
        TEXT 'It was built along the left and right '
-	   TEXT 'banks of the Euphrates '
+       TEXT 'banks of the Euphrates '
        TEXT 'river with steep embankments to contain '
-	   TEXT 'the river,s seasonal '
+       TEXT 'the river,s seasonal '
        TEXT 'floods. Babylon was originally a small '
-	   TEXT 'Akkadian town dating '
+       TEXT 'Akkadian town dating '
        TEXT 'from the period of the Akkadian Empire '
-	   TEXT 'c. 2300 BC'
+       TEXT 'c. 2300 BC'
        EVEN
 WRP6E  DATA 5,1
        DATA 56
@@ -1036,6 +1041,153 @@ SCRN8  TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
 
+*
+* The paragraph length has changed.
+* Redraw the current paragraph and all
+* paragraphs after it.
+*
+DSP9
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL9
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+* Act
+* Imply that the current paragraph's
+* line count has changed.
+       CLR  R0
+	   SOC  @STSPAR,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN9
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL9  DATA 6,1
+       DATA PAR9A
+       DATA PAR9B
+       DATA PAR9C
+       DATA PAR9D
+       DATA PAR9E
+       DATA PAR9F
+
+PAR9A  DATA -1
+       DATA WRP9A
+       TEXT '...'
+       EVEN
+WRP9A  DATA 3,1,-1,-1,-1
+PAR9B  DATA -1
+       DATA WRP9B
+       TEXT '...'
+       EVEN
+WRP9B  DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR9C  DATA -1
+       DATA WRP9C
+       TEXT '...'
+       EVEN
+WRP9C  DATA 5,1,-1,-1,-1,-1,-1
+PAR9D  DATA -1
+       DATA WRP9D
+       TEXT '...'
+       EVEN
+WRP9D  DATA 5,1,-1,-1,-1,-1,-1
+PAR9E  DATA 468
+       DATA WRP9E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP9E  DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR9F  DATA 318
+       DATA WRP9F
+       TEXT 'Garvey was born to a moderately '
+	   TEXT 'prosperous Afro-Jamaican '
+       TEXT 'family in Saint Ann"s Bay, Colony '
+	   TEXT 'of Jamaica and apprenticed '
+	   TEXT 'into the print trade as a teenager. '
+	   TEXT 'Working in Kingston, he '
+	   TEXT 'became involved in trade unionism '
+	   TEXT 'before living briefly in '
+	   TEXT 'Costa Rica, Panama, and England. '
+	   TEXT 'Returning to Jamaica, he '
+	   TEXT 'founded UNIA in 1914.'
+       EVEN
+WRP9F  DATA 5,1
+       DATA 59
+	   DATA 59+63
+	   DATA 59+63+62
+	   DATA 59+63+62+61
+	   DATA 59+63+62+61+60
+
+SCRN9  TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT 'Garvey was born to a moderately prospero'
+       TEXT 'family in Saint Ann"s Bay, Colony of Jam'
+       TEXT 'into the print trade as a teenager. Work'
+       TEXT 'became involved in trade unionism before'
+
 ********
 
 MSCNW  TEXT 'Screen contents are wrong'
@@ -1092,7 +1244,7 @@ VDPWRT
        MOV  @VADR,R2
 *
        MOV  R1,R1
-       JEQ  WDPWED	   
+       JEQ  WDPWED       
 * Write to fake VDP RAM
 WDPW1  CI   R2,SCRNED
        JHE  WDPWER
@@ -1136,9 +1288,9 @@ VDPSPC
 * Write to fake VDP RAM
 VDPS1  CI   R2,SCRNED
        JHE  WDPWER
-	   MOVB R0,*R2+
-	   DEC  R1
-	   JH   VDPS1
+       MOVB R0,*R2+
+       DEC  R1
+       JH   VDPS1
 * Update next write position
        MOV  R2,@VADR
 *
