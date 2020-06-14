@@ -85,15 +85,15 @@ DISP4  MOV  @PARINX,R3
 * If paragraph has only one line, use
 * different algorithm.
        JEQ  DISP10
-* If starting with first paragraph-line,
-* ignore wrap list for one cycle.
+* Check if displaying starts with the
+* first line of the paragraph.
        MOV  R2,R0
 	   JNE  DISP4B
 * Write first line of paragraph
 	   BL   @WRTFST
 	   JMP  DISP6
-* Adjust R5 and R6 based on the 
-* starting paragraph-line.
+* Starting in the middle of the
+* paragraph. Adjust R5 and R6.
 DISP4B S    R2,R6
 	   A    R2,R5
 	   A    R2,R5
@@ -193,6 +193,16 @@ WRTLST MOV  R11,R12
 WRTONE MOV  R11,R12
 * Write text
        BL   @PONELN
+
+*
+* WRTLIN
+*
+* Write one line of text onto screen.
+*
+* R0 already contains the address of
+* visible text
+* R1 already contains the length
+WRTLIN
        MOV  R1,R7
        BL   @VDPWRT
 * Write trailing spaces
@@ -208,8 +218,8 @@ WRTONE MOV  R11,R12
 * line of a multiline paragraph
 *
 * Input: 
-*  R5 - wrap list element address
 *  R3 - paragraph text address
+*  R5 - wrap list element address
 * Output:
 * R0, R1, R5
 PFSTLN CLR  R0
@@ -222,8 +232,8 @@ PFSTLN CLR  R0
 * a multiline paragraph
 *
 * Input: 
-*  R5 - wrap list element address
 *  R3 - paragraph text address
+*  R5 - wrap list element address
 * Output:
 * R0, R1, R5
 PMIDLN MOV  *R5,R0
@@ -265,7 +275,7 @@ PLSTLN MOV  R4,R1
 PLLN1  CI   R1,SCRNWD
 	   JLE  PLLN2
        LI   R1,SCRNWD
-* Write last row's text.
+*
 PLLN2  MOV  *R5,R0
        A    R3,R0
 	   A    @WINOFF,R0
@@ -283,7 +293,7 @@ PLLN2  MOV  *R5,R0
 * R0, R1
 PONELN MOV  R3,R0
        A    @WINOFF,R0
-* Let R4 be the length of paragraph 
+* Let R1 be the length of paragraph 
 * minus window offset, but between
 * 0 and 40
        MOV  R4,R1
@@ -293,7 +303,6 @@ PONELN MOV  R3,R0
 POLN1  CI   R1,SCRNWD
 	   JLE  POLN2
 	   LI   R1,SCRNWD
-* Write line
 POLN2
        RT
 
