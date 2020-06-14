@@ -15,54 +15,12 @@ FORTY  DATA 40
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4
 
-*
 * Let R9 = starting paragraph index
-*
-       MOV  @PARINX,R9
-
-*
 * Let R10 = starting screen row
-*   to write to.
-*
-* If cursor's paragraph is at top of
-* screen, then only skip screen header.
-       CLR  R10
-       C    @WINPAR,R9
-       JEQ  DISP3
-*
-       MOV  @WINPAR,R1
-* Let R2 total screen rows to skip
-       MOV  @WINLIN,R10
-       NEG  R10
-* Let R3 = paragraph address
-DISP2  MOV  R1,R3
-       BL   @PARADR
-* Let R3 = wrap list address
-       INCT R3
-       MOV  *R3,R3
-* Add paragraph length to row count
-       A    *R3,R10
-       INC  R10
-* Keep going until we reach the
-* cursor's paragraph
-       INC  R1
-       C    R1,R9
-       JL   DISP2
-* Skip two rows that are reserved for
-* document information.
-DISP3  INCT R10
-       
-*
-* Set VDP write address so that the
-* routine can redraw the current
-* paragraph.
-*
-* Let R0 = R10 * screen width
-       MOV  R10,R2
-       MPY  @FORTY,R2
-       MOV  R3,R0
-* Set VDP write address
-       BL   @VDPADR
+* Set initial VDP address
+       BL   @STRPAR
+       BL   @SCRNRW
+       BL   @VDPSTR
        
 *
 * Redraw the rows for one paragraph of
@@ -132,6 +90,61 @@ DISP9  RTWP
 * Write one-line paragraph.
 DISP10 BL   @WRTONE
        JMP  DISP8
+
+*
+* Let R9 = starting paragraph index
+*
+STRPAR MOV  @PARINX,R9
+       RT
+
+*
+* Let R10 = starting screen row
+*
+SCRNRW MOV  R11,R12
+* If cursor's paragraph is at top of
+* screen, then only skip screen header.
+       CLR  R10
+       C    @WINPAR,R9
+       JEQ  DISP3
+*
+       MOV  @WINPAR,R1
+* Let R2 total screen rows to skip
+       MOV  @WINLIN,R10
+       NEG  R10
+* Let R3 = paragraph address
+DISP2  MOV  R1,R3
+       BL   @PARADR
+* Let R3 = wrap list address
+       INCT R3
+       MOV  *R3,R3
+* Add paragraph length to row count
+       A    *R3,R10
+       INC  R10
+* Keep going until we reach the
+* cursor's paragraph
+       INC  R1
+       C    R1,R9
+       JL   DISP2
+* Skip two rows that are reserved for
+* document information.
+DISP3  INCT R10
+*
+       B    *R12
+       
+*
+* Set VDP write address so that the
+* routine can redraw the current
+* paragraph.
+*
+VDPSTR MOV  R11,R12
+* Let R0 = R10 * screen width
+       MOV  R10,R2
+       MPY  @FORTY,R2
+       MOV  R3,R0
+* Set VDP write address
+       BL   @VDPADR
+*
+       B    *R12
 
 *
 * Get paragraph address from index
