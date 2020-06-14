@@ -18,14 +18,17 @@ DISP   DATA DISPWS,DISP+4
 *
 * Calculate the number of rows at the
 * top of the screen that don't need to
-* be rewritten. Put the result in R2.
+* be rewritten.
+* Put the result in R2 & R10.
+*
+* Let R9 = current paragraph index
 *
 * If cursor's paragraph is at top of
 * screen, then set VDP address to the
 * first document row.
        CLR  R2
        C    @WINPAR,@PARINX
-	   JEQ  DISP3
+       JEQ  DISP3
 *
        MOV  @WINPAR,R1
 * Let R2 total screen rows to skip
@@ -49,6 +52,7 @@ DISP2  MOV  R1,R3
 * document information.
 DISP3  INCT R2
        MOV  R2,R10
+       MOV  @PARINX,R9
        
 *
 * Set VDP write address so that the
@@ -65,13 +69,16 @@ DISP3  INCT R2
 * Redraw the rows for one paragraph of
 * text.
 *
+* R9 should have the index of a paragraph
+* R10 should have a screen row
+*
 * Let R2 = starting paragraph-line
        CLR  R2
-       C    @WINPAR,@PARINX
-	   JNE  DISP4
+       C    @WINPAR,R9
+       JNE  DISP4
        MOV  @WINLIN,R2
 * Let R3 = address of cursor's paragraph
-DISP4  MOV  @PARINX,R3
+DISP4  MOV  R9,R3
        BL   @PARADR
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph
@@ -87,21 +94,21 @@ DISP4  MOV  @PARINX,R3
 * Check if displaying starts with the
 * first line of the paragraph.
        MOV  R2,R0
-	   JNE  DISP4B
+       JNE  DISP4B
 * Write first line of paragraph
-	   BL   @WRTFST
-	   JMP  DISP6
+       BL   @WRTFST
+       JMP  DISP6
 * Starting in the middle of the
 * paragraph. Adjust R5 and R6.
 DISP4B S    R2,R6
-	   A    R2,R5
-	   A    R2,R5
+       A    R2,R5
+       A    R2,R5
 * Write a row of text
 DISP5  BL   @WRTMID
 * Track screen-row
 DISP6  INC  R10
-	   CI   R10,24
-	   JHE  DISP9
+       CI   R10,24
+       JHE  DISP9
 * Check if this is last paragraph-line
        DEC  R6
        JH   DISP5
@@ -109,12 +116,23 @@ DISP6  INC  R10
        BL   @WRTLST
 * Track screen-row
 DISP8  INC  R10
+       CI   R10,24
+       JHE  DISP9
+* Increment paragraph-index
+       INC  R9
+* Set starting line of paragraph.
+       CLR  R2	   
+* If paragraph line-count changed,
+* continue drawing the screen.
+       MOV  *R13,R0
+       COC  @STSPAR,R0
+       JEQ  DISP4
 *
 DISP9  RTWP
 
 * Write one-line paragraph.
 DISP10 BL   @WRTONE
-	   JMP  DISP8
+       JMP  DISP8
 
 *
 * Get paragraph address from index
@@ -161,7 +179,7 @@ WRTLST MOV  R11,R12
 * Write text
        BL   @PLSTLN
        JMP  WRTLIN
-	   
+       
 *
 * WRTONE
 * Write a one line paragraph
@@ -203,8 +221,8 @@ WRTLIN
 * Output:
 * R0, R1, R5
 PFSTLN CLR  R0
-       JMP  PMLN0	  
-	  
+       JMP  PMLN0      
+      
 *
 * PMIDLN
 * Set parameters for writing a
@@ -221,14 +239,14 @@ PMIDLN MOV  *R5,R0
        S    *R5,R1
 PMLN0  INCT R5
        A    R3,R0
-	   A    @WINOFF,R0
-	   A    *R5,R1
-	   S    @WINOFF,R1
-	   JGT  PMLN1
-	   CLR  R1
+       A    @WINOFF,R0
+       A    *R5,R1
+       S    @WINOFF,R1
+       JGT  PMLN1
+       CLR  R1
 PMLN1  CI   R1,SCRNWD
        JLE  PMLN2
-	   LI   R1,SCRNWD
+       LI   R1,SCRNWD
 PMLN2
        RT
 
@@ -249,18 +267,18 @@ PMLN2
 * and 40
 PLSTLN MOV  R4,R1
        S    *R5,R1
-	   S    @WINOFF,R1
-	   JGT  PLLN1
-	   CLR  R1
+       S    @WINOFF,R1
+       JGT  PLLN1
+       CLR  R1
 PLLN1  CI   R1,SCRNWD
-	   JLE  PLLN2
+       JLE  PLLN2
        LI   R1,SCRNWD
 *
 PLLN2  MOV  *R5,R0
        A    R3,R0
-	   A    @WINOFF,R0
-	   RT
-	   
+       A    @WINOFF,R0
+       RT
+       
 *
 * PONELN
 * Set parameters for writing a one line
@@ -278,11 +296,11 @@ PONELN MOV  R3,R0
 * 0 and 40
        MOV  R4,R1
        S    @WINOFF,R1
-	   JGT  POLN1
-	   CLR  R1
+       JGT  POLN1
+       CLR  R1
 POLN1  CI   R1,SCRNWD
-	   JLE  POLN2
-	   LI   R1,SCRNWD
+       JLE  POLN2
+       LI   R1,SCRNWD
 POLN2
        RT
 

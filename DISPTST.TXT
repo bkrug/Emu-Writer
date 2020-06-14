@@ -1157,11 +1157,11 @@ PAR9F  DATA 318
 	   TEXT 'founded UNIA in 1914.'
        EVEN
 WRP9F  DATA 5,1
-       DATA 59
-	   DATA 59+63
-	   DATA 59+63+62
-	   DATA 59+63+62+61
-	   DATA 59+63+62+61+60
+       DATA 57
+	   DATA 57+61
+	   DATA 57+61+60
+	   DATA 57+61+60+59
+	   DATA 57+61+60+59+58
 
 SCRN9  TEXT '                                        '
        TEXT '                                        '
