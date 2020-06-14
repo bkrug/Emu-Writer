@@ -16,24 +16,24 @@ FORTY  DATA 40
 DISP   DATA DISPWS,DISP+4
 
 *
-* Calculate the number of rows at the
-* top of the screen that don't need to
-* be rewritten.
-* Put the result in R2 & R10.
+* Let R9 = starting paragraph index
 *
-* Let R9 = current paragraph index
+       MOV  @PARINX,R9
+
+*
+* Let R10 = starting screen row
+*   to write to.
 *
 * If cursor's paragraph is at top of
-* screen, then set VDP address to the
-* first document row.
-       CLR  R2
-       C    @WINPAR,@PARINX
+* screen, then only skip screen header.
+       CLR  R10
+       C    @WINPAR,R9
        JEQ  DISP3
 *
        MOV  @WINPAR,R1
 * Let R2 total screen rows to skip
-       MOV  @WINLIN,R2
-       NEG  R2
+       MOV  @WINLIN,R10
+       NEG  R10
 * Let R3 = paragraph address
 DISP2  MOV  R1,R3
        BL   @PARADR
@@ -41,25 +41,24 @@ DISP2  MOV  R1,R3
        INCT R3
        MOV  *R3,R3
 * Add paragraph length to row count
-       A    *R3,R2
-       INC  R2
+       A    *R3,R10
+       INC  R10
 * Keep going until we reach the
 * cursor's paragraph
        INC  R1
-       C    R1,@PARINX
+       C    R1,R9
        JL   DISP2
 * Skip two rows that are reserved for
 * document information.
-DISP3  INCT R2
-       MOV  R2,R10
-       MOV  @PARINX,R9
+DISP3  INCT R10
        
 *
 * Set VDP write address so that the
 * routine can redraw the current
 * paragraph.
 *
-* Let R0 = R2 * screen width
+* Let R0 = R10 * screen width
+       MOV  R10,R2
        MPY  @FORTY,R2
        MOV  R3,R0
 * Set VDP write address
