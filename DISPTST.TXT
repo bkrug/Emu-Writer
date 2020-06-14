@@ -1145,7 +1145,7 @@ WRP9E  DATA 8,1
        DATA 62+58+55+53+54+59
        DATA 62+58+55+53+54+59+55
        DATA 62+58+55+53+54+59+55+59       
-PAR9F  DATA 318
+PAR9F  DATA 316
        DATA WRP9F
        TEXT 'Garvey was born to a moderately '
        TEXT 'prosperous Afro-Jamaican '
@@ -1213,7 +1213,7 @@ DSP10
        MOV  R0,@WINOFF
        LI   R0,3
        MOV  R0,@WINPAR
-       LI   R0,4
+       LI   R0,5
        MOV  R0,@WINLIN
 * Act
 * Imply that the current paragraph's
@@ -1293,7 +1293,7 @@ WRP10E DATA 8,1
        DATA 62+58+55+53+54+59
        DATA 62+58+55+53+54+59+55
        DATA 62+58+55+53+54+59+55+59       
-PAR10F DATA 318
+PAR10F DATA 316
        DATA WRP10F
        TEXT 'Garvey was born to a moderately '
        TEXT 'prosperous Afro-Jamaican '
@@ -1313,7 +1313,7 @@ WRP10F DATA 5,1
        DATA 57+61+60
        DATA 57+61+60+59
        DATA 57+61+60+59+58
-PAR10G DATA 280
+PAR10G DATA 279
        DATA WRP10G
        TEXT 'In 1916, he moved to the United States and '
        TEXT 'established a '
@@ -1326,11 +1326,11 @@ PAR10G DATA 280
        TEXT 'Africa and the political unification of '
        TEXT 'the continent.'
 WRP10G DATA 4,1
-       DATA 59
-       DATA 59+62
-       DATA 59+62+54
-       DATA 59+62+54+57       
-PAR10H DATA 276
+       DATA 57
+       DATA 57+60
+       DATA 57+60+52
+       DATA 57+60+52+55
+PAR10H DATA 274
        DATA WRP10H
        TEXT 'He envisioned a unified Africa as a '
        TEXT 'one_party state, '
@@ -1340,15 +1340,16 @@ PAR10H DATA 276
        TEXT 'the continent, he '
        TEXT 'was committed to the Back_to_Africa '
        TEXT 'movement, arguing that '
-       TEXT 'many African-Americans should migrate '
+       TEXT 'many African_Americans should migrate '
        TEXT 'there.'
 WRP10H DATA 4,1
-       DATA 55
-       DATA 55+61
-       DATA 55+61+61
-       DATA 55+61+61+61
+       DATA 53
+       DATA 53+59
+       DATA 53+59+59
+       DATA 53+59+59+59
 
 SCRN10 TEXT '                                        '
+       TEXT '                                        '
        TEXT '                                        '
        TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
        TEXT 'was a Jamaican political activist, publi'
@@ -1371,7 +1372,6 @@ SCRN10 TEXT '                                        '
        TEXT 'campaigned for an end to European coloni'
        TEXT 'Africa and the political unification of '
        TEXT 'He envisioned a unified Africa as a one_'
-       TEXT 'governed by himself, that would enact la'
 
 ********
 

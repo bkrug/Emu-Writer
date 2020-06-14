@@ -84,6 +84,8 @@ DISP8  INC  R10
        MOV  *R13,R0
        COC  @STSPAR,R0
        JEQ  DISP4
+       COC  @STSENT,R0
+       JEQ  DISP4
 *
 DISP9  RTWP
 
@@ -94,7 +96,18 @@ DISP10 BL   @WRTONE
 *
 * Let R9 = starting paragraph index
 *
-STRPAR MOV  @PARINX,R9
+STRPAR 
+       MOV  @PARINX,R9
+* Don't move to earlier than paragraph 
+* beginning.
+       JEQ  SP9
+* If the user pressed enter, start from
+* previous paragraph.
+       MOV  *R13,R0
+       COC  @STSENT,R0
+	   JNE  SP9
+	   DEC  R9
+SP9
        RT
 
 *
