@@ -187,7 +187,8 @@ WRTLIN
        BL   @VDPWRT
 * Write trailing spaces
        MOV  R7,R1
-	   BL   @PWHITE
+       NEG  R1
+       AI   R1,SCRNWD
        BL   @VDPSPC
 *
        B    *R12
@@ -284,18 +285,6 @@ POLN1  CI   R1,SCRNWD
 	   JLE  POLN2
 	   LI   R1,SCRNWD
 POLN2
-       RT
-
-*
-* Set parameters for writing whitespace
-*
-* Input:
-* R1 - characters already written to
-*      the current row.
-* Output:
-* R0, R1
-PWHITE NEG  R1
-       AI   R1,SCRNWD
        RT
 
        END
