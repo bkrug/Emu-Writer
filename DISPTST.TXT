@@ -1,6 +1,6 @@
        DEF  TSTLST,RSLTFL
 * Mocked methods
-       DEF  VDPADR,VDPWRT
+       DEF  VDPADR,VDPWRT,VDPSPC
 *
        REF  ABLCK,AOC,AZC
        REF  AEQ,ANEQ,AL
@@ -1083,6 +1083,7 @@ VDPADR MOV  R0,@SAVER0
 * Output:
 * R0 - original value + R1's value
 * R1 - 0
+* R2
 SAVER2 DATA 0
 VDPWRT
 * Save R2 incase caller needs it later
@@ -1103,6 +1104,9 @@ WDPW1  CI   R2,SCRNED
 *
        MOV  @SAVER2,R2
 WDPWED RT
+
+* Report logic error
+* Wrote past end of the screen
 WDPWER LI   R0,SCRNED
        MOV  R2,R1
        LI   R2,WDPWM
@@ -1112,5 +1116,33 @@ WDPWER LI   R0,SCRNED
 WDPWM  TEXT 'Routine attempted to write past '
        TEXT 'end of the screen.'
 WDPWME
+
+*
+* Write multiple spaces to VDP
+*
+* Input:
+* R1 - Number of bytes
+* Output:
+* R0 - >2000
+* R1 - 0
+* R2
+VDPSPC
+       LI   R0,>2000
+* Get fake VDP address
+       MOV  @VADR,R2
+*
+       MOV  R1,R1
+       JEQ  VDPSED
+* Write to fake VDP RAM
+VDPS1  CI   R2,SCRNED
+       JHE  WDPWER
+	   MOVB R0,*R2+
+	   DEC  R1
+	   JH   VDPS1
+* Update next write position
+       MOV  R2,@VADR
+*
+       MOV  @SAVER2,R2
+VDPSED RT
 
        END

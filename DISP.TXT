@@ -1,6 +1,6 @@
        DEF  DISP
 * Mocked methods
-       REF  VDPADR,VDPWRT
+       REF  VDPADR,VDPWRT,VDPSPC
 *
        REF  DISPWS
        REF  LINLST,FMTLST,MGNLST
@@ -139,14 +139,7 @@ PARADR SLA  R3,1
 WRTFST MOV  R11,R12
 * Write text
        BL   @PFSTLN
-       MOV  R1,R7
-       BL   @VDPWRT
-* Write trailing spaces
-       MOV  R7,R1
-       BL   @PWHITE
-	   BL   @VDPWRT
-*
-	   B    *R12
+       JMP  WRTLIN
 
 *
 * WRTMID
@@ -157,14 +150,7 @@ WRTFST MOV  R11,R12
 WRTMID MOV  R11,R12
 * Write text
        BL   @PMIDLN
-       MOV  R1,R7
-       BL   @VDPWRT
-* Write trailing spaces
-       MOV  R7,R1
-       BL   @PWHITE
-	   BL   @VDPWRT
-*
-	   B    *R12
+       JMP  WRTLIN
 
 *
 * WRTLST
@@ -175,14 +161,7 @@ WRTMID MOV  R11,R12
 WRTLST MOV  R11,R12
 * Write text
        BL   @PLSTLN
-       MOV  R1,R7
-       BL   @VDPWRT
-* Write trailing spaces
-       MOV  R7,R1
-	   BL   @PWHITE
-       BL   @VDPWRT
-*
-       B    *R12
+       JMP  WRTLIN
 	   
 *
 * WRTONE
@@ -193,6 +172,7 @@ WRTLST MOV  R11,R12
 WRTONE MOV  R11,R12
 * Write text
        BL   @PONELN
+       JMP  WRTLIN
 
 *
 * WRTLIN
@@ -208,7 +188,7 @@ WRTLIN
 * Write trailing spaces
        MOV  R7,R1
 	   BL   @PWHITE
-       BL   @VDPWRT
+       BL   @VDPSPC
 *
        B    *R12
 
@@ -316,7 +296,6 @@ POLN2
 * R0, R1
 PWHITE NEG  R1
        AI   R1,SCRNWD
-       LI   R0,SPACE
        RT
 
        END
