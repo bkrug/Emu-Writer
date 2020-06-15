@@ -79,15 +79,10 @@ DISP8  INC  R10
        INC  R9
 * Set starting line of paragraph.
        CLR  R2
-* If paragraph line-count changed,
-* continue drawing the screen.
-       MOV  *R13,R0
-       COC  @STSPAR,R0
-       JEQ  DISP11
-       COC  @STSENT,R0
-       JEQ  DISP11
-       COC  @STSWIN,R0
-       JEQ  DISP11
+* Continue with next paragraph?
+       BL   @NXTPAR
+	   MOV  R0,R0
+       JEQ  DISP1
 *
 DISP9  RTWP
 
@@ -95,21 +90,42 @@ DISP9  RTWP
 DISP10 BL   @WRTONE
        JMP  DISP8
 
+**************
+
 *
-DISP11
+* Decide wether or not to continue
+* by drawing the next paragraph.
+*
+NXTPAR MOV  R11,R12
+* If paragraph line-count changed,
+* continue drawing the screen.
+       MOV  *R13,R0
+       COC  @STSPAR,R0
+       JEQ  NXT1
+       COC  @STSENT,R0
+       JEQ  NXT1
+       COC  @STSWIN,R0
+       JEQ  NXT1
+* Don't write next paragraph
+NXTNO  SETO R0
+       B    *R12
+* Write next paragraph
+NXTYES CLR  R0
+       B    *R12
+*
+NXT1
 * Don't read past document-end
        MOV  @LINLST,R0
        C    R9,*R0
-	   JL   DISP1
+	   JL   NXTYES
 * Clear remaining screen
 	   LI   R0,24
        S    R10,R0
 	   MPY  @FORTY,R0
 	   BL   @VDPSPC
 *
-       JMP  DISP9
+       JMP  NXTNO
 
-**************
 *
 * Check document status to see if part
 * of screen should be redrawn
