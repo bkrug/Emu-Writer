@@ -81,7 +81,8 @@ DISP3  RTWP
 * Single-line paragraph, first-line,
 * mid-line, or last-line
 *
-* Output: R7
+* R7 = address of write algorithm
+*
 GETALG LI   R7,ALGLST
 * If R2 != 0, add 4 to R7
        MOV  R2,R2
