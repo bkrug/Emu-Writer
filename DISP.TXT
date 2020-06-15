@@ -50,20 +50,20 @@ DISP1  MOV  R9,R3
        S    R2,R6
        A    R2,R5
        A    R2,R5
+*
+       INC  R6
+* Decrease remaining paragraph-lines
+DISP2  DEC  R6	   
 * Write a row of text
-DISP2  BL   @GETALG	   
+       BL   @GETALG	   
        BL   *R7
 * Track screen-row
        INC  R10
        CI   R10,24
-       JHE  DISP4
+       JHE  DISP3
 * Check if this is last paragraph-line
        MOV  R6,R6
-       JEQ  DISP3
-* Decrease remaining paragraph-lines
-       DEC  R6
-	   JMP  DISP2
-DISP3  
+       JNE  DISP2
 * Increment paragraph-index
        INC  R9
 * Set starting line of paragraph.
@@ -72,7 +72,7 @@ DISP3
        BL   @NXTPAR
        JEQ  DISP1
 *
-DISP4  RTWP
+DISP3  RTWP
 
 **************
 
