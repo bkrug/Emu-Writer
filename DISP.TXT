@@ -32,10 +32,10 @@ DISP   DATA DISPWS,DISP+4
 * Let R2 = starting paragraph-line
        CLR  R2
        C    @WINPAR,R9
-       JNE  DISP4
+       JNE  DISP1
        MOV  @WINLIN,R2
 * Let R3 = address of cursor's paragraph
-DISP4  MOV  R9,R3
+DISP1  MOV  R9,R3
        BL   @PARADR
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph
@@ -51,13 +51,13 @@ DISP4  MOV  R9,R3
 * Check if displaying starts with the
 * first line of the paragraph.
        MOV  R2,R0
-       JNE  DISP4B
+       JNE  DISP2
 * Write first line of paragraph
        BL   @WRTFST
        JMP  DISP6
 * Starting in the middle of the
 * paragraph. Adjust R5 and R6.
-DISP4B S    R2,R6
+DISP2  S    R2,R6
        A    R2,R5
        A    R2,R5
 * Write a row of text
@@ -100,7 +100,7 @@ DISP11
 * Don't read past document-end
        MOV  @LINLST,R0
        C    R9,*R0
-	   JL   DISP4
+	   JL   DISP1
 * Clear remaining screen
 	   LI   R0,24
        S    R10,R0
@@ -163,14 +163,14 @@ SCRNRW MOV  R11,R12
 * screen, then only skip screen header.
        CLR  R10
        C    @WINPAR,R9
-       JEQ  DISP3
+       JEQ  SROW2
 *
        MOV  @WINPAR,R1
 * Let R2 total screen rows to skip
        MOV  @WINLIN,R10
        NEG  R10
 * Let R3 = paragraph address
-DISP2  MOV  R1,R3
+SROW1  MOV  R1,R3
        BL   @PARADR
 * Let R3 = wrap list address
        INCT R3
@@ -182,10 +182,10 @@ DISP2  MOV  R1,R3
 * cursor's paragraph
        INC  R1
        C    R1,R9
-       JL   DISP2
+       JL   SROW1
 * Skip two rows that are reserved for
 * document information.
-DISP3  INCT R10
+SROW2  INCT R10
 *
        B    *R12
        
