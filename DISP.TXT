@@ -14,7 +14,7 @@ FORTY  DATA 40
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4
-
+       BL   @NOTHIN
 * Let R9 = starting paragraph index
 * Let R10 = starting screen row
 * Set initial VDP address
@@ -108,6 +108,26 @@ DISP11
 	   BL   @VDPSPC
 *
        JMP  DISP9
+
+**************
+*
+* Check document status to see if part
+* of screen should be redrawn
+*
+NOTHIN
+       MOV  *R13,R0
+       COC  @STSTYP,R0
+       JEQ  NOT1
+       COC  @STSPAR,R0
+       JEQ  NOT1
+       COC  @STSENT,R0
+       JEQ  NOT1
+       COC  @STSWIN,R0
+       JEQ  NOT1
+* Nothing to redraw
+	   RTWP
+* Redraw some portion of the screen
+NOT1   RT
 
 *
 * Let R9 = starting paragraph index
