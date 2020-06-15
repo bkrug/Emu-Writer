@@ -81,25 +81,29 @@ DISP9  RTWP
 * Single-line paragraph, first-line,
 * mid-line, or last-line
 *
-GETALG MOV  R2,R2
-       JNE  ALG5
-	   MOV  R6,R6
-	   JNE  ALG1
+GETALG LI   R7,ALGLST
+* If R2 != 0, add 4 to R7
+       MOV  R2,R2
+	   JEQ  ALG1
+	   C    *R7+,*R7+
+* If R6 != 0, add 2 to R7
+ALG1   MOV  R6,R6
+       JEQ  ALG2
+       INCT R7
+* Put routine address in R7
+ALG2   MOV  *R7,R7
 *
-       LI   R7,WRTONE
        RT
-*
-ALG1   LI   R7,WRTFST
-       RT
-*
-ALG5   MOV  R6,R6
-       JNE  ALG7
-*
-       LI   R7,WRTLST
-	   RT
-*
-ALG7   LI   R7,WRTMID
-	   RT
+	   
+ALGLST
+* First-line Yes, Last-line Yes
+       DATA WRTONE
+* First-line Yes, Last-line No
+       DATA WRTFST
+* First-line No, Last-line Yes
+       DATA WRTLST
+* First-line No, Last-line No
+       DATA WRTMID
 
 *
 * Decide wether or not to continue
