@@ -1,5 +1,5 @@
        DEF  DISP
-* Mocked methods
+* Methods for writing to VDP
        REF  VDPADR,VDPWRT,VDPSPC
 *
        REF  DISPWS
@@ -78,20 +78,36 @@ DISP8  INC  R10
 * Increment paragraph-index
        INC  R9
 * Set starting line of paragraph.
-       CLR  R2	   
+       CLR  R2
 * If paragraph line-count changed,
 * continue drawing the screen.
        MOV  *R13,R0
        COC  @STSPAR,R0
-       JEQ  DISP4
+       JEQ  DISP11
        COC  @STSENT,R0
-       JEQ  DISP4
+       JEQ  DISP11
+       COC  @STSWIN,R0
+       JEQ  DISP11
 *
 DISP9  RTWP
 
 * Write one-line paragraph.
 DISP10 BL   @WRTONE
        JMP  DISP8
+
+*
+DISP11
+* Don't read past document-end
+       MOV  @LINLST,R0
+       C    R9,*R0
+	   JL   DISP4
+* Clear remaining screen
+	   LI   R0,24
+       S    R10,R0
+	   MPY  @FORTY,R0
+	   BL   @VDPSPC
+*
+       JMP  DISP9
 
 *
 * Let R9 = starting paragraph index
@@ -101,22 +117,22 @@ STRPAR
        MOV  *R13,R0
 * If window has moved, redraw screen.
        COC  @STSWIN,R0
-	   JEQ  SP8
+       JEQ  SP2
 * Set starting position to cursor's
 * paragraph.
        MOV  @PARINX,R9
 * Avoid setting R9 to -1.
-       JEQ  SP9
+       JEQ  SP1
 * If the user pressed enter, start from
 * previous paragraph.
        COC  @STSENT,R0
-	   JNE  SP9
-	   DEC  R9
+       JNE  SP1
+       DEC  R9
 *
-SP9    RT
+SP1    RT
 * Set starting position based on window
 * position.
-SP8    MOV  @WINPAR,R9
+SP2    MOV  @WINPAR,R9
        RT
 
 *
