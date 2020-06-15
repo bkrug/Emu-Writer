@@ -45,36 +45,25 @@ DISP1  MOV  R9,R3
        MOV  *R3+,R4
        MOV  *R3+,R5
        MOV  *R5+,R6
-* If paragraph has only one line, use
-* different algorithm.
-       JEQ  DISP10
-* Check if displaying starts with the
-* first line of the paragraph.
-       MOV  R2,R0
-       JNE  DISP2
-* Write first line of paragraph
-       BL   @WRTFST
-       JMP  DISP6
-* Starting in the middle of the
+* If starting in the middle of the
 * paragraph. Adjust R5 and R6.
-DISP2  S    R2,R6
+       S    R2,R6
        A    R2,R5
        A    R2,R5
 * Write a row of text
-DISP5  BL   @WRTMID
+DISP5  BL   @GETALG	   
+       BL   *R7
 * Track screen-row
-DISP6  INC  R10
+       INC  R10
        CI   R10,24
        JHE  DISP9
 * Check if this is last paragraph-line
+       MOV  R6,R6
+       JEQ  DISP8
+* Decrease remaining paragraph-lines
        DEC  R6
-       JH   DISP5
-* Write the last line
-       BL   @WRTLST
-* Track screen-row
-DISP8  INC  R10
-       CI   R10,24
-       JHE  DISP9
+	   JMP  DISP5
+DISP8  
 * Increment paragraph-index
        INC  R9
 * Set starting line of paragraph.
@@ -85,11 +74,32 @@ DISP8  INC  R10
 *
 DISP9  RTWP
 
-* Write one-line paragraph.
-DISP10 BL   @WRTONE
-       JMP  DISP8
-
 **************
+
+*
+* Get write algorithm appropriate for
+* Single-line paragraph, first-line,
+* mid-line, or last-line
+*
+GETALG MOV  R2,R2
+       JNE  ALG5
+	   MOV  R6,R6
+	   JNE  ALG1
+*
+       LI   R7,WRTONE
+       RT
+*
+ALG1   LI   R7,WRTFST
+       RT
+*
+ALG5   MOV  R6,R6
+       JNE  ALG7
+*
+       LI   R7,WRTLST
+	   RT
+*
+ALG7   LI   R7,WRTMID
+	   RT
 
 *
 * Decide wether or not to continue
