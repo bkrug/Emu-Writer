@@ -51,19 +51,19 @@ DISP1  MOV  R9,R3
        A    R2,R5
        A    R2,R5
 * Write a row of text
-DISP5  BL   @GETALG	   
+DISP2  BL   @GETALG	   
        BL   *R7
 * Track screen-row
        INC  R10
        CI   R10,24
-       JHE  DISP9
+       JHE  DISP4
 * Check if this is last paragraph-line
        MOV  R6,R6
-       JEQ  DISP8
+       JEQ  DISP3
 * Decrease remaining paragraph-lines
        DEC  R6
-	   JMP  DISP5
-DISP8  
+	   JMP  DISP2
+DISP3  
 * Increment paragraph-index
        INC  R9
 * Set starting line of paragraph.
@@ -72,7 +72,7 @@ DISP8
        BL   @NXTPAR
        JEQ  DISP1
 *
-DISP9  RTWP
+DISP4  RTWP
 
 **************
 
@@ -81,6 +81,7 @@ DISP9  RTWP
 * Single-line paragraph, first-line,
 * mid-line, or last-line
 *
+* Output: R7
 GETALG LI   R7,ALGLST
 * If R2 != 0, add 4 to R7
        MOV  R2,R2
