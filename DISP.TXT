@@ -97,17 +97,26 @@ DISP10 BL   @WRTONE
 * Let R9 = starting paragraph index
 *
 STRPAR 
+* Let R0 = contain document status
+       MOV  *R13,R0
+* If window has moved, redraw screen.
+       COC  @STSWIN,R0
+	   JEQ  SP8
+* Set starting position to cursor's
+* paragraph.
        MOV  @PARINX,R9
-* Don't move to earlier than paragraph 
-* beginning.
+* Avoid setting R9 to -1.
        JEQ  SP9
 * If the user pressed enter, start from
 * previous paragraph.
-       MOV  *R13,R0
        COC  @STSENT,R0
 	   JNE  SP9
 	   DEC  R9
-SP9
+*
+SP9    RT
+* Set starting position based on window
+* position.
+SP8    MOV  @WINPAR,R9
        RT
 
 *
