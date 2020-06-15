@@ -26,9 +26,6 @@ DISP   DATA DISPWS,DISP+4
 * Redraw the rows for one paragraph of
 * text.
 *
-* R9 should have the index of a paragraph
-* R10 should have a screen row
-*
 * Let R2 = starting paragraph-line
        CLR  R2
        C    @WINPAR,R9
@@ -74,72 +71,7 @@ DISP2  DEC  R6
 *
 DISP3  RTWP
 
-**************
-
-*
-* Get write algorithm appropriate for
-* Single-line paragraph, first-line,
-* mid-line, or last-line
-*
-* Let R7 = address of write algorithm
-*
-GETALG LI   R7,ALGLST
-* If R2 != 0, add 4 to R7
-       MOV  R2,R2
-	   JEQ  ALG1
-	   C    *R7+,*R7+
-* If R6 != 0, add 2 to R7
-ALG1   MOV  R6,R6
-       JEQ  ALG2
-       INCT R7
-* Put routine address in R7
-ALG2   MOV  *R7,R7
-*
-       RT
-	   
-ALGLST
-* First-line Yes, Last-line Yes
-       DATA WRTONE
-* First-line Yes, Last-line No
-       DATA WRTFST
-* First-line No, Last-line Yes
-       DATA WRTLST
-* First-line No, Last-line No
-       DATA WRTMID
-
-*
-* Decide wether or not to continue
-* by drawing the next paragraph.
-*
-NXTPAR MOV  R11,R12
-* If paragraph line-count changed,
-* continue drawing the screen.
-       MOV  *R13,R0
-       COC  @STSPAR,R0
-       JEQ  NXT1
-       COC  @STSENT,R0
-       JEQ  NXT1
-       COC  @STSWIN,R0
-       JEQ  NXT1
-* Don't write next paragraph
-NXTNO  LI   R0,-1
-       B    *R12
-* Write next paragraph
-NXTYES S    R0,R0
-       B    *R12
-*
-NXT1
-* Don't read past document-end
-       MOV  @LINLST,R0
-       C    R9,*R0
-	   JL   NXTYES
-* Clear remaining screen
-	   LI   R0,24
-       S    R10,R0
-	   MPY  @FORTY,R0
-	   BL   @VDPSPC
-*
-       JMP  NXTNO
+********* Sub-Routines *********
 
 *
 * Check document status to see if part
@@ -247,6 +179,71 @@ PARADR SLA  R3,1
        C    *R3+,*R3+
        MOV  *R3,R3
        RT
+
+*
+* Get write algorithm appropriate for
+* Single-line paragraph, first-line,
+* mid-line, or last-line
+*
+* Let R7 = address of write algorithm
+*
+GETALG LI   R7,ALGLST
+* If R2 != 0, add 4 to R7
+       MOV  R2,R2
+	   JEQ  ALG1
+	   C    *R7+,*R7+
+* If R6 != 0, add 2 to R7
+ALG1   MOV  R6,R6
+       JEQ  ALG2
+       INCT R7
+* Put routine address in R7
+ALG2   MOV  *R7,R7
+*
+       RT
+	   
+ALGLST
+* First-line Yes, Last-line Yes
+       DATA WRTONE
+* First-line Yes, Last-line No
+       DATA WRTFST
+* First-line No, Last-line Yes
+       DATA WRTLST
+* First-line No, Last-line No
+       DATA WRTMID
+
+*
+* Decide wether or not to continue
+* by drawing the next paragraph.
+*
+NXTPAR MOV  R11,R12
+* If paragraph line-count changed,
+* continue drawing the screen.
+       MOV  *R13,R0
+       COC  @STSPAR,R0
+       JEQ  NXT1
+       COC  @STSENT,R0
+       JEQ  NXT1
+       COC  @STSWIN,R0
+       JEQ  NXT1
+* Don't write next paragraph
+NXTNO  LI   R0,-1
+       B    *R12
+* Write next paragraph
+NXTYES S    R0,R0
+       B    *R12
+*
+NXT1
+* Don't read past document-end
+       MOV  @LINLST,R0
+       C    R9,*R0
+	   JL   NXTYES
+* Clear remaining screen
+	   LI   R0,24
+       S    R10,R0
+	   MPY  @FORTY,R0
+	   BL   @VDPSPC
+*
+       JMP  NXTNO
 
 *
 * WRTFST
