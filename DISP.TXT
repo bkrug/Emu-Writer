@@ -81,7 +81,6 @@ DISP8  INC  R10
        CLR  R2
 * Continue with next paragraph?
        BL   @NXTPAR
-	   MOV  R0,R0
        JEQ  DISP1
 *
 DISP9  RTWP
@@ -107,10 +106,10 @@ NXTPAR MOV  R11,R12
        COC  @STSWIN,R0
        JEQ  NXT1
 * Don't write next paragraph
-NXTNO  SETO R0
+NXTNO  LI   R0,-1
        B    *R12
 * Write next paragraph
-NXTYES CLR  R0
+NXTYES S    R0,R0
        B    *R12
 *
 NXT1
