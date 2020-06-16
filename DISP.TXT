@@ -214,40 +214,6 @@ ALGLST
        DATA PMIDLN
 
 *
-* Decide wether or not to continue
-* by drawing the next paragraph.
-*
-NXTPAR MOV  R11,R12
-* If paragraph line-count changed,
-* continue drawing the screen.
-       MOV  *R13,R0
-       COC  @STSPAR,R0
-       JEQ  NXT1
-       COC  @STSENT,R0
-       JEQ  NXT1
-       COC  @STSWIN,R0
-       JEQ  NXT1
-* Don't write next paragraph
-NXTNO  LI   R0,-1
-       B    *R12
-* Write next paragraph
-NXTYES S    R0,R0
-       B    *R12
-*
-NXT1
-* Don't read past document-end
-       MOV  @LINLST,R0
-       C    R9,*R0
-	   JL   NXTYES
-* Clear remaining screen
-	   LI   R0,24
-       S    R10,R0
-	   MPY  @FORTY,R0
-	   BL   @VDPSPC
-*
-       JMP  NXTNO
-
-*
 * WRTLIN
 *
 * Write one line of text onto screen.
@@ -277,6 +243,24 @@ WRTL2
        BL   @VDPSPC
 *
        B    *R12
+
+*
+* PONELN
+* Set parameters for writing a one line
+* paragraph
+*
+* Input:
+*  R3 - paragraph text address
+*  R4 - length or paragraph
+* Output:
+* R0, R1
+PONELN MOV  R3,R0
+       A    @WINOFF,R0
+* Let R1 be the length of paragraph 
+* minus window offset
+       MOV  R4,R1
+       S    @WINOFF,R1
+       RT
 
 *
 * PFSTLN
@@ -340,23 +324,39 @@ PLSTLN
        S    *R5,R1
        S    @WINOFF,R1
        RT
-       
+
 *
-* PONELN
-* Set parameters for writing a one line
-* paragraph
+* Decide wether or not to continue
+* by drawing the next paragraph.
 *
-* Input:
-*  R3 - paragraph text address
-*  R4 - length or paragraph
-* Output:
-* R0, R1
-PONELN MOV  R3,R0
-       A    @WINOFF,R0
-* Let R1 be the length of paragraph 
-* minus window offset
-       MOV  R4,R1
-       S    @WINOFF,R1
-       RT
+NXTPAR MOV  R11,R12
+* If paragraph line-count changed,
+* continue drawing the screen.
+       MOV  *R13,R0
+       COC  @STSPAR,R0
+       JEQ  NXT1
+       COC  @STSENT,R0
+       JEQ  NXT1
+       COC  @STSWIN,R0
+       JEQ  NXT1
+* Don't write next paragraph
+NXTNO  LI   R0,-1
+       B    *R12
+* Write next paragraph
+NXTYES S    R0,R0
+       B    *R12
+*
+NXT1
+* Don't read past document-end
+       MOV  @LINLST,R0
+       C    R9,*R0
+	   JL   NXTYES
+* Clear remaining screen
+	   LI   R0,24
+       S    R10,R0
+	   MPY  @FORTY,R0
+	   BL   @VDPSPC
+*
+       JMP  NXTNO
 
        END
