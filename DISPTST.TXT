@@ -1582,12 +1582,14 @@ STACK
 * Mocked methods
 *
 
+SAVER0 DATA 0
+SAVER2 DATA 0
+
 *
 * Set VDP write address 
 *
 * Input:
 * R0 - VDP address
-SAVER0 DATA 0
 VDPADR MOV  R0,@SAVER0
        AI   R0,MKSCRN
        MOV  R0,@VADR
@@ -1604,7 +1606,6 @@ VDPADR MOV  R0,@SAVER0
 * R0 - original value + R1's value
 * R1 - 0
 * R2
-SAVER2 DATA 0
 VDPWRT
 * Save R2 incase caller needs it later
        MOV  R2,@SAVER2
@@ -1622,8 +1623,8 @@ WDPW1  CI   R2,SCRNED
 * Update next write position
        MOV  R2,@VADR
 *
-       MOV  @SAVER2,R2
-WDPWED RT
+WDPWED MOV  @SAVER2,R2
+       RT
 
 * Report logic error
 * Wrote past end of the screen
@@ -1647,6 +1648,9 @@ WDPWME
 * R1 - 0
 * R2
 VDPSPC
+* Save R2 incase caller needs it later
+       MOV  R2,@SAVER2
+*
        LI   R0,>2000
 * Get fake VDP address
        MOV  @VADR,R2
@@ -1662,7 +1666,7 @@ VDPS1  CI   R2,SCRNED
 * Update next write position
        MOV  R2,@VADR
 *
-       MOV  @SAVER2,R2
-VDPSED RT
+VDPSED MOV  @SAVER2,R2
+       RT
 
        END
