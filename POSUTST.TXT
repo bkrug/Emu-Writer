@@ -160,7 +160,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * as the screen, don't scroll down.
        DATA WDWN5
        TEXT 'WDWN5 '
-
+* When cursor-21 lines points to before
+* the document start, don't scroll up.
+       DATA WDWN6
+       TEXT 'WDWN6 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1547,6 +1550,53 @@ WDWN5
        BLWP @AEQ
 *
        LI   R0,4
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+	   
+* When cursor-21 lines points to before
+* the document start, don't scroll up.
+WDWN6
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,3
+       MOV  R0,@CHRPAX
+* Pretend that this paragraph and line
+* are 21 lines before the cursor
+       LI   R0,-1
+       MOV  R0,@MCKPAR
+       LI   R0,0
+       MOV  R0,@MCKLIN
+* Pretend that this is the first line
+* and paragraph on screen.
+       LI   R0,0
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN       
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window
+* didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
+       LI   R0,0
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,0
        MOV  @WINLIN,R1
        LI   R2,WUPM2
        LI   R3,WUPM2E-WUPM2
