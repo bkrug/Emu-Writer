@@ -52,7 +52,6 @@ DISP1  MOV  R9,R3
 * Decrease remaining paragraph-lines
 DISP2  DEC  R6	   
 * Write a row of text
-       BL   @GETALG	   
        BL   @WRTLIN
 * Track screen-row
        INC  R10
@@ -181,6 +180,38 @@ PARADR SLA  R3,1
        RT
 
 *
+* WRTLIN
+*
+* Write one line of text onto screen.
+*
+* Input:
+* R7 - address of parameter algorithm
+*
+WRTLIN MOV  R11,R12
+* Set R0 & R1 parameters for starting
+* position and length of text
+       BL   @GETALG	   
+       BL   *R7
+* Length must be in 0-40 range
+       MOV  R1,R1
+       JGT  WRTL1
+       CLR  R1
+WRTL1  CI   R1,SCRNWD
+       JLE  WRTL2
+       LI   R1,SCRNWD
+WRTL2
+* Write visible chars to screen.
+       MOV  R1,R7
+       BL   @VDPWRT
+* Write trailing spaces
+       MOV  R7,R1
+       NEG  R1
+       AI   R1,SCRNWD
+       BL   @VDPSPC
+*
+       B    *R12
+
+*
 * Get algorithm appropriate for
 * setting starting position and length
 * parameters for writing
@@ -212,37 +243,6 @@ ALGLST
        DATA PLSTLN
 * First-line No, Last-line No
        DATA PMIDLN
-
-*
-* WRTLIN
-*
-* Write one line of text onto screen.
-*
-* Input:
-* R7 - address of parameter algorithm
-*
-WRTLIN MOV  R11,R12
-* Set R0 & R1 parameters for starting
-* position and length of text
-       BL   *R7
-* Length must be in 0-40 range
-       MOV  R1,R1
-       JGT  WRTL1
-       CLR  R1
-WRTL1  CI   R1,SCRNWD
-       JLE  WRTL2
-       LI   R1,SCRNWD
-WRTL2
-* Write visible chars to screen.
-       MOV  R1,R7
-       BL   @VDPWRT
-* Write trailing spaces
-       MOV  R7,R1
-       NEG  R1
-       AI   R1,SCRNWD
-       BL   @VDPSPC
-*
-       B    *R12
 
 *
 * PONELN
