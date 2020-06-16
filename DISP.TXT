@@ -327,8 +327,14 @@ WRTL2
 *  R5 - wrap list element address
 * Output:
 * R0, R1, R5
-PFSTLN CLR  R0
-       JMP  PMLN0      
+PFSTLN MOV  R3,R0
+       A    @WINOFF,R0
+*
+       INCT R5
+       MOV  *R5,R1
+       S    @WINOFF,R1
+*
+       RT
       
 *
 * PMIDLN
@@ -342,11 +348,12 @@ PFSTLN CLR  R0
 * Output:
 * R0, R1, R5
 PMIDLN MOV  *R5,R0
-       CLR  R1
-       S    *R5,R1
-PMLN0  INCT R5
        A    R3,R0
        A    @WINOFF,R0
+*
+       CLR  R1
+       S    *R5,R1
+       INCT R5
        A    *R5,R1
        S    @WINOFF,R1
        RT
@@ -362,17 +369,15 @@ PMLN0  INCT R5
 *  R5 - wrap list element address
 * Output:
 * R0, R1, R5
-*
-* Let R1 be the length of last line 
-* minus window offset, but between 0
-* and 40
-PLSTLN MOV  R4,R1
-       S    *R5,R1
-       S    @WINOFF,R1
-*
-PLLN2  MOV  *R5,R0
+PLSTLN 
+       MOV  *R5,R0
        A    R3,R0
        A    @WINOFF,R0
+* Let R1 be the length of last line 
+* minus window offset
+       MOV  R4,R1
+       S    *R5,R1
+       S    @WINOFF,R1
        RT
        
 *
@@ -388,8 +393,7 @@ PLLN2  MOV  *R5,R0
 PONELN MOV  R3,R0
        A    @WINOFF,R0
 * Let R1 be the length of paragraph 
-* minus window offset, but between
-* 0 and 40
+* minus window offset
        MOV  R4,R1
        S    @WINOFF,R1
        RT
