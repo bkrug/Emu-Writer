@@ -53,7 +53,7 @@ DISP1  MOV  R9,R3
 DISP2  DEC  R6	   
 * Write a row of text
        BL   @GETALG	   
-       BL   *R7
+       BL   @WRTLIN
 * Track screen-row
        INC  R10
        CI   R10,24
@@ -181,11 +181,13 @@ PARADR SLA  R3,1
        RT
 
 *
-* Get write algorithm appropriate for
+* Get algorithm appropriate for
+* setting starting position and length
+* parameters for writing
 * Single-line paragraph, first-line,
 * mid-line, or last-line
 *
-* Let R7 = address of write algorithm
+* Let R7 = address of param algorithm
 *
 GETALG LI   R7,ALGLST
 * If R2 != 0, add 4 to R7
@@ -200,16 +202,16 @@ ALG1   MOV  R6,R6
 ALG2   MOV  *R7,R7
 *
        RT
-	   
+
 ALGLST
 * First-line Yes, Last-line Yes
-       DATA WRTONE
+       DATA PONELN
 * First-line Yes, Last-line No
-       DATA WRTFST
+       DATA PFSTLN
 * First-line No, Last-line Yes
-       DATA WRTLST
+       DATA PLSTLN
 * First-line No, Last-line No
-       DATA WRTMID
+       DATA PMIDLN
 
 *
 * Decide wether or not to continue
@@ -246,58 +248,17 @@ NXT1
        JMP  NXTNO
 
 *
-* WRTFST
-* Write first line within a paragraph
-*
-* Input:
-* R3,R4,R5
-WRTFST MOV  R11,R12
-* Write text
-       BL   @PFSTLN
-       JMP  WRTLIN
-
-*
-* WRTMID
-* Write one line within a paragraph
-*
-* Input:
-* R3,R4,R5
-WRTMID MOV  R11,R12
-* Write text
-       BL   @PMIDLN
-       JMP  WRTLIN
-
-*
-* WRTLST
-* Write last line within a paragraph
-*
-* Input:
-* R3,R4,R5
-WRTLST MOV  R11,R12
-* Write text
-       BL   @PLSTLN
-       JMP  WRTLIN
-       
-*
-* WRTONE
-* Write a one line paragraph
-*
-* Input:
-* R3,R4,R5
-WRTONE MOV  R11,R12
-* Write text
-       BL   @PONELN
-       JMP  WRTLIN
-
-*
 * WRTLIN
 *
 * Write one line of text onto screen.
 *
-* R0 already contains the address of
-* visible text
-* R1 already contains the length
-WRTLIN
+* Input:
+* R7 - address of parameter algorithm
+*
+WRTLIN MOV  R11,R12
+* Set R0 & R1 parameters for starting
+* position and length of text
+       BL   *R7
 * Length must be in 0-40 range
        MOV  R1,R1
        JGT  WRTL1
