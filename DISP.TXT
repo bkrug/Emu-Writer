@@ -57,6 +57,8 @@ DISP2  DEC  R6
        INC  R10
        CI   R10,24
        JHE  DISP3
+* No longer on first paragraph-line
+       INC  R2
 * Check if this is last paragraph-line
        MOV  R6,R6
        JNE  DISP2
@@ -128,7 +130,7 @@ SCRNRW MOV  R11,R12
        JEQ  SROW2
 *
        MOV  @WINPAR,R1
-* Let R2 total screen rows to skip
+* Let R10 total screen rows to skip
        MOV  @WINLIN,R10
        NEG  R10
 * Let R3 = paragraph address
