@@ -31,7 +31,7 @@ DISP   DATA DISPWS,DISP+4
        C    @WINPAR,R9
        JNE  DISP1
        MOV  @WINLIN,R2
-* Let R3 = address of cursor's paragraph
+* Let R3 = address of starting paragraph
 DISP1  MOV  R9,R3
        BL   @PARADR
 * Let R3 = address of paragraph text
@@ -49,8 +49,9 @@ DISP1  MOV  R9,R3
        A    R2,R5
 *
        INC  R6
+DISP2
 * Decrease remaining paragraph-lines
-DISP2  DEC  R6	   
+       DEC  R6	   
 * Write a row of text
        BL   @WRTLIN
 * Track screen-row
@@ -187,7 +188,7 @@ PARADR SLA  R3,1
 * Write one line of text onto screen.
 *
 * Input:
-* R7 - address of parameter algorithm
+* R2,R3,R4,R5,R6
 *
 WRTLIN MOV  R11,R12
 * Set R0 & R1 parameters for starting
@@ -220,7 +221,13 @@ WRTL2
 * Single-line paragraph, first-line,
 * mid-line, or last-line
 *
-* Let R7 = address of param algorithm
+* Input:
+* R2 - number of paragraph-lines before 
+*      current line
+* R6 - number of paragraph-lines after
+*      current line
+* Output
+* R7 - address of parameter routine
 *
 GETALG LI   R7,ALGLST
 * If R2 != 0, add 4 to R7
