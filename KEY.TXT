@@ -1,11 +1,11 @@
-       DEF  RUNTST
-	   DEF  KEYDVC,KEYPRS,USRISR
-	   DEF  NOKEY
+	   DEF  KEYDVC,KEYPRS
 	   DEF  KEYINT
 *
        REF  VSBW,KSCAN,VMBW
 	   REF  TIMER,PREVKY
 	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
+	   REF  NOKEY
+	   REF  USRISR
 
 * Keyboard device to be checked
 KEYDVC EQU  >8374
@@ -13,16 +13,11 @@ KEYDVC EQU  >8374
 KEYPRS EQU  >8375
 * Key status
 KEYSTS EQU  >837C
-* Address defining address of user-
-* defined service routine
-USRISR EQU  >83C4
 
 * The delay before initial repeat
 WAIT1  DATA >18
 * The delay before additional repeats
 WAIT2  DATA >4
-
-NOKEY  BYTE >FF
 
 * Use an interupt to record key presses
 * so that if the computer is working on

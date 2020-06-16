@@ -101,6 +101,7 @@ WINPAR DATA 0
 * First line of paragraph on screen
 WINLIN DATA 0
 
+       TEXT 'KEY.'
 * KEY.TXT
 * Time remaining before character repeat
 TIMER  DATA 0
@@ -108,6 +109,7 @@ TIMER  DATA 0
 * Wait a while before letting this key
 * repeat.
 PREVKY BYTE 0
+       EVEN
 * First address of key buffer
 KEYSTR
 * Buffer to store keypresses

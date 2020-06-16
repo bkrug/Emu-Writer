@@ -129,6 +129,12 @@ CHKDWN
        MOV  @LININX,R1
 	   LI   R2,21
 	   BLWP @LOOKUP
+* If that moves us past document start,
+* set hypothetical paragraph to 0.
+       CI   R0,-1
+	   JNE  CHKD1
+	   CLR  R0
+CHKD1
 * If that hypothetical paragraph and
 * line is later in the document than
 * the current Window-paragraph and

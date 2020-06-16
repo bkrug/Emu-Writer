@@ -1,3 +1,9 @@
+*
+* Routine for redisplaying screen text
+*
+*Input:
+* R0 - Document status
+*
        DEF  DISP
 * Methods for writing to VDP
        REF  VDPADR,VDPWRT,VDPSPC
