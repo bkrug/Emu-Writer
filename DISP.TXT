@@ -298,6 +298,15 @@ WRTONE MOV  R11,R12
 * visible text
 * R1 already contains the length
 WRTLIN
+* Length must be in 0-40 range
+       MOV  R1,R1
+       JGT  WRTL1
+       CLR  R1
+WRTL1  CI   R1,SCRNWD
+       JLE  WRTL2
+       LI   R1,SCRNWD
+WRTL2
+* Write visible chars to screen.
        MOV  R1,R7
        BL   @VDPWRT
 * Write trailing spaces
@@ -340,12 +349,6 @@ PMLN0  INCT R5
        A    @WINOFF,R0
        A    *R5,R1
        S    @WINOFF,R1
-       JGT  PMLN1
-       CLR  R1
-PMLN1  CI   R1,SCRNWD
-       JLE  PMLN2
-       LI   R1,SCRNWD
-PMLN2
        RT
 
 *
@@ -366,11 +369,6 @@ PMLN2
 PLSTLN MOV  R4,R1
        S    *R5,R1
        S    @WINOFF,R1
-       JGT  PLLN1
-       CLR  R1
-PLLN1  CI   R1,SCRNWD
-       JLE  PLLN2
-       LI   R1,SCRNWD
 *
 PLLN2  MOV  *R5,R0
        A    R3,R0
@@ -394,12 +392,6 @@ PONELN MOV  R3,R0
 * 0 and 40
        MOV  R4,R1
        S    @WINOFF,R1
-       JGT  POLN1
-       CLR  R1
-POLN1  CI   R1,SCRNWD
-       JLE  POLN2
-       LI   R1,SCRNWD
-POLN2
        RT
 
        END
