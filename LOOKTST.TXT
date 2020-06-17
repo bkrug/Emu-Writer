@@ -1,7 +1,7 @@
        DEF  TSTLST,RSLTFL
        REF  AEQ
-* Update visual position indicators
-       REF  LOOKUP
+*
+       REF  LOOKUP,LNDIFF
 *
        REF  LINLST
        REF  PARINX,CHRPAX
@@ -32,7 +32,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Look backwards beyond document start.
        DATA UP5
        TEXT 'UP5   '
-
+* Calculate difference between lines
+* in different paragraphs.
+       DATA DIFF1
+       TEXT 'DIFF1 '
 
 
 * Calculate relative document-line 
@@ -257,7 +260,6 @@ UP5
 *
        RT
 
-
 *Line List
 UP2L   DATA 4,1
        DATA UP2P0
@@ -305,5 +307,32 @@ UP2W3  DATA 5,1
        DATA 70+68+72
        DATA 70+68+72+69
        DATA 70+68+72+69+66
+
+*
+* Count the number of lines between two
+* lines in different paragraphs.
+* (Find the line difference)
+*
+DIFF1  
+* Arrange
+       LI   R0,UP2L
+       MOV  R0,@LINLST
+* Act
+       LI   R0,1
+       LI   R1,4
+       LI   R2,3
+       LI   R3,1
+       BLWP @LNDIFF
+* Assert
+       MOV  R0,R1
+       LI   R0,8
+       LI   R2,DFFM1
+       LI   R3,DFFM1E-DFFM1
+       BLWP @AEQ
+*
+       RT
+*
+DFFM1  TEXT 'Line count is wrong.'
+DFFM1E
        
        END

@@ -1,4 +1,4 @@
-       DEF  LOOKUP
+       DEF  LOOKUP,LNDIFF
 *
        REF  LOOKWS,LINLST
 *
@@ -55,7 +55,7 @@ UPLOOP C    R3,R2
        DECT R4
        DEC  R0
 * If moving past document-start, quit.
-	   JLT  UPDONE
+       JLT  UPDONE
 * Let R5 be the address of a paragraph
        MOV  *R4,R5
 * Let R5 be the address of the wrap list
@@ -86,5 +86,7 @@ UPDONE
 *
        RTWP
 
-       
+LNDIFF DATA LOOKWS,LNDIFF+4
+       RTWP
+
        END
