@@ -36,7 +36,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * in different paragraphs.
        DATA DIFF1
        TEXT 'DIFF1 '
-
+* Calculate difference between lines
+* in same paragraphs.
+       DATA DIFF2
+       TEXT 'DIFF2 '
 
 * Calculate relative document-line 
 * looking forwards within the same
@@ -334,5 +337,29 @@ DIFF1
 *
 DFFM1  TEXT 'Line count is wrong.'
 DFFM1E
-       
+
+*
+* Count the number of lines between two
+* lines in same paragraphs.
+* (Find the line difference)
+*
+DIFF2
+* Arrange
+       LI   R0,UP2L
+       MOV  R0,@LINLST
+* Act
+       LI   R0,1
+       LI   R1,2
+       LI   R2,1
+       LI   R3,5
+       BLWP @LNDIFF
+* Assert
+       MOV  R0,R1
+       LI   R0,3
+       LI   R2,DFFM1
+       LI   R3,DFFM1E-DFFM1
+       BLWP @AEQ
+*
+       RT
+
        END

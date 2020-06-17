@@ -101,7 +101,11 @@ UPDONE
 *Output:
 * R0 - Line Count
 LNDIFF DATA LOOKWS,LNDIFF+4
-*
+* Let R0 be the destination paragraph
+* Let R1 be lines to ignore in 
+*        destination paragraph
+* Let R2 be current paragraph index
+* Let R3 be number of lines counted
        MOV  *R13+,R0
        MOV  *R13+,R1
        MOV  *R13+,R2
@@ -113,12 +117,10 @@ LNDIFF DATA LOOKWS,LNDIFF+4
        SLA  R4,1
        C    *R4+,*R4+
        A    @LINLST,R4
-* Let R6 be number of lines counted
-       MOV  R3,R6
 * Stop when R2 < R0
 DIF1   C    R2,R0
        JLE  DIF2
-*
+* Move to previous paragraph
        DECT R4
        DEC  R2
 * Let R5 be the address of a paragraph
@@ -130,12 +132,13 @@ DIF1   C    R2,R0
        MOV  *R5,R5
        INC  R5
 * Increase the line-count
-       A    R5,R6
+       A    R5,R3
        JMP  DIF1
-*
-DIF2   S    R1,R6
-*
-       MOV  R6,*R13
+* Subtract paragraph-lines of earlier
+* paragraph
+DIF2   S    R1,R3
+* Return result
+       MOV  R3,*R13
        RTWP
 
        END
