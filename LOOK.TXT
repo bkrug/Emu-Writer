@@ -86,7 +86,56 @@ UPDONE
 *
        RTWP
 
+*
+* Find the number of document lines 
+* between two paragraph lines.
+*
+* R0&R1 must point to earlier document
+* line than R2&R3.
+*
+*Input:
+* R0 - Paragraph Index 1
+* R1 - Paragraph-Line 1
+* R2 - Paragraph Index 2
+* R3 - Paragraph-Line 2
+*Output:
+* R0 - Line Count
 LNDIFF DATA LOOKWS,LNDIFF+4
+*
+       MOV  *R13+,R0
+       MOV  *R13+,R1
+       MOV  *R13+,R2
+       MOV  *R13+,R3
+       AI   R13,-8
+* Let R4 be an address in the paragraph
+* list
+       MOV  R2,R4
+       SLA  R4,1
+       C    *R4+,*R4+
+       A    @LINLST,R4
+* Let R6 be number of lines counted
+       MOV  R3,R6
+* Stop when R2 < R0
+DIF1   C    R2,R0
+       JLE  DIF2
+*
+       DECT R4
+       DEC  R2
+* Let R5 be the address of a paragraph
+       MOV  *R4,R5
+* Let R5 be the address of the wrap list
+       INCT R5
+       MOV  *R5,R5
+* Let R5 be the number of paragraph-lines
+       MOV  *R5,R5
+       INC  R5
+* Increase the line-count
+       A    R5,R6
+       JMP  DIF1
+*
+DIF2   S    R1,R6
+*
+       MOV  R6,*R13
        RTWP
 
        END
