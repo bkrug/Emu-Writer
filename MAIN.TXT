@@ -10,7 +10,8 @@
 	   REF  BUFINT,BUFALC,BUFCPY
 	   REF  ARYALC,ARYADD
 	   REF  LINLST,MGNLST,FMTLST
-	   REF  VDPTXT
+	   REF  VDPTXT,VDPADR,VDPWRT
+       REF  CURTIM,CUROLD,CURRPL,CURSCN
 *
        REF  VMBW
 	   
@@ -38,6 +39,7 @@ MAIN
 * Redisplay the screen
        LIMI 0
 	   BLWP @DISP
+	   BL   @DRWCUR
 	   LIMI 2
 *
 	   JMP  MAIN
@@ -107,5 +109,22 @@ INTKEY
        MOVB R0,@KEYDVC
 *
        RT
+
+*
+* Draw the cursor on screen
+*
+DRWCUR MOV  R11,R12
+*
+       MOV  @CURSCN,R0
+       BL   @VDPADR
+*
+	   LI   R0,CURCHR
+	   LI   R1,1
+	   BL   @VDPWRT
+*
+	   B    *R12
+
+CURCHR TEXT '_'
+       EVEN
 
        END
