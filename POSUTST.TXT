@@ -1661,9 +1661,8 @@ WCURME EVEN
 MCKCNT DATA 0
 LNDIFF DATA LOOKWS,LNDIFF+4
 * If current test did not specify
-* mock values, then return 12.
-       LI   R0,12
-       MOV  R0,*R13
+* mock values, then return 0.
+       CLR  *R13
        MOV  @MCKCNT,@MCKCNT
        JEQ  DIFFRT
 * Pass mock return values
@@ -1698,6 +1697,16 @@ CUR1
        CLR  R0
        BLWP @POSUPD
 * Assert
+       LI   R0,47
+	   MOV  @CHRLIX,R1
+       LI   R2,WCURM
+       LI   R3,7
+       BLWP @AEQ
+       LI   R0,20
+	   MOV  @WINOFF,R1
+       LI   R2,WCURM
+       LI   R3,14
+       BLWP @AEQ
 * Cursor should be at 15th row of text,
 * 17th row on screen, 27th column
        LI   R0,16*40+27

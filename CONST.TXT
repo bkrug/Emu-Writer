@@ -1,5 +1,5 @@
        DEF  FMTLEN,MGNLEN,PGWDTH
-       DEF  SIX
+       DEF  SIX,FORTY
        DEF  USRISR
        DEF  STSTYP,STSENT,STSPAR,STSWIN
        DEF  ERRMEM
@@ -29,6 +29,7 @@ PGWDTH DATA 8*120
 USRISR EQU  >83C4
 
 SIX    DATA 6
+FORTY  DATA 40
 
 * Document status codes
 * Text Typed

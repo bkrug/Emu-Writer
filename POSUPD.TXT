@@ -2,15 +2,17 @@
 *
        REF  POSUWS
 *
-       REF  LOOKUP
+       REF  LOOKUP,LNDIFF
 *
        REF  STSWIN
 *
        REF  LINLST
        REF  ARYADR
+       REF  FORTY
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
+       REF  CURSCN
 
        TEXT 'POSUPD' 
 *
@@ -22,6 +24,7 @@ POSUPD DATA POSUWS,POSUPD+4
        BL   @UPINDX
        BL   @UPWOFF
        BL   @UPWTOP
+	   BL   @UPCURS
        RTWP
       
 * Width of screen in characters
@@ -150,5 +153,30 @@ UPWDWN MOV  R0,@WINPAR
        SOC  @STSWIN,*R13
 *
 UPWRT  RT
+
+*
+* Update cursor's position on screen
+*
+UPCURS 
+* Find number of paragraph-lines 
+* between cursor's line
+       MOV  @WINPAR,R0
+       MOV  @WINLIN,R1
+       MOV  @PARINX,R2
+       MOV  @LININX,R3
+       BLWP @LNDIFF
+* Increase R0 to account for screen
+* header rows
+       INCT R0
+* Let R1 = number of screen positions
+* in lines
+	   MPY  @FORTY,R0
+* Add screen positions for current line
+       A    @CHRLIX,R1
+       S    @WINOFF,R1
+* Save result
+       MOV  R1,@CURSCN
+*
+       RT
 
        END
