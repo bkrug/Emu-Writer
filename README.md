@@ -9,7 +9,7 @@ This project is a strange form of fun and a vanity project, not something that i
 
 ### Assembled files
 
-There are also several files in the source code which will load several assembled files at once.
+There are several files in the source code which will load several assembled files at once.
 See any file that ends "LOAD.TXT" as an example.
 The laod files assume that all files are assembled with a ".O" extension and are located on DSK2.
 So, MAIN.TXT is assembled into MAIN.O.
