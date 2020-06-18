@@ -1,8 +1,7 @@
        DEF  START
 *
        REF  VSBW,KSCAN,VMBW
-	   REF  KEYDVC,KEYPRS,USRISR
-	   REF  NOKEY
+	   REF  KEYDVC,USRISR
 	   REF  KEYINT
 	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 	   REF  MEMBEG,MEMEND
@@ -42,15 +41,6 @@ MAIN
 	   LIMI 2
 *
 	   JMP  MAIN
-
-*
-	   LI   R0,0
-	   LI   R1,MSG
-	   LI   R2,MSGEND-MSG
-	   BLWP @VMBW
-LOOP   JMP  LOOP
-MSG    TEXT 'GOT HERE'
-MSGEND EVEN
 
 *
 * Initialize Memory
@@ -115,9 +105,7 @@ INTKEY
 * Specify whole keyboard
        CLR  R0
        MOVB R0,@KEYDVC
-* Ignore keys pressed before
-* running the program
-       MOVB @NOKEY,@KEYPRS
+*
        RT
 
        END
