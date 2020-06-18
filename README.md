@@ -7,42 +7,33 @@ I hope that it will be better than TI-Writter/Word-Processor,
 but it's not going to be better than a product available to you to run in Windows or Linux.
 This project is a strange form of fun and a vanity project, not something that is practicle.
 
-### SCRNWRT
+### Assembled files
 
-SCRNWRT.TXT - a module that takes strings from the text buffer and creates a version that is viewable on screen.
-It takes format information like bold, underline, and italic and inserts markers to represent the point at which the format changes.
+There are also several files in the source code which will load several assembled files at once.
+See any file that ends "LOAD.TXT" as an example.
+The laod files assume that all files are assembled with a ".O" extension and are located on DSK2.
+So, MAIN.TXT is assembled into MAIN.O.
 
-SCRNTST.TXT - unit tests for SCRNWRT.TXT. 
-If you assemble SCRNWRT and SCRNTST and have TESTUTIL.O, you can load all three files from Load and Run and Run RUNTST.
+### Unit Tests
 
-SCRNLOAD.TXT - loads SCRNWRT.O, SCRNTST.O, and some other object code and runs the tests for you.
-After loading, use LTEST to run.
+Files with "TST" in their name contain unit tests.
+To run any particluar set of unit tests, you can run a file whose name ends "LOAD.O" form E/A option 3.
+Press ENTER and type "LTEST" as the program name.
 
-### WRAP
+For example, DISPTST.TXT contains tests that test the logic in DISP.TXT. 
+DISPLOAD.TXT contains code to load DISP.O and its dependencies from DSK2.
+DISPLOAD.TXT contains a list of all the required files, and thus can be used to decide which files to assemble.
 
-WRAP.TXT - a routine to wrap text. This code depends on ARRAY.TXT and MEMBUF.TXT.
+There are some files TESTUTIL.TXT and TESTFRAME.TXT in the source code.
+TESTUTIL.TXT is the old test framework.
+TESTFRAME.TXT is the new test framework.
 
-WRAPTST.TXT - unit tests for WRAP.TXT
+### Running the program
 
-WRAPLOAD.TXT - loads WRAP.O, WRAPTST.O, and some other object code.
-After loading, use LTSEST to run.
-
-### KEY
-
-KEY.TXT - contains a routine that takes input from the keyboard and places it in a key-press buffer.
-If some part of the program is processing data for a long time, a user's keystrokes will still be stored and processed.
-The routine is meant to be run from an interrupt.
-
-KEYTST.TXT - a demo of the routine in KEY.TXT.
-It displays the contents of the key-press buffer on the top row of the screen.
-On the rest of the screen it shows the contents being copied from the buffer to another area of memory.
-The demo uses a delay to simulate being busy.
-This demonstrates copying the key presses out of the buffer without loosing them every once in a while.
-
-### INPUT
-
-INPUT.TXT - a routine that reads the contents of the key-press buffer and processes different key strokes.
-This may include adding text to a string, or using an arrow key.
+To run the program, assemble all files that are not unit test files.
+You don't need to assemble any "LOAD.TXT" files except "MAINLOAD.TXT".
+Load "DSK2.MAINLOAD.O" from E/A option 3.
+Enter "LTEST" as the program name.
 
 ### VAR & CONST
 
@@ -52,5 +43,5 @@ VAR.TXT - All areas of memory that can change should ideally be located here.
 If the finished program is small enough, then I can simulate a ROM cartridge for most of the code.
 But variables and workspaces will still need to be stored in the memory expansion RAM.
 
-MEMBUF.O - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
-This is a routine useful for storing things like strings.
+MEMBUF.O and ARRAY.O - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
+These contain routines useful for storing things like strings and arrays.
