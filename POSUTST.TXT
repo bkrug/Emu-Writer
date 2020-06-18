@@ -1,6 +1,6 @@
        DEF  TSTLST,RSLTFL
 * Mock of code from LOOK.TXT
-       DEF  LOOKUP
+       DEF  LOOKUP,LNDIFF
 * Assert Routine
        REF  AEQ,AZC,AOC
 * Update visual position indicators
@@ -12,6 +12,7 @@
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
+       REF  CURSCN
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Calculate LININX and CHRLIX
@@ -164,6 +165,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * the document start, don't scroll up.
        DATA WDWN6
        TEXT 'WDWN6 '
+* Calculate cursor's screen position
+       DATA CUR1
+       TEXT 'CUR1  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1602,5 +1606,106 @@ WDWN6
        LI   R3,WUPM2E-WUPM2
        BLWP @AEQ
        RT
-       
+
+*Line List
+CUR1L  DATA 4,1
+       DATA CUR1P0
+       DATA CUR1P1
+       DATA CUR1P2
+       DATA CUR1P3
+       DATA FAKEAD
+       DATA FAKEAD
+CUR1LE
+*paragraphs
+CUR1P0 DATA 68+71+9
+       DATA CUR1W0
+       TEXT 'In the beg...end.'
+       EVEN
+CUR1P1 DATA 70+66+69+72+67+71+24
+       DATA CUR1W1
+       TEXT 'In the beg...end.'
+       EVEN
+CUR1P2 DATA 69+71+65+42
+       DATA CUR1W2
+       TEXT 'In the beg...end.'
+       EVEN
+CUR1P3 DATA 70+68+72+69+66+4
+       DATA CUR1W3
+       TEXT 'In the beg...end.'
+       EVEN
+*A wrap list
+CUR1W0 DATA 2,1
+       DATA 68
+       DATA 68+71
+CUR1W1 DATA 6,1
+       DATA 70
+       DATA 70+66
+       DATA 70+66+69
+       DATA 70+66+69+72
+       DATA 70+66+69+72+67
+       DATA 70+66+69+72+67+71
+CUR1W2 DATA 3,1
+       DATA 69
+       DATA 69+71
+       DATA 69+71+65
+CUR1W3 DATA 5,1
+       DATA 70
+       DATA 70+68
+       DATA 70+68+72
+       DATA 70+68+72+69
+       DATA 70+68+72+69+66
+WCURM  TEXT 'Cursors position on screen is wrong.'
+WCURME EVEN
+
+* Mock of LNDIFF
+MCKCNT DATA 0
+LNDIFF DATA LOOKWS,LNDIFF+4
+* If current test did not specify
+* mock values, then return 12.
+       LI   R0,12
+       MOV  R0,*R13
+       MOV  @MCKCNT,@MCKCNT
+       JEQ  DIFFRT
+* Pass mock return values
+       MOV  @MCKCNT,*R13
+* Reset mock values
+* Next test may not wish to mock this.
+       CLR  @MCKCNT
+DIFFRT RTWP
+
+* Calculate cursor's screen position
+CUR1
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,70+68+47
+       MOV  R0,@CHRPAX
+	   LI   R0,20
+	   MOV  R0,@WINOFF
+* The screen starts on the third line
+* of the first paragraph.
+       LI   R0,0
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN       
+* There should be 14 lines between
+* Para 0 Line 2 & Para 3 Line 2
+       LI   R0,14
+	   MOV  R0,@MCKCNT
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Cursor should be at 15th row of text,
+* 17th row on screen, 27th column
+       LI   R0,16*40+27
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
        END

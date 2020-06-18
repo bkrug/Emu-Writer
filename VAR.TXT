@@ -20,6 +20,7 @@
 * POSUPD.TXT
 	   DEF  LININX,CHRLIX
        DEF  WINOFF,WINPAR,WINLIN
+       DEF  CURSCN
 * KEY.TXT
        DEF  TIMER,PREVKY,KEYBUF
 	   DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
@@ -100,6 +101,8 @@ WINOFF DATA 0
 WINPAR DATA 0
 * First line of paragraph on screen
 WINLIN DATA 0
+* Position of flashing cursor on screen
+CURSCN DATA 0
 
        TEXT 'KEY.'
 * KEY.TXT
