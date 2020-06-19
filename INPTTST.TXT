@@ -15,6 +15,7 @@
 
 * constants
        REF  STSTYP,STSENT,STSPAR,STSWIN
+       REF  STSARW
 
 *
 INSKEY EQU  >04
@@ -397,23 +398,33 @@ TST2   MOV  R11,R12
        LI   R0,TST2M
        LI   R1,TST2ME-TST2M
        BLWP @PRINTL
-	   B    *R12
+       B    *R12
 *
 TST2A  CZC  @STSENT,R5
-	   JEQ  TST2B
+       JEQ  TST2B
        LI   R0,TST2N
        LI   R1,TST2NE-TST2N
        BLWP @PRINTL
-	   B    *R12
+       B    *R12
 *
-TST2B  BL   @PSUCCS
+TST2B  CZC  @STSARW,R5
+       JEQ  TST2C
+       LI   R0,TST2O
+       LI   R1,TST2OE-TST2O
+       BLWP @PRINTL
+       B    *R12
+*
+TST2C  BL   @PSUCCS
 *
        B    *R12
 
 TST2M  TEXT 'Text-Typed bit should have been set.'
 TST2ME
 TST2N  TEXT 'Enter-Pressed bit should not have been set.'
-TST2NE EVEN
+TST2NE 
+TST2O  TEXT 'Arrow-Key-Pressed bit should not '
+       TEXT 'have been set.'
+TST2OE EVEN
 
 * input from the keyboard.
 KEYL2  TEXT ' abcdef '
@@ -725,6 +736,8 @@ TST8   MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
+* Save document status
+       MOV  R0,R5
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
@@ -748,13 +761,21 @@ TST8   MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
+       COC  @STSARW,R5
+       JEQ  TST8A
+       LI   R0,TST8M
+       LI   R1,TST8ME-TST8M
+       BLWP @PRINTL
+*
+TST8A  BL   @PSUCCS
 *
        B    *R12
 
 * input from the keyboard.
 KEYL8  BYTE BCKKEY
 KEYL8E
+TST8M  TEXT 'Arrow-Key-Pressed bit should be set.'
+TST8ME EVEN
 
 * Test 9
 * ------
@@ -824,6 +845,8 @@ TST10  MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
+* Save document status
+       MOV  R0,R5
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
@@ -847,7 +870,13 @@ TST10  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
+       COC  @STSARW,R5
+       JEQ  TST9A
+       LI   R0,TST8M
+       LI   R1,TST8ME-TST8M
+       BLWP @PRINTL
+*
+TST9A  BL   @PSUCCS
 *
        B    *R12
 
@@ -902,7 +931,7 @@ TST11  MOV  R11,R12
        BL   @PSUCCS
 *
        B    *R12
-	   
+       
 * Test 15
 * -------
 * User pressed the forward space and
@@ -1179,7 +1208,7 @@ ERR14M TEXT 'Test 000E failed. '
 ERR14N TEXT '....'
 ERR14O
        EVEN
-	   
+       
 * Test 16
 * -------
 * User presses enter and one letter, but
@@ -1235,9 +1264,9 @@ TST16  MOV  R11,R12
 * should have advanced one.
        MOV  @KEYRD,R0
        LI   R1,KEYSTR
-	   INC  R1
-	   LI   R2,LKEYRD
-	   BL   @COMPVL
+       INC  R1
+       LI   R2,LKEYRD
+       BL   @COMPVL
 *
        BL   @PSUCCS
 *
@@ -1251,7 +1280,7 @@ ERR16  MOV  R1,R0
        LI   R1,ERR16O-ERR16M
        BLWP @PRINTL
 *
-       B    *R12	   
+       B    *R12       
 ERR16M TEXT 'Test 0010 failed. '
        TEXT 'The old paragraph is not empty: '
 ERR16N TEXT '....'
@@ -1292,14 +1321,14 @@ TST17  MOV  R11,R12
        LI   R0,TST17M
        LI   R1,TST17N-TST17M
        BLWP @PRINTL
-	   B    *R12
+       B    *R12
 *
 TST17A COC  @STSENT,R2
-	   JEQ  TST17B
+       JEQ  TST17B
        LI   R0,TST17O
        LI   R1,TST17P-TST17O
        BLWP @PRINTL
-	   B    *R12
+       B    *R12
 *
 TST17B BL   @PSUCCS
 *
@@ -1320,8 +1349,8 @@ TST17P EVEN
 CPYKEY
 * Prohibit keystreams longer than 14 bytes
        CI   R2,14
-	   JL   CPY0
-	   LI   R2,14
+       JL   CPY0
+       LI   R2,14
 *
 CPY0   AI   R2,KEYSTR
        MOV  R2,@KEYRD

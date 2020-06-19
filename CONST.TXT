@@ -2,6 +2,7 @@
        DEF  SIX,FORTY
        DEF  USRISR
        DEF  STSTYP,STSENT,STSPAR,STSWIN
+       DEF  STSARW
        DEF  ERRMEM
        DEF  DELKEY
        DEF  LF,CR,CHRMIN,CHRMAX
@@ -40,6 +41,8 @@ STSENT DATA >2
 STSPAR DATA >4
 * Window Moved
 STSWIN DATA >8
+* Arrow Key Pressed
+STSARW DATA >10
 * Insufficient Memory Error
 ERRMEM DATA >8000
 

@@ -16,6 +16,7 @@
        REF  ENDINP
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSPAR,STSWIN
+	   REF  STSARW
 
 *
 * Process the new keystrokes
@@ -30,6 +31,7 @@ INPUT  DATA INPTWS,INPUT+4
 * Reset Document-Status bits
        SZC  @STSTYP,*R13
 	   SZC  @STSENT,*R13
+	   SZC  @STSARW,*R13
 * Reset the input mode to unspecified
        CLR  @INPTMD
 	   JMP  INPTBG
@@ -104,7 +106,7 @@ INPTNN DATA 0
 MODEXT EQU  1
 INPTXT DATA 1
 * Movement input mode
-MODEMV DATA 2
+MODEMV EQU  2
 INPTMV DATA 2
 
 * Move position in key stream forwards
@@ -144,7 +146,8 @@ BACKS1 DEC  @PARINX
 * beginning of the document.
 BACKS2 CLR  @CHRPAX
        CLR  @PARINX
-BACKRT B    @INPUT3
+BACKRT SOC  @STSARW,*R13
+       B    @INPUT3
 
 *
 * Fordward space by one position
@@ -167,7 +170,8 @@ FWRDS1 INC  @PARINX
 * Apparently we reached end of document.
 FWRDS2 DEC  @PARINX
        DEC  @CHRPAX
-FWRDRT B    @INPUT3
+FWRDRT SOC  @STSARW,*R13
+       B    @INPUT3
 
 *
 * Enter key pressed
