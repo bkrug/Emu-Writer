@@ -4,6 +4,7 @@
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFREE,BUFCPY
+       REF  VDPADR,VDPWRT
 
 * variables just for INPUT
        REF  INPTWS
@@ -17,6 +18,7 @@
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSPAR,STSWIN
 	   REF  STSARW
+       REF  CURINS,CUROVR
 
 *
 * Process the new keystrokes
@@ -119,8 +121,21 @@ INCKRD MOV  @KEYRD,R0
 UPDBUF MOV  R0,@KEYRD
        RT
 
+* Specify address of cursor character
+* pattern.
+INSSWP
+       LI   R0,>7F*8+>801
+	   BL   @VDPADR
 * Toggle insert/overwrite mode.
-INSSWP INV  @INSTMD
+       INV  @INSTMD
+       JEQ  INSSW1
+* Set cursor pattern for overwrite
+	   LI   R0,CUROVR
+       JMP  INSSW2
+* Set cursor pattern for insert
+INSSW1 LI   R0,CURINS
+INSSW2 LI   R1,7
+	   BL   @VDPWRT
        JMP  INPUT3
 
 *
