@@ -14,7 +14,7 @@
        REF  VDPRAD,VDPREA
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
-       REF  CURINS,CHRCUR
+       REF  CURINS,CHRCUR,CURMOD
 *
        
 START
@@ -105,13 +105,20 @@ INTKEY
        MOV  R0,@KEYWRT
        MOV  R0,@KEYRD
 * Define the interupt routine
-       LI   R0,KEYINT
+       LI   R0,INTRPT
        MOV  R0,@USRISR
 * Specify whole keyboard
        CLR  R0
        MOVB R0,@KEYDVC
 *
        RT
+
+INTRPT
+* Decrease cursor time
+       DEC   @CURTIM
+* Call key scanning interupt
+* (which is responsible for return)
+	   B     @KEYINT
 	   
 * 
 * Initialize screen
@@ -128,6 +135,8 @@ INTSCN MOV  R11,R12
 	   LI   R0,CURINS
 	   LI   R1,7
 	   BL   @VDPWRT
+* Set cursor to visible
+       SETO @CURMOD
 * Set position steps
        BLWP @POSUPD
 * Draw cursor and return to caller
@@ -146,15 +155,22 @@ DRWCUR MOV  R11,R12
        COC  @STSWIN,R0
        JEQ  DRWCR8
        COC  @STSARW,R0
-       JNE  DRWCR9
+       JEQ  DRWCR2
+       MOV  @CURTIM,R0
+	   JNE  DRWCR9
+* Switch cursor mode
+       INV  @CURMOD
+       JMP  DRWCR3
 * Replace original character
-       MOV  @CUROLD,R0
+DRWCR2 MOV  @CUROLD,R0
        BL   @VDPADR
        LI   R0,CURRPL
        LI   R1,1
        BL   @VDPWRT
 * Store new cursor position
 DRWCR8 MOV  @CURSCN,@CUROLD
+* Set cursor mode to visible
+       SETO @CURMOD
 * Store character from new position
        MOV  @CURSCN,R0
        BL   @VDPRAD
@@ -162,12 +178,19 @@ DRWCR8 MOV  @CURSCN,@CUROLD
        LI   R1,1
        BL   @VDPREA
 * Draw cursor
-       MOV  @CURSCN,R0
+DRWCR3 MOV  @CURSCN,R0
        BL   @VDPADR
 *
-       LI   R0,CHRCUR
-       LI   R1,1
+       MOV  @CURMOD,R0
+       JNE  DRWCR0
+       LI   R0,CURRPL
+	   JMP  DRWCR1
+DRWCR0 LI   R0,CHRCUR
+DRWCR1 LI   R1,1
        BL   @VDPWRT
+* Reset cursor timer
+       LI   R0,30
+       MOV  R0,@CURTIM
 *
 DRWCR9 B    *R12
 

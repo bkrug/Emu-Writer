@@ -60,8 +60,8 @@ ENDINP BYTE >FE
 NOKEY  BYTE >FF
 
 * Cursor pattern in insert mode
-CURINS BYTE >C0,>C0,>C0,>C0,>C0,>C0,>C0
+CURINS BYTE >60,>60,>60,>60,>60,>60,>60
 * Cursor pattern in overwrite mode
-CUROVR BYTE >00,>00,>00,>00,>00,>F8,>F8
+CUROVR BYTE >00,>00,>00,>00,>00,>7C,>7C
        EVEN
        END
