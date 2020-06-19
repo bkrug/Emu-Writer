@@ -141,7 +141,7 @@ INTSCN MOV  R11,R12
        BLWP @POSUPD
 * Draw cursor and return to caller
        SOC  @STSTYP,R0
-       BL   @DRWCR8
+       BL   @DRWCR2
 
 *
 * Draw the cursor on screen
@@ -149,26 +149,26 @@ INTSCN MOV  R11,R12
 DRWCUR MOV  R11,R12
 *
        COC  @STSTYP,R0
-       JEQ  DRWCR8
-       COC  @STSENT,R0
-	   JEQ  DRWCR8
-       COC  @STSWIN,R0
-       JEQ  DRWCR8
-       COC  @STSARW,R0
        JEQ  DRWCR2
+       COC  @STSENT,R0
+	   JEQ  DRWCR2
+       COC  @STSWIN,R0
+       JEQ  DRWCR2
+       COC  @STSARW,R0
+       JEQ  DRWCR1
        MOV  @CURTIM,R0
 	   JNE  DRWCR9
 * Switch cursor mode
        INV  @CURMOD
        JMP  DRWCR3
 * Replace original character
-DRWCR2 MOV  @CUROLD,R0
+DRWCR1 MOV  @CUROLD,R0
        BL   @VDPADR
        LI   R0,CURRPL
        LI   R1,1
        BL   @VDPWRT
 * Store new cursor position
-DRWCR8 MOV  @CURSCN,@CUROLD
+DRWCR2 MOV  @CURSCN,@CUROLD
 * Set cursor mode to visible
        SETO @CURMOD
 * Store character from new position
@@ -182,14 +182,14 @@ DRWCR3 MOV  @CURSCN,R0
        BL   @VDPADR
 *
        MOV  @CURMOD,R0
-       JNE  DRWCR0
+       JNE  DRWCR4
        LI   R0,CURRPL
-	   JMP  DRWCR1
-DRWCR0 LI   R0,CHRCUR
-DRWCR1 LI   R1,1
+	   JMP  DRWCR5
+DRWCR4 LI   R0,CHRCUR
+DRWCR5 LI   R1,1
        BL   @VDPWRT
 * Reset cursor timer
-       LI   R0,30
+       LI   R0,32
        MOV  R0,@CURTIM
 *
 DRWCR9 B    *R12
