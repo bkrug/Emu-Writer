@@ -17,7 +17,7 @@
        REF  ENDINP
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSPAR,STSWIN
-	   REF  STSARW
+       REF  STSARW
        REF  CURINS,CUROVR
 
 *
@@ -32,11 +32,11 @@
 INPUT  DATA INPTWS,INPUT+4
 * Reset Document-Status bits
        SZC  @STSTYP,*R13
-	   SZC  @STSENT,*R13
-	   SZC  @STSARW,*R13
+       SZC  @STSENT,*R13
+       SZC  @STSARW,*R13
 * Reset the input mode to unspecified
        CLR  @INPTMD
-	   JMP  INPTBG
+       JMP  INPTBG
 *
 INPUT1 MOV  @KEYRD,R10
 * Handle visible character key strokes
@@ -64,15 +64,15 @@ KYBRC3 DEC  R0
        MOV  *R1,R1
 * Let R3 = acceptable input mode
        LI   R3,EXPMOD
-	   A    R0,R3
+       A    R0,R3
 * Set Input mode if currently unset
        C    @INPTMD,@INPTNN
-	   JNE  KYBRC5
-	   MOV  *R3,@INPTMD
+       JNE  KYBRC5
+       MOV  *R3,@INPTMD
 * If the next key is for different
 * input mode, leave routine
 KYBRC5 C    *R3,@INPTMD
-	   JNE   INPTRT
+       JNE   INPTRT
 * Branch to routine associated with key
        B    *R1
 KYBRC4
@@ -125,17 +125,17 @@ UPDBUF MOV  R0,@KEYRD
 * pattern.
 INSSWP
        LI   R0,>7F*8+>801
-	   BL   @VDPADR
+       BL   @VDPADR
 * Toggle insert/overwrite mode.
        INV  @INSTMD
        JEQ  INSSW1
 * Set cursor pattern for overwrite
-	   LI   R0,CUROVR
+       LI   R0,CUROVR
        JMP  INSSW2
 * Set cursor pattern for insert
 INSSW1 LI   R0,CURINS
 INSSW2 LI   R1,7
-	   BL   @VDPWRT
+       BL   @VDPWRT
        JMP  INPUT3
 
 *
@@ -263,13 +263,13 @@ RTERR  RTWP
 ADDTXT
 * Set input mode if currently unset
        C    @INPTMD,@INPTNN
-	   JNE  ADDT1
-	   MOV  @INPTXT,@INPTMD
+       JNE  ADDT1
+       MOV  @INPTXT,@INPTMD
 * If the input mode is not text,
 * leave the INPUT routine.
 ADDT1  C    @INPTMD,@INPTXT
-	   JEQ  ADDT2
-	   RTWP
+       JEQ  ADDT2
+       RTWP
 * Set document status bit
 ADDT2  SOC  @STSTYP,*R13
 * Get paragraph address

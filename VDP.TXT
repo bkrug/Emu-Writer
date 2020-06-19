@@ -5,7 +5,7 @@
        DEF  VDPTXT,VDPADR,VDPRAD
        DEF  VDPWRT,VDPSPC,VDPREA
 *
-	   REF  SPACE
+       REF  SPACE
 
 VDPWA  EQU  >8C02        VDP RAM write address
 VDPRD  EQU  >8800        VDP RAM read data
@@ -56,7 +56,7 @@ VDPAD1 SWPB R0
        SWPB R0
        MOVB R0,@VDPWA
 *
-       RT	   
+       RT       
 
 *
 * Set VDP read address 
@@ -85,11 +85,11 @@ VDPRAD
 VDPWRT
 * Don't write if R1 = 0
        MOV  R1,R1
-	   JEQ  VWRT2
+       JEQ  VWRT2
 * Write as many bytes as R1 specifies
 VWRT1  MOVB *R0+,@VDPWD
        DEC  R1
-	   JNE  VWRT1
+       JNE  VWRT1
 *
 VWRT2  RT
 
@@ -103,11 +103,11 @@ VWRT2  RT
 VDPSPC
 * Don't write if R1 = 0
        MOV  R1,R1
-	   JEQ  VSPC2
+       JEQ  VSPC2
 * Write as many bytes as R1 specifies
 VSPC1  MOVB @SPACE,@VDPWD
        DEC  R1
-	   JNE  VSPC1
+       JNE  VSPC1
 *
 VSPC2  RT
 
@@ -123,11 +123,11 @@ VSPC2  RT
 VDPREA
 * Don't read if R1 = 0
        MOV  R1,R1
-	   JEQ  VRD2
+       JEQ  VRD2
 * Read as many bytes as R1 specifies
 VRD1   MOVB @VDPRD,*R0+
        DEC  R1
-	   JNE  VRD1
+       JNE  VRD1
 *
 VRD2   RT
        END

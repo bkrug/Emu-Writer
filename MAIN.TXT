@@ -21,7 +21,7 @@ START
 * Initialize Program
        BL   @INTMEM
        BL   @INTKEY
-	   BL   @INTSCN
+       BL   @INTSCN
        BL   @VDPTXT
        LIMI 2
 *
@@ -118,8 +118,8 @@ INTRPT
        DEC   @CURTIM
 * Call key scanning interupt
 * (which is responsible for return)
-	   B     @KEYINT
-	   
+       B     @KEYINT
+       
 * 
 * Initialize screen
 *
@@ -131,10 +131,10 @@ INTSCN MOV  R11,R12
        BL   @VDPSPC
 * Define cursor pattern
        LI   R0,>7F*8+>801
-	   BL   @VDPADR
-	   LI   R0,CURINS
-	   LI   R1,7
-	   BL   @VDPWRT
+       BL   @VDPADR
+       LI   R0,CURINS
+       LI   R1,7
+       BL   @VDPWRT
 * Set cursor to visible
        SETO @CURMOD
 * Set position steps
@@ -151,13 +151,13 @@ DRWCUR MOV  R11,R12
        COC  @STSTYP,R0
        JEQ  DRWCR2
        COC  @STSENT,R0
-	   JEQ  DRWCR2
+       JEQ  DRWCR2
        COC  @STSWIN,R0
        JEQ  DRWCR2
        COC  @STSARW,R0
        JEQ  DRWCR1
        MOV  @CURTIM,R0
-	   JNE  DRWCR9
+       JNE  DRWCR9
 * Switch cursor mode
        INV  @CURMOD
        JMP  DRWCR3
@@ -184,7 +184,7 @@ DRWCR3 MOV  @CURSCN,R0
        MOV  @CURMOD,R0
        JNE  DRWCR4
        LI   R0,CURRPL
-	   JMP  DRWCR5
+       JMP  DRWCR5
 DRWCR4 LI   R0,CHRCUR
 DRWCR5 LI   R1,1
        BL   @VDPWRT
