@@ -9,7 +9,8 @@
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  LINLST,MGNLST,FMTLST
-       REF  VDPTXT,VDPADR,VDPWRT
+       REF  VDPTXT,VDPSPC
+       REF  VDPADR,VDPWRT
        REF  VDPRAD,VDPREA
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
@@ -116,6 +117,11 @@ INTKEY
 * Initialize screen
 *
 INTSCN MOV  R11,R12
+* Clear screen
+       CLR  R0
+       BL   @VDPADR
+       LI   R1,24*40
+       BL   @VDPSPC
 * Define cursor pattern
        LI   R0,>7F*8+>801
 	   BL   @VDPADR
