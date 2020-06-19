@@ -1,25 +1,28 @@
        DEF  START
 *
-	   REF  KEYDVC,USRISR
-	   REF  KEYINT
-	   REF  KEYSTR,KEYEND,KEYWRT,KEYRD
-	   REF  MEMBEG,MEMEND
-	   REF  INPUT,WRAP,POSUPD,DISP
-	   REF  PARINX
-	   REF  BUFINT,BUFALC,BUFCPY
-	   REF  ARYALC,ARYADD
-	   REF  LINLST,MGNLST,FMTLST
-	   REF  VDPTXT,VDPADR,VDPWRT
+       REF  KEYDVC,USRISR
+       REF  KEYINT
+       REF  KEYSTR,KEYEND,KEYWRT,KEYRD
+       REF  MEMBEG,MEMEND
+       REF  INPUT,WRAP,POSUPD,DISP
+       REF  PARINX
+       REF  BUFINT,BUFALC,BUFCPY
+       REF  ARYALC,ARYADD
+       REF  LINLST,MGNLST,FMTLST
+       REF  VDPTXT,VDPADR,VDPWRT
+       REF  VDPRAD,VDPREA
+       REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
-	   REF  FAKERF
+       REF  FAKERF
 *
-	   
+       
 START
 * Initialize Program
        BL   @INTMEM
        BL   @INTKEY
-	   BL   @VDPTXT
-	   LIMI 2
+	   BL   @INTSCN
+       BL   @VDPTXT
+       LIMI 2
 *
 * Main program loop while program runs
 *
@@ -27,21 +30,21 @@ MAIN
 * Clear the document status register
        CLR  R0
 * Process user input
-	   BLWP @INPUT
+       BLWP @INPUT
 * Wrap the current paragraph
-	   MOV  R0,R1
-	   MOV  @PARINX,R0
-	   BLWP @WRAP
-	   MOV  R1,R0
+       MOV  R0,R1
+       MOV  @PARINX,R0
+       BLWP @WRAP
+       MOV  R1,R0
 * Update cursor and window positions
-	   BLWP @POSUPD
+       BLWP @POSUPD
 * Redisplay the screen
        LIMI 0
-	   BLWP @DISP
-	   BL   @DRWCUR
-	   LIMI 2
+       BLWP @DISP
+       BL   @DRWCUR
+       LIMI 2
 *
-	   JMP  MAIN
+       JMP  MAIN
 
 *
 * Initialize Memory
@@ -68,7 +71,7 @@ INTMEM
        LI   R0,PAREND-PAR
        MOV  R0,R2
        BLWP @BUFALC
-	   MOV  R0,R4
+       MOV  R0,R4
        MOV  R0,R1
        LI   R0,PAR
        BLWP @BUFCPY
@@ -99,7 +102,7 @@ INTKEY
 * Define the buffer locations
        LI   R0,KEYSTR
        MOV  R0,@KEYWRT
-	   MOV  R0,@KEYRD
+       MOV  R0,@KEYRD
 * Define the interupt routine
        LI   R0,KEYINT
        MOV  R0,@USRISR
@@ -108,20 +111,53 @@ INTKEY
        MOVB R0,@KEYDVC
 *
        RT
+	   
+* 
+* Initialize screen
+*
+INTSCN MOV  R11,R12
+* Set position steps
+       BLWP @POSUPD
+* Draw cursor and return to caller
+       SOC  @STSTYP,R0
+       BL   @DRWCR8
 
 *
 * Draw the cursor on screen
 *
 DRWCUR MOV  R11,R12
 *
+       COC  @STSTYP,R0
+       JEQ  DRWCR8
+       COC  @STSENT,R0
+	   JEQ  DRWCR8
+       COC  @STSWIN,R0
+       JEQ  DRWCR8
+       COC  @STSARW,R0
+       JNE  DRWCR9
+* Replace original character
+       MOV  @CUROLD,R0
+       BL   @VDPADR
+       LI   R0,CURRPL
+       LI   R1,1
+       BL   @VDPWRT
+* Store new cursor position
+DRWCR8 MOV  @CURSCN,@CUROLD
+* Store character from new position
+       MOV  @CURSCN,R0
+       BL   @VDPRAD
+       LI   R0,CURRPL
+       LI   R1,1
+       BL   @VDPREA
+* Draw cursor
        MOV  @CURSCN,R0
        BL   @VDPADR
 *
-	   LI   R0,CURCHR
-	   LI   R1,1
-	   BL   @VDPWRT
+       LI   R0,CURCHR
+       LI   R1,1
+       BL   @VDPWRT
 *
-	   B    *R12
+DRWCR9 B    *R12
 
 CURCHR TEXT '_'
        EVEN
