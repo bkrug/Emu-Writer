@@ -47,7 +47,7 @@ UPSP3  C    *R4,@LININX
 * Let R5 = new CHRPAX
 UPSP5  A    @CHRLIX,R5
 	   C    R5,R6
-	   JLE  UPSP6
+	   JL   UPSP6
 	   MOV  R6,R5
 	   DEC  R5
 *
