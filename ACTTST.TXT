@@ -1,7 +1,7 @@
        DEF  TSTLST,RSLTFL
 *
        REF  LINLST
-	   REF  PARINX,CHRPAX,LININX,CHRLIX
+       REF  PARINX,CHRPAX,LININX,CHRLIX
 * Assert methods
        REF  AEQ
 * Tested methods
@@ -27,9 +27,17 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA UP6
        TEXT 'UP6   '
 * Move from 4th to 3rd line.
-* 2nd line too short.
+* 3rd line too short.
        DATA UP7
        TEXT 'UP7   '
+* Move from bottom line.
+* next line too short.
+       DATA UP8
+       TEXT 'UP8   '
+* Move up to previous paragraph.
+* next line too short.
+       DATA UP9
+       TEXT 'UP9   '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -46,26 +54,26 @@ PAR1A  DATA 56+60+59+25
        TEXT 'Beg..End'
 WRP1A  DATA 3,1
        DATA 56
-	   DATA 56+60
-	   DATA 56+60+59
+       DATA 56+60
+       DATA 56+60+59
 PAR1B  DATA 32
        DATA WRP1B
-	   TEXT 'Beg..End'
+       TEXT 'Beg..End'
 WRP1B  DATA 0,1
 PAR1C  DATA 61+57+48+56+60
        DATA WRP1C
-	   TEXT 'Beg..End'
+       TEXT 'Beg..End'
 WRP1C  DATA 4,1
        DATA 61
-	   DATA 61+57
-	   DATA 61+57+48
-	   DATA 61+57+48+56
+       DATA 61+57
+       DATA 61+57+48
+       DATA 61+57+48+56
 PAR1D  DATA 57+58+40
        DATA WRP1D
-	   TEXT 'Beg..End'
+       TEXT 'Beg..End'
 WRP1D  DATA 2,1
        DATA 57
-	   DATA 57+58
+       DATA 57+58
 
 PARM   TEXT 'Paragraph index is wrong.'
 PARME
@@ -89,31 +97,31 @@ UP1    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,2
-	   MOV  R0,@PARINX
-	   LI   R0,61+57+40
-	   MOV  R0,@CHRPAX
        LI   R0,2
-	   MOV  R0,@LININX
-	   LI   R0,40
-	   MOV  R0,@CHRLIX
+       MOV  R0,@PARINX
+       LI   R0,61+57+40
+       MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@LININX
+       LI   R0,40
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,2
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,61+40
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
 
 *
 * Move from second to first line in the
@@ -125,31 +133,31 @@ UP2    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,2
-	   MOV  R0,@PARINX
-	   LI   R0,61+25
-	   MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+25
+       MOV  R0,@CHRPAX
        LI   R0,1
-	   MOV  R0,@LININX
-	   LI   R0,25
-	   MOV  R0,@CHRLIX
+       MOV  R0,@LININX
+       LI   R0,25
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,2
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,25
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
 
 *
 * Move from bottom to second from
@@ -161,31 +169,31 @@ UP3    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,2
-	   MOV  R0,@PARINX
-	   LI   R0,61+57+48+56+3
-	   MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+57+48+56+3
+       MOV  R0,@CHRPAX
        LI   R0,4
-	   MOV  R0,@LININX
-	   LI   R0,3
-	   MOV  R0,@CHRLIX
+       MOV  R0,@LININX
+       LI   R0,3
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,2
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,61+57+48+3
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
 
 *
 * Move from one paragraph to previous
@@ -197,31 +205,31 @@ UP4    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,3
-	   MOV  R0,@PARINX
-	   LI   R0,15
-	   MOV  R0,@CHRPAX
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,15
+       MOV  R0,@CHRPAX
        LI   R0,0
-	   MOV  R0,@LININX
-	   LI   R0,15
-	   MOV  R0,@CHRLIX
+       MOV  R0,@LININX
+       LI   R0,15
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,2
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,61+57+48+56+15
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
 
 *
 * Move up to one-line paragraph.
@@ -232,31 +240,31 @@ UP5    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,2
-	   MOV  R0,@PARINX
-	   LI   R0,5
-	   MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,5
+       MOV  R0,@CHRPAX
        LI   R0,0
-	   MOV  R0,@LININX
-	   LI   R0,5
-	   MOV  R0,@CHRLIX
+       MOV  R0,@LININX
+       LI   R0,5
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,1
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,5
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
 
 *
 * Move up from one-line paragraph.
@@ -267,31 +275,31 @@ UP6    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,1
-	   MOV  R0,@PARINX
-	   LI   R0,8
-	   MOV  R0,@CHRPAX
+       LI   R0,1
+       MOV  R0,@PARINX
+       LI   R0,8
+       MOV  R0,@CHRPAX
        LI   R0,0
-	   MOV  R0,@LININX
-	   LI   R0,8
-	   MOV  R0,@CHRLIX
+       MOV  R0,@LININX
+       LI   R0,8
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,0
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,56+60+59+8
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
 
 *
 * Move from fourth to third line in the
@@ -302,30 +310,101 @@ UP7    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
-	   LI   R0,2
-	   MOV  R0,@PARINX
-	   LI   R0,61+57+48+51
-	   MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+57+48+51
+       MOV  R0,@CHRPAX
        LI   R0,3
-	   MOV  R0,@LININX
-	   LI   R0,51
-	   MOV  R0,@CHRLIX
+       MOV  R0,@LININX
+       LI   R0,51
+       MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
        LI   R0,2
-	   MOV  @PARINX,R1
-	   LI   R2,PARM
-	   LI   R3,PARME-PARM
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
        BLWP @AEQ
 *
        LI   R0,61+57+48-1
-	   MOV  @CHRPAX,R1
-	   LI   R2,CHRM
-	   LI   R3,CHRME-CHRM
-	   BLWP @AEQ
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
-	   RT
+       RT
+
+*
+* Move from fourth to third line in the
+* same paragraph.
+* New line too short.
+*
+UP8    MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+* index 56 on 5th line.
+* 4th line is shorter.
+       LI   R0,61+57+48+56+56
+       MOV  R0,@CHRPAX
+       LI   R0,4
+       MOV  R0,@LININX
+       LI   R0,56
+       MOV  R0,@CHRLIX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+57+48+56-1
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
+* Move up to previous paragraph.
+* New line too short.
+*
+UP9    MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,40
+       MOV  R0,@CHRLIX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,1
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,31
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
 
        END
