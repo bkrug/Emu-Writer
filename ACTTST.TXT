@@ -1,21 +1,27 @@
        DEF  TSTLST,RSLTFL
 *
        REF  LINLST
-	   REF  PARINX,CHRPAX
+	   REF  PARINX,CHRPAX,LININX
 * Assert methods
        REF  AEQ
 * Tested methods
        REF  UPUPSP,DOWNSP
 
 TSTLST DATA TSTEND-TSTLST-2/8
-* One paragraph. Middle Screen.
+* Move from 3rd to 2nd line
        DATA UP1
        TEXT 'UP1   '
+* Move from 2nd to 1st line
+       DATA UP2
+       TEXT 'UP2   '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
 RSLTFE
        EVEN
+FRAMRT DATA 0
+
+**** Mock document ****
 
 DOC1   DATA 4,1
        DATA PAR1A,PAR1B,PAR1C,PAR1D
@@ -49,14 +55,18 @@ PARM   TEXT 'Paragraph index is wrong.'
 PARME
 CHRM   TEXT 'Character index within '
        TEXT 'paragraph is wrong.'
-CHRME  EVEN
+CHRME
+LINM   TEXT 'Line index within '
+       TEXT 'paragraph is wrong.'
+LINME  EVEN
 
 *
-* Move up one line in the same paragraph.
+* Move from third to second line in the
+* same paragraph.
 * Upper line is long enough so that
 * cursor need not move left.
 *
-UP1
+UP1    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@LINLST
@@ -79,6 +89,39 @@ UP1
 	   LI   R3,CHRME-CHRM
 	   BLWP @AEQ
 *
+       MOV  @FRAMRT,R11
+	   RT
+
+*
+* Move from second to first line in the
+* same paragraph.
+* Upper line is long enough so that
+* cursor need not move left.
+*
+UP2    MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+	   LI   R0,2
+	   MOV  R0,@PARINX
+	   LI   R0,61+25
+	   MOV  R0,@CHRPAX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+	   MOV  @PARINX,R1
+	   LI   R2,PARM
+	   LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,25
+	   MOV  @CHRPAX,R1
+	   LI   R2,CHRM
+	   LI   R3,CHRME-CHRM
+	   BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
 	   RT
 
        END
