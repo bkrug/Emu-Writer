@@ -14,6 +14,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move from 2nd to 1st line
        DATA UP2
        TEXT 'UP2   '
+* Move from bottom line
+       DATA UP3
+       TEXT 'UP3   '
+* Move to previous paragraph
+       DATA UP4
+       TEXT 'UP4   '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -36,7 +42,7 @@ PAR1B  DATA 32
        DATA WRP1B
 	   TEXT 'Beg..End'
 WRP1B  DATA 0,1
-PAR1C  DATA 127
+PAR1C  DATA 61+57+48+56+60
        DATA WRP1C
 	   TEXT 'Beg..End'
 WRP1C  DATA 4,1
@@ -44,7 +50,7 @@ WRP1C  DATA 4,1
 	   DATA 61+57
 	   DATA 61+57+48
 	   DATA 61+57+48+56
-PAR1D  DATA 214
+PAR1D  DATA 57+58+40
        DATA WRP1D
 	   TEXT 'Beg..End'
 WRP1D  DATA 2,1
@@ -116,6 +122,70 @@ UP2    MOV  R11,@FRAMRT
        BLWP @AEQ
 *
        LI   R0,25
+	   MOV  @CHRPAX,R1
+	   LI   R2,CHRM
+	   LI   R3,CHRME-CHRM
+	   BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+	   RT
+
+*
+* Move from bottom to second from
+* bottom line in the same paragraph.
+* Upper line is long enough so that
+* cursor need not move left.
+*
+UP3    MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+	   LI   R0,2
+	   MOV  R0,@PARINX
+	   LI   R0,61+57+48+56+3
+	   MOV  R0,@CHRPAX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+	   MOV  @PARINX,R1
+	   LI   R2,PARM
+	   LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+57+48+3
+	   MOV  @CHRPAX,R1
+	   LI   R2,CHRM
+	   LI   R3,CHRME-CHRM
+	   BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+	   RT
+
+*
+* Move from one paragraph to previous
+* paragraph.
+* Upper line is long enough so that
+* cursor need not move left.
+*
+UP4    MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+	   LI   R0,3
+	   MOV  R0,@PARINX
+	   LI   R0,15
+	   MOV  R0,@CHRPAX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+	   MOV  @PARINX,R1
+	   LI   R2,PARM
+	   LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+57+48+56+15
 	   MOV  @CHRPAX,R1
 	   LI   R2,CHRM
 	   LI   R3,CHRME-CHRM
