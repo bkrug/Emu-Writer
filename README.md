@@ -9,10 +9,13 @@ This project is a strange form of fun and a vanity project, not something that i
 
 ### Assembled files
 
-There are several files in the source code which will load several assembled files at once.
-See any file that ends "LOAD.TXT" as an example.
-The laod files assume that all files are assembled with a ".O" extension and are located on DSK2.
-So, MAIN.TXT is assembled into MAIN.O.
+All the assembly code in this repo currently uses the extension "TXT".
+The source code assumes that any assembled object code has an extension of "O" and is placed in "DSK2".
+For example, MAIN.TXT is assembled into DSK2.MAIN.O.
+If you wish to use a different extension for object code or store it in a different disk,
+Edit the files ending "LOAD.TXT" in your local files.
+These contain lists of dependent object code.
+Some of the "TST" files also contain an filename to output test results to.
 
 ### Unit Tests
 
@@ -30,8 +33,7 @@ TESTFRAME.TXT is the new test framework.
 
 ### Running the program
 
-To run the program, assemble all files that are not unit test files.
-You don't need to assemble any "LOAD.TXT" files except "MAINLOAD.TXT".
+To run the program, assemble MAINLOAD.TXT as DSK2.MAINLOAD.O, and assemble all of the files that are listed in MAINLOAD.
 Load "DSK2.MAINLOAD.O" from E/A option 3.
 Enter "LTEST" as the program name.
 
@@ -39,9 +41,11 @@ Enter "LTEST" as the program name.
 
 CONST.TXT - Stores some constant values that are shared by at least two source code files
 
-VAR.TXT - All areas of memory that can change should ideally be located here.
+VAR.TXT - All areas of memory that can change are to be located here.
 If the finished program is small enough, then I can simulate a ROM cartridge for most of the code.
 But variables and workspaces will still need to be stored in the memory expansion RAM.
 
+### External Dependencies
+
 MEMBUF.O and ARRAY.O - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
-These contain routines useful for storing things like strings and arrays.
+These contain routines for allocating and de-allocating space for variable-length objects like strings and arrays.
