@@ -26,7 +26,7 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move up from one-line paragraph
        DATA UP6
        TEXT 'UP6   '
-* Move from 3rd to 2nd line.
+* Move from 4th to 3rd line.
 * 2nd line too short.
        DATA UP7
        TEXT 'UP7   '
