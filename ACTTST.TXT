@@ -1,7 +1,7 @@
        DEF  TSTLST,RSLTFL
 *
        REF  LINLST
-	   REF  PARINX,CHRPAX,LININX
+	   REF  PARINX,CHRPAX,LININX,CHRLIX
 * Assert methods
        REF  AEQ
 * Tested methods
@@ -74,7 +74,10 @@ CHRM   TEXT 'Character index within '
 CHRME
 LINM   TEXT 'Line index within '
        TEXT 'paragraph is wrong.'
-LINME  EVEN
+LINME
+CHRLM  TEXT 'Character index within '
+       TEXT 'is wrong.'
+CHRLME EVEN
 
 *
 * Move from third to second line in the
@@ -90,6 +93,10 @@ UP1    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,61+57+40
 	   MOV  R0,@CHRPAX
+       LI   R0,2
+	   MOV  R0,@LININX
+	   LI   R0,40
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
@@ -122,6 +129,10 @@ UP2    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,61+25
 	   MOV  R0,@CHRPAX
+       LI   R0,1
+	   MOV  R0,@LININX
+	   LI   R0,25
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
@@ -154,6 +165,10 @@ UP3    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,61+57+48+56+3
 	   MOV  R0,@CHRPAX
+       LI   R0,4
+	   MOV  R0,@LININX
+	   LI   R0,3
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
@@ -186,6 +201,10 @@ UP4    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,15
 	   MOV  R0,@CHRPAX
+       LI   R0,0
+	   MOV  R0,@LININX
+	   LI   R0,15
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
@@ -217,6 +236,10 @@ UP5    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,5
 	   MOV  R0,@CHRPAX
+       LI   R0,0
+	   MOV  R0,@LININX
+	   LI   R0,5
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
@@ -248,6 +271,10 @@ UP6    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,8
 	   MOV  R0,@CHRPAX
+       LI   R0,0
+	   MOV  R0,@LININX
+	   LI   R0,8
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert
@@ -279,6 +306,10 @@ UP7    MOV  R11,@FRAMRT
 	   MOV  R0,@PARINX
 	   LI   R0,61+57+48+51
 	   MOV  R0,@CHRPAX
+       LI   R0,3
+	   MOV  R0,@LININX
+	   LI   R0,51
+	   MOV  R0,@CHRLIX
 * Act
        BL   @UPUPSP
 * Assert

@@ -1,86 +1,82 @@
        DEF  UPUPSP,DOWNSP
 *
        REF  LINLST
-       REF  PARINX,CHRPAX,LININX
+	   REF  PARINX,CHRPAX,LININX,CHRLIX
 
 UPUPSP MOV  R11,R12
+*
+       MOV  @LININX,R0
+	   JEQ  UPSP1
+* Move up within same paragraph
+	   DEC  @LININX
 * Let R3 = Address of paragraph
-       MOV  @PARINX,R3
+* Let R4 = Wrap list address
        BL   @PARADR
+*
+	   JMP  UPSP2
+* Move up to previous paragraph
+UPSP1  DEC  @PARINX
+* Let R3 = Address of paragraph
 * Let R4 = Wrap list address
-* Let R5 = address after wrap list
-       BL   @WRPADR
-* Let R4 = first element address
-       C    *R4+,*R4+
-* Let R5 point to previous line break
-UPSP5  C    R5,R4
-       JEQ  UPSP7
+       BL   @PARADR
+*
+       MOV  *R4,@LININX
+UPSP2  
+* Let R5 = address of prev line break
+* Let R6 = address of next iine break
+       MOV  @LININX,R6
+	   SLA  R6,1
+	   C    *R6+,*R6+
+	   A    R4,R6
+	   MOV  R6,R5
 	   DECT R5
-       C    *R5,@CHRPAX
-	   JH   UPSP5
-* Let R6 = length previous line
-       MOV  *R5,R6
-       C    R5,R4
-       JEQ  UPSP6
-       DECT R5
-	   S    *R5+,R6
-* Decrease CHRPAX
-UPSP6  S    R6,@CHRPAX
-* If new line is shorter cursor's 
-* position on the old line,
-* move to the left.
-       C   @CHRPAX,*R5
-       JL  UPSP4
-       MOV *R5,@CHRPAX
-       DEC @CHRPAX
+* Let R5 = prev line break
+* Let R6 = next line break
+       MOV  *R5,R5
+	   MOV  *R6,R6
+* If this is first paragraph-line,
+* prev line break is 0.
+       MOV  @LININX,R0
+	   JNE  UPSP3
+	   CLR  R5
+* If this is the last paragraph-line,
+* next line break is paragraph-length.
+UPSP3  C    *R4,@LININX
+	   JNE  UPSP5
+	   MOV  *R3,R6
+* Let R5 = new CHRPAX
+UPSP5  A    @CHRLIX,R5
+	   C    R5,R6
+	   JLE  UPSP6
+	   MOV  R6,R5
+	   DEC  R5
 *
-UPSP4  B    *R12
-* Move to previous paragraph
-UPSP7  DEC  @PARINX
+UPSP6  MOV  R5,@CHRPAX
 *
-       MOV  @PARINX,R3
-	   BL   @PARADR
-* Let R4 = Wrap list address
-* Let R5 = address after wrap list
-       BL   @WRPADR
-* Is new paragraph is one-line,
-* CHRPAX is already correct.
-       MOV  *R4,*R4
-       JEQ  UPSP8
-* Set new cursor position based on last
-* wrap list entry
-       DECT R5
-	   A    *R5,@CHRPAX
-*
-UPSP8  B    *R12
-
+       B    *R12
+	   
 DOWNSP RT
 
 *
-* Get paragraph address from index
+* Get paragraph address and wrap list
+* address.
 *
 * Input:
 * R3 - paragraph index
 * Output:
 * R3 - paragraph address
-PARADR SLA  R3,1
+* R4 - wrap list address
+PARADR 
+* Set R3
+       MOV  @PARINX,R3
+       SLA  R3,1
        A    @LINLST,R3
        C    *R3+,*R3+
        MOV  *R3,R3
-       RT
-
-*
-* Let R4 = Wrap list address
-* Let R5 = address after wrap list
-*
-WRPADR MOV  R3,R4
+* Set R4
+       MOV  R3,R4
 	   INCT R4
 	   MOV  *R4,R4
-* set R5
-       MOV  *R4,R5
-	   SLA  R5,1
-	   A    R4,R5
-	   C    *R5+,*R5+
 *
        RT
 
