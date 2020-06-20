@@ -23,11 +23,18 @@ UPSP5  C    R5,R4
        C    R5,R4
        JEQ  UPSP6
        DECT R5
-	   S    *R5,R6
+	   S    *R5+,R6
 * Decrease CHRPAX
 UPSP6  S    R6,@CHRPAX
+* If new line is shorter cursor's 
+* position on the old line,
+* move to the left.
+       C   @CHRPAX,*R5
+       JL  UPSP4
+       MOV *R5,@CHRPAX
+       DEC @CHRPAX
 *
-       B    *R12
+UPSP4  B    *R12
 * Move to previous paragraph
 UPSP7  DEC  @PARINX
 *

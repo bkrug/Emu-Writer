@@ -26,6 +26,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move up from one-line paragraph
        DATA UP6
        TEXT 'UP6   '
+* Move from 3rd to 2nd line.
+* 2nd line too short.
+       DATA UP7
+       TEXT 'UP7   '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -37,13 +41,13 @@ FRAMRT DATA 0
 
 DOC1   DATA 4,1
        DATA PAR1A,PAR1B,PAR1C,PAR1D
-PAR1A  DATA 56+61+59+25
+PAR1A  DATA 56+60+59+25
        DATA WRP1A
        TEXT 'Beg..End'
 WRP1A  DATA 3,1
        DATA 56
 	   DATA 56+60
-	   DATA 56+61+59
+	   DATA 56+60+59
 PAR1B  DATA 32
        DATA WRP1B
 	   TEXT 'Beg..End'
@@ -253,7 +257,38 @@ UP6    MOV  R11,@FRAMRT
 	   LI   R3,PARME-PARM
        BLWP @AEQ
 *
-       LI   R0,56+61+59+8
+       LI   R0,56+60+59+8
+	   MOV  @CHRPAX,R1
+	   LI   R2,CHRM
+	   LI   R3,CHRME-CHRM
+	   BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+	   RT
+
+*
+* Move from fourth to third line in the
+* same paragraph.
+* New line too short.
+*
+UP7    MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+	   LI   R0,2
+	   MOV  R0,@PARINX
+	   LI   R0,61+57+48+51
+	   MOV  R0,@CHRPAX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+	   MOV  @PARINX,R1
+	   LI   R2,PARM
+	   LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+57+48-1
 	   MOV  @CHRPAX,R1
 	   LI   R2,CHRM
 	   LI   R3,CHRME-CHRM
