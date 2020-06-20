@@ -1,0 +1,84 @@
+       DEF  TSTLST,RSLTFL
+*
+       REF  LINLST
+	   REF  PARINX,CHRPAX
+* Assert methods
+       REF  AEQ
+* Tested methods
+       REF  UPUPSP,DOWNSP
+
+TSTLST DATA TSTEND-TSTLST-2/8
+* One paragraph. Middle Screen.
+       DATA UP1
+       TEXT 'UP1   '
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK2.TESTRESULT.TXT'
+RSLTFE
+       EVEN
+
+DOC1   DATA 4,1
+       DATA PAR1A,PAR1B,PAR1C,PAR1D
+PAR1A  DATA 403
+       DATA WRP1A
+       TEXT 'Beg..End'
+WRP1A  DATA 3,1
+       DATA 56
+	   DATA 56+60
+	   DATA 56+61+59
+PAR1B  DATA 32
+       DATA WRP1B
+	   TEXT 'Beg..End'
+WRP1B  DATA 0,1
+PAR1C  DATA 127
+       DATA WRP1C
+	   TEXT 'Beg..End'
+WRP1C  DATA 4,1
+       DATA 61
+	   DATA 61+57
+	   DATA 61+57+48
+	   DATA 61+57+48+56
+PAR1D  DATA 214
+       DATA WRP1D
+	   TEXT 'Beg..End'
+WRP1D  DATA 2,1
+       DATA 57
+	   DATA 57+58
+
+PARM   TEXT 'Paragraph index is wrong.'
+PARME
+CHRM   TEXT 'Character index within '
+       TEXT 'paragraph is wrong.'
+CHRME  EVEN
+
+*
+* Move up one line in the same paragraph.
+* Upper line is long enough so that
+* cursor need not move left.
+*
+UP1
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+	   LI   R0,2
+	   MOV  R0,@PARINX
+	   LI   R0,61+57+40
+	   MOV  R0,@CHRPAX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+	   MOV  @PARINX,R1
+	   LI   R2,PARM
+	   LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+40
+	   MOV  @CHRPAX,R1
+	   LI   R2,CHRM
+	   LI   R3,CHRME-CHRM
+	   BLWP @AEQ
+*
+	   RT
+
+       END

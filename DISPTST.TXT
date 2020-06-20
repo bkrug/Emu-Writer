@@ -60,8 +60,6 @@ RSLTFL BYTE RSLTFE-RSLTFL-1
 RSLTFE
        EVEN
 
-FAKEAD DATA >FFFE
-
 *
 * Only should redraw the current
 * paragraph, which is in middle of the

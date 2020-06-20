@@ -1,0 +1,8 @@
+       DEF  UPUPSP,DOWNSP
+*
+       REF  INPTDN
+
+UPUPSP RT
+DOWNSP RT
+
+       END

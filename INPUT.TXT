@@ -6,6 +6,9 @@
        REF  BUFALC,BUFREE,BUFCPY
        REF  VDPADR,VDPWRT
 
+* Key stroke routines in another file
+       REF  UPUPSP,DOWNSP
+
 * variables just for INPUT
        REF  INPTWS
        REF  PARINX,CHRPAX
@@ -74,11 +77,10 @@ KYBRC3 DEC  R0
 KYBRC5 C    *R3,@INPTMD
        JNE   INPTRT
 * Branch to routine associated with key
-       B    *R1
+       BL   *R1
 KYBRC4
-* If we got here, this keystroke is 
-* unrecognized. Skip it.
-INPUT3 BL   @INCKRD
+* Increment the key read position
+INPTDN BL   @INCKRD
 * Are there more keystrokes to process?
 INPTBG C    @KEYRD,@KEYWRT
        JNE  INPUT1
@@ -93,10 +95,13 @@ DWNKEY EQU  >0A
 ENTER  EQU  >0D
 
 ROUTKY BYTE INSKEY,BCKKEY,FWDKEY,ENTER
+       BYTE UPPKEY,DWNKEY
 ROUTKE
        EVEN
 ROUTIN DATA INSSWP,BACKSP,FWRDSP,ISENTR
+       DATA UPUPSP,DOWNSP
 EXPMOD DATA MODEXT,MODEMV,MODEMV,MODEXT
+       DATA MODEMV,MODEMV
 
 * 
 * Input mode values
@@ -136,7 +141,7 @@ INSSWP
 INSSW1 LI   R0,CURINS
 INSSW2 LI   R1,7
        BL   @VDPWRT
-       JMP  INPUT3
+       JMP  INPTDN
 
 *
 * Backspace by one position
@@ -162,7 +167,7 @@ BACKS1 DEC  @PARINX
 BACKS2 CLR  @CHRPAX
        CLR  @PARINX
 BACKRT SOC  @STSARW,*R13
-       B    @INPUT3
+       B    @INPTDN
 
 *
 * Fordward space by one position
@@ -186,7 +191,7 @@ FWRDS1 INC  @PARINX
 FWRDS2 DEC  @PARINX
        DEC  @CHRPAX
 FWRDRT SOC  @STSARW,*R13
-       B    @INPUT3
+       B    @INPTDN
 
 *
 * Enter key pressed
@@ -351,6 +356,6 @@ RPLTXT MOVB *R10,*R3
 * Increase character indexes.
        INC  @CHRPAX
 *
-       B    @INPUT3
+       B    @INPTDN
 
        END
