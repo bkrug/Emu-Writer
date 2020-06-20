@@ -36,11 +36,16 @@ UPSP7  DEC  @PARINX
 * Let R4 = Wrap list address
 * Let R5 = address after wrap list
        BL   @WRPADR
-*
+* Is new paragraph is one-line,
+* CHRPAX is already correct.
+       MOV  *R4,*R4
+       JEQ  UPSP8
+* Set new cursor position based on last
+* wrap list entry
        DECT R5
 	   A    *R5,@CHRPAX
 *
-       B    *R12
+UPSP8  B    *R12
 
 DOWNSP RT
 
