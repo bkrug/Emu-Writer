@@ -267,7 +267,7 @@ RTERR  RTWP
 *
 * Delete key was pressed.
 *
-DELCHR 
+DELCHR
 * Set document status bit
        SOC  @STSTYP,*R13
 *
@@ -277,6 +277,10 @@ DELCHR
        BLWP @ARYADR
 * Let R3 = address of paragraph
        MOV  *R1,R3
+* If cursor is at end of paragraph,
+* merge two paragraphs together.
+       C    @CHRPAX,*R3
+	   JEQ  DELC2
 * Reduce paragraph length
        DEC  *R3
 * Let R4 = position in paragraph
@@ -295,6 +299,65 @@ DELC1  MOVB *R5+,*R4+
        JLE  DELC1
 *
        RT
+* Merge two paragraphs
+* Let R2 = Address in paragraph list
+* Let R4 = Address of second paragraph
+DELC2  MOV  R1,R2
+       INCT R2
+       MOV  *R2,R4
+* Let R0 = space to reserve
+       MOV  *R3,R0
+	   A    *R4,R0
+	   C    *R0+,*R0+
+* Allocate space for new paragraph
+       BLWP @BUFALC
+* Let R5 = address of new paragraph
+       MOV  R0,R5
+* Set length of new paragraph
+       MOV  *R3,*R5
+	   A    *R4,*R5
+* Allocate space for wrap list
+       LI   R0,1
+	   BLWP @ARYALC
+* Record new wrap list address
+       MOV  R0,@2(5)
+* Copy bytes from first old paragraph
+       MOV  R3,R0
+	   C    *R0+,*R0+
+	   MOV  R5,R1
+	   C    *R1+,*R1+
+	   MOV  *R3,R2
+	   BLWP @BUFCPY
+* Copy bytes from second old paragraph
+       MOV  R4,R0
+	   C    *R0+,*R0+
+	   A    *R3,R1
+	   MOV  *R4,R2
+	   BLWP @BUFCPY
+* Deallocate old wrap lists
+       MOV  @2(3),R0
+	   BLWP @BUFREE
+	   MOV  @2(4),R0
+	   BLWP @BUFREE
+* Deallocate old paragraphs
+       MOV  R3,R0
+       BLWP @BUFREE
+	   MOV  R4,R0
+       BLWP @BUFREE
+* Put new paragraph in paragraph list
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+       MOV  R5,*R1
+* Remove one element from paragraph list
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+	   INC  R1
+	   BLWP @ARYDEL
+* 
+       RT
+       
+
 
 * User typed some text.
 * Put it in the buffer.
