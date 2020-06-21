@@ -431,8 +431,10 @@ UP9    MOV  R11,@FRAMRT
        LI   R2,PARM
        LI   R3,PARME-PARM
        BLWP @AEQ
-*
-       LI   R0,31
+* Cursor should be one position past
+* then end of the paragraph in order to
+* add more characters at the end.
+       LI   R0,32
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM

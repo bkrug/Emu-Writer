@@ -79,10 +79,12 @@ ADJCHR
        JNE  ADJC1
        CLR  R5
 * If this is the last paragraph-line,
-* next line break is paragraph-length.
+* next line break is paragraph-length
+* plus one.
 ADJC1  C    *R4,@LININX
        JNE  ADJC2
        MOV  *R3,R6
+       INC  R6
 * Let R7 = new CHRPAX
 ADJC2  MOV  R5,R7
        A    @CHRLIX,R7
