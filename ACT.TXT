@@ -3,6 +3,9 @@
        REF  LINLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
 
+*
+* Move the cursor up by one line
+*
 UPUPSP MOV  R11,R12
 *
        MOV  @LININX,R0
@@ -24,9 +27,25 @@ UPSP1  DEC  @PARINX
 UPSP2  JMP  ADJCHR
 
 *
+* Move the cursor down by one line
 *
+DOWNSP MOV  R11,R12
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+       BL   @PARADR
+* Is this the last paragraph-line?
+       C    @LININX,*R4
+       JEQ  DWNSP1
+* Move down within same paragraph
+       INC  @LININX
+       JMP  DWNSP2
+* Move down to next paragraph
+DWNSP1 INC  @PARINX
+       CLR  @LININX
+* Recalculate R3 & R4
+DWNSP2 BL   @PARADR
 *
-DOWNSP RT
+       JMP  ADJCHR
 
 *
 * Adjust CHRPAX and CHRLIX

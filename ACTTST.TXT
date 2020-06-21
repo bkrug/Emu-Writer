@@ -419,7 +419,7 @@ DOWN1  MOV  R11,@FRAMRT
        MOV  R0,@LINLST
        LI   R0,2
        MOV  R0,@PARINX
-       LI   R0,61+57+40
+       LI   R0,61+40
        MOV  R0,@CHRPAX
        LI   R0,1
        MOV  R0,@LININX
@@ -434,7 +434,7 @@ DOWN1  MOV  R11,@FRAMRT
        LI   R3,PARME-PARM
        BLWP @AEQ
 *
-       LI   R0,61+40
+       LI   R0,61+57+40
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
