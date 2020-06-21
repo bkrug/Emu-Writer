@@ -2,8 +2,9 @@
 *
        REF  LINLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
+       REF  STSARW
 * Assert methods
-       REF  AEQ
+       REF  AEQ,AOC
 * Tested methods
        REF  UPUPSP,DOWNSP
 
@@ -41,6 +42,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move up from first line in document
        DATA UP10
        TEXT 'UP10  '
+* STSARW should be set to true
+       DATA UP11
+       TEXT 'UP11  '
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '
@@ -60,6 +64,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move down from last line in document
        DATA DOWN6
        TEXT 'DOWN6 '
+* STSARW should be set to true
+       DATA DOWN7
+       TEXT 'DOWN7 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -97,6 +104,9 @@ WRP1D  DATA 2,1
        DATA 57
        DATA 57+58
 
+* Mock return workspace address
+MOCKWS DATA 0
+
 PARM   TEXT 'Paragraph index is wrong.'
 PARME
 CHRM   TEXT 'Character index within '
@@ -107,7 +117,9 @@ LINM   TEXT 'Line index within '
 LINME
 CHRLM  TEXT 'Character index within '
        TEXT 'is wrong.'
-CHRLME EVEN
+CHRLME
+TYPM   TEXT 'STSARW should be set.'
+TYPME  EVEN
 
 *
 * Move from third to second line in the
@@ -464,6 +476,38 @@ UP10   MOV  R11,@FRAMRT
        RT
 
 *
+* STSARW should be set after moving
+* the cursor up.
+*
+UP11   MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+57+40
+       MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@LININX
+       LI   R0,40
+       MOV  R0,@CHRLIX
+* R0 of the caller's workspace is a
+* document status byte
+	   LI   R13,MOCKWS
+	   CLR  *R13
+* Act
+       BL   @UPUPSP
+* Assert
+       MOV  @STSARW,R0
+	   MOV  *R13,R1
+       LI   R2,TYPM
+       LI   R3,TYPME-TYPM
+       BLWP @AOC
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
 * Move down within a paragraph.
 *
 DOWN1  MOV  R11,@FRAMRT
@@ -665,5 +709,39 @@ DOWN6  MOV  R11,@FRAMRT
 *
        MOV  @FRAMRT,R11
        RT
+
+*
+* STSARW should be set after moving
+* cursor down.
+*
+DOWN7  MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+40
+       MOV  R0,@CHRPAX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,40
+       MOV  R0,@CHRLIX
+* R0 of the caller's workspace is a
+* document status byte
+	   LI   R13,MOCKWS
+	   CLR  *R13
+* Act
+       BL   @DOWNSP
+* Assert
+       MOV  @STSARW,R0
+       MOV  *R13,R1
+       LI   R2,TYPM
+       LI   R3,TYPME-TYPM
+       BLWP @AOC
+*
+       MOV  @FRAMRT,R11
+       RT
+
+
 
        END
