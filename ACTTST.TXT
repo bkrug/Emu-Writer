@@ -38,6 +38,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * next line too short.
        DATA UP9
        TEXT 'UP9   '
+* Move up from first line in document
+       DATA UP10
+       TEXT 'UP10  '
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '
@@ -54,6 +57,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move down and left to next paragraph.
        DATA DOWN5
        TEXT 'DOWN5 '
+* Move down from last line in document
+       DATA DOWN6
+       TEXT 'DOWN6 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -424,6 +430,40 @@ UP9    MOV  R11,@FRAMRT
        RT
 
 *
+* Attempt to move up from first line 
+* in document, but don't go anywhere.
+*
+UP10   MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,15
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,15
+       MOV  R0,@CHRLIX
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,0
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,15
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
 * Move down within a paragraph.
 *
 DOWN1  MOV  R11,@FRAMRT
@@ -584,6 +624,40 @@ DOWN5  MOV  R11,@FRAMRT
        BLWP @AEQ
 *
        LI   R0,57-1
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
+* Attempt to move down past end of 
+* document, but don't go anywhere.
+*
+DOWN6  MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,57+58+15
+       MOV  R0,@CHRPAX
+       LI   R0,2
+       MOV  R0,@LININX
+       LI   R0,15
+       MOV  R0,@CHRLIX
+* Act
+       BL   @DOWNSP
+* Assert
+       LI   R0,3
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,57+58+15
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
