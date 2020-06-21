@@ -2,6 +2,7 @@
 *
        REF  LINLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
+       REF  STSARW
 
 *
 * Move the cursor up by one line
@@ -75,24 +76,26 @@ ADJCHR
 * If this is first paragraph-line,
 * prev line break is 0.
        MOV  @LININX,R0
-       JNE  UPSP3
+       JNE  ADJC1
        CLR  R5
 * If this is the last paragraph-line,
 * next line break is paragraph-length.
-UPSP3  C    *R4,@LININX
-       JNE  UPSP5
+ADJC1  C    *R4,@LININX
+       JNE  ADJC2
        MOV  *R3,R6
 * Let R7 = new CHRPAX
-UPSP5  MOV  R5,R7
+ADJC2  MOV  R5,R7
        A    @CHRLIX,R7
        C    R7,R6
-       JL   UPSP6
+       JL   ADJC3
        MOV  R6,R7
        DEC  R7
 * update CHRPAX and CHRLIX
-UPSP6  MOV  R7,@CHRPAX
+ADJC3  MOV  R7,@CHRPAX
        S    R5,R7
        MOV  R7,@CHRLIX
+* Edit document status
+       SOC  @STSARW,*R13
 *
 ARRWRT B    *R12
        
