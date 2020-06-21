@@ -21,8 +21,8 @@ START
 * Initialize Program
        BL   @INTMEM
        BL   @INTKEY
-       BL   @INTSCN
        BL   @VDPTXT
+       BL   @INTSCN
        LIMI 2
 *
 * Main program loop while program runs

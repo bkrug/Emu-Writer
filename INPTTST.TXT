@@ -73,6 +73,10 @@ RUNTST BLWP @OPENF
 * be affected.
        BL   @TSTINT
        BL   @TST7
+* Delete the character at the cursor
+* position.
+       BL   @TSTINT
+       BL   @TST18
 * ---
 * User pressed the backspace from middle
 * of paragraph.
@@ -717,6 +721,75 @@ TST7   MOV  R11,R12
 * input from the keyboard.
 KEYL7  BYTE >F0
 KEYL7E
+
+* Test 18
+* -------
+* Insert a character that the system
+* doesn't recognize. Output should not
+* be affected.
+TST18  MOV  R11,R12
+* Set test number.
+       LI   R3,18
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,8
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KYL18
+       LI   R1,KYL18E
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+* Get address of paragraph now
+       MOV  @LINLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Test paragraph contents
+       AI   R1,4
+       LI   R2,EXP18+4
+       LI   R0,EXP18A
+       BL   @STRCMP
+* Test position values.
+* CHRPAX should be unchanged.
+       MOV  @PARINX,R0
+       LI   R1,2
+       LI   R2,LPRINX
+       BL   @COMPVL
+*
+       MOV  @CHRPAX,R0
+       LI   R1,8
+       LI   R2,LCRPAX
+       BL   @COMPVL
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* input from the keyboard.
+* Delete key.
+KYL18  BYTE >03
+KYL18E
+
+* Deleted the "i" from "history"
+EXP18  DATA PAR2A-PAR2-4,WRAP2
+       TEXT 'With a hstory, Wuhan is one of the most '
+       TEXT 'ancient and civilized '
+       TEXT 'metropolitan cities in China. Panlongcheng '
+       TEXT 'is located in '
+       TEXT 'modern-day Huangpi District. During the '
+       TEXT 'Western Zhou, the E '
+       TEXT 'state controlled the present-day '
+       TEXT 'Wuchang area south of the Yangtze River. '
+       TEXT 'After the conquest of the E state, the '
+       TEXT 'present-day Wuhan area was controlled by the '
+       TEXT 'Chu state for the rest of the Western Zhou '
+       TEXT 'and Eastern Zhou periods.'
+EXP18A
+       EVEN
 
 * Test 8
 * ------
@@ -1432,6 +1505,7 @@ STRERR S    R4,R2
        BLWP @MAKETX
 *
        MOV  R2,R0
+       DEC  R0
        LI   R1,STRMS2
        BLWP @MAKETX
 *
