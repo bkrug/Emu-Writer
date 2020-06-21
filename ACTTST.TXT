@@ -38,6 +38,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * next line too short.
        DATA UP9
        TEXT 'UP9   '
+* Move down within a paragraph.
+       DATA DOWN1
+       TEXT 'DOWN1 '
+* Move down to next paragraph.
+* Move down and left within a paragraph.
+* Move down and left to next paragraph.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -399,6 +405,36 @@ UP9    MOV  R11,@FRAMRT
        BLWP @AEQ
 *
        LI   R0,31
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
+
+DOWN1  MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+57+40
+       MOV  R0,@CHRPAX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,40
+       MOV  R0,@CHRLIX
+* Act
+       BL   @DOWNSP
+* Assert
+       LI   R0,2
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+40
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM

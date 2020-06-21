@@ -1,19 +1,19 @@
        DEF  UPUPSP,DOWNSP
 *
        REF  LINLST
-	   REF  PARINX,CHRPAX,LININX,CHRLIX
+       REF  PARINX,CHRPAX,LININX,CHRLIX
 
 UPUPSP MOV  R11,R12
 *
        MOV  @LININX,R0
-	   JEQ  UPSP1
+       JEQ  UPSP1
 * Move up within same paragraph
-	   DEC  @LININX
+       DEC  @LININX
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
 *
-	   JMP  UPSP2
+       JMP  UPSP2
 * Move up to previous paragraph
 UPSP1  DEC  @PARINX
 * Let R3 = Address of paragraph
@@ -21,42 +21,53 @@ UPSP1  DEC  @PARINX
        BL   @PARADR
 *
        MOV  *R4,@LININX
-UPSP2  
+UPSP2  JMP  ADJCHR
+
+*
+*
+*
+DOWNSP RT
+
+*
+* Adjust CHRPAX and CHRLIX
+*
+ADJCHR
 * Let R5 = address of prev line break
 * Let R6 = address of next iine break
        MOV  @LININX,R6
-	   SLA  R6,1
-	   C    *R6+,*R6+
-	   A    R4,R6
-	   MOV  R6,R5
-	   DECT R5
+       SLA  R6,1
+       C    *R6+,*R6+
+       A    R4,R6
+       MOV  R6,R5
+       DECT R5
 * Let R5 = prev line break
 * Let R6 = next line break
        MOV  *R5,R5
-	   MOV  *R6,R6
+       MOV  *R6,R6
 * If this is first paragraph-line,
 * prev line break is 0.
        MOV  @LININX,R0
-	   JNE  UPSP3
-	   CLR  R5
+       JNE  UPSP3
+       CLR  R5
 * If this is the last paragraph-line,
 * next line break is paragraph-length.
 UPSP3  C    *R4,@LININX
-	   JNE  UPSP5
-	   MOV  *R3,R6
-* Let R5 = new CHRPAX
-UPSP5  A    @CHRLIX,R5
-	   C    R5,R6
-	   JL   UPSP6
-	   MOV  R6,R5
-	   DEC  R5
-*
-UPSP6  MOV  R5,@CHRPAX
+       JNE  UPSP5
+       MOV  *R3,R6
+* Let R7 = new CHRPAX
+UPSP5  MOV  R5,R7
+       A    @CHRLIX,R7
+       C    R7,R6
+       JL   UPSP6
+       MOV  R6,R7
+       DEC  R7
+* update CHRPAX and CHRLIX
+UPSP6  MOV  R7,@CHRPAX
+       S    R5,R7
+       MOV  R7,@CHRLIX
 *
        B    *R12
-	   
-DOWNSP RT
-
+       
 *
 * Get paragraph address and wrap list
 * address.
@@ -75,8 +86,8 @@ PARADR
        MOV  *R3,R3
 * Set R4
        MOV  R3,R4
-	   INCT R4
-	   MOV  *R4,R4
+       INCT R4
+       MOV  *R4,R4
 *
        RT
 
