@@ -34,15 +34,21 @@ MAIN
        BLWP @INPUT
 * Wrap the previous paragraph if needed
        MOV  R0,R1
-       COC  @STSENT,R1
-	   JNE  MAIN1
-	   MOV  @PARINX,R0
-	   DEC  R0
-	   BLWP @WRAP
-* Wrap the current paragraph
-MAIN1  MOV  @PARINX,R0
+	   MOV  R0,R2
+       COC  @STSENT,R2
+       JNE  MAIN1
+       MOV  @PARINX,R0
+       DEC  R0
+       BLWP @WRAP
+* Wrap the current paragraph if needed
+MAIN1  COC  @STSENT,R2
+       JEQ  MAIN2
+       COC  @STSTYP,R2
+       JNE  MAIN3
+MAIN2  MOV  @PARINX,R0
        BLWP @WRAP
        MOV  R1,R0
+MAIN3
 * Update cursor and window positions
        BLWP @POSUPD
 * Redisplay the screen
