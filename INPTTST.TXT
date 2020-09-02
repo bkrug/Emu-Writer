@@ -16,8 +16,8 @@
        REF  INSTMD
 
 * constants
-       REF  STSTYP,STSENT,STSPAR,STSWIN
-       REF  STSARW
+       REF  STSTYP,STSENT,STSDCR
+       REF  STSPAR,STSWIN,STSARW
 
 *
 INSKEY EQU  >04
@@ -823,6 +823,8 @@ TST19  MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
+* Save document status
+       MOV  R0,R5
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,0
@@ -855,7 +857,13 @@ TST19  MOV  R11,R12
        LI   R2,PARLEN
        BL   @COMPVL
 *
-       BL   @PSUCCS
+       COC  @STSDCR,R5
+       JEQ  TST19A
+       LI   R0,TST19M
+       LI   R1,TST19N-TST19M
+       BLWP @PRINTL
+*
+TST19A BL   @PSUCCS
 *
        B    *R12
 
@@ -869,7 +877,9 @@ EXP19  DATA EXP19A-EXP19-4,WRAP0
        TEXT 'History'
        TEXT 'Antiquity'
 EXP19A
-       EVEN
+TST19M TEXT 'Delete Carriage Return '
+       TEXT 'bit should be set.'
+TST19N EVEN
 
 * Test 8
 * ------
