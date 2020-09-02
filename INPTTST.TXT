@@ -1617,7 +1617,7 @@ VDPWRT RT
 
 ****************************************
 
-SPACE  BSS  >800
+SPACE  BSS  >1000
 SPCEND
 
        END

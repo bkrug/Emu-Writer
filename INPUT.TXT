@@ -3,7 +3,7 @@
        REF  LINLST,FMTLST,MGNLST
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
-       REF  BUFALC,BUFREE,BUFCPY
+       REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  VDPADR,VDPWRT
 
 * Key stroke routines in another file
@@ -303,7 +303,7 @@ DELC1  MOVB *R5+,*R4+
 * delete nothing.
 DELC2  MOV  @LINLST,R9
        MOV  @PARINX,R10
-	   INC  R10
+       INC  R10
        C    R10,*R9
        JEQ  DELC3
 * Merge two paragraphs
@@ -381,7 +381,8 @@ ADDT1  C    @INPTMD,@INPTXT
        RTWP
 * Set document status bit
 ADDT2  SOC  @STSTYP,*R13
-* Get paragraph address
+* Let R1 = address of paragraph's
+* entry in the paragraph list
        MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
@@ -390,73 +391,52 @@ ADDT2  SOC  @STSTYP,*R13
        JEQ  INSERT
 * R1 already contains address in
 * paragraph list.
+* Let R0 = address of paragraph.
 * If Overwrite position is at the end of
 * the paragraph, then act as if this
 * were insert mode.
-       MOV  *R1,R3
-       C    *R3,@CHRPAX
+       MOV  *R1,R0
+       C    *R0,@CHRPAX
        JEQ  INSERT
 * Overwrite text
-* R3 contains address of paragraph.
+* R0 contains address of paragraph.
 * Set it to the address to overwrite
 * text at.
-       C    *R3+,*R3+
-       A    @CHRPAX,R3
+       C    *R0+,*R0+
+       A    @CHRPAX,R0
        JMP  RPLTXT
-* Check if there is space to insert a
-* new character.
-* Let R1 be the address in paragraph
-* list of current paragraph.
-* Let R3 be the address of the
+* Grow the paragraph's allocated
+* block, if necessary.
+* Let R0 be the address of the
 * paragraph.
-* Let R5 be the amount of new space
-* required.
+* Let R1 be the length of the paragraph
+* plus one new character plus four-byte
+* paragraph header.
 * Let R6 be the address in the
 * paragraph list.
 INSERT MOV  R1,R6
-       MOV  *R6,R3
-       MOV  R3,R4
-       DECT R4
-       MOV  *R4,R4
-       SZC  @BLKUSE,R4
-       DECT R4
-       MOV  *R3,R5
-       AI   R5,5
-       C    R5,R4
-       JLE  ADDTX1
-* Allocate more space
-       AI   R5,15
-       MOV  R5,R0
-       BLWP @BUFALC
-       MOV  R0,R1
-       MOV  R3,R0
-       MOV  R5,R2
-       AI   R2,-16
-       BLWP @BUFCPY
-       MOV  R1,R3
-       BLWP @BUFREE
-       MOV  R3,*R6
+       MOV  *R6,R0
+       MOV  *R0,R1
+       AI   R1,5
+       BLWP @BUFGRW
+       MOV  R0,*R6
 * Insert character.
-* Let R4 contain address following
+* Let R2 contain address following
 * the paragraph
+       MOV  *R0,R2
+       S    @CHRPAX,R2
 * Increase paragraph length by one.
-* Change R3 to insertion address.
-ADDTX1
-       MOV  *R3,R4
-       INC  *R3
-       C    *R3+,*R3+
-       A    R3,R4
-       A    @CHRPAX,R3
-* Copy
-       MOV  R4,R5
-       DEC  R5
-ADDCPY MOVB *R5,*R4
-       DEC  R4
-       DEC  R5
-       C    R5,R3
-       JHE  ADDCPY
+       INC  *R0
+* Let R0 = insertion address.
+       C    *R0+,*R0+
+       A    @CHRPAX,R0
+* Let R1 = next address.
+       MOV  R0,R1
+       INC  R1
+       BLWP @BUFCPY
+RPLTXT
 * put keystroke in new space
-RPLTXT MOVB *R10,*R3
+       MOVB *R10,*R0
 * Increase character indexes.
        INC  @CHRPAX
 *
