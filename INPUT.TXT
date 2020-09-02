@@ -312,50 +312,36 @@ DELC2  MOV  @LINLST,R9
        MOV  R1,R2
        INCT R2
        MOV  *R2,R4
-* Let R0 = space to reserve
-       MOV  *R3,R0
-       A    *R4,R0
-       C    *R0+,*R0+
-* Allocate space for new paragraph
-       BLWP @BUFALC
-* Let R5 = address of new paragraph
-       MOV  R0,R5
-* Set length of new paragraph
-       MOV  *R3,*R5
-       A    *R4,*R5
-* Allocate space for wrap list
-       LI   R0,1
-       BLWP @ARYALC
-* Record new wrap list address
-       MOV  R0,@2(5)
-* Copy bytes from first old paragraph
-       MOV  R3,R0
-       C    *R0+,*R0+
-       MOV  R5,R1
+* Let R1 = space to reserve
+       MOV  *R3,R1
+       A    *R4,R1
        C    *R1+,*R1+
-       MOV  *R3,R2
-       BLWP @BUFCPY
+* Grow memory block for first paragraph
+       MOV  R3,R0
+       BLWP @BUFGRW
+* Let R3 = address of new paragraph
+       MOV  R0,R3
 * Copy bytes from second old paragraph
        MOV  R4,R0
        C    *R0+,*R0+
+	   MOV  R3,R1
+	   C    *R1+,*R1+
        A    *R3,R1
        MOV  *R4,R2
        BLWP @BUFCPY
-* Deallocate old wrap lists
-       MOV  @2(3),R0
-       BLWP @BUFREE
+* Set length of new paragraph
+       A    *R4,*R3
+* Deallocate wrap list for second para
        MOV  @2(4),R0
        BLWP @BUFREE
-* Deallocate old paragraphs
-       MOV  R3,R0
-       BLWP @BUFREE
+* Deallocate second paragraph
        MOV  R4,R0
        BLWP @BUFREE
-* Put new paragraph in paragraph list
+* Put merged paragraph in paragraph list
        MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
-       MOV  R5,*R1
+       MOV  R3,*R1
 * Remove one element from paragraph list
        MOV  @LINLST,R0
        MOV  @PARINX,R1
@@ -437,7 +423,7 @@ INSERT MOV  R1,R6
 RPLTXT
 * put keystroke in new space
        MOVB *R10,*R0
-* Increase character indexes.
+* Increase character index.
        INC  @CHRPAX
 *
        B    @INPTDN
