@@ -4,6 +4,7 @@
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
+       REF  BUFSRK
        REF  VDPADR,VDPWRT
 
 * Key stroke routines in another file
@@ -297,6 +298,11 @@ DELCHR
 DELC1  MOVB *R5+,*R4+
        C    R4,R6
        JLE  DELC1
+* Shrink memory block if needed.
+       MOV  R3,R0
+       MOV  *R3,R1
+       C    *R1+,*R1+
+       BLWP @BUFSRK
 *
        RT
 * If this is the end of document,
@@ -324,8 +330,8 @@ DELC2  MOV  @LINLST,R9
 * Copy bytes from second old paragraph
        MOV  R4,R0
        C    *R0+,*R0+
-	   MOV  R3,R1
-	   C    *R1+,*R1+
+       MOV  R3,R1
+       C    *R1+,*R1+
        A    *R3,R1
        MOV  *R4,R2
        BLWP @BUFCPY
