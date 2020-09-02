@@ -249,6 +249,18 @@ ISENTR
 * Adjust CHRPAX
 * PARINX was incremented previously.
 ENTR2  CLR  @CHRPAX
+* Shrink the previous paragraph.
+* Let R0 = address of paragraph.
+* Let R1 = required space.
+       MOV  @LINLST,R0
+       MOV  @PARINX,R1
+	   DEC  R1
+       BLWP @ARYADR
+	   MOV  *R1,R0
+	   MOV  *R0,R1
+	   C    *R1+,*R1+
+*
+       BLWP @BUFSRK
 * Set document-status bit
        SOC  @STSENT,*R13
 * We processed a key, so move KEYRD
