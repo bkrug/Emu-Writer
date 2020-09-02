@@ -19,8 +19,8 @@
        REF  BLKUSE,USRISR,SIX
        REF  ENDINP
        REF  CHRMIN,CHRMAX
-       REF  STSTYP,STSENT,STSPAR,STSWIN
-       REF  STSARW
+       REF  STSTYP,STSENT,STSDCR
+       REF  STSPAR,STSWIN,STSARW
        REF  CURINS,CUROVR
 
 *
@@ -320,6 +320,8 @@ DELC2  MOV  @LINLST,R9
        C    R10,*R9
        JEQ  DELC3
 * Merge two paragraphs
+* Set document status
+       SOC  @STSDCR,*R13
 * Let R2 = Address in paragraph list
 * Let R4 = Address of second paragraph
        MOV  R1,R2
