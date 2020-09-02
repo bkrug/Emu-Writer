@@ -38,12 +38,14 @@ FORTY  DATA 40
 STSTYP DATA >1
 * Enter Pressed
 STSENT DATA >2
+* Deleted Carriage Return
+STSDCR DATA >4
 * Paragraph Line Count Changed
-STSPAR DATA >4
+STSPAR DATA >8
 * Window Moved
-STSWIN DATA >8
+STSWIN DATA >10
 * Arrow Key Pressed
-STSARW DATA >10
+STSARW DATA >20
 * Insufficient Memory Error
 ERRMEM DATA >8000
 

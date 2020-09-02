@@ -12,7 +12,8 @@
        REF  LINLST,FMTLST,MGNLST
        REF  PARINX
        REF  WINOFF,WINPAR,WINLIN
-       REF  STSTYP,STSENT,STSPAR,STSWIN
+       REF  STSTYP,STSENT,STSDCR
+       REF  STSPAR,STSWIN
        REF  ERRMEM
        REF  FORTY
 
@@ -56,7 +57,7 @@ DISP1  MOV  R9,R3
        A    R2,R5
 DISP2
 * Decrease remaining paragraph-lines
-       DEC  R6	   
+       DEC  R6       
 * Write a row of text
        BL   @WRTLIN
 * Track screen-row
@@ -90,12 +91,14 @@ NOTHIN
        JEQ  NOT1
        COC  @STSPAR,R0
        JEQ  NOT1
+       COC  @STSDCR,R0
+       JEQ  NOT1
        COC  @STSENT,R0
        JEQ  NOT1
        COC  @STSWIN,R0
        JEQ  NOT1
 * Nothing to redraw
-	   RTWP
+       RTWP
 * Redraw some portion of the screen
 NOT1   RT
 
@@ -198,7 +201,7 @@ PARADR SLA  R3,1
 WRTLIN MOV  R11,R12
 * Set R0 & R1 parameters for starting
 * position and length of text
-       BL   @GETALG	   
+       BL   @GETALG       
        BL   *R7
 * Length must be in 0-40 range
        MOV  R1,R1
@@ -237,8 +240,8 @@ WRTL2
 GETALG LI   R7,ALGLST
 * If R2 != 0, add 4 to R7
        MOV  R2,R2
-	   JEQ  ALG1
-	   C    *R7+,*R7+
+       JEQ  ALG1
+       C    *R7+,*R7+
 * If R6 != 0, add 2 to R7
 ALG1   MOV  R6,R6
        JEQ  ALG2
@@ -353,6 +356,8 @@ NXTPAR MOV  R11,R12
        JEQ  NXT1
        COC  @STSWIN,R0
        JEQ  NXT1
+       COC  @STSDCR,R0
+       JEQ  NXT1
 * Don't write next paragraph
 NXTNO  LI   R0,-1
        B    *R12
@@ -364,12 +369,12 @@ NXT1
 * Don't read past document-end
        MOV  @LINLST,R0
        C    R9,*R0
-	   JL   NXTYES
+       JL   NXTYES
 * Clear remaining screen
-	   LI   R0,24
+       LI   R0,24
        S    R10,R0
-	   MPY  @FORTY,R0
-	   BL   @VDPSPC
+       MPY  @FORTY,R0
+       BL   @VDPSPC
 *
        JMP  NXTNO
 
