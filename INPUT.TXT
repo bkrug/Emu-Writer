@@ -240,11 +240,7 @@ ISENTR
        MOV  R4,*R5+
        MOV  R3,*R5+
 * Copy part of old paragraph.
-* TODO: If you remove the JEQ command
-* the system will freeze for TST14.
-* Can't this logic be inside of BUFCPY?
        MOV  R4,R2
-       JEQ  ENTR2
        MOV  R1,R0
        C    *R0+,*R0+
        A    @CHRPAX,R0
