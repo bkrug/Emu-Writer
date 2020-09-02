@@ -35,9 +35,9 @@
 * Areas for workspace registers
 *
        TEXT 'WORKSPCE'
-STRWS  BSS  >20
 LOOKWS
-ARRYWS BSS  >20
+ARRYWS BSS  >10
+STRWS  BSS  >20
 WRAPWS
 INPTWS
 POSUWS
