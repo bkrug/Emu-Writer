@@ -1,8 +1,7 @@
        DEF  INPUT
 *
        REF  LINLST,FMTLST,MGNLST
-       REF  ARYALC,ARYADD,ARYINS,ARYDEL
-       REF  ARYADR
+       REF  ARYALC,ARYINS,ARYDEL,ARYADR
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  BUFSRK
        REF  VDPADR,VDPWRT
@@ -254,11 +253,11 @@ ENTR2  CLR  @CHRPAX
 * Let R1 = required space.
        MOV  @LINLST,R0
        MOV  @PARINX,R1
-	   DEC  R1
+       DEC  R1
        BLWP @ARYADR
-	   MOV  *R1,R0
-	   MOV  *R0,R1
-	   C    *R1+,*R1+
+       MOV  *R1,R0
+       MOV  *R0,R1
+       C    *R1+,*R1+
 *
        BLWP @BUFSRK
 * Set document-status bit
@@ -333,6 +332,8 @@ DELC2  MOV  @LINLST,R9
 * Grow memory block for first paragraph
        MOV  R3,R0
        BLWP @BUFGRW
+       CI   R0,>FFFF
+       JEQ  RTERR
 * Let R3 = address of new paragraph
        MOV  R0,R3
 * Copy bytes from second old paragraph
@@ -419,6 +420,8 @@ INSERT MOV  R1,R6
        MOV  *R0,R1
        AI   R1,5
        BLWP @BUFGRW
+       CI   R0,>FFFF
+       JEQ  RTERR
        MOV  R0,*R6
 * Insert character.
 * Let R2 contain address following
