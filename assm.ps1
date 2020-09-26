@@ -14,7 +14,8 @@ ForEach($file in $files) {
 }
 
 # Add TIFILES header to all object files
-$objectFiles = Get-ChildItem ".\" -Filter *.obj
+$objectFiles = Get-ChildItem ".\" -Filter *.obj |
+               Where-Object { $_.Name -ne 'ARRAY.obj' -and $_.Name -ne 'MEMBUF.obj' }
 ForEach($objectFile in $objectFiles) {
     xdm99.py -T $objectFile.Name -f DIS/FIX80 -o $objectFile.Name
 }
