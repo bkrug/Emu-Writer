@@ -1,4 +1,6 @@
 *.L
 *.O
+*.lst
+*.obj
 PRINTOUT
 TESTRESULT.TXT
