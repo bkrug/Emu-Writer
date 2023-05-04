@@ -8,7 +8,7 @@
 * Constants
        REF  SPACE,DASH,SIX
        REF  FMTLEN,MGNLEN,PGWDTH
-	   REF  ERRMEM,STSPAR
+       REF  ERRMEM,STSPAR
 * Variables
        REF  FMTEND,MGNEND,LNWDT1,LNWDTH
 
@@ -250,12 +250,18 @@ CHRCT5 CLR  R0
        JEQ  WRP2
 * Find last invisible character in early
 * line
+       MOV  R4,R0
 WRP1   DEC  R4
        CB   *R4,@SPACE
        JEQ  WRP3
        CB   *R4,@DASH
        JEQ  WRP3
-       JMP  WRP1
+       C    R4,R3
+       JH   WRP1
+* The word at the beginning of this line
+* cannot fit on one line. Break it in middle.
+       MOV  R0,R4
+       JMP  WRP4
 * Find first visible character in next
 * line
 WRP2   INC  R4

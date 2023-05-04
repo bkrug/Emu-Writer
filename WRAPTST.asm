@@ -29,6 +29,8 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'WRP10 '
        DATA WRP11
        TEXT 'WRP11 '
+       DATA WRP12
+       TEXT 'WRP12 '       
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -93,7 +95,7 @@ WRP1
        MOV  R0,@MGNLST
 * Act
        LI   R0,0
-	   LI   R1,0
+       LI   R1,0
        BLWP @WRAP
 * Assert
 *  No error should be detected
@@ -109,7 +111,7 @@ WRP1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AZC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE1
        MOV  @PAR1A+2,R1
        LI   R2,WRPE1E-WRPE1
@@ -191,7 +193,7 @@ WRP2
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE2
        MOV  @PAR2A+2,R1
        LI   R2,WRPE2E-WRPE2
@@ -271,7 +273,7 @@ WRP3
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AZC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE3
        MOV  @PAR3A+2,R1
        LI   R2,WRPE3E-WRPE3
@@ -350,7 +352,7 @@ WRP4
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE4
        MOV  @PAR4A+2,R1
        LI   R2,WRPE4E-WRPE4
@@ -432,7 +434,7 @@ WRP5
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE5
        MOV  @PAR5A+2,R1
        LI   R2,WRPE5E-WRPE5
@@ -515,7 +517,7 @@ WRP6
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE6
        MOV  @PAR6A+2,R1
        LI   R2,WRPE6E-WRPE6
@@ -614,7 +616,7 @@ WRP7
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE7
        MOV  @PAR7A+2,R1
        LI   R2,WRPE7E-WRPE7
@@ -711,7 +713,7 @@ WRP8
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE8
        MOV  @PAR8A+2,R1
        LI   R2,WRPE8E-WRPE8
@@ -799,7 +801,7 @@ WRP9
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE9
        MOV  @PAR9A+2,R1
        LI   R2,WRPE9E-WRPE9
@@ -895,7 +897,7 @@ WRP10
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE10
        MOV  @PAR10A+2,R1
        LI   R2,WRE10E-WRPE10
@@ -1003,7 +1005,7 @@ WRP11
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
-*  Wrap list should match expected
+* Wrap list should match expected
        LI   R0,WRPE11
        MOV  @PAR11A+2,R1
        LI   R2,WRE11E-WRPE11
@@ -1064,6 +1066,92 @@ MRGN11 DATA 4,3
 * 2.5-inch margins,
 * 0.5-inch hanging indent
        DATA 10,>00F6,>3232,>1414
+
+*
+* Assume a page width of eight inches
+* with 1 inch margins,
+* 10 CPI,
+* One word is longer than 60 characters.
+*
+WRP12
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL12
+       LI   R3,WRE12E-WRPL12
+       LI   R4,PAR12A
+       BL   @CPYWRP
+*
+       LI   R0,PARL12
+       MOV  R0,@LINLST
+       LI   R0,FMT12
+       MOV  R0,@FMTLST
+       LI   R0,MRGN12
+       MOV  R0,@MGNLST
+* Act
+       LI   R0,2
+       LI   R1,0
+       BLWP @WRAP
+* Assert
+* R1 contains document status
+       MOV  @ERRMEM,R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+       BLWP @AZC
+* Document status reports line count
+* changed
+* R1 contains document status
+       MOV  @STSPAR,R0
+       LI   R2,MPARC
+       LI   R3,MPARCE-MPARC
+       BLWP @AOC
+* Wrap list should match expected
+       LI   R0,WRPE12
+       MOV  @PAR12A+2,R1
+       LI   R2,WRE12E-WRPE12
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL12 DATA 4,1
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA PAR12A
+       DATA FAKEAD
+
+PAR12A DATA 240
+       DATA WRPL12
+       TEXT 'The alphabet is '
+       TEXT 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmn'
+       TEXT 'opqrstuvwxyz. That is a different '
+       TEXT 'alphabet than some languages. German '
+       TEXT 'includes more letters, and the imaginary '
+       TEXT 'language chut-in-puut-orange has letters '
+       TEXT 'that have not been inveted yet.'
+       EVEN
+WRPL12 DATA 4,1
+       DATA 38,104,157,221
+WRPE12 DATA 6,1
+       DATA 16
+       DATA 16+40
+       DATA 16+40+34
+       DATA 16+40+34+37
+       DATA 16+40+34+37+41
+       DATA 16+40+34+37+41+41
+WRE12E
+
+FMT12  DATA 0,3
+
+MRGN12 DATA 1,3
+* 2-inch margins
+       DATA 0,>0000,>2828,>1414
 
 ********
 
