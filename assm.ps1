@@ -42,6 +42,7 @@ xas99.py -l `
     CONST.obj.temp `
     ARRAY.obj.temp `
     WRAP.obj.temp `
+    ACT.obj.temp `
     -o INPTRUN.obj
 
 xas99.py -l `
