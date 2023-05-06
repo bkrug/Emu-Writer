@@ -15,6 +15,17 @@ ForEach($file in $files) {
 }
 
 write-host 'Linking Unit Test Runners'
+
+xas99.py -l `
+    TESTFRAM.obj.temp `
+    ACTTST.obj.temp `
+    ACT.obj.temp `
+    MEMBUF.obj.temp `
+    VAR.obj.temp `
+    CONST.obj.temp `
+    ARRAY.obj.temp `
+    -o ACTRUN.obj
+
 xas99.py -l `
     TESTFRAM.obj.temp `
     DISPTSTA.obj.temp `
