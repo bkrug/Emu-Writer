@@ -3,6 +3,10 @@
        REF  LOOKWS,LINLST
 *
 
+* This data is a work around for the "first DATA word is 0 bug"
+* TODO: Write an issue to Ralph B.'s github
+       DATA >1234
+
 * Methods that look backwards or
 * forwards by an arbitrary number of
 * document lines. Given a paragraph and

@@ -23,6 +23,9 @@
        REF  STSPAR,STSWIN,STSARW
        REF  CURINS,CUROVR
 
+* This data is a work around for the "first DATA word is 0 if REFed bug"
+* TODO: Write an issue to Ralph B.'s github
+       DATA >1234
 *
 * Process the new keystrokes
 *

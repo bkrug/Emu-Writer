@@ -2,5 +2,6 @@
 *.O
 *.lst
 *.obj
+*.obj.temp
 PRINTOUT
 TESTRESULT.TXT

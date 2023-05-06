@@ -12,6 +12,10 @@
 * Variables
        REF  FMTEND,MGNEND,LNWDT1,LNWDTH
 
+* This data is a work around for the "first DATA word is 0 bug"
+* TODO: Write an issue to Ralph B.'s github
+       DATA >1234
+
 *
 * Wrap
 *
