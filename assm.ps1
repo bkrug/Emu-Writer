@@ -14,7 +14,7 @@ ForEach($file in $files) {
     xas99.py -q -S -R $file.Name -L $listFile -o $objFile
 }
 
-write-host 'Linking Test Runners'
+write-host 'Linking Unit Test Runners'
 xas99.py -l `
     TESTFRAM.obj.temp `
     DISPTSTA.obj.temp `
@@ -43,14 +43,6 @@ xas99.py -l `
     ARRAY.obj.temp `
     WRAP.obj.temp `
     -o INPTRUN.obj
-
-xas99.py -l `
-    KEYTST.obj.temp `
-    TESTUTIL.obj.temp `
-    KEY.obj.temp `
-    VAR.obj.temp `
-    CONST.obj.temp `
-    -o KEYRUN.obj
 
 xas99.py -l `
     TESTFRAM.obj.temp `
@@ -86,6 +78,15 @@ xas99.py -l `
     CONST.obj.temp `
     ARRAY.obj.temp `
     -o WRAPRUN.obj
+
+write-host 'Linking Key Buffer Test Program'
+xas99.py -l `
+    KEYTST.obj.temp `
+    TESTUTIL.obj.temp `
+    KEY.obj.temp `
+    VAR.obj.temp `
+    CONST.obj.temp `
+    -o KEYRUN.obj
 
 write-host 'Linking Main Program'
 xas99.py -l `
