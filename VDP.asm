@@ -17,26 +17,16 @@ BIT0   DATA >8000
 BIT1   DATA >4000
 
 *
-* Set Text Mode
+* Set Text Mode and Colors
 *
 * Output:
 * R0
 VDPTXT
+       MOVB @REGLST+1,@REG1CP
+       LI   R1,REGLST
+VDPT2
 * VDP Reg 1, needs to be set to >F0
-       LI   R0,>01F0
-* Specify that we are changing a registers
-       SOC  @BIT0,R0
-       SZC  @BIT1,R0
-* Write new value to copy byte
-       SWPB R0
-       MOVB R0,@REG1CP
-* Write new value to VDP register
-       MOVB R0,@VDPWA
-* Specify VDP register to change
-       SWPB R0
-       MOVB R0,@VDPWA
-* Set Color in Reg 7
-       LI   R0,>07FD
+       MOV  *R1+,R0
 * Specify that we are changing a registers
        SOC  @BIT0,R0
        SZC  @BIT1,R0
@@ -47,8 +37,13 @@ VDPTXT
 * Specify VDP register to change
        SWPB R0
        MOVB R0,@VDPWA
+* Loop
+       CI   R1,REGEND
+       JL   VDPT2
 *
        RT
+REGLST DATA >01F0,>07FD
+REGEND
 
 *
 * Set VDP write address 
