@@ -35,6 +35,18 @@ VDPTXT
 * Specify VDP register to change
        SWPB R0
        MOVB R0,@VDPWA
+* Set Color in Reg 7
+       LI   R0,>07FD
+* Specify that we are changing a registers
+       SOC  @BIT0,R0
+       SZC  @BIT1,R0
+* Write new value to copy byte
+       SWPB R0
+* Write new value to VDP register
+       MOVB R0,@VDPWA
+* Specify VDP register to change
+       SWPB R0
+       MOVB R0,@VDPWA
 *
        RT
 
