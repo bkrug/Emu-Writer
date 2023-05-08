@@ -114,6 +114,7 @@ xas99.py -l `
     VDP.obj.temp `
     LOOK.obj.temp `
     ACT.obj.temp `
+    PRINT.obj.temp `
     VAR.obj.temp `
     END.obj.temp `
     -o MAINRUN.obj

@@ -7,11 +7,7 @@
 *
        REF  SPACE
 
-VDPWA  EQU  >8C02        VDP RAM write address
-VDPRD  EQU  >8800        VDP RAM read data
-VDPWD  EQU  >8C00        VDP RAM write data
-VDPSTA EQU  >8802        VDP RAM status
-REG1CP EQU  >83D4        Address holding a copy of VDP Register 1
+       COPY 'CPUADR.asm'
 
 BIT0   DATA >8000
 BIT1   DATA >4000
