@@ -32,7 +32,7 @@ PDATA  BYTE 0
        DATA >0000
        BYTE 0
        BYTE PDATA1-PDATA0
-PDATA0 TEXT 'DSK2.PIO'
+PDATA0 TEXT 'CLIP'
 PDATA1
 OUTP   BYTE 13,10
        TEXT 'Some text sent to the printer.'
@@ -46,6 +46,8 @@ WRITE  BYTE >03
        EVEN
 
 PRINT  MOV  R11,R12
+* Turn off interrupts
+       LIMI 0
 * Write PAB data to VDP RAM
        LI   R0,PAB
        BL   @VDPADR
@@ -56,13 +58,10 @@ PRINT  MOV  R11,R12
        LI   R6,PAB+9
        MOV  R6,@PNTR
 * Open file
+       SB   @STATUS,@STATUS
        BLWP @DSRLNK
        DATA 8
-* TODO: It doesn't seem like we can
-* do error checks after opening the file.
-* We'll have to confirm that the file exists
-* some other way 
-*
+       BL   @CHKERR
 * Change I/O op-code to write
        LI   R0,PAB
        BL   @VDPADR
@@ -94,6 +93,7 @@ PRINT  MOV  R11,R12
        DATA 8
        BL   @CHKERR
 *
+       LIMI 2
        B    *R12
 
 MSG0   BYTE MSG1-MSG0-1
@@ -147,4 +147,5 @@ CHKE1  LI   R0,PAB+1
 * Clear error
        SB   @STATUS,@STATUS
 * Return to caller. Skip rest of print routine.
+       LIMI 2
        B    *R12
