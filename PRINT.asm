@@ -83,23 +83,43 @@ PRINT  MOV  R11,R12
        MOV  R4,R6
        AI   R6,4
        MOV  R5,R7
-       AI   R7,4       
-* Specify number of characters to write
-       LI   R0,PAB+5
-       BL   @VDPADR
-       MOVB @1(R7),@VDPWD
+       INCT R7
+* Let R5 = address of last entry in wrap list
+       MOV  *R5,R0
+       INC  R0
+       SLA  R0,1
+       A    R0,R5
+PRINT1
+* TODO: Calculate R8 differently for first and last lines
+* Let R8 = length of line
+       CLR  R8
+       S    *R7+,R8
+       A    *R7,R8
 * Write record to VDP RAM
        LI   R0,PABBUF
        BL   @VDPADR
        MOV  R6,R0
-       MOV  *R7,R1
+       MOV  R8,R1
        BL   @VDPWRT
+* In PAB, specify number of characters to write
+       LI   R0,PAB+5
+       BL   @VDPADR
+       SWPB R8
+       MOVB R8,@VDPWD
 * Write one record
        MOV  R3,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
-* Change I/O op-code to close
+* Let R6 = address of next line in paragraph
+       MOV  R4,R6
+       AI   R6,4
+       A    *R7,R6
+* End of paragraph?
+* TODO: Somehow this isn't leaving the loop
+       C    R7,R5
+       JL   PRINT1       
+* Yes, change I/O op-code to close
        LI   R0,PAB
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
