@@ -2,6 +2,7 @@
 *
        REF  DSRLNK
        REF  VDPADR,VDPWRT
+       REF  LINLST,ARYADR
 
 PABBUF EQU  >1000
 PAB    EQU  >F80
@@ -55,8 +56,8 @@ PRINT  MOV  R11,R12
        LI   R1,PDATA1-PDATA
        BL   @VDPWRT
 * Store pointer name length
-       LI   R6,PAB+9
-       MOV  R6,@PNTR
+       LI   R3,PAB+9
+       MOV  R3,@PNTR
 * Open file
        SB   @STATUS,@STATUS
        BLWP @DSRLNK
@@ -66,20 +67,35 @@ PRINT  MOV  R11,R12
        LI   R0,PAB
        BL   @VDPADR
        MOVB @WRITE,@VDPWD
+* Let R2 = current paragraph
+       CLR  R2
+* Let R1 = address of paragraph's
+* entry in the paragraph list
+       MOV  @LINLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R4 = address of paragraph
+* Let R5 = address of wrap list
+* Let R6 = address within paragraph
+* Let R7 = address within wrap list
+       MOV  *R1,R4
+       MOV  @2(R4),R5
+       MOV  R4,R6
+       AI   R6,4
+       MOV  R5,R7
+       AI   R7,4       
 * Specify number of characters to write
        LI   R0,PAB+5
        BL   @VDPADR
-       LI   R0,OUTP1-OUTP
-       SWPB R0
-       MOVB R0,@VDPWD
+       MOVB @1(R7),@VDPWD
 * Write record to VDP RAM
        LI   R0,PABBUF
        BL   @VDPADR
-       LI   R0,OUTP
-       LI   R1,OUTP1-OUTP
+       MOV  R6,R0
+       MOV  *R7,R1
        BL   @VDPWRT
 * Write one record
-       MOV  R6,@PNTR
+       MOV  R3,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
@@ -88,7 +104,7 @@ PRINT  MOV  R11,R12
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
 * Close the file
-       MOV  R6,@PNTR
+       MOV  R3,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
