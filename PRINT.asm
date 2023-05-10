@@ -72,7 +72,7 @@ PRINT  MOV  R11,R12
 * Let R1 = address of paragraph's
 * entry in the paragraph list
        MOV  @LINLST,R0
-       MOV  R2,R1
+PRINT1 MOV  R2,R1
        BLWP @ARYADR
 * Let R4 = address of paragraph
 * Let R5 = address of wrap list
@@ -83,7 +83,7 @@ PRINT  MOV  R11,R12
        MOV  R4,R6
        AI   R6,4
        CLR  R7
-PRINT1
+PRINT2
 * Let R8 = length of line
        MOV  *R5,*R5
        JNE  LENP1
@@ -146,9 +146,14 @@ PRINT3
        A    *R1,R6
 * Loop to write next line
        INC  R7
-       JMP  PRINT1
-* Yes, change I/O op-code to close
+       JMP  PRINT2
 PRINT4
+* Last paragraph of document?
+       INC  R2
+       MOV  @LINLST,R0
+       C    R2,*R0
+       JL   PRINT1
+* Yes, change I/O op-code to close
        LI   R0,PAB
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
