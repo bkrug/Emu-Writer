@@ -77,25 +77,48 @@ PRINT  MOV  R11,R12
 * Let R4 = address of paragraph
 * Let R5 = address of wrap list
 * Let R6 = address within paragraph
-* Let R7 = address within wrap list
+* Let R7 = line in paragraph (0-based)
        MOV  *R1,R4
        MOV  @2(R4),R5
        MOV  R4,R6
        AI   R6,4
-       MOV  R5,R7
-       INCT R7
-* Let R5 = address of last entry in wrap list
-       MOV  *R5,R0
-       INC  R0
-       SLA  R0,1
-       A    R0,R5
+       CLR  R7
 PRINT1
-* TODO: Calculate R8 differently for first and last lines
 * Let R8 = length of line
+       MOV  *R5,*R5
+       JNE  LENP1
+* Set Length for paragraph with one line
+       MOV  *R4,R8
+       JMP  PRINT3
+*
+LENP1  MOV  R7,R7
+       JNE  LENP2
+* Set length for first line in paragraph
+       MOV  @4(R5),R8
+       JMP  PRINT3
+*
+LENP2  C    R7,*R5
+       JHE  LENP3
+* Set length for middle lines in paragraph
+       MOV  R5,R0
+       MOV  R7,R1
+       BLWP @ARYADR
+*
        CLR  R8
-       S    *R7+,R8
-       A    *R7,R8
+       S    @-2(R1),R8
+       A    *R1,R8
+       JMP  PRINT3
+* Set length for last line in paragraph
+LENP3  MOV  R5,R0
+       MOV  R7,R1
+       DEC  R1
+       BLWP @ARYADR
+*
+       CLR  R8
+       S    *R1,R8
+       A    *R4,R8
 * Write record to VDP RAM
+PRINT3       
        LI   R0,PABBUF
        BL   @VDPADR
        MOV  R6,R0
@@ -111,15 +134,21 @@ PRINT1
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
-* Let R6 = address of next line in paragraph
+* End of paragraph?
+       C    R7,*R5
+       JHE  PRINT4
+* No, let R6 = address of next line in paragraph
+       MOV  R5,R0
+       MOV  R7,R1
+       BLWP @ARYADR
        MOV  R4,R6
        AI   R6,4
-       A    *R7,R6
-* End of paragraph?
-* TODO: Somehow this isn't leaving the loop
-       C    R7,R5
-       JL   PRINT1       
+       A    *R1,R6
+* Loop to write next line
+       INC  R7
+       JMP  PRINT1
 * Yes, change I/O op-code to close
+PRINT4
        LI   R0,PAB
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
