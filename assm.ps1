@@ -73,15 +73,6 @@ xas99.py -l `
     -o POSRUN.obj
 
 xas99.py -l `
-    SCRNTST.obj.temp `
-    TESTUTIL.obj.temp `
-    SCRNWRT.obj.temp `
-    MEMBUF.obj.temp `
-    VAR.obj.temp `
-    CONST.obj.temp `
-    -o SCRNRUN.obj
-
-xas99.py -l `
     TESTFRAM.obj.temp `
     WRAPTST.obj.temp `
     WRAP.obj.temp `
