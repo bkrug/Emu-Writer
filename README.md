@@ -49,3 +49,9 @@ But variables and workspaces will still need to be stored in the memory expansio
 
 MEMBUF.O and ARRAY.O - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
 These contain routines for allocating and de-allocating space for variable-length objects like strings and arrays.
+
+### Taglines
+
+EMU-WRITER -- A semi-modern word processor for a semi-modern world
+EMU-WRITER -- Be a little later for the party
+EMU-WRITER -- WYSIWhaaaat?
