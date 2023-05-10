@@ -118,6 +118,7 @@ LENP3  MOV  R5,R0
        S    *R1,R8
        A    *R4,R8
 * Write record to VDP RAM
+* TODO: Test that the length is <= 254 bytes
 PRINT3       
        LI   R0,PABBUF
        BL   @VDPADR
