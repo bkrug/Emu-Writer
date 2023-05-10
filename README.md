@@ -52,6 +52,7 @@ These contain routines for allocating and de-allocating space for variable-lengt
 
 ### Taglines
 
-EMU-WRITER -- A semi-modern word processor for a semi-modern world
-EMU-WRITER -- Be a little later for the party
-EMU-WRITER -- WYSIWhaaaat?
+EMU-WRITER -- A semi-modern word processor for a semi-modern world.
+EMU-WRITER -- Be a little late to the party.
+EMU-WRITER -- WYSIWhaaaaaat?
+EMU-WRITER -- You didn't think you needed it, but now you know for sure.

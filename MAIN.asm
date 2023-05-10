@@ -34,7 +34,7 @@ MAIN
        BLWP @INPUT
 * Wrap the previous paragraph if needed
        MOV  R0,R1
-	   MOV  R0,R2
+	MOV  R0,R2
        COC  @STSENT,R2
        JNE  MAIN1
        MOV  @PARINX,R0
