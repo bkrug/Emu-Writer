@@ -4,6 +4,7 @@
 *
        DEF  VDPTXT,VDPADR,VDPRAD
        DEF  VDPWRT,VDPSPC,VDPREA
+       DEF  VDPSTR
 *
        REF  SPACE
 
@@ -95,6 +96,21 @@ VWRT1  MOVB *R0+,@VDPWD
        JNE  VWRT1
 *
 VWRT2  RT
+
+*
+* VDPSTR:
+* Write null-terminating string to VDP
+*
+* Input:
+* R0 - Address of text to copy
+* Output:
+* R0 - Address of null terminator
+*
+VSTR1  MOVB *R0+,@VDPWD
+VDPSTR MOVB *R0,*R0
+       JNE  VSTR1
+*
+       RT
 
 *
 * Write multiple spaces to VDP

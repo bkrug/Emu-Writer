@@ -106,9 +106,32 @@ xas99.py -l `
     LOOK.obj.temp `
     ACT.obj.temp `
     PRINT.obj.temp `
+    MENU.obj.temp `
+    MENULOGIC.obj.temp `
+    FORM.obj.temp `
     VAR.obj.temp `
     END.obj.temp `
     -o MAINRUN.obj
+# xas99.py -l `
+#     MAIN.asm `
+#     CONST.asm `
+#     MEMBUF.asm `
+#     ARRAY.asm `
+#     INPUT.asm `
+#     WRAP.asm `
+#     POSUPD.asm `
+#     DISP.asm `
+#     KEY.asm `
+#     VDP.asm `
+#     LOOK.asm `
+#     ACT.asm `
+#     PRINT.asm `
+#     MENU.asm `
+#     MENULOGIC.asm `
+#     FORM.asm `
+#     VAR.asm `
+#     END.asm `
+#     -o MAINRUN.obj
 
 # Add TIFILES header to MAIN
 # xdm99.py -T 'MAIN.PRG' -f PROGRAM -o PROGRAM

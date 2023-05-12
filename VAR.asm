@@ -26,6 +26,8 @@
 * KEY.TXT
        DEF  TIMER,PREVKY,KEYBUF
        DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
+* MENULOGIC.asm
+       DEF  CURMNU
 
 * Areas of memory that absolutely have
 * to be in RAM and could never be part
@@ -136,5 +138,8 @@ KEYWRT DATA 0
 * value in KEYWRT, then there are no
 * new characters to write.===
 KEYRD  DATA 0
+
+* MENULOGIC.asm
+CURMNU BSS  2
 
        END
