@@ -9,8 +9,8 @@ ENTER  EQU  >0D
 ESCKEY EQU  >0F
 
 * If key pressed, go to menu
-NXTMNU EQU  >1
+NXTMNU EQU  0
 * If key pressed, go to form
-NXTFRM EQU  >2
+NXTFRM EQU  2
 * If key pressed, go to routine
-NXTRTN EQU  >3
+NXTRTN EQU  4
