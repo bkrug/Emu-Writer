@@ -23,7 +23,7 @@ KEYHM  DATA KEYHM1
        BYTE NXTMNU
        DATA MNUFL
 *
-       BYTE >80    *  ESCKEY
+       BYTE ESCKEY
        BYTE NXTRTN
        DATA SHWEDT
 KEYHM1
@@ -48,9 +48,9 @@ KEYFL  DATA KEYFL1
        BYTE NXTFRM
        DATA FRMPRT
 *
-       BYTE >80    *  ESCKEY
+       BYTE ESCKEY
        BYTE NXTMNU
-       DATA SHWEDT       
+       DATA MNUHOM
 KEYFL1
 
 *
