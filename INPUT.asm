@@ -25,7 +25,6 @@
        REF  CURINS,CUROVR
 
 * This data is a work around for the "first DATA word is 0 if REFed bug"
-* TODO: Write an issue to Ralph B.'s github
        DATA >1234
 *
 * Process the new keystrokes
@@ -54,6 +53,8 @@ INPUT1 MOV  @KEYRD,R10
        B    @ADDTXT
 * Branch to non-typing routine specified
 * by key code in R10
+* Let R0 = Address of element within ROUTKY
+* that corresponds to the pressed key
 KEYBRC LI   R0,ROUTKY
        MOV  R0,R2
 KYBRC2 CB   *R10,*R0+
@@ -63,8 +64,7 @@ KYBRC2 CB   *R10,*R0+
        JMP  KYBRC4
 KYBRC3 DEC  R0
        S    R2,R0
-* R0 now has index of routine
-* Let R1 = address of desired routine
+* Let R1 = address of routine specified in ROUTKY element
        LI   R1,ROUTIN
        SLA  R0,1
        A    R0,R1
@@ -76,10 +76,10 @@ KYBRC3 DEC  R0
        C    @INPTMD,@INPTNN
        JNE  KYBRC5
        MOV  *R3,@INPTMD
-* If the next key is for different
-* input mode, leave routine
+* If the next key involves switching to a
+* different input mode, leave the routine
 KYBRC5 C    *R3,@INPTMD
-       JNE   INPTRT
+       JNE  INPTRT
 * Branch to routine associated with key
        BL   *R1
 KYBRC4
@@ -377,8 +377,8 @@ ADDTXT
        C    @INPTMD,@INPTNN
        JNE  ADDT1
        MOV  @INPTXT,@INPTMD
-* If the input mode is not text,
-* leave the INPUT routine.
+* If processing this key involves switching
+* input modes, leave the INPUT routine.
 ADDT1  C    @INPTMD,@INPTXT
        JEQ  ADDT2
        RTWP
