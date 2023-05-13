@@ -454,8 +454,13 @@ RPLTXT
 * regular delete button when we are at the beginning of the document.
 BCKDEL
        MOV  R11,R12
+* Is this the beginning of document?
+       MOV  @PARINX,R0
+       A    @CHRPAX,R0
+       JEQ  BCKDL1
+* No, delete previous character
        BL   @BACKSP
        BL   @DELCHR
-       B    *R12
+BCKDL1 B    *R12
 
        END
