@@ -1,5 +1,5 @@
        DEF  MNUHOM,MNUFL
-       REF  FRMPRT
+       REF  FRMPRT,SHWEDT
 
        COPY 'EQUKEY.asm'
 
@@ -52,8 +52,3 @@ KEYFL  DATA KEYFL1
        BYTE NXTMNU
        DATA MNUHOM
 KEYFL1
-
-*
-* Return to editor
-*
-SHWEDT

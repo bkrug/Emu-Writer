@@ -1,10 +1,11 @@
-       DEF  MNUINT
+       DEF  MNUINT,SHWEDT
 *
        REF  CURMNU                        From VAR.asm
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPSPC,VDPSTR          From VDP.asm
+       REF  STSWIN
 
 *
 * Initialize start menu
@@ -90,6 +91,24 @@ KEY2
 GOMNU  MOV  R1,@CURMNU
        JMP  MNUDSP
 
+GORTN  B    *R1
+
 NXTLST DATA GOMNU
        DATA 0
-       DATA 0
+       DATA GORTN
+
+*
+* Return to editor
+*
+SHWEDT
+* Set document status as if window has moved
+* Redraw the entire screen
+       SOC  @STSWIN,*R13
+* When the menu is active, we are still BLWP'd
+* into the INPUT method.
+* That could get confusing.
+* Clear the active menu so in the future
+* the document loop can enter menu mode 
+* whenever it sees a non-zero current menu.
+       CLR  @CURMNU
+       RTWP
