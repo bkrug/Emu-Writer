@@ -15,10 +15,13 @@
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CURINS,CHRCUR,CURMOD
+       REF  CURMNU,STACK
+       REF  MNULP
 *
        
 START
 * Initialize Program
+       LI   R10,STACK
        BL   @INTMEM
        BL   @INTKEY
        BL   @VDPTXT
@@ -30,8 +33,12 @@ START
 MAIN
 * Clear the document status register
        CLR  R0
+* If in menu mode, leave document loop
+       MOV  @CURMNU,R1
+       JEQ  MAIN0
+       BL   @MNULP
 * Process user input
-       BLWP @INPUT
+MAIN0  BLWP @INPUT
 * Wrap the previous paragraph if needed
        MOV  R0,R1
 	MOV  R0,R2

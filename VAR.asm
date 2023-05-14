@@ -5,6 +5,7 @@
        DEF  STRWS
        DEF  LOOKWS,ARRYWS
        DEF  WRAPWS,INPTWS,POSUWS,DISPWS,SCRNWS
+       DEF  STACK
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
 * Arrays
@@ -45,6 +46,9 @@ INPTWS
 POSUWS
 DISPWS
 SCRNWS BSS  >20
+       TEXT 'STACK '
+       BSS  >40
+STACK
 
 *
 * Areas for changeable values

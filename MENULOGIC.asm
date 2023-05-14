@@ -1,4 +1,4 @@
-       DEF  MNUINT,SHWEDT
+       DEF  MNUINT,MNULP,SHWEDT
 *
        REF  CURMNU                        From VAR.asm
        REF  KEYRD,KEYWRT                  "
@@ -16,14 +16,21 @@ MNUINT
 * Select Home menu as start menu
        LI   R0,MNUHOM
        MOV  R0,@CURMNU
-       JMP  MNUDSP
+* We are still BLWP'd into the INPUT method.
+* So return to the document loop now.
+       RTWP
 
 *
 * Display the current menu
 * Wait for a key press
 *
-MNUDSP
-       LIMI 0
+MNULP
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R0,*R10
+*
+MNUDSP LIMI 0
 * Clear screen
        CLR  R0
        BL   @VDPADR
@@ -101,14 +108,13 @@ NXTLST DATA GOMNU
 * Return to editor
 *
 SHWEDT
+       MOV  *R10+,R0
 * Set document status as if window has moved
 * Redraw the entire screen
-       SOC  @STSWIN,*R13
-* When the menu is active, we are still BLWP'd
-* into the INPUT method.
-* That could get confusing.
-* Clear the active menu so in the future
-* the document loop can enter menu mode 
-* whenever it sees a non-zero current menu.
+       SOC  @STSWIN,R0
+* Clear the active menu so the
+* the document loop leave menu-mode.
        CLR  @CURMNU
-       RTWP
+*
+       MOV  *R10+,R11
+       RT
