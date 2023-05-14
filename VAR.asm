@@ -29,6 +29,7 @@
        DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
 * MENULOGIC.asm
        DEF  CURMNU
+       DEF  CURFRM
 
 * Areas of memory that absolutely have
 * to be in RAM and could never be part
@@ -143,7 +144,8 @@ KEYWRT DATA 0
 * new characters to write.===
 KEYRD  DATA 0
 
-* MENULOGIC.asm
+* MENULOGIC.asm and FORMLOGIC.asm
 CURMNU BSS  2
+CURFRM BSS  2
 
        END

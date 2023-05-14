@@ -6,15 +6,16 @@
 *
 * Print Form
 *
-FRMPRT DATA FLDPR
-       DATA KEYPR
-       TEXT 'Print Document'
+FRMPRT DATA FLDPR           * Field List
+       DATA KEYPR           * Key List
+       TEXT 'PRINT'
        BYTE 0
+       EVEN
 
 FLDPR  DATA FLDPR1
-       TEXT 'Device'
+       TEXT 'Printer Name'
        BYTE 0
-       BYTE 72              Length of field
+       BYTE 72              * Length of field
 * TODO: put conditions on which chars can be entered into this field
 FLDPR1 EVEN
 

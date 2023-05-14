@@ -1,6 +1,6 @@
        DEF  MNUINT,ENTMNU,SHWEDT
 *
-       REF  CURMNU                        From VAR.asm
+       REF  CURMNU,CURFRM                 From VAR.asm
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
@@ -126,7 +126,16 @@ KEY2
 * According to menu's key list
 *
 NXTLST DATA GOMNU
-       DATA 0
+       DATA GOFRM
+       DATA GORTN
 
 GOMNU  MOV  R1,@CURMNU
        RT
+
+GOFRM  CLR  @CURMNU
+       MOV  R1,@CURFRM
+       RT
+
+* We should not call external routines from menu mode
+* Just other menus and forms
+GORTN  RT
