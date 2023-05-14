@@ -143,7 +143,8 @@ INTRPT
 * 
 * Initialize screen
 *
-INTSCN MOV  R11,R12
+INTSCN DECT R10
+       MOV  R11,*R10
 * Clear screen
        CLR  R0
        BL   @VDPADR
@@ -166,7 +167,8 @@ INTSCN MOV  R11,R12
 *
 * Draw the cursor on screen
 *
-DRWCUR MOV  R11,R12
+DRWCUR DECT R10
+       MOV  R11,*R10
 *
        COC  @STSTYP,R0
        JEQ  DRWCR2
@@ -212,7 +214,8 @@ DRWCR5 LI   R1,1
        LI   R0,32
        MOV  R0,@CURTIM
 *
-DRWCR9 B    *R12
+DRWCR9 MOV  *R10+,R11
+       RT
 
        EVEN
 
