@@ -16,7 +16,7 @@
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CURINS,CHRCUR,CURMOD
        REF  CURMNU,STACK
-       REF  MNULP
+       REF  ENTMNU
 *
        
 START
@@ -36,7 +36,7 @@ MAIN
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
        JEQ  MAIN0
-       BL   @MNULP
+       BL   @ENTMNU
 * Process user input
 MAIN0  BLWP @INPUT
 * Wrap the previous paragraph if needed

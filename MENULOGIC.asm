@@ -1,4 +1,4 @@
-       DEF  MNUINT,MNULP,SHWEDT
+       DEF  MNUINT,ENTMNU,SHWEDT
 *
        REF  CURMNU                        From VAR.asm
        REF  KEYRD,KEYWRT                  "
@@ -24,13 +24,29 @@ MNUINT
 * Display the current menu
 * Wait for a key press
 *
-MNULP
+ENTMNU
        DECT R10
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
 *
-MNUDSP LIMI 0
+MNULP  BL   @MNUDSP
+       BL   @KEYWT
+       MOV  @CURMNU,R0
+       JNE  MNULP
+* Set document status as if window has moved
+* Redraw the entire screen
+       MOV  *R10+,R0
+       SOC  @STSWIN,R0
+*
+       MOV  *R10+,R11
+       RT
+
+MNUDSP
+       DECT R10
+       MOV  R11,*R10
+*
+       LIMI 0
 * Clear screen
        CLR  R0
        BL   @VDPADR
@@ -60,6 +76,14 @@ DSP1   BL   @VDPSTR
        JL   DSP1
 *
        LIMI 2
+       MOV  *R10+,R11       
+       RT
+
+*
+* Wait for key and process it
+*
+KEYWT  DECT R10
+       MOV  R11,*R10
 * Let R3 = address of keys
 * Let R4 = end of keys
 KEYLP  MOV  @2(R2),R3
@@ -92,29 +116,35 @@ KEY2
 * Might be address of a menu, form, or external routine
        MOV  *R3,R1
 * Brand to routine for handling key
-       B    *R0
+       BL   *R0
 *
+       MOV  *R10+,R11
+       RT
 
-GOMNU  MOV  R1,@CURMNU
-       JMP  MNUDSP
-
-GORTN  B    *R1
-
+*
+* List of routines to branch to
+* According to menu's key list
+*
 NXTLST DATA GOMNU
        DATA 0
        DATA GORTN
+
+GOMNU  MOV  R1,@CURMNU
+       RT
+
+GORTN  DECT R10
+       MOV  R11,*R10
+*
+       BL   *R1
+*
+       MOV  *R10+,R11
+       RT
 
 *
 * Return to editor
 *
 SHWEDT
-       MOV  *R10+,R0
-* Set document status as if window has moved
-* Redraw the entire screen
-       SOC  @STSWIN,R0
 * Clear the active menu so the
 * the document loop leave menu-mode.
        CLR  @CURMNU
-*
-       MOV  *R10+,R11
        RT
