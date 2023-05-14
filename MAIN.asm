@@ -16,11 +16,12 @@
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CURINS,CHRCUR,CURMOD
        REF  CURMNU,CURFRM,STACK
-       REF  ENTMNU,ENTFRM
+       REF  ENTMNU
 *
        
 START
 * Initialize Program
+       CLR  @CURMNU
        LI   R10,STACK
        BL   @INTMEM
        BL   @INTKEY
@@ -35,12 +36,8 @@ MAIN
        CLR  R0
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
-       JEQ  MAIN0A
-       BL   @ENTMNU
-* If in form mode, leave document loop
-MAIN0A MOV  @CURFRM,R1
        JEQ  MAIN0
-       BL   @ENTFRM
+       BL   @ENTMNU
 * Process user input
 MAIN0  BLWP @INPUT
 * Wrap the previous paragraph if needed

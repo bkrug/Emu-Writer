@@ -1,4 +1,4 @@
-       DEF  MNUINT,ENTMNU,ENTFRM
+       DEF  MNUINT,ENTMNU
 *
        REF  CURMNU,CURFRM                 From VAR.asm
        REF  KEYRD,KEYWRT                  "
@@ -10,8 +10,8 @@
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
-DELLFT BYTE CLRKEY
 DELRGT BYTE DELKEY
+DELLFT BYTE CLRKEY
 ARWLFT BYTE BCKKEY
 ARWRGT BYTE FWDKEY
 SPACE  TEXT ' '
@@ -122,16 +122,17 @@ KEYLP  MOV  @2(R2),R3
        AI   R5,->2000   
 * compare to key list
 KEY1   CB   *R3,R5
-       JEQ  KEY2
+       JEQ  KEY9
        AI   R3,4
        C    R3,R4
        JL   KEY1
 * Found key does not match list
+       LIMI 0
 * If not typeable, skip
        CB   R5,@SPACE
-       JLE  KEY3
+       JLE  KEY4
        CB   R5,@ASCHGH
-       JH   KEY3
+       JH   KEY4
 * Let R3 = address of first field
 * Let R4 = end of fields
        MOV  @4(R2),R3
@@ -141,17 +142,39 @@ KEY1   CB   *R3,R5
        BL   @VDPADR
 * Write char to screen
        MOVB R5,@VDPWD
-* Increment write position, but not past field end
+* Increment write position
        INC  R9
+       JMP  KEY5
+* Not a typeable key
+KEY4
+       CB   R5,@DELRGT
+       JL   KEY8
+       CB   R5,@ARWRGT
+       JH   KEY8
+* Let R0 = address of arrow or delete key routine
+       MOVB R5,R0
+       SB   @DELRGT,R0
+       SRL  R0,8
+       SLA  R0,1
+       AI   R0,SPCKEY
+       MOV  *R0,R0
+       JEQ  KEY5
+* Handle arrow or delete key
+       BL   *R0
+* If cursor went past end of field,
+* bring it backwards.
+KEY5
        MOV  *R3+,R0
        A    *R3,R0
        C    R9,R0
-       JL   KEY3
+       JL   KEY8
+       MOV  R0,R9
        DEC  R9
 * Increment KEYRD so we see next key
-KEY3   BL   @INCKRD
+KEY8   LIMI 2
+       BL   @INCKRD
        JMP  KEYLP
-KEY2
+KEY9
 * Key found, increment key buffer position
        BL   @INCKRD
 * Let R0 = address of routine to handle key
@@ -189,67 +212,30 @@ GOFRM  CLR  @CURMNU
 * Just other menus and forms
 GORTN  RT
 
-**
-** TODO: Delete everything from here onwards
-**
+SPCKEY
+* Delete key in form field
+       DATA 0
 *
-* Display the current menu
-* Wait for a key press
-*
-ENTFRM
-       DECT R10
-       MOV  R11,*R10
-       DECT R10
-       MOV  R0,*R10
-*
-FRMLP  BL   @FRMDSP
-       BL   @KEYWT
-       MOV  @CURFRM,R0
-       JNE  FRMLP
-* Set document status as if window has moved
-* Redraw the entire screen
-       MOV  *R10+,R0
-       SOC  @STSWIN,R0
-*
-       MOV  *R10+,R11
-       RT
+       DATA 0,0,0
+* Backspace Delete key in form field
+       DATA BCKDEL
+* Left arrow
+       DATA LFTSPC
+* Right arrow
+       DATA RGTSPC
 
-* TODO: Pass CURMNU or CURFRM into R2
-* as a parameter. Then merge FRMDSP and MNUDSP
-* together
-FRMDSP
+LFTSPC DEC  R9
+       RT
+RGTSPC INC  R9
+       RT
+BCKDEL 
        DECT R10
        MOV  R11,*R10
 *
-       LIMI 0
-* Clear screen
-       CLR  R0
+       DEC  R9
+       MOV  R9,R0
        BL   @VDPADR
-       LI   R1,24*40
-       BL   @VDPSPC
-* Write text
-       CLR  R0
-       BL   @VDPADR
-* Let R2 = address of menu
-* Let R3 = address of strings
-* Let R4 = end of strings
-       MOV  @CURFRM,R2
-       MOV  *R2,R3
-       MOV  *R3+,R4
-* Write strings
-       MOV  R3,R0
-DSP2   BL   @VDPSTR
+       MOVB @SPACE,@VDPWD
 *
-       MOV  R3,R1
-       S    R0,R1
-       AI   R1,40
-       BL   @VDPSPC
-*
-       INC  R0
-       MOV  R0,R3
-       C    R0,R4
-       JL   DSP2
-*
-       LIMI 2
        MOV  *R10+,R11       
        RT
