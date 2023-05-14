@@ -1,4 +1,4 @@
-       DEF  START
+       DEF  START,DRWCUR
 *
        REF  KEYDVC,USRISR
        REF  KEYINT

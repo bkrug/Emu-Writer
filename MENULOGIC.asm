@@ -5,7 +5,10 @@
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPSPC,VDPSTR          From VDP.asm
-       REF  STSWIN
+       REF  STSWIN,STSTYP,STSARW
+       REF  DRWCUR
+       REF  CUROLD,CURRPL,CURMOD
+       REF  CURSCN
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -41,16 +44,40 @@ ENTMNU
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
+       DECT R10
+       MOV  R0,@CUROLD
+       DECT R10
+       MOV  R0,@CURMOD
+       DECT R10
+       MOV  R0,@CURRPL
+       DECT R10
+       MOV  R0,@CURSCN
+*
+       CLR  @CURMOD
+MNULP
+* Let R7 = Document Status
+       CLR  R7
+       SOC  @STSTYP,R7
+* In case there are no fields, let R9 be off screen
+       CLR  R9
 * Let R9 = address specified by first field
-MNULP  MOV  @CURMNU,R2
+       MOV  @CURMNU,R2
        MOV  @4(R2),R2
+       JEQ  MNULP1
        INCT R2
        MOV  *R2,R9
+* Set cursor
+       MOV  R9,@CURSCN
 * Menu loop
-       BL   @MNUDSP
+MNULP1 BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
        JNE  MNULP
+*
+       MOV  *R10+,@CURSCN
+       MOV  *R10+,@CURRPL
+       MOV  *R10+,@CURMOD
+       MOV  *R10+,@CUROLD
 * Set document status as if window has moved
 * Redraw the entire screen
        MOV  *R10+,R0
@@ -108,6 +135,13 @@ KEYWT  DECT R10
 * Let R4 = end of keys
 KEYLP  MOV  @2(R2),R3
        MOV  *R3+,R4
+* Process cursor
+       MOV  @CURSCN,R0
+       JEQ  KEY0
+       MOV  R7,R0
+       BL   @DRWCUR
+       CLR  R7
+KEY0       
 * Wait for key press
        C    @KEYRD,@KEYWRT
        JEQ  KEYLP
@@ -142,6 +176,8 @@ KEY1   CB   *R3,R5
        BL   @VDPADR
 * Write char to screen
        MOVB R5,@VDPWD
+* Set document status to "typed"
+       SOC  @STSTYP,R7
 * Increment write position
        INC  R9
        JMP  KEY5
@@ -161,9 +197,11 @@ KEY4
        JEQ  KEY5
 * Handle arrow or delete key
        BL   *R0
+KEY5
+* Reset cursor position
+       MOV  R9,@CURSCN
 * If cursor went past end of field,
 * bring it backwards.
-KEY5
        MOV  *R3+,R0
        A    *R3,R0
        C    R9,R0
@@ -225,13 +263,16 @@ SPCKEY
        DATA RGTSPC
 
 LFTSPC DEC  R9
+       SOC  @STSARW,R7
        RT
 RGTSPC INC  R9
+       SOC  @STSARW,R7
        RT
 BCKDEL 
        DECT R10
        MOV  R11,*R10
 *
+       SOC  @STSARW,R7
        DEC  R9
        MOV  R9,R0
        BL   @VDPADR
