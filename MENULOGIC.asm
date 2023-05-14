@@ -82,6 +82,9 @@ DSP1   BL   @VDPSTR
 *
 * Wait for key and process it
 *
+* Input:
+*   R2 - 
+*
 KEYWT  DECT R10
        MOV  R11,*R10
 * Let R3 = address of keys
@@ -163,6 +166,9 @@ FRMLP  BL   @FRMDSP
        MOV  *R10+,R11
        RT
 
+* TODO: Pass CURMNU or CURFRM into R2
+* as a parameter. Then merge FRMDSP and MNUDSP
+* together
 FRMDSP
        DECT R10
        MOV  R11,*R10
@@ -177,15 +183,24 @@ FRMDSP
        CLR  R0
        BL   @VDPADR
 * Let R2 = address of menu
-* Let R3 = address of fields
-* Let R4 = end of fields
+* Let R3 = address of strings
+* Let R4 = end of strings
        MOV  @CURFRM,R2
        MOV  *R2,R3
        MOV  *R3+,R4
 * Write strings
-       MOV  R2,R0
-       AI   R0,4
-       BL   @VDPSTR
+       MOV  R3,R0
+DSP2   BL   @VDPSTR
+*
+       MOV  R3,R1
+       S    R0,R1
+       AI   R1,40
+       BL   @VDPSPC
+*
+       INC  R0
+       MOV  R0,R3
+       C    R0,R4
+       JL   DSP2
 *
        LIMI 2
        MOV  *R10+,R11       
