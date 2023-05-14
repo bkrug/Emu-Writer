@@ -1,4 +1,4 @@
-       DEF  MNUINT,ENTMNU,SHWEDT
+       DEF  MNUINT,ENTMNU,ENTFRM
 *
        REF  CURMNU,CURFRM                 From VAR.asm
        REF  KEYRD,KEYWRT                  "
@@ -8,7 +8,7 @@
        REF  STSWIN
 
 *
-* Initialize start menu
+* Initialize home menu
 *
 MNUINT
 * Skip the most recently read key
@@ -129,7 +129,8 @@ NXTLST DATA GOMNU
        DATA GOFRM
        DATA GORTN
 
-GOMNU  MOV  R1,@CURMNU
+GOMNU  CLR  @CURFRM
+       MOV  R1,@CURMNU
        RT
 
 GOFRM  CLR  @CURMNU
@@ -139,3 +140,53 @@ GOFRM  CLR  @CURMNU
 * We should not call external routines from menu mode
 * Just other menus and forms
 GORTN  RT
+
+*
+* Display the current menu
+* Wait for a key press
+*
+ENTFRM
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R0,*R10
+*
+FRMLP  BL   @FRMDSP
+       BL   @KEYWT
+       MOV  @CURFRM,R0
+       JNE  FRMLP
+* Set document status as if window has moved
+* Redraw the entire screen
+       MOV  *R10+,R0
+       SOC  @STSWIN,R0
+*
+       MOV  *R10+,R11
+       RT
+
+FRMDSP
+       DECT R10
+       MOV  R11,*R10
+*
+       LIMI 0
+* Clear screen
+       CLR  R0
+       BL   @VDPADR
+       LI   R1,24*40
+       BL   @VDPSPC
+* Write text
+       CLR  R0
+       BL   @VDPADR
+* Let R2 = address of menu
+* Let R3 = address of fields
+* Let R4 = end of fields
+       MOV  @CURFRM,R2
+       MOV  *R2,R3
+       MOV  *R3+,R4
+* Write strings
+       MOV  R2,R0
+       AI   R0,4
+       BL   @VDPSTR
+*
+       LIMI 2
+       MOV  *R10+,R11       
+       RT

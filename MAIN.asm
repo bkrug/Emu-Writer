@@ -15,8 +15,8 @@
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CURINS,CHRCUR,CURMOD
-       REF  CURMNU,STACK
-       REF  ENTMNU
+       REF  CURMNU,CURFRM,STACK
+       REF  ENTMNU,ENTFRM
 *
        
 START
@@ -35,8 +35,12 @@ MAIN
        CLR  R0
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
-       JEQ  MAIN0
+       JEQ  MAIN0A
        BL   @ENTMNU
+* If in form mode, leave document loop
+MAIN0A MOV  @CURFRM,R1
+       JEQ  MAIN0
+       BL   @ENTFRM
 * Process user input
 MAIN0  BLWP @INPUT
 * Wrap the previous paragraph if needed
