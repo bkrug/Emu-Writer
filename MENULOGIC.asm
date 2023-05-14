@@ -8,7 +8,12 @@
        REF  STSWIN
 
        COPY 'CPUADR.asm'
+       COPY 'EQUKEY.asm'
 
+DELLFT BYTE CLRKEY
+DELRGT BYTE DELKEY
+ARWLFT BYTE BCKKEY
+ARWRGT BYTE FWDKEY
 SPACE  TEXT ' '
 LOWA   TEXT 'a'
 LOWZ   TEXT 'z'
@@ -36,8 +41,13 @@ ENTMNU
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
-*
-MNULP  BL   @MNUDSP
+* Let R9 = address specified by first field
+MNULP  MOV  @CURMNU,R2
+       MOV  @4(R2),R2
+       INCT R2
+       MOV  *R2,R9
+* Menu loop
+       BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
        JNE  MNULP
@@ -127,9 +137,17 @@ KEY1   CB   *R3,R5
        MOV  @4(R2),R3
        MOV  *R3+,R4
 * Set VDP Write Address
-       MOV  *R3,R0
+       MOV  R9,R0
        BL   @VDPADR
+* Write char to screen
        MOVB R5,@VDPWD
+* Increment write position, but not past field end
+       INC  R9
+       MOV  *R3+,R0
+       A    *R3,R0
+       C    R9,R0
+       JL   KEY3
+       DEC  R9
 * Increment KEYRD so we see next key
 KEY3   BL   @INCKRD
        JMP  KEYLP

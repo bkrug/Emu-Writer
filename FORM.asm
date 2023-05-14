@@ -33,6 +33,6 @@ KEYPR1
 
 FLDPR  DATA FLDPR1
        DATA 2*40+14         * Field position on screen
-       DATA 72              * Length of field
+       DATA 80-14           * Length of field
 * TODO: put conditions on which chars can be entered into this field
 FLDPR1 EVEN

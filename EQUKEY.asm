@@ -1,6 +1,6 @@
 DELKEY EQU  >03
 INSKEY EQU  >04
-CLRKEY EQU  >07
+CLRKEY EQU  >07                 * Isn't this really the erase key?
 BCKKEY EQU  >08
 FWDKEY EQU  >09
 UPPKEY EQU  >0B
