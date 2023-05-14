@@ -24,8 +24,8 @@ KEYHM  DATA KEYHM1
        DATA MNUFL
 *
        BYTE ESCKEY
-       BYTE NXTRTN
-       DATA SHWEDT
+       BYTE NXTMNU          * When pressing escape key from home menu
+       DATA 0               * Set the current menu to 0, so we leave menu mode
 KEYHM1
 
 *

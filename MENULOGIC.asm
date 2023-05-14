@@ -127,24 +127,6 @@ KEY2
 *
 NXTLST DATA GOMNU
        DATA 0
-       DATA GORTN
 
 GOMNU  MOV  R1,@CURMNU
-       RT
-
-GORTN  DECT R10
-       MOV  R11,*R10
-*
-       BL   *R1
-*
-       MOV  *R10+,R11
-       RT
-
-*
-* Return to editor
-*
-SHWEDT
-* Clear the active menu so the
-* the document loop leave menu-mode.
-       CLR  @CURMNU
        RT
