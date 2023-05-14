@@ -18,7 +18,9 @@
        REF  CURMNU,CURFRM,STACK
        REF  ENTMNU
 *
-       
+
+       COPY 'CPUADR.asm'
+
 START
 * Initialize Program
        CLR  @CURMNU
@@ -186,9 +188,7 @@ DRWCUR DECT R10
 * Replace original character
 DRWCR1 MOV  @CUROLD,R0
        BL   @VDPADR
-       LI   R0,CURRPL
-       LI   R1,1
-       BL   @VDPWRT
+       MOVB @CURRPL,@VDPWD
 * Store new cursor position
 DRWCR2 MOV  @CURSCN,@CUROLD
 * Set cursor mode to visible
@@ -196,9 +196,7 @@ DRWCR2 MOV  @CURSCN,@CUROLD
 * Store character from new position
        MOV  @CURSCN,R0
        BL   @VDPRAD
-       LI   R0,CURRPL
-       LI   R1,1
-       BL   @VDPREA
+       MOVB @VDPRD,@CURRPL
 * Draw cursor
 DRWCR3 MOV  @CURSCN,R0
        BL   @VDPADR
