@@ -7,8 +7,12 @@
        REF  VDPADR,VDPSPC,VDPSTR          From VDP.asm
        REF  STSWIN
 
+       COPY 'CPUADR.asm'
+
+SPACE  TEXT ' '
 LOWA   TEXT 'a'
 LOWZ   TEXT 'z'
+ASCHGH BYTE 126
 
 *
 * Initialize home menu
@@ -113,8 +117,21 @@ KEY1   CB   *R3,R5
        C    R3,R4
        JL   KEY1
 * Found key does not match list
+* If not typeable, skip
+       CB   R5,@SPACE
+       JLE  KEY3
+       CB   R5,@ASCHGH
+       JH   KEY3
+* Let R3 = address of first field
+* Let R4 = end of fields
+       MOV  @4(R2),R3
+       MOV  *R3+,R4
+* Set VDP Write Address
+       MOV  *R3,R0
+       BL   @VDPADR
+       MOVB R5,@VDPWD
 * Increment KEYRD so we see next key
-       BL   @INCKRD
+KEY3   BL   @INCKRD
        JMP  KEYLP
 KEY2
 * Key found, increment key buffer position
