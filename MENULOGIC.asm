@@ -7,6 +7,9 @@
        REF  VDPADR,VDPSPC,VDPSTR          From VDP.asm
        REF  STSWIN
 
+LOWA   TEXT 'a'
+LOWZ   TEXT 'z'
+
 *
 * Initialize home menu
 *
@@ -83,7 +86,7 @@ DSP1   BL   @VDPSTR
 * Wait for key and process it
 *
 * Input:
-*   R2 - 
+*   R2 - Address of menu header 
 *
 KEYWT  DECT R10
        MOV  R11,*R10
@@ -94,9 +97,16 @@ KEYLP  MOV  @2(R2),R3
 * Wait for key press
        C    @KEYRD,@KEYWRT
        JEQ  KEYLP
-* Key press found, compare to key list
+* Key press found
        MOV  @KEYRD,R5
        MOVB *R5,R5
+* make uppercase
+       CB   R5,@LOWA
+       JL   KEY1
+       CB   R5,@LOWZ
+       JH   KEY1
+       AI   R5,->2000   
+* compare to key list
 KEY1   CB   *R3,R5
        JEQ  KEY2
        AI   R3,4
@@ -144,6 +154,9 @@ GOFRM  CLR  @CURMNU
 * Just other menus and forms
 GORTN  RT
 
+**
+** TODO: Delete everything from here onwards
+**
 *
 * Display the current menu
 * Wait for a key press

@@ -14,3 +14,7 @@ NXTMNU EQU  0
 NXTFRM EQU  2
 * If key pressed, go to routine
 NXTRTN EQU  4
+
+* When Menu header contains 0 in the
+* field address, skip field logic.
+NOFLDS EQU  0

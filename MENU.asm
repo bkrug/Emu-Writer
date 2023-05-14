@@ -8,6 +8,7 @@
 *
 MNUHOM DATA TXTHM
        DATA KEYHM
+       DATA NOFLDS
 
 TXTHM  DATA TXTHM1
        TEXT 'File'
@@ -33,6 +34,7 @@ KEYHM1
 *
 MNUFL  DATA TXTFL
        DATA KEYFL
+       DATA NOFLDS
 
 TXTFL  DATA TXTFL1
        TEXT 'Save'
@@ -45,7 +47,7 @@ TXTFL1 EVEN
 
 KEYFL  DATA KEYFL1
        TEXT 'P'
-       BYTE NXTFRM
+       BYTE NXTMNU
        DATA FRMPRT
 *
        BYTE ESCKEY
