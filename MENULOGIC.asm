@@ -262,15 +262,29 @@ SPCKEY
 * Right arrow
        DATA RGTSPC
 
-LFTSPC DEC  R9
+LFTSPC
+* Don't move left of field
+       MOV  @4(R2),R0
+       INCT R0
+       C    R9,*R0
+       JLE  LFTRT
+*
+       DEC  R9
        SOC  @STSARW,R7
-       RT
-RGTSPC INC  R9
+LFTRT  RT
+
+RGTSPC
+       INC  R9
        SOC  @STSARW,R7
        RT
 BCKDEL 
        DECT R10
        MOV  R11,*R10
+* Don't move left of field
+       MOV  @4(R2),R0
+       INCT R0
+       C    R9,*R0
+       JLE  BCKRT
 *
        SOC  @STSARW,R7
        DEC  R9
@@ -278,5 +292,5 @@ BCKDEL
        BL   @VDPADR
        MOVB @SPACE,@VDPWD
 *
-       MOV  *R10+,R11       
+BCKRT  MOV  *R10+,R11       
        RT
