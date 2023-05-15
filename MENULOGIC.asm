@@ -1,6 +1,6 @@
        DEF  MNUINT,ENTMNU
 *
-       REF  CURMNU,CURFRM                 From VAR.asm
+       REF  CURMNU,CURFRM,FLDVAL,FLDVE    From VAR.asm
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
@@ -60,18 +60,24 @@ MNULP
 * Let R7 = Document Status
        CLR  R7
        SOC  @STSTYP,R7
-* In case there are no fields, let R9 be off screen
+* Initialize Field Value
+       CLR  R0
+       LI   R1,FLDVAL
+MNULP0 MOVB R0,*R1+
+       CI   R1,FLDVE
+       JL   MNULP0
+* Let R9 = address within first field
+* If no fields exist for this menu, set R9 to 0
        CLR  R9
-* Let R9 = address specified by first field
+       CLR  @CURSCN
        MOV  @CURMNU,R2
-       MOV  @4(R2),R2
+       MOV  @4(R2),R1
        JEQ  MNULP1
-       INCT R2
-       MOV  *R2,R9
-* Set cursor
-MNULP1 MOV  R9,@CURSCN
+       LI   R9,FLDVAL
+* Set cursor position on screen
+       MOV  @2(R1),@CURSCN
 * Menu loop
-       BL   @MNUDSP
+MNULP1 BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
        JNE  MNULP
@@ -164,24 +170,16 @@ KEY1   CB   *R3,R5
        JL   KEY1
 * Found key does not match list
        LIMI 0
-* If not typeable, skip
+* Is key displayable?
        CB   R5,@SPACE
        JLE  KEY4
        CB   R5,@ASCHGH
        JH   KEY4
-* Let R3 = address of first field
-* Let R4 = end of fields
-       MOV  @4(R2),R3
-       MOV  *R3+,R4
-* Set VDP Write Address
-       MOV  R9,R0
-       BL   @VDPADR
-* Write char to screen
-       MOVB R5,@VDPWD
+* Yes, record keystroke
+       MOVB R5,*R9+
 * Set document status to "typed"
        SOC  @STSTYP,R7
-* Increment write position
-       INC  R9
+*
        JMP  KEY5
 * Not a typeable key
 KEY4
@@ -200,18 +198,34 @@ KEY4
 * Handle arrow or delete key
        BL   *R0
 KEY5
-* Reset cursor position
-       MOV  R9,@CURSCN
-* If cursor went past end of field,
-* bring it backwards.
-       MOV  *R3+,R0
-       A    *R3,R0
+* Let R3 = screen address of first field
+* Let R4 = length of field
+       MOV  @4(R2),R0
+       INCT R0
+       MOV  *R0+,R3
+       MOV  *R0,R4
+* Write field value to VDP
+       MOV  R3,R0
+       BL   @VDPADR
+       LI   R0,FLDVAL
+       MOV  R4,R1
+       BL   @VDPWRT
+* Don't let cursor go past edge of field
+       LI   R0,FLDVAL
+       A    R4,R0
        C    R9,R0
        JL   KEY8
        MOV  R0,R9
-       DEC  R9
+KEY8
+* Let R1 = position within FLDVAL
+       LI   R1,FLDVAL
+       NEG  R1
+       A    R9,R1
+* Recalculate cursor position
+       MOV  R3,@CURSCN
+       A    R1,@CURSCN
 * Increment KEYRD so we see next key
-KEY8   LIMI 2
+       LIMI 2
        BL   @INCKRD
        JMP  KEYLP
 KEY9
@@ -266,9 +280,7 @@ SPCKEY
 
 LFTSPC
 * Don't move left of field
-       MOV  @4(R2),R0
-       INCT R0
-       C    R9,*R0
+       CI   R9,FLDVAL
        JLE  LFTRT
 *
        DEC  R9
@@ -276,21 +288,24 @@ LFTSPC
 LFTRT  RT
 
 RGTSPC
+* Don't move right of field
+       LI   R0,FLDVE
+       DEC  R0
+       C    R9,R0
+       JHE  RGTRT
+*
        INC  R9
        SOC  @STSARW,R7
-       RT
+RGTRT  RT
 
 BCKDEL 
        DECT R10
        MOV  R11,*R10
 * Don't move left of field
-       MOV  @4(R2),R0
-       INCT R0
-       C    R9,*R0
+       CI   R9,FLDVAL
        JLE  BCKRT
 *
-       SOC  @STSARW,R7
-       DEC  R9
+       BL   @LFTSPC
        BL   @FWDDEL
 *
 BCKRT  MOV  *R10+,R11       
@@ -299,44 +314,17 @@ BCKRT  MOV  *R10+,R11
 FWDDEL
        DECT R10
        MOV  R11,*R10
-* Let R0 = position of field end
-       A    *R3,R0
-       DEC  R0
-* Let R6 = length of data
-       MOV  @4(R2),R3
-       INCT R3
-       MOV  *R3+,R6
-       A    *R3,R6
-       S    R9,R6
-       JEQ  DELRT
-* Let R5 = address to store data
-       MOV  R6,R0
-       BLWP @BUFALC
-       MOV  R0,R5
-       SETO R1
-       C    R1,R5
-       JEQ  DELRT
-* Read data
+*
        MOV  R9,R0
-       BL   @VDPADR
-       MOV  R5,R0
-       MOV  R6,R1
-       BL   @VDPREA
-* Write data
-       MOV  R9,R0
-       BL   @VDPADR
-       MOV  R5,R0
-       INCT R0
-       MOV  R6,R1
-       DECT R1
-       BL   @VDPWRT
-       MOVB @SPACE,@VDPWD
-       MOVB @SPACE,@VDPWD
-* Free space
-       MOV  R5,R0
-       BLWP @BUFREE
+       MOV  R0,R1
+       INC  R1
+DEL1   CI   R1,FLDVE
+       JHE  DEL2
+       MOVB *R1+,*R0+
+       JMP  DEL1
+DEL2
 *
        SOC  @STSTYP,R7
 *
-DELRT  MOV  *R10+,R11       
+       MOV  *R10+,R11       
        RT
