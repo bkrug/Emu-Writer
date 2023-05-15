@@ -61,9 +61,8 @@ MNULP
        CLR  R7
        SOC  @STSTYP,R7
 * Initialize Field Value
-       CLR  R0
        LI   R1,FLDVAL
-MNULP0 MOVB R0,*R1+
+MNULP0 MOVB @SPACE,*R1+
        CI   R1,FLDVE
        JL   MNULP0
 * Let R9 = address within first field
@@ -213,6 +212,7 @@ KEY5
 * Don't let cursor go past edge of field
        LI   R0,FLDVAL
        A    R4,R0
+       DEC  R0
        C    R9,R0
        JL   KEY8
        MOV  R0,R9
@@ -279,7 +279,7 @@ SPCKEY
        DATA RGTSPC
 
 LFTSPC
-* Don't move left of field
+* Don't move left of field start
        CI   R9,FLDVAL
        JLE  LFTRT
 *
@@ -288,20 +288,14 @@ LFTSPC
 LFTRT  RT
 
 RGTSPC
-* Don't move right of field
-       LI   R0,FLDVE
-       DEC  R0
-       C    R9,R0
-       JHE  RGTRT
-*
        INC  R9
        SOC  @STSARW,R7
-RGTRT  RT
+       RT
 
 BCKDEL 
        DECT R10
        MOV  R11,*R10
-* Don't move left of field
+* Don't move left of field start
        CI   R9,FLDVAL
        JLE  BCKRT
 *
@@ -312,9 +306,6 @@ BCKRT  MOV  *R10+,R11
        RT
 
 FWDDEL
-       DECT R10
-       MOV  R11,*R10
-*
        MOV  R9,R0
        MOV  R0,R1
        INC  R1
@@ -326,5 +317,4 @@ DEL2
 *
        SOC  @STSTYP,R7
 *
-       MOV  *R10+,R11       
        RT
