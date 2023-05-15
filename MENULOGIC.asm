@@ -69,9 +69,9 @@ MNULP
        INCT R2
        MOV  *R2,R9
 * Set cursor
-       MOV  R9,@CURSCN
+MNULP1 MOV  R9,@CURSCN
 * Menu loop
-MNULP1 BL   @MNUDSP
+       BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
        JNE  MNULP
@@ -291,9 +291,7 @@ BCKDEL
 *
        SOC  @STSARW,R7
        DEC  R9
-       MOV  R9,R0
-       BL   @VDPADR
-       MOVB @SPACE,@VDPWD
+       BL   @FWDDEL
 *
 BCKRT  MOV  *R10+,R11       
        RT
