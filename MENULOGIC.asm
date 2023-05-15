@@ -5,10 +5,12 @@
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPSPC,VDPSTR          From VDP.asm
+       REF  VDPREA,VDPWRT                 From VDP.asm
        REF  STSWIN,STSTYP,STSARW
        REF  DRWCUR
        REF  CUROLD,CURRPL,CURMOD
        REF  CURSCN
+       REF  BUFALC,BUFREE
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -252,7 +254,7 @@ GORTN  RT
 
 SPCKEY
 * Delete key in form field
-       DATA 0
+       DATA FWDDEL
 *
        DATA 0,0,0
 * Backspace Delete key in form field
@@ -294,4 +296,49 @@ BCKDEL
        MOVB @SPACE,@VDPWD
 *
 BCKRT  MOV  *R10+,R11       
+       RT
+
+FWDDEL
+       DECT R10
+       MOV  R11,*R10
+* Let R0 = position of field end
+       A    *R3,R0
+       DEC  R0
+* Let R6 = length of data
+       MOV  @4(R2),R3
+       INCT R3
+       MOV  *R3+,R6
+       A    *R3,R6
+       S    R9,R6
+       JEQ  DELRT
+* Let R5 = address to store data
+       MOV  R6,R0
+       BLWP @BUFALC
+       MOV  R0,R5
+       SETO R1
+       C    R1,R5
+       JEQ  DELRT
+* Read data
+       MOV  R9,R0
+       BL   @VDPADR
+       MOV  R5,R0
+       MOV  R6,R1
+       BL   @VDPREA
+* Write data
+       MOV  R9,R0
+       BL   @VDPADR
+       MOV  R5,R0
+       INCT R0
+       MOV  R6,R1
+       DECT R1
+       BL   @VDPWRT
+       MOVB @SPACE,@VDPWD
+       MOVB @SPACE,@VDPWD
+* Free space
+       MOV  R5,R0
+       BLWP @BUFREE
+*
+       SOC  @STSTYP,R7
+*
+DELRT  MOV  *R10+,R11       
        RT
