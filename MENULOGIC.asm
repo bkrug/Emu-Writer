@@ -168,6 +168,10 @@ KEY1   CB   *R3,R5
        C    R3,R4
        JL   KEY1
 * Found key does not match list
+* Is there a field on this menu?
+       MOV  @4(R2),R0
+       JEQ  KEY8
+* Yes, type or move cursor in field
        LIMI 0
 * Is key displayable?
        CB   R5,@SPACE
@@ -183,9 +187,9 @@ KEY1   CB   *R3,R5
 * Not a typeable key
 KEY4
        CB   R5,@DELRGT
-       JL   KEY8
+       JL   KEY7
        CB   R5,@ARWRGT
-       JH   KEY8
+       JH   KEY7
 * Let R0 = address of arrow or delete key routine
        MOVB R5,R0
        SB   @DELRGT,R0
@@ -214,9 +218,9 @@ KEY5
        A    R4,R0
        DEC  R0
        C    R9,R0
-       JL   KEY8
+       JL   KEY7
        MOV  R0,R9
-KEY8
+KEY7
 * Let R1 = position within FLDVAL
        LI   R1,FLDVAL
        NEG  R1
@@ -226,10 +230,10 @@ KEY8
        A    R1,@CURSCN
 * Increment KEYRD so we see next key
        LIMI 2
-       BL   @INCKRD
+KEY8   BL   @INCKRD
        JMP  KEYLP
 KEY9
-* Key found, increment key buffer position
+* Menu item key pressed, increment key buffer position
        BL   @INCKRD
 * Let R0 = address of routine to handle key
        INC  R3
@@ -266,6 +270,9 @@ GOFRM  CLR  @CURMNU
 * Just other menus and forms
 GORTN  RT
 
+*
+* Arrow and delete keys pressed in form field
+*
 SPCKEY
 * Delete key in form field
        DATA FWDDEL
