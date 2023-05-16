@@ -61,9 +61,8 @@ MNULP
        CLR  R7
        SOC  @STSTYP,R7
 * Initialize Field Value
-       CLR  R0
        LI   R1,FLDVAL
-MNULP0 MOVB R0,*R1+
+MNULP0 SB   *R1,*R1+
        CI   R1,FLDVE
        JL   MNULP0
 * Let R9 = address within first field
