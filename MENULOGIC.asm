@@ -255,20 +255,15 @@ KEY9
 * According to menu's key list
 *
 NXTLST DATA GOMNU
-       DATA GOFRM
        DATA GORTN
 
 GOMNU  CLR  @CURFRM
        MOV  R1,@CURMNU
        RT
 
-GOFRM  CLR  @CURMNU
-       MOV  R1,@CURFRM
+GORTN  CLR  @CURMNU
+       B    *R1
        RT
-
-* We should not call external routines from menu mode
-* Just other menus and forms
-GORTN  RT
 
 *
 * Arrow and delete keys pressed in form field

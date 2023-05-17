@@ -10,10 +10,8 @@ ESCKEY EQU  >0F
 
 * If key pressed, go to menu
 NXTMNU EQU  0
-* If key pressed, go to form
-NXTFRM EQU  2
 * If key pressed, go to routine
-NXTRTN EQU  4
+NXTRTN EQU  2
 
 * When Menu header contains 0 in the
 * field address, skip field logic.
