@@ -80,15 +80,15 @@ MNULP1 BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
        JNE  MNULP
+* Set document status as if window has moved
+* Redraw the entire screen
+       MOV  *R10+,R0
+       SOC  @STSWIN,R0
 *
        MOV  *R10+,@CURSCN
        MOV  *R10+,@CURRPL
        MOV  *R10+,@CURMOD
        MOV  *R10+,@CUROLD
-* Set document status as if window has moved
-* Redraw the entire screen
-       MOV  *R10+,R0
-       SOC  @STSWIN,R0
 *
        MOV  *R10+,R11
        RT
