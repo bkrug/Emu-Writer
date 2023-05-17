@@ -1,8 +1,9 @@
        DEF  PRINT
 *
        REF  DSRLNK
-       REF  VDPADR,VDPWRT
+       REF  VDPADR,VDPWRT,VDPSTR
        REF  LINLST,ARYADR
+       REF  FLDVAL
 
 PABBUF EQU  >1000
 PAB    EQU  >F80
@@ -32,14 +33,8 @@ PDATA  BYTE 0
        BYTE 0
        DATA >0000
        BYTE 0
-       BYTE PDATA1-PDATA0
-PDATA0 TEXT 'CLIP'
-PDATA1
-OUTP   BYTE 13,10
-       TEXT 'Some text sent to the printer.'
-       BYTE 13,10
-       TEXT 'A second line.'
-OUTP1
+       BYTE 0
+PDATA0
 OPEN   BYTE >00
 CLOSE  BYTE >01
 READ   BYTE >02
@@ -53,8 +48,20 @@ PRINT  MOV  R11,R12
        LI   R0,PAB
        BL   @VDPADR
        LI   R0,PDATA
-       LI   R1,PDATA1-PDATA
+       LI   R1,PDATA0-PDATA
        BL   @VDPWRT
+* Write device name to VDP RAM
+       LI   R0,FLDVAL
+       BL   @VDPSTR
+* Write name length to VDP RAM
+       LI   R2,FLDVAL
+       NEG  R2
+       A    R0,R2
+       SLA  R2,8
+*
+       LI   R0,PAB+9
+       BL   @VDPADR
+       MOVB R2,@VDPWD
 * Store pointer name length
        LI   R3,PAB+9
        MOV  R3,@PNTR
