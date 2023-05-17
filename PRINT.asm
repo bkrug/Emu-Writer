@@ -44,26 +44,29 @@ WRITE  BYTE >03
 PRINT  MOV  R11,R12
 * Turn off interrupts
        LIMI 0
+* Let R9 = PAB
+* Let R3 = PAB+9 (pointer to device name length)
+       LI   R9,PAB
+       LI   R3,PAB+9
 * Write PAB data to VDP RAM
-       LI   R0,PAB
+       MOV  R9,R0
        BL   @VDPADR
        LI   R0,PDATA
        LI   R1,PDATA0-PDATA
        BL   @VDPWRT
 * Write device name to VDP RAM
-       LI   R0,FLDVAL
+       LI   R2,FLDVAL
+       MOV  R2,R0
        BL   @VDPSTR
 * Write name length to VDP RAM
-       LI   R2,FLDVAL
        NEG  R2
        A    R0,R2
        SLA  R2,8
 *
-       LI   R0,PAB+9
+       MOV  R3,R0
        BL   @VDPADR
        MOVB R2,@VDPWD
 * Store pointer name length
-       LI   R3,PAB+9
        MOV  R3,@PNTR
 * Open file
        SB   @STATUS,@STATUS
@@ -71,7 +74,7 @@ PRINT  MOV  R11,R12
        DATA 8
        BL   @CHKERR
 * Change I/O op-code to write
-       LI   R0,PAB
+       MOV  R9,R0
        BL   @VDPADR
        MOVB @WRITE,@VDPWD
 * Let R2 = current paragraph
@@ -162,7 +165,7 @@ PRINT4
        C    R2,*R0
        JL   PRINT1
 * Yes, change I/O op-code to close
-       LI   R0,PAB
+       MOV  R9,R0
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
 * Close the file
