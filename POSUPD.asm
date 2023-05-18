@@ -24,7 +24,7 @@ POSUPD DATA POSUWS,POSUPD+4
        BL   @UPINDX
        BL   @UPWOFF
        BL   @UPWTOP
-	   BL   @UPCURS
+	BL   @UPCURS
        RTWP
       
 * Width of screen in characters
@@ -170,7 +170,7 @@ UPCURS
        INCT R0
 * Let R1 = number of screen positions
 * in lines
-	   MPY  @FORTY,R0
+	MPY  @FORTY,R0
 * Add screen positions for current line
        A    @CHRLIX,R1
        S    @WINOFF,R1

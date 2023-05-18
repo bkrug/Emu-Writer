@@ -105,7 +105,7 @@ xas99.py -l `
     VDP.obj.temp `
     LOOK.obj.temp `
     ACT.obj.temp `
-    PRINT.obj.temp `
+    IO.obj.temp `
     MENU.obj.temp `
     MENULOGIC.obj.temp `
     FORM.obj.temp `
@@ -125,7 +125,7 @@ xas99.py -l `
 #     VDP.asm `
 #     LOOK.asm `
 #     ACT.asm `
-#     PRINT.asm `
+#     IO.asm `
 #     MENU.asm `
 #     MENULOGIC.asm `
 #     FORM.asm `
