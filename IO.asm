@@ -185,7 +185,8 @@ LOADR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
-*       JMP  LOADR
+*
+       JMP  LOADR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPADR
