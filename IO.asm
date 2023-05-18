@@ -1,4 +1,4 @@
-       DEF  PRINT,SAVE
+       DEF  SAVE,LOAD,PRINT
 *
        REF  DSRLNK
        REF  VDPADR,VDPWRT,VDPSTR
@@ -38,6 +38,17 @@ SDATA  BYTE 0
        BYTE 0                               * Name length
 SDATA0
 *
+* PAB data for Loading
+LDATA  BYTE 0
+       BYTE FIXED+DISPLY+INPUT+SEQUEN
+       DATA PABBUF
+       BYTE FIXSAV                          * Fixed Record Length
+       BYTE FIXSAV                          * Length of this record
+       DATA 0                               * Record number
+       BYTE 0                               * Screen offset
+       BYTE 0                               * Name length
+LDATA0
+*
 * PAB data for Printing
 PDATA  BYTE 0
        BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
@@ -61,6 +72,9 @@ EOD    BYTE 4                               * End of document
 *
        EVEN
 
+*
+* Save
+*
 SAVE   DECT R10
        MOV  R11,*R10
 * Save stack restore point
@@ -146,6 +160,37 @@ SAVEDN
        MOV  *R10+,R11
        RT
 
+*
+* Load
+*
+LOAD   DECT R10
+       MOV  R11,*R10
+* Save stack restore point
+       MOV  R10,R12
+* Turn off interrupts
+       LIMI 0
+* Open File
+       LI   R2,LDATA
+       BL   @OPENFL
+* Change I/O op-code to write
+       LI   R0,PAB
+       BL   @VDPADR
+       MOVB @WRITE,@VDPWD
+* Set VDP read position
+       LI   R0,PABBUF
+       BL   @VDPADR
+
+*
+       BL   @CLOSFL
+*
+       LIMI 2
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Print
+*
 PRINT  DECT R10
        MOV  R11,*R10
 * Save stack restore point

@@ -1,5 +1,5 @@
        DEF  MNUHOM,MNUFL
-       REF  FRMPRT,FRMSAV
+       REF  FRMSAV,FRMLOD,FRMPRT
 
        COPY 'EQUKEY.asm'
 
@@ -46,13 +46,17 @@ TXTFL  DATA TXTFL1
 TXTFL1 EVEN
 
 KEYFL  DATA KEYFL1
-       TEXT 'P'
-       BYTE NXTMNU
-       DATA FRMPRT
-*
        TEXT 'S'
        BYTE NXTMNU
        DATA FRMSAV
+*
+       TEXT 'L'
+       BYTE NXTMNU
+       DATA FRMLOD
+*
+       TEXT 'P'
+       BYTE NXTMNU
+       DATA FRMPRT
 *
        BYTE ESCKEY
        BYTE NXTMNU
