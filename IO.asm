@@ -2,7 +2,7 @@
 *
        REF  DSRLNK
        REF  INTMEM
-       REF  VDPADR,VDPWRT,VDPSTR
+       REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
        REF  LINLST,ARYADR
        REF  FLDVAL
 
@@ -172,30 +172,23 @@ LOAD   DECT R10
        LIMI 0
 * Purge old file
        BL   @INTMEM
-*
-       LIMI 2
-*
-       MOV  *R10+,R11
-       RT
-
-*
-* TODO: Code to use for loading file.
-*
 * Open File
        LI   R2,LDATA
        BL   @OPENFL
-* Change I/O op-code to write
+* Change I/O op-code to read
        LI   R0,PAB
        BL   @VDPADR
-       MOVB @WRITE,@VDPWD
-* Set VDP read position
-       LI   R0,PABBUF
-       BL   @VDPADR
+       MOVB @READ,@VDPWD
+LOADR
 * Read record
        MOV  @LNGADR,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
+*       JMP  LOADR
+* Set VDP read position
+       LI   R0,PABBUF
+       BL   @VDPADR
 *
        BL   @CLOSFL
 *
@@ -394,21 +387,29 @@ ERRSTS DATA >2000
 * Report errors if any
 *
 CHKERR
-* Check status bit
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R2,*R10
+* Read status from VDP RAM
+* Let R2 = error number in range 0-7
+       LI   R0,PAB+1
+       BL   @VDPRAD
+       MOVB @VDPRD,R2
+       SRL  R2,13
+       JNE  CHKE2
+* If PAB status is 0, check COND bit in status byte
        MOVB @STATUS,R0
        COC  @ERRSTS,R0
-       JEQ  CHKE1
+       JEQ  CHKE2
 * No error occurred
+       MOV  *R10+,R2
+       MOV  *R10+,R11
        RT
+CHKE2
 * Error occurred
-* Read from VDP RAM
-CHKE1  LI   R0,PAB+1
-       BL   @VDPADR
-       MOVB @VDPRD,R2
-* Let R2 = error number in range 0-7
-       SRL  R2,13
-       SLA  R2,1
 * Let R2 = address of error messsage
+       SLA  R2,1
        AI   R2,MSGNUM
        MOV  *R2,R2
 * Write messsage
