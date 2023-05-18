@@ -1,5 +1,7 @@
        DEF  FRMPRT,FRMSAV
-       REF  PRINT,MNUFL
+*
+       REF  MNUFL
+       REF  PRINT,SAVE
 
        COPY 'EQUKEY.asm'
 
@@ -55,7 +57,7 @@ KEYSV  DATA KEYSV1
 *
        BYTE ENTER
        BYTE NXTRTN
-       DATA PRINT
+       DATA SAVE
 *
        BYTE ESCKEY
        BYTE NXTMNU

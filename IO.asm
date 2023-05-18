@@ -1,4 +1,4 @@
-       DEF  PRINT
+       DEF  PRINT,SAVE
 *
        REF  DSRLNK
        REF  VDPADR,VDPWRT,VDPSTR
@@ -41,38 +41,26 @@ READ   BYTE >02
 WRITE  BYTE >03
        EVEN
 
-PRINT  MOV  R11,R12
+SAVE   DECT R10
+       MOV  R11,*R10
+* Save stack restore point
+       MOV  R10,R12
+*
+       MOV  *R10+,R11
+       RT
+
+PRINT  DECT R10
+       MOV  R11,*R10
+* Save stack restore point
+       MOV  R10,R12
 * Turn off interrupts
        LIMI 0
 * Let R9 = PAB
 * Let R3 = PAB+9 (pointer to device name length)
        LI   R9,PAB
        LI   R3,PAB+9
-* Write PAB data to VDP RAM
-       MOV  R9,R0
-       BL   @VDPADR
-       LI   R0,PDATA
-       LI   R1,PDATA0-PDATA
-       BL   @VDPWRT
-* Write device name to VDP RAM
-       LI   R2,FLDVAL
-       MOV  R2,R0
-       BL   @VDPSTR
-* Write name length to VDP RAM
-       NEG  R2
-       A    R0,R2
-       SLA  R2,8
-*
-       MOV  R3,R0
-       BL   @VDPADR
-       MOVB R2,@VDPWD
-* Store pointer name length
-       MOV  R3,@PNTR
-* Open file
-       SB   @STATUS,@STATUS
-       BLWP @DSRLNK
-       DATA 8
-       BL   @CHKERR
+* Open File
+       BL   @OPENFL
 * Change I/O op-code to write
        MOV  R9,R0
        BL   @VDPADR
@@ -164,6 +152,49 @@ PRINT4
        MOV  @LINLST,R0
        C    R2,*R0
        JL   PRINT1
+*
+       BL   @CLOSFL
+*
+       LIMI 2
+*
+       MOV  *R10+,R11
+       RT
+
+OPENFL
+       DECT R10
+       MOV  R11,*R10
+* Write PAB data to VDP RAM
+       MOV  R9,R0
+       BL   @VDPADR
+       LI   R0,PDATA
+       LI   R1,PDATA0-PDATA
+       BL   @VDPWRT
+* Write device name to VDP RAM
+       LI   R2,FLDVAL
+       MOV  R2,R0
+       BL   @VDPSTR
+* Write name length to VDP RAM
+       NEG  R2
+       A    R0,R2
+       SLA  R2,8
+*
+       MOV  R3,R0
+       BL   @VDPADR
+       MOVB R2,@VDPWD
+* Store pointer name length
+       MOV  R3,@PNTR
+* Open file
+       SB   @STATUS,@STATUS
+       BLWP @DSRLNK
+       DATA 8
+       BL   @CHKERR
+*
+       MOV  *R10+,R11
+       RT
+
+CLOSFL
+       DECT R10
+       MOV  R11,*R10
 * Yes, change I/O op-code to close
        MOV  R9,R0
        BL   @VDPADR
@@ -174,8 +205,8 @@ PRINT4
        DATA 8
        BL   @CHKERR
 *
-       LIMI 2
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 MSG0   BYTE MSG1-MSG0-1
        TEXT 'Err 0: Bad device name'
@@ -229,4 +260,8 @@ CHKE1  LI   R0,PAB+1
        SB   @STATUS,@STATUS
 * Return to caller. Skip rest of print routine.
        LIMI 2
-       B    *R12
+* Exit fast.
+* Restore stack trace to position when we entered the IO routine.
+       MOV  R12,R10
+       MOV  *R10+,R11
+       RT
