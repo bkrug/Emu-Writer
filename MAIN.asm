@@ -1,11 +1,11 @@
-       DEF  START,DRWCUR
+       DEF  START,DRWCUR,INTMEM
 *
        REF  KEYDVC,USRISR
        REF  KEYINT
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
-       REF  PARINX
+       REF  PARINX,CHRPAX
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  LINLST,MGNLST,FMTLST
@@ -109,6 +109,9 @@ INTMEM
        BLWP @ARYADD
        MOV  R0,@LINLST
        MOV  R4,*R1
+* Set cursor position to document start
+       CLR  @PARINX
+       CLR  @CHRPAX
 *
        RT
 

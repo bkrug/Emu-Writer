@@ -1,6 +1,7 @@
        DEF  SAVE,LOAD,PRINT
 *
        REF  DSRLNK
+       REF  INTMEM
        REF  VDPADR,VDPWRT,VDPSTR
        REF  LINLST,ARYADR
        REF  FLDVAL
@@ -169,6 +170,17 @@ LOAD   DECT R10
        MOV  R10,R12
 * Turn off interrupts
        LIMI 0
+* Purge old file
+       BL   @INTMEM
+*
+       LIMI 2
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* TODO: Code to use for loading file.
+*
 * Open File
        LI   R2,LDATA
        BL   @OPENFL
@@ -179,7 +191,11 @@ LOAD   DECT R10
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPADR
-
+* Read record
+       MOV  @LNGADR,@PNTR
+       BLWP @DSRLNK
+       DATA 8
+       BL   @CHKERR
 *
        BL   @CLOSFL
 *
