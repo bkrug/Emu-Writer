@@ -1,5 +1,5 @@
        DEF  MNUHOM,MNUFL
-       REF  FRMPRT,SHWEDT
+       REF  FRMPRT,FRMSAV
 
        COPY 'EQUKEY.asm'
 
@@ -49,6 +49,10 @@ KEYFL  DATA KEYFL1
        TEXT 'P'
        BYTE NXTMNU
        DATA FRMPRT
+*
+       TEXT 'S'
+       BYTE NXTMNU
+       DATA FRMSAV
 *
        BYTE ESCKEY
        BYTE NXTMNU
