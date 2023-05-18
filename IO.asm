@@ -39,6 +39,8 @@ OPEN   BYTE >00
 CLOSE  BYTE >01
 READ   BYTE >02
 WRITE  BYTE >03
+*
+LNGADR DATA PAB+9
        EVEN
 
 SAVE   DECT R10
@@ -55,14 +57,10 @@ PRINT  DECT R10
        MOV  R10,R12
 * Turn off interrupts
        LIMI 0
-* Let R9 = PAB
-* Let R3 = PAB+9 (pointer to device name length)
-       LI   R9,PAB
-       LI   R3,PAB+9
 * Open File
        BL   @OPENFL
 * Change I/O op-code to write
-       MOV  R9,R0
+       LI   R0,PAB
        BL   @VDPADR
        MOVB @WRITE,@VDPWD
 * Let R2 = current paragraph
@@ -129,7 +127,7 @@ PRINT3
        SWPB R8
        MOVB R8,@VDPWD
 * Write one record
-       MOV  R3,@PNTR
+       MOV  @LNGADR,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
@@ -164,7 +162,7 @@ OPENFL
        DECT R10
        MOV  R11,*R10
 * Write PAB data to VDP RAM
-       MOV  R9,R0
+       LI   R0,PAB
        BL   @VDPADR
        LI   R0,PDATA
        LI   R1,PDATA0-PDATA
@@ -178,11 +176,11 @@ OPENFL
        A    R0,R2
        SLA  R2,8
 *
-       MOV  R3,R0
+       MOV  @LNGADR,R0
        BL   @VDPADR
        MOVB R2,@VDPWD
 * Store pointer name length
-       MOV  R3,@PNTR
+       MOV  @LNGADR,@PNTR
 * Open file
        SB   @STATUS,@STATUS
        BLWP @DSRLNK
@@ -196,11 +194,11 @@ CLOSFL
        DECT R10
        MOV  R11,*R10
 * Yes, change I/O op-code to close
-       MOV  R9,R0
+       LI   R0,PAB
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
 * Close the file
-       MOV  R3,@PNTR
+       MOV  @LNGADR,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
