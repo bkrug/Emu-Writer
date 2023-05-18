@@ -24,17 +24,28 @@ APPEND EQU  >06
 SEQUEN EQU  >00
 RELATV EQU  >01
 *
-MAXLNG EQU  >FE
-*
+* PAB data for Printing
 PDATA  BYTE 0
-       BYTE DISPLY+VARIAB+OUTPUT+SEQUEN
+       BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
        DATA PABBUF
-       BYTE MAXLNG
-       BYTE 0
-       DATA >0000
-       BYTE 0
-       BYTE 0
+       BYTE >FE                             * Max Record Length
+       BYTE 0                               * Length of this record
+       DATA 0                               * Record number
+       BYTE 0                               * Screen offset
+       BYTE 0                               * Name length
 PDATA0
+*
+* PAB data for Saving
+SDATA  BYTE 0
+       BYTE FIXED+DISPLY+OUTPUT+SEQUEN
+       DATA PABBUF
+       BYTE >40                             * Fixed Record Length
+       BYTE >40                             * Length of this record
+       DATA 0                               * Record number
+       BYTE 0                               * Screen offset
+       BYTE 0                               * Name length
+SDATA0
+*
 OPEN   BYTE >00
 CLOSE  BYTE >01
 READ   BYTE >02
@@ -58,6 +69,7 @@ PRINT  DECT R10
 * Turn off interrupts
        LIMI 0
 * Open File
+       LI   R2,PDATA
        BL   @OPENFL
 * Change I/O op-code to write
        LI   R0,PAB
@@ -158,14 +170,21 @@ PRINT4
        MOV  *R10+,R11
        RT
 
+*
+* Open file
+*
+* Input:
+*   R2 - Address of PAB Data
+* Output:
+*   R0, R1, R2 all changed
 OPENFL
        DECT R10
        MOV  R11,*R10
 * Write PAB data to VDP RAM
        LI   R0,PAB
        BL   @VDPADR
-       LI   R0,PDATA
-       LI   R1,PDATA0-PDATA
+       MOV  R2,R0
+       LI   R1,10
        BL   @VDPWRT
 * Write device name to VDP RAM
        LI   R2,FLDVAL
