@@ -363,23 +363,23 @@ CLOSFL
        MOV  *R10+,R11
        RT
 
-MSG0   BYTE MSG1-MSG0-1
-       TEXT 'Err 0: Bad device name'
-MSG1   BYTE MSG2-MSG1-1
-       TEXT 'Err 1: Device is write protected'
-MSG2   BYTE MSG3-MSG2-1
-       TEXT 'Err 2: File type on disk not as expected'
-MSG3   BYTE MSG4-MSG3-1
-       TEXT 'Err 3: Illegal operation of peripheral'
-MSG4   BYTE MSG5-MSG4-1
-       TEXT 'Err 4: Out of space'
-MSG5   BYTE MSG6-MSG5-1
-       TEXT 'Err 5: Read past end of file'
-MSG6   BYTE MSG7-MSG6-1
-       TEXT 'Err 6: Device not connected or other'
-MSG7   BYTE MSG8-MSG7-1
-       TEXT 'Err 7: File does not exist'
-MSG8   EVEN
+MSG0   TEXT 'Err 0: Bad device name'
+       BYTE 0
+MSG1   TEXT 'Err 1: Device is write protected'
+       BYTE 0
+MSG2   TEXT 'Err 2: File type on disk not as expected'
+       BYTE 0
+MSG3   TEXT 'Err 3: Illegal operation of peripheral'
+       BYTE 0
+MSG4   TEXT 'Err 4: Out of space'
+       BYTE 0
+MSG5   TEXT 'Err 5: Read past end of file'
+       BYTE 0
+MSG6   TEXT 'Err 6: Device not connected or other'
+       BYTE 0
+MSG7   TEXT 'Err 7: File not found'
+       BYTE 0
+       EVEN
 MSGNUM DATA MSG0,MSG1,MSG2,MSG3
        DATA MSG4,MSG5,MSG6,MSG7
 ERRSTS DATA >2000
@@ -415,10 +415,8 @@ CHKE2
 * Write messsage
        CLR  R0
        BL   @VDPADR
-       MOVB *R2+,R1
-       SRL  R1,8
        MOV  R2,R0
-       BL   @VDPWRT
+       BL   @VDPSTR
 * Clear error
        SB   @STATUS,@STATUS
 * Return to caller. Skip rest of print routine.
