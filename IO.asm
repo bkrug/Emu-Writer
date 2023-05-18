@@ -24,12 +24,15 @@ APPEND EQU  >06
 SEQUEN EQU  >00
 RELATV EQU  >01
 *
+FIXSAV EQU  >40                             * Fixed length of save records
+MAXPRT EQU  >FE                             * Max Length of print records
+*
 * PAB data for Saving
 SDATA  BYTE 0
        BYTE FIXED+DISPLY+OUTPUT+SEQUEN
        DATA PABBUF
-       BYTE >40                             * Fixed Record Length
-       BYTE >40                             * Length of this record
+       BYTE FIXSAV                          * Fixed Record Length
+       BYTE FIXSAV                          * Length of this record
        DATA 0                               * Record number
        BYTE 0                               * Screen offset
        BYTE 0                               * Name length
@@ -39,7 +42,7 @@ SDATA0
 PDATA  BYTE 0
        BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
        DATA PABBUF
-       BYTE >FE                             * Max Record Length
+       BYTE MAXPRT                          * Max Record Length
        BYTE 0                               * Length of this record
        DATA 0                               * Record number
        BYTE 0                               * Screen offset
@@ -52,6 +55,10 @@ OPEN   BYTE >00
 CLOSE  BYTE >01
 READ   BYTE >02
 WRITE  BYTE >03
+*
+CR     BYTE 13
+EOD    BYTE 4                               * End of document
+*
        EVEN
 
 SAVE   DECT R10
@@ -63,6 +70,74 @@ SAVE   DECT R10
 * Open File
        LI   R2,SDATA
        BL   @OPENFL
+* Change I/O op-code to write
+       LI   R0,PAB
+       BL   @VDPADR
+       MOVB @WRITE,@VDPWD
+* Set VDP write position
+       LI   R0,PABBUF
+       BL   @VDPADR
+* Let R2 = remaining paragraphs
+       MOV  @LINLST,R0
+       MOV  *R0,R2
+* Let R3 = number of bytes already written to VDP
+       CLR  R3
+* Let R1 = address of paragraph entry in the paragraph list
+       MOV  @LINLST,R0
+       CLR  R1
+       BLWP @ARYADR
+* Let R4 = address within paragraph
+* Let R5 = remaining bytes in paragraph
+       MOV  *R1,R4
+       MOV  *R4,R5
+       AI   R4,4
+SAVBYT
+* If paragraph complete, write CR
+       MOV  R5,R5
+       JEQ  SAVECR
+* Write text to VDP RAM
+       MOVB *R4+,@VDPWD
+       DEC  R5
+       JMP  SAVE3
+*
+SAVECR
+* Prepare for next paragraph
+       INCT R1
+       DEC  R2
+       JEQ  SAVEDN
+* Let R4 = address within paragraph
+* Let R5 = remaining bytes in paragraph
+       MOV  *R1,R4
+       MOV  *R4,R5
+       AI   R4,4
+* Write CR to VDP RAM
+       MOVB @CR,@VDPWD
+* Enough bytes to write record?
+SAVE3  INC  R3
+       CI   R3,FIXSAV
+* If not, next byte
+       JL   SAVBYT
+* If yes, write record
+       MOV  @LNGADR,@PNTR
+       BLWP @DSRLNK
+       DATA 8
+       BL   @CHKERR
+* Re-set VDP write position
+       LI   R0,PABBUF
+       BL   @VDPADR
+*
+       CLR  R3
+*
+       JMP  SAVBYT
+* Document complete
+SAVEDN
+* Write EOD character
+       MOVB @EOD,@VDPWD
+* Write record
+       MOV  @LNGADR,@PNTR
+       BLWP @DSRLNK
+       DATA 8
+       BL   @CHKERR
 *
        BL   @CLOSFL
 *
