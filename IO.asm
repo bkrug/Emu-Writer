@@ -24,17 +24,6 @@ APPEND EQU  >06
 SEQUEN EQU  >00
 RELATV EQU  >01
 *
-* PAB data for Printing
-PDATA  BYTE 0
-       BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
-       DATA PABBUF
-       BYTE >FE                             * Max Record Length
-       BYTE 0                               * Length of this record
-       DATA 0                               * Record number
-       BYTE 0                               * Screen offset
-       BYTE 0                               * Name length
-PDATA0
-*
 * PAB data for Saving
 SDATA  BYTE 0
        BYTE FIXED+DISPLY+OUTPUT+SEQUEN
@@ -46,18 +35,38 @@ SDATA  BYTE 0
        BYTE 0                               * Name length
 SDATA0
 *
+* PAB data for Printing
+PDATA  BYTE 0
+       BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
+       DATA PABBUF
+       BYTE >FE                             * Max Record Length
+       BYTE 0                               * Length of this record
+       DATA 0                               * Record number
+       BYTE 0                               * Screen offset
+       BYTE 0                               * Name length
+PDATA0
+*
+LNGADR DATA PAB+9
+*
 OPEN   BYTE >00
 CLOSE  BYTE >01
 READ   BYTE >02
 WRITE  BYTE >03
-*
-LNGADR DATA PAB+9
        EVEN
 
 SAVE   DECT R10
        MOV  R11,*R10
 * Save stack restore point
        MOV  R10,R12
+* Turn off interrupts
+       LIMI 0
+* Open File
+       LI   R2,SDATA
+       BL   @OPENFL
+*
+       BL   @CLOSFL
+*
+       LIMI 2
 *
        MOV  *R10+,R11
        RT
