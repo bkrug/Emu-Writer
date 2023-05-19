@@ -450,8 +450,6 @@ RPLTXT
 *
 * Backspace Delete
 *
-* TODO: Fix a bug that causes this to act like
-* regular delete button when we are at the beginning of the document.
 BCKDEL
        MOV  R11,R12
 * Is this the beginning of document?

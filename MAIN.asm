@@ -1,4 +1,4 @@
-       DEF  START,DRWCUR,INTMEM
+       DEF  START,DRWCUR,INTMEM,INTPAR
 *
        REF  KEYDVC,USRISR
        REF  KEYINT
@@ -72,6 +72,10 @@ MAIN3
 *
 * Initialize Memory
 *
+* Output:
+*  R1 - Address in LINLST
+*  R4 - Address of paragraph
+*  R0,R2 - changed
 INTMEM
 * Initialize buffer.
        LI   R0,MEMBEG
@@ -91,7 +95,7 @@ INTMEM
        MOV  R0,@LINLST
 * Insert one empty paragraph
 * Let R4 = paragraph address
-       LI   R0,PAREND-PAR
+INTPAR LI   R0,PAREND-PAR
        MOV  R0,R2
        BLWP @BUFALC
        MOV  R0,R4
@@ -102,7 +106,7 @@ INTMEM
 * place address inside paragraph object
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@2(4)
+       MOV  R0,@2(R4)
 * Put the paragraph into the
 * paragraph list
        MOV  @LINLST,R0

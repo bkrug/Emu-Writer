@@ -1,9 +1,10 @@
        DEF  SAVE,LOAD,PRINT
 *
        REF  DSRLNK
-       REF  INTMEM
+       REF  INTMEM,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
-       REF  LINLST,ARYADR
+       REF  LINLST
+       REF  ARYADR,BUFGRW
        REF  FLDVAL
 
 PABBUF EQU  >1000
@@ -179,19 +180,64 @@ LOAD   DECT R10
        LI   R0,PAB
        BL   @VDPADR
        MOVB @READ,@VDPWD
+* Let R3 = address of first element in paragraph list
+       MOV  @LINLST,R3
+       C    *R3+,*R3+
 LOADR
 * Read record
        MOV  @LNGADR,@PNTR
        BLWP @DSRLNK
        DATA 8
        BL   @CHKERR
-*
-       JMP  LOADR
 * Set VDP read position
        LI   R0,PABBUF
-       BL   @VDPADR
-*
-       BL   @CLOSFL
+       BL   @VDPRAD
+* Let R4 = number of record bytes to read
+       LI   R4,FIXSAV
+LOADBY
+* Is next char a CR?
+       MOVB @VDPRD,R5
+       CB   R5,@CR
+*       JEQ  NEWPAR
+* Reached end of document?
+       CB   R5,@EOD
+       JEQ  LOADDN
+* No, grow the paragraph's allocated block, if necessary.
+* Let R0 be the address of the paragraph.
+* Let R1 be the length of the paragraph plus one new character
+       MOV  *R3,R0
+       MOV  *R0,R1
+       AI   R1,5
+       BLWP @BUFGRW
+*       CI   R0,>FFFF
+*       JEQ  RTERR
+* Store new paragraph address
+       MOV  R0,*R3
+* Let R6 contain address following the paragraph
+       MOV  R0,R6
+       C    *R6+,*R6+
+       A    *R0,R6
+* Append character to paragraph.
+       MOVB R5,*R6
+* Increase paragraph length by one.
+       INC  *R0
+       JMP  LOAD1
+NEWPAR
+* Start new pararaph
+* Let R3 = address of element in paragraph list
+       MOV  R4,R5
+       BL   @INTPAR
+       MOV  R1,R3
+       MOV  R5,R4
+LOAD1
+* Decrease remaining char to read
+       DEC  R4
+* Reached end of record?
+       JNE  LOADBY
+* Yes, load another record
+       JMP  LOADR
+* Reached End of Document
+LOADDN BL   @CLOSFL
 *
        LIMI 2
 *
