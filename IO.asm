@@ -198,7 +198,7 @@ LOADBY
 * Is next char a CR?
        MOVB @VDPRD,R5
        CB   R5,@CR
-*       JEQ  NEWPAR
+       JEQ  NEWPAR
 * Reached end of document?
        CB   R5,@EOD
        JEQ  LOADDN
