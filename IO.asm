@@ -6,6 +6,7 @@
        REF  LINLST
        REF  ARYADR,BUFGRW
        REF  FLDVAL
+       REF  WRAP
 
 PABBUF EQU  >1000
 PAB    EQU  >F80
@@ -238,6 +239,16 @@ LOAD1
        JMP  LOADR
 * Reached End of Document
 LOADDN BL   @CLOSFL
+* Wrap all paragraphs
+       MOV  @LINLST,R2
+       CLR  R0
+WRAPLP C    R0,*R2
+       JHE  WRAPDN
+       CLR  R1
+       BLWP @WRAP
+       INC  R0
+       JMP  WRAPLP
+WRAPDN
 *
        LIMI 2
 *

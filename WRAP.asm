@@ -301,9 +301,9 @@ WRP5
 * to new wrap list.
 * Let R7 = address of old wrap list
        MOV  *R5,R7
-	   C    *R7,*R6
-	   JEQ  WRP6
-	   SOC  @STSPAR,@2(13)
+	C    *R7,*R6
+	JEQ  WRP6
+	SOC  @STSPAR,@2(13)
 * Deallocate old wrap list.
 WRP6   MOV  *R5,R0
        BLWP @BUFREE
