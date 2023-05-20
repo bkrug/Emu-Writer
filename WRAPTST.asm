@@ -94,6 +94,8 @@ WRP1
        MOV  R0,@FMTLST
        LI   R0,MRGN1
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,0
        LI   R1,0
@@ -177,6 +179,8 @@ WRP2
        MOV  R0,@FMTLST
        LI   R0,MRGN2
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,1
        LI   R1,0
@@ -256,6 +260,8 @@ WRP3
        MOV  R0,@FMTLST
        LI   R0,MRGN3
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,2
        LI   R1,0
@@ -336,6 +342,8 @@ WRP4
        MOV  R0,@FMTLST
        LI   R0,MRGN4
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,3
        LI   R1,0
@@ -418,6 +426,8 @@ WRP5
        MOV  R0,@FMTLST
        LI   R0,MRGN5
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,4
        LI   R1,0
@@ -501,6 +511,8 @@ WRP7
        MOV  R0,@FMTLST
        LI   R0,MRGN7
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,6
        LI   R1,0
@@ -598,6 +610,8 @@ WRP8
        MOV  R0,@FMTLST
        LI   R0,MRGN8
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,7
        LI   R1,0
@@ -684,6 +698,8 @@ WRP9
        MOV  R0,@FMTLST
        LI   R0,MRGN9
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,8
        LI   R1,0
@@ -780,6 +796,8 @@ WRP10
        MOV  R0,@FMTLST
        LI   R0,MRGN10
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,9
        LI   R1,0
@@ -886,6 +904,8 @@ WRP11
        MOV  R0,@FMTLST
        LI   R0,MRGN11
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,10
        LI   R1,0
@@ -989,6 +1009,8 @@ WRP12
        MOV  R0,@FMTLST
        LI   R0,MRGN12
        MOV  R0,@MGNLST
+* Turn off vertical mode
+       CLR  @WINMOD
 * Act
        LI   R0,2
        LI   R1,0
