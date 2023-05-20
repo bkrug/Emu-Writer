@@ -2,11 +2,14 @@
        REF  ABLCK,AOC,AZC,AEQ,ANEQ
 *
        REF  WRAP,LINLST,FMTLST,MGNLST
+       REF  WINMOD
        REF  BUFINT,BUFALC,BUFCPY
        REF  STSPAR,ERRMEM
 
 
 TSTLST DATA TSTEND-TSTLST-2/8
+       DATA WRP13
+       TEXT 'WRP13 '
        DATA WRP1
        TEXT 'WRP1  '
        DATA WRP2
@@ -28,7 +31,7 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA WRP11
        TEXT 'WRP11 '
        DATA WRP12
-       TEXT 'WRP12 '       
+       TEXT 'WRP12 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1046,6 +1049,103 @@ FMT12  DATA 0,3
 MRGN12 DATA 1,3
 * 10-char left margin, 60-char paragraph width
        DATA 0,>0000,>1428,>0000
+
+*
+* Wrap the paragraph in vertical mode.
+* Configured paragraph width ignored.
+* Use width of 39-char instead.
+*
+* Assume a page width of eight inches
+* with two inch margins, no indent,
+* 10 CPI
+*
+WRP13
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* The wrap list must go in the block
+* of memory allocated to the chunck
+* manager because it may be deallocated.
+       LI   R2,WRPL13
+       LI   R3,WRPE13-WRPL13
+       LI   R4,PAR13A
+       BL   @CPYWRP
+*
+       LI   R0,PARL13
+       MOV  R0,@LINLST
+       LI   R0,FMT13
+       MOV  R0,@FMTLST
+       LI   R0,MRGN13
+       MOV  R0,@MGNLST
+* Turn on vertical mode
+       SETO @WINMOD
+* Act
+       LI   R0,0
+       LI   R1,0
+       BLWP @WRAP
+* Assert
+*  No error should be detected
+* R1 contains document status
+       MOV  @ERRMEM,R0
+       LI   R2,MNERR
+       LI   R3,MNERRE-MNERR
+*       BLWP @AZC
+* Document status reports linecount is
+* unchanged
+* R1 contains document status
+       MOV  @STSPAR,R0
+       LI   R2,MPARC
+       LI   R3,MPARCE-MPARC
+*       BLWP @AZC
+* Wrap list should match expected
+       LI   R0,WRPE13
+       MOV  @PAR13A+2,R1
+       LI   R2,WRE13E-WRPE13
+       LI   R3,MWRP
+       LI   R4,MWRPE-MWRP
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+
+* Paragraph List
+PARL13 DATA 5,1
+       DATA PAR13A
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+       DATA FAKEAD
+
+PAR13A DATA 58+56+57+58+11
+       DATA WRPL13
+       TEXT 'Other historical events taking place in '
+       TEXT 'Wuhan include the Wuchang Uprising of 1911, '
+       TEXT 'which led to the end of 2,000 years of '
+       TEXT 'dynastic rule. Wuhan was briefly the capital '
+       TEXT 'of China in 1927 under the left wing of '
+       TEXT 'the Kuomintang (KMT) government.'
+       EVEN
+WRPL13 DATA 4,1
+       DATA 58
+       DATA 58+56
+       DATA 58+56+57
+       DATA 58+56+57+58
+WRPE13 DATA 6,1
+       DATA 40
+       DATA 40+38
+       DATA 40+38+36
+       DATA 40+38+36+34
+       DATA 40+38+36+34+37
+       DATA 40+38+36+34+37+38
+WRE13E
+
+FMT13  DATA 0,3
+
+MRGN13 DATA 1,3
+* 10-char left margin, 50-char paragraph width
+       DATA 0,>0000,>0A3C,>0000
 
 ********
 

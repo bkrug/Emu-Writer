@@ -55,6 +55,10 @@ MGN2   INCT R8
        SRA  R0,8
        MOV  *R8,R1
        SB   R1,R1
+* TODO: Add code here that checks if we are in verticle mode.
+* If Yes, move SCRNWD to R1 and decrement.
+* Also make sure indent is in range -20 to +20
+*
 * Let R1 = width of first paragraph line
 * Let R2 = width of other paragraph lines
        MOV  R1,R2
@@ -73,7 +77,6 @@ MGN4   LI   R1,60
 * Record calculated widths
 MGN5   MOV  R1,@LNWDT1
        MOV  R2,@LNWDTH
-
 
 * Let R2 = address of new wrap list
        LI   R0,1

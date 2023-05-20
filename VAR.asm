@@ -14,6 +14,7 @@
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
 * WRAP.TXT
        DEF  FMTEND,MGNEND,LNWDT1,LNWDTH
+       DEF  WINMOD
 * SCRNWRT.TXT
        DEF  SRCLIN,INDENT,CPI,NXTFMT
        DEF  DSPSTR,CURSTR
@@ -86,6 +87,9 @@ MGNEND DATA 0
 LNWDT1 DATA 0
 * General line width
 LNWDTH DATA 0
+* When reset, use windowed mode like TI-Writer
+* Otherwise, use vertical mode
+WINMOD DATA 0
 
 * SCRNWRT.TXT
 SRCLIN DATA 0
