@@ -29,7 +29,6 @@
        DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
 * MENULOGIC.asm
        DEF  CURMNU
-       DEF  CURFRM
        DEF  FLDVAL,FLDVE
 
 * Areas of memory that absolutely have
@@ -145,9 +144,8 @@ KEYWRT DATA 0
 * new characters to write.===
 KEYRD  DATA 0
 
-* MENULOGIC.asm and FORMLOGIC.asm
+* MENULOGIC.asm
 CURMNU BSS  2
-CURFRM BSS  2
 FLDVAL BSS  80
 FLDVE
 

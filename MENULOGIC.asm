@@ -1,6 +1,6 @@
        DEF  MNUINT,ENTMNU
 *
-       REF  CURMNU,CURFRM,FLDVAL,FLDVE    From VAR.asm
+       REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
@@ -291,33 +291,6 @@ KEY9
        RT
 
 *
-* List of routines to branch to
-* According to menu's key list
-*
-NXTLST DATA GOMNU
-       DATA GORTN
-
-GOMNU
-* Specify new menu
-       CLR  @CURFRM
-       MOV  R1,@CURMNU
-* No error
-       CLR  R0
-       RT
-
-GORTN
-       DECT R10
-       MOV  R11,*R10
-*
-       BL   *R1
-       MOV  R0,R0
-       JNE  GORTN1
-       CLR  @CURMNU
-*
-GORTN1 MOV  *R10+,R11
-       RT
-
-*
 * Arrow and delete keys pressed in form field
 *
 SPCKEY
@@ -375,4 +348,35 @@ DEL2
 *
        SOC  @STSTYP,R7
 *
+       RT
+
+*
+* List of routines to branch to
+* According to menu's key list
+*
+NXTLST DATA GOMNU
+       DATA GORTN
+
+*
+* Switch to meu specified by a particular key
+GOMNU
+* Specify new menu
+       MOV  R1,@CURMNU
+* No error
+       CLR  R0
+       RT
+
+*
+* Run the routine specified by a given key
+GORTN
+       DECT R10
+       MOV  R11,*R10
+*
+       BL   *R1
+       MOV  R0,R0
+* If no error occurred, clear current menu and return to editor
+       JNE  GORTN1
+       CLR  @CURMNU
+*
+GORTN1 MOV  *R10+,R11
        RT
