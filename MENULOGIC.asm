@@ -114,13 +114,11 @@ MNUDSP
 *
        MOV  @SCRNWD,R1
        SLA  R1,1
-       LI   R1,2*40
        BL   @VDPSPI
 *
        MOV  @SCRNWD,R0
        LI   R2,22
        MPY  R2,R0
-       LI   R1,22*40
        BL   @VDPSPC
 * Write text
        CLR  R0
@@ -144,7 +142,6 @@ MNUDSP
 * Set VDP address for strings
        MOV  @SCRNWD,R0
        SLA  R0,1
-       LI   R0,80
        BL   @VDPADR
 * Write strings
        MOV  R3,R0
