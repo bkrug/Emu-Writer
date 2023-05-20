@@ -157,6 +157,8 @@ SAVEDN
        BL   @CHKERR
 *
        BL   @CLOSFL
+* No Error
+       CLR  R0
 *
        LIMI 2
 *
@@ -249,6 +251,8 @@ WRAPLP C    R0,*R2
        INC  R0
        JMP  WRAPLP
 WRAPDN
+* No Error
+       CLR  R0
 *
        LIMI 2
 *
@@ -360,6 +364,8 @@ PRINT4
        JL   PRINT1
 *
        BL   @CLOSFL
+* No Error
+       CLR  R0
 *
        LIMI 2
 *
@@ -479,6 +485,8 @@ CHKE2
        SB   @STATUS,@STATUS
 * Return to caller. Skip rest of print routine.
        LIMI 2
+* Record Error
+       SETO R0
 * Exit fast.
 * Restore stack trace to position when we entered the IO routine.
        MOV  R12,R10

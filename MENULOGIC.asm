@@ -282,6 +282,10 @@ KEY9
        MOV  *R3,R1
 * Brand to routine for handling key
        BL   *R0
+* If error occurred, stay in menu
+       MOV  @CURMNU,R2
+       MOV  R0,R0
+       JNE  KEYLP
 *
        MOV  *R10+,R11
        RT
@@ -293,12 +297,24 @@ KEY9
 NXTLST DATA GOMNU
        DATA GORTN
 
-GOMNU  CLR  @CURFRM
+GOMNU
+* Specify new menu
+       CLR  @CURFRM
        MOV  R1,@CURMNU
+* No error
+       CLR  R0
        RT
 
-GORTN  CLR  @CURMNU
-       B    *R1
+GORTN
+       DECT R10
+       MOV  R11,*R10
+*
+       BL   *R1
+       MOV  R0,R0
+       JNE  GORTN1
+       CLR  @CURMNU
+*
+GORTN1 MOV  *R10+,R11
        RT
 
 *
