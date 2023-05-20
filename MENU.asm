@@ -3,12 +3,18 @@
 
        COPY 'EQUKEY.asm'
 
+HOTKEY TEXT 'FCTN+9: Previous Menu'
+       BYTE 0
+HKYHOM TEXT 'FCTN+9: Editor'
+       BYTE 0
+
 *
 * Main/Home Menu
 *
 MNUHOM DATA TXTHM
        DATA KEYHM
        DATA NOFLDS
+       DATA HKYHOM
        TEXT 'HOME'
        BYTE 0
 
@@ -37,6 +43,7 @@ KEYHM1
 MNUFL  DATA TXTFL
        DATA KEYFL
        DATA NOFLDS
+       DATA HOTKEY
        TEXT 'FILE'
        BYTE 0
 
