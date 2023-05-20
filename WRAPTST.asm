@@ -963,9 +963,9 @@ MRGN11 DATA 4,3
 
 *
 * Assume a page width of eight inches
-* with 1 inch margins,
+* with 2 inch margins,
 * 10 CPI,
-* One word is longer than 60 characters.
+* One word is longer than 40 characters.
 *
 WRP12
 * Arrange
@@ -1045,7 +1045,7 @@ FMT12  DATA 0,3
 
 MRGN12 DATA 1,3
 * 10-char left margin, 60-char paragraph width
-       DATA 0,>0000,>0A3C,>0000
+       DATA 0,>0000,>1428,>0000
 
 ********
 

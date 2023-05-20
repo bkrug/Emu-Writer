@@ -126,10 +126,10 @@ BRK3
        CB   *R6,@SPACE
        JEQ  BRK3
        JMP  BRK5
+*
 BRK4   INC  R6
-BRK5
 * Let R1 = address of new entry in wrap list
-       MOV  R2,R0
+BRK5   MOV  R2,R0
        BLWP @ARYADD
        CI   R0,>FFFF
        JEQ  WRPERR
