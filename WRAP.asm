@@ -9,8 +9,10 @@
        REF  SPACE,DASH,SIX
        REF  FMTLEN,MGNLEN,PGWDTH
        REF  ERRMEM,STSPAR
+       REF  SCRNWD
 * Variables
        REF  FMTEND,MGNEND,LNWDT1,LNWDTH
+       REF  WINMOD
 
 * This data is a work around for the "first DATA word is 0 bug"
 * TODO: Write an issue to Ralph B.'s github
@@ -55,13 +57,18 @@ MGN2   INCT R8
        SRA  R0,8
        MOV  *R8,R1
        SB   R1,R1
-* TODO: Add code here that checks if we are in verticle mode.
-* If Yes, move SCRNWD to R1 and decrement.
-* Also make sure indent is in range -20 to +20
+* Are we in windowed mode?
+       MOV  @WINMOD,R3
+       JEQ  MGN2A
+* No, we are in vertical mode
+       MOV  @SCRNWD,R1
+       DEC  R1
+* TODO: Also make sure indent is in range -20 to +20
+*
 *
 * Let R1 = width of first paragraph line
 * Let R2 = width of other paragraph lines
-       MOV  R1,R2
+MGN2A  MOV  R1,R2
 * Decrease either line 1 width, or regular width by indent
        MOV  R0,R0
        JLT  MGN3
