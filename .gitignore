@@ -3,6 +3,9 @@
 *.lst
 *.obj
 *.obj.temp
+*.prg
+
 PRINTOUT
 TESTRESULT.TXT
 SEPARATE
+EMUWRITER

@@ -1,3 +1,8 @@
+* Areas of memory that absolutely have
+* to be in RAM and could never be part
+* of a cartridge ROM should go here.
+*
+
 *
 * Definitions in this file
 *
@@ -34,15 +39,14 @@
 * MENULOGIC.asm
        DEF  CURMNU
        DEF  FLDVAL,FLDVE
+* End of Program
+       DEF  MEMBEG,MEMEND
 
-* Areas of memory that absolutely have
-* to be in RAM and could never be part
-* of a cartridge ROM should go here.
-
+       AORG >A000
 *
 * Areas for workspace registers
 *
-       TEXT 'WORKSPCE'
+*       TEXT 'WORKSPCE'
 LOOKWS
 ARRYWS BSS  >10
 STRWS  BSS  >20
@@ -53,7 +57,7 @@ DISPWS
 SCRNWS BSS  >20
 DSRLWS BSS  >20
 MAINWS BSS  >20
-       TEXT 'STACK '
+*       TEXT 'STACK '
        BSS  >40
 STACK
 
@@ -61,13 +65,13 @@ STACK
 * Areas for changeable values
 *
 
-       TEXT 'VARIABLE'
+*       TEXT 'VARIABLE'
 * Address of line list
-LINLST DATA 0
+LINLST BSS  2
 * Address of format line list
-FMTLST DATA 0
+FMTLST BSS  2
 * Address of margin list
-MGNLST DATA 0
+MGNLST BSS  2
 
 * MEMBUF.O
 * holds block size
@@ -77,68 +81,67 @@ BUFADR BSS  >2
 BUFEND BSS  >2
 
 * MAIN.TXT
-CURTIM DATA 0
-CUROLD DATA 0
-CURMOD DATA 0
-CURRPL BYTE 0
+CURTIM BSS  2
+CUROLD BSS  2
+CURMOD BSS  2
+CURRPL BSS  1
        EVEN
 
 * WRAP.TXT
-FMTEND DATA 0
-MGNEND DATA 0
+FMTEND BSS  2
+MGNEND BSS  2
 * Width of first paragraph line
 * If there is no indent it will match
 * LNWDTH.
-LNWDT1 DATA 0
+LNWDT1 BSS  2
 * General line width
-LNWDTH DATA 0
+LNWDTH BSS  2
 * When reset, use windowed mode like TI-Writer
 * Otherwise, use vertical mode
-WINMOD DATA 0
+WINMOD BSS  2
 
 * SCRNWRT.TXT
-SRCLIN DATA 0
-INDENT DATA 0
-CPI    DATA 0
-NXTFMT DATA 0
-DSPSTR DATA 0
-CURSTR DATA 0
+SRCLIN BSS  2
+INDENT BSS  2
+CPI    BSS  2
+NXTFMT BSS  2
+DSPSTR BSS  2
+CURSTR BSS  2
 
 * INPUT.TXT
 * Current Paragraph Index
-PARINX DATA 0
+PARINX BSS  2
 * Character Index in Paragraph
-CHRPAX DATA 0
+CHRPAX BSS  2
 * Insert Mode. 0 = insert, -1 = overwrit
-INSTMD DATA 0
+INSTMD BSS  2
 * Input mode. 0 = unspecified,
 * 1 = text, 2 = movement
-INPTMD DATA 0
+INPTMD BSS  2
 
 * POSUPDT.TXT
 * Line Index in Paragraph
-LININX DATA 0
+LININX BSS  2
 * Character Index in line
-CHRLIX DATA 0
+CHRLIX BSS  2
 * Window horizontal offset
-WINOFF DATA 0
+WINOFF BSS  2
 * First Paragraph on screen
-WINPAR DATA 0
+WINPAR BSS  2
 * First line of paragraph on screen
-WINLIN DATA 0
+WINLIN BSS  2
 * Position of flashing cursor on screen
-CURSCN DATA 0
+CURSCN BSS  2
 
-       TEXT 'KEY.'
 * KEY.TXT
 * Time remaining before character repeat
-TIMER  DATA 0
+TIMER  BSS  2
 * Scan return address
-SCANRT DATA 0
+SCANRT BSS  2
 * The previously detected key press.
 * Wait a while before letting this key
 * repeat.
-PREVKY BYTE 0
+PREVKY BSS  1
        EVEN
 * First address of key buffer
 KEYSTR
@@ -148,16 +151,26 @@ KEYBUF BSS  >10
 KEYEND 
 * Address where the next keypress 
 * should be stored.
-KEYWRT DATA 0
+KEYWRT BSS  2
 * Next address to read a keypress from.
 * If the value here is equal to the
 * value in KEYWRT, then there are no
 * new characters to write.===
-KEYRD  DATA 0
+KEYRD  BSS  2
 
 * MENULOGIC.asm
 CURMNU BSS  2
 FLDVAL BSS  80
 FLDVE
+
+*
+* End of Program
+*
+MEMBEG BSS  2
+MEMEND EQU  >FFD8
+       END
+
+* Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
+* --- E/A manual 24.2.1.1 (page 400)
 
        END

@@ -92,7 +92,7 @@ xas99.py -l `
     -o KEYRUN.obj
 
 write-host 'Linking Main Program'
-xas99.py -l `
+xas99.py -i -a ">2000" -l `
     MAIN.obj.temp `
     CONST.obj.temp `
     MEMBUF.obj.temp `
@@ -112,31 +112,7 @@ xas99.py -l `
     FORM.obj.temp `
     HEADER.obj.temp `
     VAR.obj.temp `
-    END.obj.temp `
-    -o MAINRUN.obj
-# xas99.py -l `
-#     MAIN.asm `
-#     CONST.asm `
-#     MEMBUF.asm `
-#     ARRAY.asm `
-#     INPUT.asm `
-#     WRAP.asm `
-#     POSUPD.asm `
-#     DISP.asm `
-#     KEY.asm `
-#     VDP.asm `
-#     LOOK.asm `
-#     ACT.asm `
-#     IO.asm `
-#     MENU.asm `
-#     MENULOGIC.asm `
-#     FORM.asm `
-#     VAR.asm `
-#     END.asm `
-#     -o MAINRUN.obj
-
-# Add TIFILES header to MAIN
-# xdm99.py -T 'MAIN.PRG' -f PROGRAM -o PROGRAM
+    -o EMUWRITER
 
 Remove-Item *.obj.temp
 Remove-Item *.lst
@@ -147,3 +123,12 @@ $objectFiles = Get-ChildItem ".\" -Filter *.obj |
 ForEach($objectFile in $objectFiles) {
     xdm99.py -T $objectFile.Name -f DIS/FIX80 -o $objectFile.Name
 }
+
+# Add TIFILES header to EMUWRITER
+xdm99.py -T 'EMUWRITER' -f PROGRAM -o EMUWRITER
+
+# Add TIFILES header to all program files
+# $programFiles = Get-ChildItem ".\" -Filter *.prg
+# ForEach($programFile in $programFiles) {
+#     xdm99.py -T $programFile.Name -f PROGRAM -o $programFile.Name
+# }
