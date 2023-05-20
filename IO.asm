@@ -5,7 +5,7 @@
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
        REF  LINLST
        REF  ARYADR,BUFGRW
-       REF  FLDVAL
+       REF  FLDVAL,WINMOD
        REF  WRAP
 
 PAB    EQU  >480
@@ -242,17 +242,7 @@ LOAD1
 * Reached End of Document
 LOADDN BL   @CLOSFL
 * Wrap all paragraphs
-       MOV  @LINLST,R2
-       CLR  R0
-WRAPLP C    R0,*R2
-       JHE  WRAPDN
-       CLR  R1
-       BLWP @WRAP
-*       CI   R0,>FFFF
-*       JEQ  
-       INC  R0
-       JMP  WRAPLP
-WRAPDN
+       BL   @WRAPDC
 * No Error
        CLR  R0
 *
@@ -266,10 +256,18 @@ WRAPDN
 *
 PRINT  DECT R10
        MOV  R11,*R10
+       DECT R10
+       MOV  @WINMOD,*R10
 * Save stack restore point
        MOV  R10,R12
 * Turn off interrupts
        LIMI 0
+* If not already in Window Mode, wrap all paragraphs
+       MOV  *R10,*R10
+       JEQ  PRINT0
+       CLR  @WINMOD
+       BL   @WRAPDC
+PRINT0
 * Open File
        LI   R2,PDATA
        BL   @OPENFL
@@ -366,6 +364,12 @@ PRINT4
        JL   PRINT1
 *
        BL   @CLOSFL
+* If original mode was not window mode,
+* wrap all paragraphs in the original mode
+       MOV  *R10+,@WINMOD
+       JEQ  PRINT5
+       BL   @WRAPDC
+PRINT5
 * No Error
        CLR  R0
 *
@@ -427,6 +431,23 @@ CLOSFL
        BL   @CHKERR
 *
        MOV  *R10+,R11
+       RT
+
+*
+* Wrap all paragraphs
+*
+WRAPDC
+       MOV  @LINLST,R2
+       CLR  R0
+WRAPLP C    R0,*R2
+       JHE  WRAPDN
+       CLR  R1
+       BLWP @WRAP
+*       CI   R0,>FFFF
+*       JEQ  
+       INC  R0
+       JMP  WRAPLP
+WRAPDN
        RT
 
 MSG0   TEXT 'Err 0: Bad device name'
