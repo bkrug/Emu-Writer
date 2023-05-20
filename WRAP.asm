@@ -18,6 +18,8 @@
 * TODO: Write an issue to Ralph B.'s github
        DATA >1234
 
+MAXIDT EQU  21
+
 *
 * Wrap
 *
@@ -59,16 +61,22 @@ MGN2   INCT R8
        SB   R1,R1
 * Are we in windowed mode?
        MOV  @WINMOD,R3
-       JEQ  MGN2A
+       JEQ  MGN2Z
 * No, we are in vertical mode
        MOV  @SCRNWD,R1
        DEC  R1
-* TODO: Also make sure indent is in range -20 to +20
-*
-*
+* Also make sure indent is in range -20 to +20
+       LI   R3,MAXIDT
+       C    R0,R3
+       JLT  MGN2A
+       MOV  R3,R0
+MGN2A  NEG  R3
+       C    R0,R3
+       JGT  MGN2Z
+       MOV  R0,R3
 * Let R1 = width of first paragraph line
 * Let R2 = width of other paragraph lines
-MGN2A  MOV  R1,R2
+MGN2Z  MOV  R1,R2
 * Decrease either line 1 width, or regular width by indent
        MOV  R0,R0
        JLT  MGN3
