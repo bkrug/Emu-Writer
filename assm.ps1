@@ -109,6 +109,7 @@ xas99.py -l `
     MENU.obj.temp `
     MENULOGIC.obj.temp `
     FORM.obj.temp `
+    HEADER.obj.temp `
     VAR.obj.temp `
     END.obj.temp `
     -o MAINRUN.obj

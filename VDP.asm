@@ -2,11 +2,11 @@
 * A set of routines for communicating
 * with VDP RAM
 *
-       DEF  VDPTXT,VDPADR,VDPRAD
-       DEF  VDPWRT,VDPSPC,VDPREA
-       DEF  VDPSTR
+       DEF  VDPTXT,VDPRAD,VDPADR
+       DEF  VDPREA,VDPWRT
+       DEF  VDPSTR,VDPINV,VDPSPC,VDPSPI
 *
-       REF  SPACE
+       REF  SPACE,ISPACE
 
        COPY 'CPUADR.asm'
 
@@ -133,6 +133,24 @@ VDPSTR MOVB *R0,*R0
        RT
 
 *
+* VDPINV:
+* Write inverted null-terminating string to VDP
+*
+* Input:
+* R0 - Address of text to copy
+* Output:
+* R0 - Address of null terminator
+* R1 - changed
+*
+VSTI1  MOVB *R0+,R1
+       AI   R1,>8000
+       MOVB R1,@VDPWD
+VDPINV MOVB *R0,*R0
+       JNE  VSTI1
+*
+       RT
+
+*
 * Write multiple spaces to VDP
 *
 * Input:
@@ -149,4 +167,22 @@ VSPC1  MOVB @SPACE,@VDPWD
        JNE  VSPC1
 *
 VSPC2  RT
+
+*
+* Write multiple inverted spaces to VDP
+*
+* Input:
+* R1 - Number of bytes
+* Output:
+* R1 - 0
+VDPSPI
+* Don't write if R1 = 0
+       MOV  R1,R1
+       JEQ  VSPI2
+* Write as many bytes as R1 specifies
+VSPI1  MOVB @ISPACE,@VDPWD
+       DEC  R1
+       JNE  VSPI1
+*
+VSPI2  RT
        END

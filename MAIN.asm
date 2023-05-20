@@ -17,6 +17,7 @@
        REF  CURINS,CHRCUR,CURMOD
        REF  CURMNU,CURFRM,STACK
        REF  ENTMNU
+       REF  WRTHDR,ADJHDR
 *
 
        COPY 'CPUADR.asm'
@@ -31,6 +32,7 @@ START
        BL   @INTKEY
        BL   @VDPTXT
        BL   @INTSCN
+       BL   @WRTHDR
        LIMI 2
 *
 * Main program loop while program runs
@@ -65,6 +67,7 @@ MAIN3
        BLWP @POSUPD
 * Redisplay the screen
        LIMI 0
+       BL   @ADJHDR
        BLWP @DISP
        BL   @DRWCUR
        LIMI 2
@@ -225,7 +228,7 @@ DRWCR9 MOV  *R10+,R11
        RT
 
 *
-* Invite Char
+* Invert Character
 *
 INVCHR
        DEC  R10
@@ -234,8 +237,9 @@ INVCHR
        LI   R0,PATLOW
        BL   @VDPRAD
 *
-       LI   R0,MEMEND
-       LI   R1,>400
+       LI   R0,MEMBEG
+       INCT R0
+       LI   R1,>0400
 INVLP  MOVB @VDPRD,R2
        INV  R2
        MOVB R2,*R0+
@@ -244,7 +248,8 @@ INVLP  MOVB @VDPRD,R2
 *
        LI   R0,PATHGH
        BL   @VDPADR
-       LI   R0,MEMEND
+       LI   R0,MEMBEG
+       INCT R0
        LI   R1,>400
        BL   @VDPWRT
 *
