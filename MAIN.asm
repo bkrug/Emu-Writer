@@ -10,7 +10,7 @@
        REF  ARYALC,ARYADD
        REF  LINLST,MGNLST,FMTLST
        REF  VDPTXT,VDPSPC
-       REF  VDPADR,VDPWRT
+       REF  VDPADR,VDPRAD,VDPWRT
        REF  VDPRAD
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
@@ -20,11 +20,13 @@
 *
 
        COPY 'CPUADR.asm'
+       COPY 'EQUVDPADR.asm'
 
 START
 * Initialize Program
        CLR  @CURMNU
        LI   R10,STACK
+       BL   @INVCHR
        BL   @INTMEM
        BL   @INTKEY
        BL   @VDPTXT
@@ -222,6 +224,31 @@ DRWCR5 LI   R1,1
 DRWCR9 MOV  *R10+,R11
        RT
 
-       EVEN
+*
+* Invite Char
+*
+INVCHR
+       DEC  R10
+       MOV  R11,*R10
+*
+       LI   R0,PATLOW
+       BL   @VDPRAD
+*
+       LI   R0,MEMEND
+       LI   R1,>400
+INVLP  MOVB @VDPRD,R2
+       INV  R2
+       MOVB R2,*R0+
+       DEC  R1
+       JNE  INVLP
+*
+       LI   R0,PATHGH
+       BL   @VDPADR
+       LI   R0,MEMEND
+       LI   R1,>400
+       BL   @VDPWRT
+*
+       MOV  *R10+,R11
+       RT
 
        END

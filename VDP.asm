@@ -43,6 +43,21 @@ REGLST DATA >01F0,>07FD
 REGEND
 
 *
+* Set VDP read address 
+*
+* Input:
+* R0 - VDP address
+* Output:
+* R0 - bits 0 and 1 changed
+VDPRAD 
+* Set most signfication two bits for 
+* reading
+       SZC  @BIT0,R0
+       SZC  @BIT1,R0
+* Write address to system
+       JMP  VDPAD1
+
+*
 * Set VDP write address 
 *
 * Input:
@@ -63,19 +78,24 @@ VDPAD1 SWPB R0
        RT       
 
 *
-* Set VDP read address 
+* Read multiple bytes from VDP
 *
 * Input:
-* R0 - VDP address
+* R0 - Address to copy text to
+* R1 - Number of bytes
 * Output:
-* R0 - bits 0 and 1 changed
-VDPRAD 
-* Set most signfication two bits for 
-* reading
-       SZC  @BIT0,R0
-       SZC  @BIT1,R0
-* Write address to system
-       JMP  VDPAD1
+* R0 - original value + R1's value
+* R1 - 0
+VDPREA
+* Don't read if R1 = 0
+       MOV  R1,R1
+       JEQ  VRD2
+* Read as many bytes as R1 specifies
+VRD1   MOVB @VDPRD,*R0+
+       DEC  R1
+       JNE  VRD1
+*
+VRD2   RT
 
 *
 * Write multiple bytes to VDP
@@ -129,24 +149,4 @@ VSPC1  MOVB @SPACE,@VDPWD
        JNE  VSPC1
 *
 VSPC2  RT
-
-*
-* Read multiple bytes from VDP
-*
-* Input:
-* R0 - Address to copy text to
-* R1 - Number of bytes
-* Output:
-* R0 - original value + R1's value
-* R1 - 0
-VDPREA
-* Don't read if R1 = 0
-       MOV  R1,R1
-       JEQ  VRD2
-* Read as many bytes as R1 specifies
-VRD1   MOVB @VDPRD,*R0+
-       DEC  R1
-       JNE  VRD1
-*
-VRD2   RT
        END
