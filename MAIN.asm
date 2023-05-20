@@ -3,6 +3,7 @@
        REF  KEYDVC,USRISR
        REF  KEYINT
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
+       REF  MAINWS
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
        REF  PARINX,CHRPAX
@@ -25,6 +26,7 @@
 
 START
 * Initialize Program
+       LWPI MAINWS
        CLR  @CURMNU
        SETO @WINMOD
        LI   R10,STACK

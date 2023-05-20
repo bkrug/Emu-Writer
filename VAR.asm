@@ -6,6 +6,7 @@
        DEF  LOOKWS,ARRYWS
        DEF  WRAPWS
        DEF  INPTWS,POSUWS,DISPWS,SCRNWS
+       DEF  MAINWS
        DEF  STACK
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
@@ -29,6 +30,7 @@
 * KEY.TXT
        DEF  TIMER,PREVKY,KEYBUF
        DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
+       DEF  SCANRT
 * MENULOGIC.asm
        DEF  CURMNU
        DEF  FLDVAL,FLDVE
@@ -49,6 +51,7 @@ INPTWS
 POSUWS
 DISPWS
 SCRNWS BSS  >20
+MAINWS BSS  >20
        TEXT 'STACK '
        BSS  >40
 STACK
@@ -129,6 +132,8 @@ CURSCN DATA 0
 * KEY.TXT
 * Time remaining before character repeat
 TIMER  DATA 0
+* Scan return address
+SCANRT DATA 0
 * The previously detected key press.
 * Wait a while before letting this key
 * repeat.

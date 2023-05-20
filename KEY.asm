@@ -1,11 +1,12 @@
        DEF  KEYDVC,KEYPRS
        DEF  KEYINT
 *
-       REF  KSCAN
+       REF  SCAN
        REF  TIMER,PREVKY
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
        REF  NOKEY
        REF  USRISR
+       REF  SCANRT
 
 * Keyboard device to be checked
 KEYDVC EQU  >8374
@@ -23,7 +24,12 @@ WAIT2  DATA >4
 * so that if the computer is working on
 * a long process the keys will still be
 * recorded.
-KEYINT BLWP @KSCAN
+KEYINT
+* Call console Key Scan routine
+       MOV  R11,@SCANRT     save GPL R11
+       BL   @SCAN           call keyboard scanning routine
+       MOV  @SCANRT,R11     restore GPL R11
+*
        CB   @KEYPRS,@NOKEY
        JNE  KEYDWN
        MOVB @KEYPRS,@PREVKY
