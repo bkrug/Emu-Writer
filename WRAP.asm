@@ -34,7 +34,7 @@ WRAP   DATA WRAPWS,WRAP+4
 *
        MOV  @MGNLST,R9
        MOV  *R9,R8
-       JEQ  MGN3
+       JEQ  MGN4
        SLA  R8,3
        C    *R9+,*R9+
        A    R9,R8
@@ -47,21 +47,33 @@ MGN1   S    @MGNLEN,R8
        C    *R8,*R13
        JH   MGN1
 * We found current margin entry
-* Record Pargraph Width
+* Let R0 = index
+* Let R1 = paragraph width
 MGN2   INCT R8
-       INCT R8
-       MOV  *R8,R0
-       SB   R0,R0
-       MOV  R0,@LNWDTH
-       MOV  R0,@LNWDT1
+       MOV  *R8+,R0
+       SLA  R0,8
+       SRA  R0,8
+       MOV  *R8,R1
+       SB   R1,R1
+* Let R1 = width of first paragraph line
+* Let R2 = width of other paragraph lines
+       MOV  R1,R2
+* Decrease either line 1 width, or regular width by indent
+       MOV  R0,R0
+       JLT  MGN3
+* Indent is positive or zero, decrease first line width
+       S    R0,R1
        JMP  MGN5
-* The format list is empty
-MGN3
+* Indent is negative, decrease other lines' width
+MGN3   A    R0,R2
+       JMP  MGN5
 * Set default paragraph width
-MGN4   LI   R8,60
-       MOV  R8,@LNWDTH
-       MOV  R8,@LNWDT1
-MGN5
+MGN4   LI   R1,60
+       MOV  R1,R2
+* Record calculated widths
+MGN5   MOV  R1,@LNWDT1
+       MOV  R2,@LNWDTH
+
 
 * Let R2 = address of new wrap list
        LI   R0,1
@@ -81,10 +93,12 @@ MGN5
        A    R3,R4
 * Let R5 = address of beginning of current line
        MOV  R3,R5
+* Let R7 = line width (of first line in paragraph)
+       MOV  @LNWDT1,R7
 BRK1
 * Let R6 = line break candidate
        MOV  R5,R6
-       A    @LNWDTH,R6
+       A    R7,R6
 * Past end of paragraph?
        C    R6,R4
        JHE  BRK6
@@ -102,7 +116,7 @@ BRK2   DEC  R6
 * The word at the beginning of this line
 * cannot fit on one line. Break it in middle.
        MOV  R5,R6
-       A    @LNWDTH,R6
+       A    R7,R6
        JMP  BRK5
 * Move right to next visible character
 BRK3
@@ -123,6 +137,8 @@ BRK5
 * Place index within paragraph in new entry
        MOV  R6,*R1
        S    R3,*R1
+* Let R7 = line width
+       MOV  @LNWDTH,R7
 * Do next line in paragraph
        MOV  R6,R5
        JMP  BRK1

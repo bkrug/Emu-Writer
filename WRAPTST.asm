@@ -568,8 +568,8 @@ MRGN7  DATA 3,3
        DATA 0,>0000,>1428,>0000
 * 12-char left margin, 72-char paragraph width
        DATA 4,>0000,>0C48,>0000
-* 10-char left margin, 20-char paragraph width, 5-char indent
-       DATA 6,>0005,>0A14,>0000
+* 10-char left margin, 20-char paragraph width
+       DATA 6,>0000,>0A14,>0000
 
 *
 * Assume a page width of eight inches
@@ -852,8 +852,8 @@ FMT10  DATA 3,3
 MRGN10 DATA 4,3
 * 20-char left margin, 40-char paragraph width
        DATA 0,>0000,>1428,>0000
-* 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
+* 24-char left margin, 48-char paragraph width, 12-char indent
+       DATA 4,>000C,>1830,>0000
 * 2.5-inch margins,
 * 0.5-inch hanging indent
        DATA 10,>00FA,>1E1E,>0000
