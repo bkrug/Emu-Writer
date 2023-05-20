@@ -22,7 +22,7 @@ WRTHDR
        SLA  R1,1
        BL   @VDPSPI
 *
-       MOV  @SCRNWD,R0
+       CLR  R0
        BL   @VDPADR
        LI   R0,TEXT1
        BL   @VDPINV
