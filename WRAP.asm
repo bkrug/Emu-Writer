@@ -38,7 +38,7 @@ WRAP   DATA WRAPWS,WRAP+4
 *
        MOV  @MGNLST,R9
        MOV  *R9,R8
-       JEQ  MGN4
+       JEQ  MGN2B
        SLA  R8,3
        C    *R9+,*R9+
        A    R9,R8
@@ -47,7 +47,7 @@ WRAP   DATA WRAPWS,WRAP+4
 * paragraph, or the entry before it.
 MGN1   S    @MGNLEN,R8
        C    R8,R9
-       JL   MGN4
+       JL   MGN2B
        C    *R8,*R13
        JH   MGN1
 * We found current margin entry
@@ -59,6 +59,11 @@ MGN2   INCT R8
        SRA  R0,8
        MOV  *R8,R1
        SB   R1,R1
+       JMP  MGN2C
+* Set default paragraph width and indents
+MGN2B  CLR  R0
+       LI   R1,60
+MGN2C
 * Are we in windowed mode?
        MOV  @WINMOD,R3
        JEQ  MGN2Z
@@ -73,7 +78,7 @@ MGN2   INCT R8
 MGN2A  NEG  R3
        C    R0,R3
        JGT  MGN2Z
-       MOV  R0,R3
+       MOV  R3,R0
 * Let R1 = width of first paragraph line
 * Let R2 = width of other paragraph lines
 MGN2Z  MOV  R1,R2
@@ -85,14 +90,11 @@ MGN2Z  MOV  R1,R2
        JMP  MGN5
 * Indent is negative, decrease other lines' width
 MGN3   A    R0,R2
-       JMP  MGN5
-* Set default paragraph width
-MGN4   LI   R1,60
-       MOV  R1,R2
 * Record calculated widths
 MGN5   MOV  R1,@LNWDT1
        MOV  R2,@LNWDTH
 
+*
 * Let R2 = address of new wrap list
        LI   R0,1
        BLWP @ARYALC

@@ -14,7 +14,7 @@
        REF  VDPRAD
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
-       REF  CURINS,CHRCUR,CURMOD
+       REF  CURINS,CHRCUR,CURMOD,WINMOD
        REF  CURMNU,STACK
        REF  ENTMNU
        REF  WRTHDR,ADJHDR
@@ -26,7 +26,9 @@
 START
 * Initialize Program
        CLR  @CURMNU
+       SETO @WINMOD
        LI   R10,STACK
+*
        BL   @INVCHR
        BL   @INTMEM
        BL   @INTKEY
