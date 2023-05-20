@@ -9,6 +9,8 @@
 MNUHOM DATA TXTHM
        DATA KEYHM
        DATA NOFLDS
+       TEXT 'HOME'
+       BYTE 0
 
 TXTHM  DATA TXTHM1
        TEXT 'File'
@@ -35,6 +37,8 @@ KEYHM1
 MNUFL  DATA TXTFL
        DATA KEYFL
        DATA NOFLDS
+       TEXT 'FILE'
+       BYTE 0
 
 TXTFL  DATA TXTFL1
        TEXT 'Save'

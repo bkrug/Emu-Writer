@@ -4,13 +4,15 @@
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
-       REF  VDPADR,VDPSPC,VDPSTR          From VDP.asm
+       REF  VDPADR                        From VDP.asm
+       REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   From VDP.asm
        REF  VDPREA,VDPWRT                 From VDP.asm
        REF  STSWIN,STSTYP,STSARW
        REF  DRWCUR
        REF  CUROLD,CURRPL,CURMOD
        REF  CURSCN
        REF  BUFALC,BUFREE
+       REF  SCRNWD
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -74,7 +76,10 @@ MNULP0 SB   *R1,*R1+
        JEQ  MNULP1
        LI   R9,FLDVAL
 * Set cursor position on screen
-       MOV  @2(R1),@CURSCN
+       MOV  @SCRNWD,R0
+       SLA  R0,1
+       A    @2(R1),R0
+       MOV  R0,@CURSCN
 * Menu loop
 MNULP1 BL   @MNUDSP
        BL   @KEYWT
@@ -101,7 +106,16 @@ MNUDSP
 * Clear screen
        CLR  R0
        BL   @VDPADR
-       LI   R1,24*40
+*
+       MOV  @SCRNWD,R1
+       SLA  R1,1
+       LI   R1,2*40
+       BL   @VDPSPI
+*
+       MOV  @SCRNWD,R0
+       LI   R2,22
+       MPY  R2,R0
+       LI   R1,22*40
        BL   @VDPSPC
 * Write text
        CLR  R0
@@ -112,13 +126,22 @@ MNUDSP
        MOV  @CURMNU,R2
        MOV  *R2,R3
        MOV  *R3+,R4
+* Write title
+       MOV  R2,R0
+       AI   R0,6
+       BL   @VDPINV
+* Set VDP address for strings
+       MOV  @SCRNWD,R0
+       SLA  R0,1
+       LI   R0,80
+       BL   @VDPADR
 * Write strings
        MOV  R3,R0
 DSP1   BL   @VDPSTR
 *
        MOV  R3,R1
        S    R0,R1
-       AI   R1,40
+       A    @SCRNWD,R1
        BL   @VDPSPC
 *
        INC  R0
@@ -205,7 +228,9 @@ KEY5
 * Let R4 = length of field
        MOV  @4(R2),R0
        INCT R0
-       MOV  *R0+,R3
+       MOV  @SCRNWD,R3
+       SLA  R3,1
+       A    *R0+,R3
        MOV  *R0,R4
 * Write field value to VDP
        MOV  R3,R0
