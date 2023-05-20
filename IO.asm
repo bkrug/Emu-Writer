@@ -1,6 +1,6 @@
        DEF  SAVE,LOAD,PRINT
 *
-       REF  DSRLNK
+       REF  DSRLCL
        REF  INTMEM,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
        REF  LINLST
@@ -136,7 +136,7 @@ SAVE3  INC  R3
        JL   SAVBYT
 * If yes, write record
        MOV  @LNGADR,@PNTR
-       BLWP @DSRLNK
+       BLWP @DSRLCL
        DATA 8
        BL   @CHKERR
 * Re-set VDP write position
@@ -152,7 +152,7 @@ SAVEDN
        MOVB @EOD,@VDPWD
 * Write record
        MOV  @LNGADR,@PNTR
-       BLWP @DSRLNK
+       BLWP @DSRLCL
        DATA 8
        BL   @CHKERR
 *
@@ -189,7 +189,7 @@ LOAD   DECT R10
 LOADR
 * Read record
        MOV  @LNGADR,@PNTR
-       BLWP @DSRLNK
+       BLWP @DSRLCL
        DATA 8
        BL   @CHKERR
 * Set VDP read position
@@ -340,7 +340,7 @@ PRINT3
        MOVB R8,@VDPWD
 * Write one record
        MOV  @LNGADR,@PNTR
-       BLWP @DSRLNK
+       BLWP @DSRLCL
        DATA 8
        BL   @CHKERR
 * End of paragraph?
@@ -410,7 +410,7 @@ OPENFL
        MOV  @LNGADR,@PNTR
 * Open file
        SB   @STATUS,@STATUS
-       BLWP @DSRLNK
+       BLWP @DSRLCL
        DATA 8
        BL   @CHKERR
 *
@@ -426,7 +426,7 @@ CLOSFL
        MOVB @CLOSE,@VDPWD
 * Close the file
        MOV  @LNGADR,@PNTR
-       BLWP @DSRLNK
+       BLWP @DSRLCL
        DATA 8
        BL   @CHKERR
 *

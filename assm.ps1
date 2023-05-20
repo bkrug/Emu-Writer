@@ -105,6 +105,7 @@ xas99.py -l `
     VDP.obj.temp `
     LOOK.obj.temp `
     ACT.obj.temp `
+    DSRLNK.obj.temp `
     IO.obj.temp `
     MENU.obj.temp `
     MENULOGIC.obj.temp `
