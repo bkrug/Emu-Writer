@@ -17,8 +17,6 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'WRP4  '
        DATA WRP5
        TEXT 'WRP5  '
-       DATA WRP6
-       TEXT 'WRP6  '
        DATA WRP7
        TEXT 'WRP7  '
        DATA WRP8
@@ -144,8 +142,8 @@ WRPE1E
 FMT1   DATA 0,3
 
 MRGN1  DATA 1,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
 
 *
 * The entire paragraph will be
@@ -224,8 +222,8 @@ WRPE2E
 FMT2   DATA 0,3
 
 MRGN2  DATA 1,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
 	   
 *
 * The entire paragraph will be
@@ -304,8 +302,8 @@ WRPE3E
 FMT3   DATA 0,3
 
 MRGN3  DATA 1,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
 
 *
 * The entire paragraph will be
@@ -388,10 +386,10 @@ FMT4   DATA 1,3
        DATA 4,0,0,10
 
 MRGN4  DATA 2,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
 
 *
 * Assume a page width of eight inches
@@ -471,109 +469,10 @@ FMT5   DATA 1,3
        DATA 4,0,0,10
 
 MRGN5  DATA 2,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-
-*
-* Assume a page width of eight inches
-* with two inch margins, no indent,
-* more than one CPI
-*
-WRP6
-* Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
-* The wrap list must go in the block
-* of memory allocated to the chunck
-* manager because it may be deallocated.
-       LI   R2,WRPL6
-       LI   R3,WRPE6-WRPL6
-       LI   R4,PAR6A
-       BL   @CPYWRP
-*
-       LI   R0,PARL6
-       MOV  R0,@LINLST
-       LI   R0,FMT6
-       MOV  R0,@FMTLST
-       LI   R0,MRGN6
-       MOV  R0,@MGNLST
-* Act
-       LI   R0,5
-       LI   R1,0
-       BLWP @WRAP
-* Assert
-* R1 contains document status
-       MOV  @ERRMEM,R0
-       LI   R2,MNERR
-       LI   R3,MNERRE-MNERR
-       BLWP @AZC
-* Document status reports line count
-* changed
-* R1 contains document status
-       MOV  @STSPAR,R0
-       LI   R2,MPARC
-       LI   R3,MPARCE-MPARC
-       BLWP @AOC
-* Wrap list should match expected
-       LI   R0,WRPE6
-       MOV  @PAR6A+2,R1
-       LI   R2,WRPE6E-WRPE6
-       LI   R3,MWRP
-       LI   R4,MWRPE-MWRP
-       BLWP @ABLCK
-*
-       MOV  *R12+,R11
-       RT
-
-PARL6  DATA 8,1
-       DATA FAKEAD
-       DATA FAKEAD
-       DATA FAKEAD
-       DATA FAKEAD
-       DATA FAKEAD
-       DATA PAR6A
-       DATA FAKEAD
-       DATA FAKEAD
-
-PAR6A  DATA >9E
-       DATA WRPL6
-       TEXT 'Holding sub-provincial status,[16] Wuhan is '
-       TEXT 'recognized as the political, '
-       TEXT 'economic, financial, '
-       TEXT 'cultural, '
-       TEXT 'educational and '
-       TEXT 'transportation '
-       TEXT 'center of central '
-       TEXT 'China.'
-       EVEN
-WRPL6  DATA 4,1,40,39,42,38
-WRPE6  DATA 7,1
-       DATA 44
-       DATA 44+29
-       DATA 44+29+21
-       DATA 44+29+21+10
-       DATA 44+29+21+10+16
-       DATA 44+29+21+10+16+15
-       DATA 44+29+21+10+16+15+18
-WRPE6E
-
-FMT6   DATA 2,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
-* 5-Cpi in middle of second line of 
-* paragraph
-       DATA 5,64,0,24
-
-MRGN6  DATA 3,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-* 2-inch margins, 1-inch indent
-       DATA 9,>0014,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
 
 *
 * Assume a page width of eight inches
@@ -665,12 +564,12 @@ FMT7   DATA 2,3
        DATA 5,64,0,24
 
 MRGN7  DATA 3,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-* 2-inch margins, 1-inch indent
-       DATA 9,>0014,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
+* 10-char left margin, 20-char paragraph width, 5-char indent
+       DATA 6,>0005,>0A14,>0000
 
 *
 * Assume a page width of eight inches
@@ -753,12 +652,12 @@ FMT8   DATA 3,3
        DATA 7,0,0,10
 
 MRGN8  DATA 3,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-* 2-inch margins, 1-inch indent
-       DATA 9,>0014,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
+* 10-char left margin, 20-char paragraph width, 5-char indent
+       DATA 6,>0005,>0A14,>0000
 
 *
 * Assume a page width of eight inches
@@ -846,15 +745,15 @@ FMT9   DATA 3,3
        DATA 7,0,0,10
 
 MRGN9  DATA 4,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-* 2-inch margins, 1-inch indent
-       DATA 9,>0014,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
+* 10-char left margin, 20-char paragraph width, 5-char indent
+       DATA 9,>0005,>0A14,>0000
 * 2.5-inch margins,
 * 0.5-inch hanging indent
-       DATA 10,>00F6,>3232,>1414
+       DATA 10,>00FA,>1E1E,>0000
 
 *
 * Assume a page width of eight inches
@@ -953,15 +852,13 @@ FMT10  DATA 3,3
        DATA 7,0,0,10
 
 MRGN10 DATA 4,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-* 2-inch margins, 1-inch indent
-       DATA 9,>0014,>2828,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
 * 2.5-inch margins,
 * 0.5-inch hanging indent
-       DATA 10,>00F6,>3232,>1414
+       DATA 10,>00FA,>1E1E,>0000
 
 *
 * Assume a page width of eight inches
@@ -1057,15 +954,14 @@ FMT11  DATA 3,3
        DATA 7,0,0,10
 
 MRGN11 DATA 4,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
-* 1-inch margins
-       DATA 7,>0000,>1414,>1414
-* 2-inch margins, 1-inch indent
-       DATA 9,>0014,>2828,>1414
-* 2.5-inch margins,
-* 0.5-inch hanging indent
-       DATA 10,>00F6,>3232,>1414
+* 20-char left margin, 40-char paragraph width
+       DATA 0,>0000,>1428,>0000
+* 12-char left margin, 72-char paragraph width
+       DATA 4,>0000,>0C48,>0000
+* 10-char left margin, 20-char paragraph width, 5-char indent
+       DATA 9,>0005,>0A14,>0000
+* 30-char left margin, 36-char paragraph width, 6-char hanging indent
+       DATA 10,>00FA,>1E24,>0000
 
 *
 * Assume a page width of eight inches
@@ -1150,8 +1046,8 @@ WRE12E
 FMT12  DATA 0,3
 
 MRGN12 DATA 1,3
-* 2-inch margins
-       DATA 0,>0000,>2828,>1414
+* 10-char left margin, 60-char paragraph width
+       DATA 0,>0000,>0A3C,>0000
 
 ********
 
