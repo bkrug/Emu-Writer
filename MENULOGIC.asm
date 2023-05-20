@@ -26,6 +26,11 @@ LOWA   TEXT 'a'
 LOWZ   TEXT 'z'
 ASCHGH BYTE 126
 
+* Offsets from menu address
+MNUKEY EQU  2
+FIELDS EQU  4
+KEYTXT EQU  6
+
 *
 * Initialize home menu
 *
@@ -72,7 +77,7 @@ MNULP0 SB   *R1,*R1+
        CLR  R9
        CLR  @CURSCN
        MOV  @CURMNU,R2
-       MOV  @4(R2),R1
+       MOV  @FIELDS(R2),R1
        JEQ  MNULP1
        LI   R9,FLDVAL
 * Set cursor position on screen
@@ -134,7 +139,7 @@ MNUDSP
        MOV  @SCRNWD,R0
        BL   @VDPADR
 *
-       MOV  @6(R2),R0
+       MOV  @KEYTXT(R2),R0
        BL   @VDPINV
 * Set VDP address for strings
        MOV  @SCRNWD,R0
@@ -169,7 +174,7 @@ KEYWT  DECT R10
        MOV  R11,*R10
 * Let R3 = address of keys
 * Let R4 = end of keys
-KEYLP  MOV  @2(R2),R3
+KEYLP  MOV  @MNUKEY(R2),R3
        MOV  *R3+,R4
 * Process cursor
        MOV  @CURSCN,R0
@@ -198,7 +203,7 @@ KEY1   CB   *R3,R5
        JL   KEY1
 * Found key does not match list
 * Is there a field on this menu?
-       MOV  @4(R2),R0
+       MOV  @FIELDS(R2),R0
        JEQ  KEY8
 * Yes, type or move cursor in field
        LIMI 0
@@ -232,7 +237,7 @@ KEY4
 KEY5
 * Let R3 = screen address of first field
 * Let R4 = length of field
-       MOV  @4(R2),R0
+       MOV  @FIELDS(R2),R0
        INCT R0
        MOV  @SCRNWD,R3
        SLA  R3,1
