@@ -127,8 +127,8 @@ ForEach($objectFile in $objectFiles) {
 # Add TIFILES header to EMUWRITER
 xdm99.py -T 'EMUWRITER' -f PROGRAM -o EMUWRITER
 
-# Add TIFILES header to all program files
-# $programFiles = Get-ChildItem ".\" -Filter *.prg
-# ForEach($programFile in $programFiles) {
-#     xdm99.py -T $programFile.Name -f PROGRAM -o $programFile.Name
-# }
+#
+write-host 'Creating disk image'
+$diskImage = 'EmuWriter.dsk'
+xdm99.py -X sssd $diskImage
+xdm99.py $diskImage -a 'EMUWRITER' -f PROGRAM

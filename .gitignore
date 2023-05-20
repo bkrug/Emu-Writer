@@ -4,6 +4,7 @@
 *.obj
 *.obj.temp
 *.prg
+*.dsk
 
 PRINTOUT
 TESTRESULT.TXT
