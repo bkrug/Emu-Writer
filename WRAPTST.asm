@@ -471,8 +471,8 @@ FMT5   DATA 1,3
 MRGN5  DATA 2,3
 * 20-char left margin, 40-char paragraph width
        DATA 0,>0000,>1428,>0000
-* 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
+* 24-char left margin, 48-char paragraph width
+       DATA 4,>0000,>1830,>0000
 
 *
 * Assume a page width of eight inches
