@@ -8,8 +8,8 @@
        REF  FLDVAL
        REF  WRAP
 
-PABBUF EQU  >1000
-PAB    EQU  >F80
+PAB    EQU  >480
+PABBUF EQU  >500
 *
        COPY 'CPUADR.asm'
 *
