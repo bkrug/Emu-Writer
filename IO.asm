@@ -248,6 +248,8 @@ WRAPLP C    R0,*R2
        JHE  WRAPDN
        CLR  R1
        BLWP @WRAP
+*       CI   R0,>FFFF
+*       JEQ  
        INC  R0
        JMP  WRAPLP
 WRAPDN

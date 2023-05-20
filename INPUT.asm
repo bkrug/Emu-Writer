@@ -5,6 +5,7 @@
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  BUFSRK
        REF  VDPADR,VDPWRT
+       REF  WINMOD,WINOFF
 
 * Key stroke routines in another file
        REF  UPUPSP,DOWNSP
@@ -23,6 +24,9 @@
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN,STSARW
        REF  CURINS,CUROVR
+
+*
+       REF  WRAP
 
 * This data is a work around for the "first DATA word is 0 if REFed bug"
        DATA >1234
@@ -95,15 +99,15 @@ INPTRT RTWP
 
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,CLRKEY
-       BYTE ESCKEY
+       BYTE ESCKEY,FCTN0
 ROUTKE
        EVEN
 ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
-       DATA MNUINT
+       DATA MNUINT,WINVRT
 EXPMOD DATA MODEXT,MODEXT,MODEMV,MODEMV
        DATA MODEMV,MODEMV,MODEXT,MODEXT
-       DATA MODENN
+       DATA MODENN,MODEMV
 
 * 
 * Input mode values
@@ -460,5 +464,34 @@ BCKDEL
        BL   @BACKSP
        BL   @DELCHR
 BCKDL1 B    *R12
+
+*
+* Swap between windowed and vertical mode
+*
+WINVRT
+* Switch modes
+       INV  @WINMOD
+* If we just switched to vertical mode, clear the horizontal offset
+       JEQ  WV1
+       CLR  @WINOFF
+WV1
+* Wrap all paragraphs
+* TODO: this is duplicate code. See also IO.asm
+       MOV  @LINLST,R2
+       CLR  R0
+WRAPLP C    R0,*R2
+       JHE  WRAPDN
+       CLR  R1
+       BLWP @WRAP
+       CI   R0,>FFFF
+       JNE  WRAPL1
+       B    @RTERR  
+WRAPL1 INC  R0
+       JMP  WRAPLP
+WRAPDN
+* Set document status to redraw window
+       SOC  @STSWIN,*R13
+*
+       RT
 
        END
