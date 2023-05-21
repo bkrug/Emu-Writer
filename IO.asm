@@ -3,6 +3,7 @@
        REF  DSRLCL
        REF  INTDOC,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
+       REF  VDPSPC
        REF  LINLST
        REF  ARYADR,BUFGRW
        REF  FLDVAL,WINMOD
@@ -325,11 +326,19 @@ LENP3  MOV  R5,R0
        CLR  R8
        S    *R1,R8
        A    *R4,R8
-* Write record to VDP RAM
-* TODO: Test that the length is <= 254 bytes
 PRINT3       
+* Increase record length by size of left margin
+* Truncate the record length if it is greater than 254
+       LI   R1,10
+       A    R1,R8
+       CI   R8,MAXPRT
+       JLE  PRNT3B
+       LI   R8,MAXPRT
+PRNT3B
+* Write record (following left margin) to VDP RAM
        LI   R0,PABBUF
        BL   @VDPADR
+       BL   @VDPSPC
        MOV  R6,R0
        MOV  R8,R1
        BL   @VDPWRT
@@ -417,6 +426,9 @@ OPENFL
        MOV  *R10+,R11
        RT
 
+*
+* Close File
+*
 CLOSFL
        DECT R10
        MOV  R11,*R10

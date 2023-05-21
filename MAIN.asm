@@ -29,8 +29,6 @@
 START
 * Initialize Program
        LWPI MAINWS
-       CLR  @CURMNU
-       SETO @WINMOD
        LI   R10,STACK
 *
        BL   @INVCHR
@@ -40,6 +38,8 @@ START
        BL   @VDPTXT
        BL   @INTSCN
        BL   @WRTHDR
+*
+       SETO @WINMOD
        LIMI 2
 *
 * Main program loop while program runs
@@ -114,6 +114,9 @@ INTDOC
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@LINLST
+* Set cursor position to document start
+       CLR  @PARINX
+       CLR  @CHRPAX
 * Insert one empty paragraph
 * Let R4 = paragraph address
 INTPAR LI   R0,PAREND-PAR
@@ -134,9 +137,6 @@ INTPAR LI   R0,PAREND-PAR
        BLWP @ARYADD
        MOV  R0,@LINLST
        MOV  R4,*R1
-* Set cursor position to document start
-       CLR  @PARINX
-       CLR  @CHRPAX
 *
        RT
 
