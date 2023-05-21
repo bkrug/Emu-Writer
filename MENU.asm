@@ -1,4 +1,4 @@
-       DEF  MNUHOM,MNUFL
+       DEF  MNUHOM,MNUFL,MNUTTL
        REF  FRMSAV,FRMLOD,FRMPRT
 
        COPY 'EQUKEY.asm'
@@ -6,7 +6,52 @@
 HOTKEY TEXT 'FCTN+9: Previous Menu'
        BYTE 0
 HKYHOM TEXT 'FCTN+9: Editor'
+NOHTKY BYTE 0
+
+*
+* Title Screen
+*
+MNUTTL DATA TXTTTL
+       DATA KEYTTL
+       DATA NOFLDS
+       DATA NOHTKY
+       TEXT ''
        BYTE 0
+
+TXTTTL DATA TXTTT1
+       BYTE 0
+       BYTE 0
+       BYTE 0
+       BYTE 0
+       TEXT '             ============='
+       BYTE 0
+       TEXT '               EmuWriter'
+       BYTE 0
+       TEXT '                  v0.1'
+       BYTE 0
+       TEXT '             ============='
+       BYTE 0
+       BYTE 0
+       TEXT '    "Be a little late to the party"'
+       BYTE 0
+       BYTE 0
+       BYTE 0
+       TEXT '          Released Anyary 2023'
+       BYTE 0
+       TEXT '    Press ENTER or SPACE to continue'
+       BYTE 0
+TXTTT1 EVEN
+
+KEYTTL DATA KEYTT1
+*
+       BYTE ENTER
+       BYTE NXTMNU
+       DATA 0            * Clearing the menu takes us to the editor
+*
+       BYTE SPCBAR
+       BYTE NXTMNU
+       DATA 0
+KEYTT1
 
 *
 * Main/Home Menu
@@ -21,10 +66,10 @@ MNUHOM DATA TXTHM
 TXTHM  DATA TXTHM1
        TEXT 'File'
        BYTE 0
-       TEXT 'paGe'
-       BYTE 0
-       TEXT 'pAragraph'
-       BYTE 0
+*       TEXT 'paGe'
+*       BYTE 0
+*       TEXT 'pAragraph'
+*       BYTE 0
 TXTHM1 EVEN
 
 KEYHM  DATA KEYHM1

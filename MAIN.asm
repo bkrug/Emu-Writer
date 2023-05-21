@@ -19,7 +19,7 @@
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CURINS,CHRCUR,CURMOD,WINMOD
        REF  CURMNU,STACK
-       REF  ENTMNU
+       REF  ENTMNU,MNUTTL
        REF  WRTHDR,ADJHDR
 *
 
@@ -40,6 +40,8 @@ START
        BL   @WRTHDR
 *
        SETO @WINMOD
+       LI   R0,MNUTTL
+       MOV  R0,@CURMNU
        LIMI 2
 *
 * Main program loop while program runs
