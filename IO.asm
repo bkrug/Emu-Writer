@@ -80,6 +80,7 @@ EOD    BYTE 4                               * End of document
 * If the second byte of the version is high, we can still load the file
 FLEHDR TEXT 'DocOfEmuWriter'
 FLEVER BYTE 1,1
+HDREND
        EVEN
 
 *
@@ -101,11 +102,15 @@ SAVE   DECT R10
 * Set VDP write position
        LI   R0,PABBUF
        BL   @VDPADR
+* Write file Header
+* Let R3 = number of bytes already written to VDP
+       LI   R0,FLEHDR
+       LI   R1,HDREND-FLEHDR
+       MOV  R1,R3
+       BL   @VDPWRT
 * Let R2 = remaining paragraphs
        MOV  @LINLST,R0
        MOV  *R0,R2
-* Let R3 = number of bytes already written to VDP
-       CLR  R3
 * Let R1 = address of paragraph entry in the paragraph list
        MOV  @LINLST,R0
        CLR  R1
@@ -190,9 +195,34 @@ LOAD   DECT R10
        LI   R0,PAB
        BL   @VDPADR
        MOVB @READ,@VDPWD
+* Read first record
+       MOV  @LNGADR,@PNTR
+       BLWP @DSRLCL
+       DATA 8
+       BL   @CHKERR
+* Set VDP read position
+       LI   R0,PABBUF
+       BL   @VDPRAD
+* Does first record contain expected header?
+       LI   R1,FLEHDR
+LOAD3  MOVB @VDPRD,R0
+       CB   R0,*R1+
+       JNE  HDRMSS
+       CI   R1,FLEVER
+       JL   LOAD3
+* Is Version too high?
+       MOVB @VDPRD,R0
+       CB   R0,@FLEVER
+       JH   WRGVER
+* Read next byte of format-version
+       MOVB @VDPRD,R0
+* Let R4 = number of record bytes remaining to read
+       LI   R4,FIXSAV-HDREND+FLEHDR
 * Let R3 = address of first element in paragraph list
        MOV  @LINLST,R3
        C    *R3+,*R3+
+*
+       JMP  LOADBY
 LOADR
 * Read record
        MOV  @LNGADR,@PNTR
@@ -202,7 +232,7 @@ LOADR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPRAD
-* Let R4 = number of record bytes to read
+* Let R4 = number of record bytes remaining to read
        LI   R4,FIXSAV
 LOADBY
 * Is next char a CR?
@@ -257,6 +287,16 @@ LOADDN BL   @CLOSFL
 *
        MOV  *R10+,R11
        RT
+*
+* File Header Missing
+*
+HDRMSS LI   R2,MSGNOT
+       B    @WRTERR
+*
+* Wrong File Format Version
+*
+WRGVER LI   R2,MSGVER
+       B    @WRTERR
 
 *
 * Print
@@ -522,7 +562,7 @@ CHKE2
        AI   R2,MSGNUM
        MOV  *R2,R2
 * Write messsage
-CHKE3  CLR  R0
+WRTERR CLR  R0
        BL   @VDPADR
        MOV  R2,R0
        BL   @VDPINV
