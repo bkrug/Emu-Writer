@@ -7,6 +7,7 @@
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
        REF  PARINX,CHRPAX
+       REF  INSTMD
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  LINLST,MGNLST,FMTLST
@@ -32,6 +33,7 @@ START
        LI   R10,STACK
 *
        BL   @INVCHR
+       BL   @INTMEM
        BL   @INTDOC
        BL   @INTKEY
        BL   @VDPTXT
@@ -79,7 +81,13 @@ MAIN3
        JMP  MAIN
 
 *
-* Initialize Memory
+* Initialize Memory to zero
+*
+INTMEM CLR  @INSTMD
+       RT
+
+*
+* Initialize Document values
 *
 * Output:
 *  R1 - Address in LINLST
