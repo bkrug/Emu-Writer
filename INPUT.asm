@@ -274,7 +274,9 @@ ENTR2  CLR  @CHRPAX
 
 * Somehow let the user know that there
 * is no remaining buffer space.
-RTERR  RTWP
+* Do not reprocess the key that cause the overflow.
+RTERR  MOV  @KEYRD,@KEYWRT
+       RTWP
 
 *
 * Delete key was pressed.
