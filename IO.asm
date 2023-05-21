@@ -210,11 +210,12 @@ LOAD3  MOVB @VDPRD,R0
        JNE  HDRMSS
        CI   R1,FLEVER
        JL   LOAD3
-* Is Version too high?
+* Is Format-Version too high?
        MOVB @VDPRD,R0
        CB   R0,@FLEVER
        JH   WRGVER
-* Read next byte of format-version
+* Read next byte of Format-Version
+* If it is too high, file merely has extra data we can't use
        MOVB @VDPRD,R0
 * Let R4 = number of record bytes remaining to read
        LI   R4,FIXSAV-HDREND+FLEHDR
