@@ -3,7 +3,7 @@
        REF  DSRLCL
        REF  INTDOC,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
-       REF  VDPSPC
+       REF  VDPSPC,VDPINV
        REF  LINLST
        REF  ARYADR,BUFGRW
        REF  FLDVAL,WINMOD
@@ -74,6 +74,12 @@ WRITE  BYTE >03
 CR     BYTE 13
 EOD    BYTE 4                               * End of document
 *
+* This goes at the beginning of each Emu-Writer file
+* If the HDR does not match, this is not an Emu-Writer file
+* If the first byte of the version is high, the version is incompatible
+* If the second byte of the version is high, we can still load the file
+FLEHDR TEXT 'DocOfEmuWriter'
+FLEVER BYTE 1,1
        EVEN
 
 *
@@ -462,11 +468,15 @@ WRAPLP C    R0,*R2
 WRAPDN
        RT
 
+MSGNOT TEXT 'Error: File not an EmuWriter document'
+       BYTE 0
+MSGVER TEXT 'Error: File for higher EmuWriter version'
+       BYTE 0
 MSG0   TEXT 'Err 0: Bad device name'
        BYTE 0
 MSG1   TEXT 'Err 1: Device is write protected'
        BYTE 0
-MSG2   TEXT 'Err 2: File type on disk not as expected'
+MSG2   TEXT 'Err 2: File type is incorrect'
        BYTE 0
 MSG3   TEXT 'Err 3: Illegal operation of peripheral'
        BYTE 0
@@ -474,7 +484,7 @@ MSG4   TEXT 'Err 4: Out of space'
        BYTE 0
 MSG5   TEXT 'Err 5: Read past end of file'
        BYTE 0
-MSG6   TEXT 'Err 6: Device not connected or other'
+MSG6   TEXT 'Err 6: Device not connected or other Err'
        BYTE 0
 MSG7   TEXT 'Err 7: File not found'
        BYTE 0
@@ -512,10 +522,10 @@ CHKE2
        AI   R2,MSGNUM
        MOV  *R2,R2
 * Write messsage
-       CLR  R0
+CHKE3  CLR  R0
        BL   @VDPADR
        MOV  R2,R0
-       BL   @VDPSTR
+       BL   @VDPINV
 * Clear error
        SB   @STATUS,@STATUS
 * Return to caller. Skip rest of print routine.
