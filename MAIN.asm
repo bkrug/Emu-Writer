@@ -1,4 +1,4 @@
-       DEF  START,DRWCUR,INTMEM,INTPAR
+       DEF  START,DRWCUR,INTDOC,INTPAR
 *
        REF  KEYDVC,USRISR
        REF  KEYINT
@@ -32,7 +32,7 @@ START
        LI   R10,STACK
 *
        BL   @INVCHR
-       BL   @INTMEM
+       BL   @INTDOC
        BL   @INTKEY
        BL   @VDPTXT
        BL   @INTSCN
@@ -85,7 +85,7 @@ MAIN3
 *  R1 - Address in LINLST
 *  R4 - Address of paragraph
 *  R0,R2 - changed
-INTMEM
+INTDOC
 * Initialize buffer.
        LI   R0,MEMBEG
        LI   R1,MEMEND

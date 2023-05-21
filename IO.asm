@@ -1,7 +1,7 @@
        DEF  SAVE,LOAD,PRINT
 *
        REF  DSRLCL
-       REF  INTMEM,INTPAR
+       REF  INTDOC,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
        REF  LINLST
        REF  ARYADR,BUFGRW
@@ -175,7 +175,7 @@ LOAD   DECT R10
 * Turn off interrupts
        LIMI 0
 * Purge old file
-       BL   @INTMEM
+       BL   @INTDOC
 * Open File
        LI   R2,LDATA
        BL   @OPENFL
