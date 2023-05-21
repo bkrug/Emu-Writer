@@ -10,9 +10,11 @@
        DEF  STRWS
        DEF  LOOKWS,ARRYWS
        DEF  WRAPWS
-       DEF  INPTWS,POSUWS,DISPWS,SCRNWS
+       DEF  INPTWS,POSUWS,DISPWS
        DEF  DSRLWS,MAINWS
        DEF  STACK
+*
+       DEF  VARBEG,VAREND
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
 * Arrays
@@ -42,22 +44,20 @@
 * End of Program
        DEF  MEMBEG,MEMEND
 
-       AORG >A000
 *
 * Areas for workspace registers
 *
-*       TEXT 'WORKSPCE'
+       TEXT 'WORKSPCE'
+MAINWS EQU  >8300
 LOOKWS
+DSRLWS
 ARRYWS BSS  >10
 STRWS  BSS  >20
 WRAPWS BSS  >20
 INPTWS
 POSUWS
-DISPWS
-SCRNWS BSS  >20
-DSRLWS BSS  >20
-MAINWS BSS  >20
-*       TEXT 'STACK '
+DISPWS BSS  >20
+       TEXT 'STACK '
        BSS  >40
 STACK
 
@@ -65,7 +65,8 @@ STACK
 * Areas for changeable values
 *
 
-*       TEXT 'VARIABLE'
+       TEXT 'VARIABLE'
+VARBEG
 * Address of line list
 LINLST BSS  2
 * Address of format line list
@@ -162,11 +163,13 @@ KEYRD  BSS  2
 CURMNU BSS  2
 FLDVAL BSS  80
 FLDVE
+VAREND
+       TEXT 'ENDOFPROG'
 
 *
-* End of Program
+* Buffer for text
 *
-MEMBEG BSS  2
+MEMBEG EQU  >A000
 MEMEND EQU  >FFD8
        END
 

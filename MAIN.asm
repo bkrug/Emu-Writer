@@ -1,5 +1,6 @@
        DEF  START,DRWCUR,INTDOC,INTPAR
 *
+       REF  VARBEG,VAREND
        REF  KEYDVC,USRISR
        REF  KEYINT
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
@@ -83,7 +84,10 @@ MAIN3
 *
 * Initialize Memory to zero
 *
-INTMEM CLR  @INSTMD
+INTMEM LI   R0,VARBEG
+IMLP   CLR  *R0+
+       CI   R0,VAREND
+       JL   IMLP
        RT
 
 *
