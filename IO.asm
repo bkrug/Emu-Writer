@@ -250,8 +250,8 @@ LOADBY
        MOV  *R0,R1
        AI   R1,5
        BLWP @BUFGRW
-*       CI   R0,>FFFF
-*       JEQ  RTERR
+       CI   R0,>FFFF
+       JEQ  LOADDN
 * Store new paragraph address
        MOV  R0,*R3
 * Let R6 contain address following the paragraph
@@ -502,8 +502,8 @@ WRAPLP C    R0,*R2
        JHE  WRAPDN
        CLR  R1
        BLWP @WRAP
-*       CI   R0,>FFFF
-*       JEQ  
+       CI   R0,>FFFF
+       JEQ  WRAPDN
        INC  R0
        JMP  WRAPLP
 WRAPDN
