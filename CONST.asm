@@ -1,4 +1,4 @@
-       DEF  FMTLEN,MGNLEN,PGWDTH
+       DEF  FMTLEN,MGNLEN
        DEF  SIX,FORTY,SCRNWD
        DEF  USRISR
        DEF  STSTYP,STSENT,STSDCR
@@ -26,8 +26,6 @@ MGNLEN
 * Number of bytes in each entry of the
 * format list.
 FMTLEN DATA 8
-* Page width in 120ths of an inch
-PGWDTH DATA 8*120
 * Address defining address of user-
 * defined service routine
 USRISR EQU  >83C4

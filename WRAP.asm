@@ -7,7 +7,7 @@
        REF  WRAPWS
 * Constants
        REF  SPACE,DASH,SIX
-       REF  FMTLEN,MGNLEN,PGWDTH
+       REF  FMTLEN,MGNLEN
        REF  ERRMEM,STSPAR
        REF  SCRNWD
 * Variables

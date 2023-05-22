@@ -23,6 +23,7 @@
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN,STSARW
+       REF  ERRMEM
        REF  CURINS,CUROVR
 
 *
@@ -276,6 +277,7 @@ ENTR2  CLR  @CHRPAX
 * is no remaining buffer space.
 * Do not reprocess the key that cause the overflow.
 RTERR  MOV  @KEYRD,@KEYWRT
+       SOC  @ERRMEM,@2(13)
        RTWP
 
 *
@@ -429,8 +431,9 @@ INSERT MOV  R1,R6
        AI   R1,5
        BLWP @BUFGRW
        CI   R0,>FFFF
-       JEQ  RTERR
-       MOV  R0,*R6
+       JNE  INS1
+       B    @RTERR
+INS1   MOV  R0,*R6
 * Insert character.
 * Let R2 contain address following
 * the paragraph
