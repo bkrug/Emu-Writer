@@ -96,9 +96,10 @@ IMLP   CLR  *R0+
 * Initialize Document values
 *
 * Output:
+*  R0 - zero - to imply no error
+*  R2 - changed
 *  R1 - Address in LINLST
 *  R4 - Address of paragraph
-*  R0,R2 - changed
 INTDOC
 * Initialize buffer.
        LI   R0,MEMBEG
@@ -139,6 +140,8 @@ INTPAR LI   R0,PAREND-PAR
        BLWP @ARYADD
        MOV  R0,@LINLST
        MOV  R4,*R1
+*
+       CLR  R0
 *
        RT
 

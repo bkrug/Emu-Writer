@@ -1,4 +1,4 @@
-       DEF  SAVE,LOAD,PRINT
+       DEF  SAVE,LOAD,PRINT,MYBNEW
 *
        REF  DSRLCL
        REF  INTDOC,INTPAR
@@ -7,7 +7,8 @@
        REF  LINLST
        REF  ARYADR,BUFGRW
        REF  FLDVAL,WINMOD
-       REF  WRAP
+       REF  WRAP,INTDOC
+       REF  CURMNU
 
 PAB    EQU  >480
 PABBUF EQU  >500
@@ -73,6 +74,8 @@ WRITE  BYTE >03
 *
 CR     BYTE 13
 EOD    BYTE 4                               * End of document
+YES    TEXT 'Y'
+NO     TEXT 'N'
 *
 * This goes at the beginning of each Emu-Writer file
 * If the HDR does not match, this is not an Emu-Writer file
@@ -82,6 +85,29 @@ FLEHDR TEXT 'DocOfEmuWriter'
 FLEVER BYTE 1,1
 HDREND
        EVEN
+
+*
+* New Document
+*
+MYBNEW DECT R10
+       MOV  R11,*R10
+*
+       CB   @FLDVAL,@YES
+       JNE  MYBN
+       BL   @INTDOC
+       JMP  MYRT
+*
+MYBN   CB   @FLDVAL,@NO
+       JNE  MYB0
+       CLR  @CURMNU
+       CLR  R0
+       JMP  MYRT
+*
+MYB0   SETO R0
+*
+MYRT
+       MOV  *R10+,R11
+       RT
 
 *
 * Save

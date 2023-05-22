@@ -1,7 +1,7 @@
-       DEF  FRMSAV,FRMLOD,FRMPRT
+       DEF  FRMSAV,FRMLOD,FRMPRT,FRMNEW
 *
        REF  MNUFL
-       REF  SAVE,LOAD,PRINT
+       REF  SAVE,LOAD,PRINT,MYBNEW
 
        COPY 'EQUKEY.asm'
 
@@ -99,3 +99,38 @@ FLDPR  DATA FLDPR1
        DATA 40+14           * Field position on screen
        DATA 80-14           * Length of field
 FLDPR1 EVEN
+
+*
+* New Document Form
+*
+FRMNEW DATA TXTNW           * String List
+       DATA KEYNW           * Key List
+       DATA FLDNW           * Field List
+       DATA HKYFIL
+       TEXT 'NEW DOCUMENT'
+       BYTE 0
+       EVEN
+
+TXTNW  DATA TXTNW1
+       BYTE 0
+       TEXT 'Clear old document. Are you sure?'
+       BYTE 0
+       TEXT '(Y/N)'
+       BYTE 0
+TXTNW1 EVEN
+
+KEYNW  DATA KEYNW1
+*
+       BYTE ENTER
+       BYTE NXTRTN
+       DATA MYBNEW
+*
+       BYTE ESCKEY
+       BYTE NXTMNU
+       DATA MNUFL
+KEYNW1
+
+FLDNW  DATA FLDNW1
+       DATA 80+8            * Field position on screen
+       DATA 1               * Length of field
+FLDNW1 EVEN
