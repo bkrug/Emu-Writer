@@ -1,7 +1,9 @@
        DEF  FRMSAV,FRMLOD,FRMPRT,FRMNEW
+       DEF  FRMQIT
 *
        REF  MNUFL
        REF  SAVE,LOAD,PRINT,MYBNEW
+       REF  MYBQIT
 
        COPY 'EQUKEY.asm'
 
@@ -134,3 +136,36 @@ FLDNW  DATA FLDNW1
        DATA 80+8            * Field position on screen
        DATA 1               * Length of field
 FLDNW1 EVEN
+
+*
+* Quit Form
+*
+FRMQIT DATA TXTQT           * String List
+       DATA KEYQT           * Key List
+       DATA FLDQT           * Field List
+       DATA HKYFIL
+       TEXT 'QUIT'
+       BYTE 0
+       EVEN
+
+TXTQT  DATA TXTQT1
+       BYTE 0
+       TEXT 'Quit. Are you sure? (Y/N)'
+       BYTE 0
+TXTQT1 EVEN
+
+KEYQT  DATA KEYQT1
+*
+       BYTE ENTER
+       BYTE NXTRTN
+       DATA MYBQIT
+*
+       BYTE ESCKEY
+       BYTE NXTMNU
+       DATA MNUFL
+KEYQT1
+
+FLDQT  DATA FLDQT1
+       DATA 40+27           * Field position on screen
+       DATA 1               * Length of field
+FLDQT1 EVEN

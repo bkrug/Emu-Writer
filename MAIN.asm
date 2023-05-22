@@ -42,6 +42,7 @@ START
        SETO @WINMOD
        LI   R0,MNUTTL
        MOV  R0,@CURMNU
+       MOVB @NOQUIT,@INTSTP
        LIMI 2
 *
 * Main program loop while program runs
@@ -276,5 +277,8 @@ INVLP  MOVB @VDPRD,R2
 *
        MOV  *R10+,R11
        RT
+
+NOQUIT BYTE >80
+       EVEN
 
        END

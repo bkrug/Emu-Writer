@@ -1,5 +1,6 @@
        DEF  MNUHOM,MNUFL,MNUTTL,MNUHK
        REF  FRMSAV,FRMLOD,FRMPRT,FRMNEW
+       REF  FRMQIT
 
        COPY 'EQUKEY.asm'
 
@@ -125,8 +126,8 @@ KEYFL  DATA KEYFL1
        DATA FRMPRT
 *
        TEXT 'Q'
-       BYTE NXTRTN
-       DATA >0000
+       BYTE NXTMNU
+       DATA FRMQIT
 *
        BYTE ESCKEY
        BYTE NXTMNU

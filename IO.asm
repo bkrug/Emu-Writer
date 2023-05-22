@@ -1,4 +1,5 @@
        DEF  SAVE,LOAD,PRINT,MYBNEW
+       DEF  MYBQIT
 *
        REF  DSRLCL
        REF  INTDOC,INTPAR
@@ -87,26 +88,34 @@ HDREND
        EVEN
 
 *
+* Quit
+*
+MYBQIT DECT R10
+       MOV  R11,*R10
+*
+       CB   @FLDVAL,@YES
+       JNE  CHKNO
+       BLWP @>0000
+*
+
+*
 * New Document
 *
 MYBNEW DECT R10
        MOV  R11,*R10
 *
        CB   @FLDVAL,@YES
-       JNE  MYBN
-       BL   @INTDOC
-       JMP  MYRT
+       JEQ  MYBNY
 *
-MYBN   CB   @FLDVAL,@NO
-       JNE  MYB0
-       CLR  @CURMNU
-       CLR  R0
-       JMP  MYRT
+CHKNO  CB   @FLDVAL,@NO
+       JEQ  MYBNN
 *
-MYB0   SETO R0
+       SETO R0
+       JMP  MYBNRT
 *
-MYRT
-       MOV  *R10+,R11
+MYBNY  BL   @INTDOC
+MYBNN  CLR  R0
+MYBNRT MOV  *R10+,R11
        RT
 
 *

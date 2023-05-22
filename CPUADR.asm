@@ -4,4 +4,5 @@ VDPWD  EQU  >8C00        VDP RAM write data
 VDPSTA EQU  >8802        VDP RAM status
 PNTR   EQU  >8356        PAB length pointer address
 STATUS EQU  >837C
+INTSTP EQU  >83C2        First four bits enable/disable interrupt steps
 REG1CP EQU  >83D4        Address holding a copy of VDP Register 1
