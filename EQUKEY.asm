@@ -8,6 +8,7 @@ DWNKEY EQU  >0A
 ENTER  EQU  >0D
 ESCKEY EQU  >0F
 SPCBAR EQU  >20
+CTRLY  EQU  >99
 FCTN0  EQU  >BC
 
 * If key pressed, go to menu

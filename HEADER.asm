@@ -31,6 +31,6 @@ WRTHDR
        MOV  *R10+,R11
        RT
 
-TEXT1  TEXT 'FCTN+9: Menu'
+TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
        BYTE 0
        EVEN

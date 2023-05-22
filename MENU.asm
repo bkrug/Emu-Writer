@@ -1,4 +1,4 @@
-       DEF  MNUHOM,MNUFL,MNUTTL
+       DEF  MNUHOM,MNUFL,MNUTTL,MNUHK
        REF  FRMSAV,FRMLOD,FRMPRT
 
        COPY 'EQUKEY.asm'
@@ -120,3 +120,31 @@ KEYFL  DATA KEYFL1
        BYTE NXTMNU
        DATA MNUHOM
 KEYFL1
+
+*
+* Hotkey Menu
+*
+MNUHK  DATA TXTHK
+       DATA KEYHK
+       DATA NOFLDS
+       DATA HKYHOM
+       TEXT 'Hot Keys'
+       BYTE 0
+
+TXTHK  DATA TXTHK1
+       BYTE 0
+       TEXT 'FCTN+1 Delete Char'
+       BYTE 0
+       TEXT 'FCTN+2 Insert/Overwrite'
+       BYTE 0
+       TEXT 'FCTN+3 Backspace Delete'
+       BYTE 0
+       TEXT 'FCTN+0 Vertical/Windowed Mode'
+       BYTE 0
+TXTHK1 EVEN
+
+KEYHK  DATA KEYHK1
+       BYTE ESCKEY
+       BYTE NXTMNU          * When pressing escape key from home menu
+       DATA 0               * Set the current menu to 0, so we leave menu mode
+KEYHK1

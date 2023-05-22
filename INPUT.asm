@@ -27,7 +27,8 @@
        REF  CURINS,CUROVR
 
 *
-       REF  WRAP
+       REF  WRAP,MNUHK
+       REF  CURMNU
 
 * This data is a work around for the "first DATA word is 0 if REFed bug"
        DATA >1234
@@ -100,15 +101,15 @@ INPTRT RTWP
 
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,CLRKEY
-       BYTE ESCKEY,FCTN0
+       BYTE ESCKEY,FCTN0,CTRLY
 ROUTKE
        EVEN
 ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
-       DATA MNUINT,WINVRT
+       DATA MNUINT,WINVRT,SHOWHK
 EXPMOD DATA MODEXT,MODEXT,MODEMV,MODEMV
        DATA MODEMV,MODEMV,MODEXT,MODEXT
-       DATA MODENN,MODEMV
+       DATA MODENN,MODEMV,MODEMV
 
 * 
 * Input mode values
@@ -497,6 +498,14 @@ WRAPDN
 * Set document status to redraw window
        SOC  @STSWIN,*R13
 *
+       RT
+
+*
+* Turn on Hot Key menu
+*
+SHOWHK
+       LI   R0,MNUHK
+       MOV  R0,@CURMNU
        RT
 
        END
