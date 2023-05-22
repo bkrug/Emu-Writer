@@ -64,6 +64,7 @@ MNUHOM DATA TXTHM
        BYTE 0
 
 TXTHM  DATA TXTHM1
+       BYTE 0
        TEXT 'File'
        BYTE 0
 *       TEXT 'paGe'
@@ -93,6 +94,7 @@ MNUFL  DATA TXTFL
        BYTE 0
 
 TXTFL  DATA TXTFL1
+       BYTE 0
        TEXT 'Save'
        BYTE 0
        TEXT 'Load'

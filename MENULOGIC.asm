@@ -120,9 +120,6 @@ MNUDSP
        LI   R2,22
        MPY  R2,R0
        BL   @VDPSPC
-* Write text
-       CLR  R0
-       BL   @VDPADR
 * Let R2 = address of menu
 * Let R3 = address of strings
 * Let R4 = end of strings
@@ -130,14 +127,17 @@ MNUDSP
        MOV  *R2,R3
        MOV  *R3+,R4
 * Write title
-       MOV  R2,R0
-       AI   R0,8
+       CLR  R0
+       BL   @VDPADR
+*
+       MOV  @KEYTXT(R2),R0
        BL   @VDPINV
 * Write Hot keys
        MOV  @SCRNWD,R0
        BL   @VDPADR
 *
-       MOV  @KEYTXT(R2),R0
+       MOV  R2,R0
+       AI   R0,8
        BL   @VDPINV
 * Set VDP address for strings
        MOV  @SCRNWD,R0
