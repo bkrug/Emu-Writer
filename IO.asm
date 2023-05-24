@@ -123,8 +123,6 @@ MYBNRT MOV  *R10+,R11
 *
 SAVE   DECT R10
        MOV  R11,*R10
-* Save stack restore point
-       MOV  R10,R12
 * Turn off interrupts
        LIMI 0
 * Open File
@@ -222,8 +220,6 @@ SLERR  BL   @DSPERR
 *
 LOAD   DECT R10
        MOV  R11,*R10
-* Save stack restore point
-       MOV  R10,R12
 * Turn off interrupts
        LIMI 0
 * Open File
@@ -347,8 +343,6 @@ WRGVER LI   R2,MSGVER
 *
 PRINT  DECT R10
        MOV  R11,*R10
-* Save stack restore point
-       MOV  R10,R12
 * Turn off interrupts
        LIMI 0
 * If not already in Window Mode, wrap all paragraphs

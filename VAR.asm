@@ -22,8 +22,7 @@
 * MAIN.TXT
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
 * WRAP.TXT
-       DEF  FMTEND,MGNEND,LNWDT1,LNWDTH
-       DEF  WINMOD
+       DEF  LNWDT1,LNWDTH,WINMOD
 * INPUT.TXT
        DEF  PARINX,CHRPAX
        DEF  INSTMD,INPTMD
@@ -86,8 +85,6 @@ CURRPL BSS  1
        EVEN
 
 * WRAP.TXT
-FMTEND BSS  2
-MGNEND BSS  2
 * Width of first paragraph line
 * If there is no indent it will match
 * LNWDTH.

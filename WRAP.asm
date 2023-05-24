@@ -11,8 +11,7 @@
        REF  ERRMEM,STSPAR
        REF  SCRNWD
 * Variables
-       REF  FMTEND,MGNEND,LNWDT1,LNWDTH
-       REF  WINMOD
+       REF  LNWDT1,LNWDTH,WINMOD
 
 * This data is a work around for the "first DATA word is 0 bug"
 * TODO: Write an issue to Ralph B.'s github
