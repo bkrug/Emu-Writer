@@ -24,9 +24,6 @@
 * WRAP.TXT
        DEF  FMTEND,MGNEND,LNWDT1,LNWDTH
        DEF  WINMOD
-* SCRNWRT.TXT
-       DEF  SRCLIN,INDENT,CPI,NXTFMT
-       DEF  DSPSTR,CURSTR
 * INPUT.TXT
        DEF  PARINX,CHRPAX
        DEF  INSTMD,INPTMD
@@ -100,14 +97,6 @@ LNWDTH BSS  2
 * When reset, use windowed mode like TI-Writer
 * Otherwise, use vertical mode
 WINMOD BSS  2
-
-* SCRNWRT.TXT
-SRCLIN BSS  2
-INDENT BSS  2
-CPI    BSS  2
-NXTFMT BSS  2
-DSPSTR BSS  2
-CURSTR BSS  2
 
 * INPUT.TXT
 * Current Paragraph Index
