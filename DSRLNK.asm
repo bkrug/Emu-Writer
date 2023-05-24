@@ -1,6 +1,13 @@
        DEF  DSRLCL
 * TODO: replace A209A with DSRLWS
        REF  DSRLWS
+*
+* As far as I can tell,
+* This code uses Scratch PAD address >8354-8357
+* and areas above >83C0 which we already know
+* belong to the Interrpreter and GPL workspaces.
+* TODO: Move more of the VAR section to the scratch PAD.
+*
 
 * TODO: Figure out how much of this is constants and how much is variables
 A2032  DATA >0000                  cru base for dsr
