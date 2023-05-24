@@ -57,7 +57,7 @@ LDATA0
 *
 * PAB data for Printing
 PDATA  BYTE 0
-       BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
+       BYTE VARIAB+DISPLY+APPEND+SEQUEN
        DATA PABBUF
        BYTE MAXPRT                          * Max Record Length
        BYTE 0                               * Length of this record
