@@ -57,7 +57,7 @@ LDATA0
 *
 * PAB data for Printing
 PDATA  BYTE 0
-       BYTE VARIAB+DISPLY+APPEND+SEQUEN
+       BYTE VARIAB+DISPLY+OUTPUT+SEQUEN
        DATA PABBUF
        BYTE MAXPRT                          * Max Record Length
        BYTE 0                               * Length of this record
@@ -334,8 +334,7 @@ LOADRT LIMI 2
 * File Header Missing
 *
 HDRMSS LI   R2,MSGNOT
-       BL   @WRTERR
-       JMP  LOADRT
+       JMP  WRGVER+4
 *
 * Wrong File Format Version
 *
