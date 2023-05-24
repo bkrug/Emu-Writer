@@ -226,8 +226,6 @@ LOAD   DECT R10
        MOV  R10,R12
 * Turn off interrupts
        LIMI 0
-* Purge old file
-       BL   @INTDOC
 * Open File
        LI   R2,LDATA
        BL   @OPENFL
@@ -258,6 +256,8 @@ LOAD3  MOVB @VDPRD,R0
 * Read next byte of Format-Version
 * If it is too high, file merely has extra data we can't use
        MOVB @VDPRD,R0
+* Since this is a valid file, purge the old file
+       BL   @INTDOC
 * Let R4 = number of record bytes remaining to read
        LI   R4,FIXSAV-HDREND+FLEHDR
 * Let R3 = address of first element in paragraph list
