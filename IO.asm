@@ -130,6 +130,7 @@ SAVE   DECT R10
 * Open File
        LI   R2,SDATA
        BL   @OPENFL
+       JEQ  SAVERR
 * Change I/O op-code to write
        LI   R0,PAB
        BL   @VDPADR
@@ -185,7 +186,7 @@ SAVE3  INC  R3
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
+       JEQ  SAVERR
 * Re-set VDP write position
        LI   R0,PABBUF
        BL   @VDPADR
@@ -201,16 +202,20 @@ SAVEDN
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
+       JEQ  SAVERR
 *
        BL   @CLOSFL
+       JEQ  SAVERR
 * No Error
        CLR  R0
 *
-       LIMI 2
+SAVERT LIMI 2
 *
        MOV  *R10+,R11
        RT
+*
+SAVERR BL   @DSPERR
+       JMP  SAVERT
 
 *
 * Load
@@ -226,6 +231,7 @@ LOAD   DECT R10
 * Open File
        LI   R2,LDATA
        BL   @OPENFL
+       JEQ  LODERR
 * Change I/O op-code to read
        LI   R0,PAB
        BL   @VDPADR
@@ -234,7 +240,7 @@ LOAD   DECT R10
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
+       JEQ  LODERR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPRAD
@@ -264,7 +270,7 @@ LOADR
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
+       JEQ  LODERR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPRAD
@@ -314,25 +320,31 @@ LOAD1
        JMP  LOADR
 * Reached End of Document
 LOADDN BL   @CLOSFL
+       JEQ  LODERR
 * Wrap all paragraphs
        BL   @WRAPDC
 * No Error
        CLR  R0
 *
-       LIMI 2
+LOADRT LIMI 2
 *
        MOV  *R10+,R11
        RT
 *
+LODERR BL   @DSPERR
+       JMP  LOADRT
+*
 * File Header Missing
 *
 HDRMSS LI   R2,MSGNOT
-       B    @WRTERR
+       BL   @WRTERR
+       JMP  LOADRT
 *
 * Wrong File Format Version
 *
 WRGVER LI   R2,MSGVER
-       B    @WRTERR
+       BL   @WRTERR
+       JMP  LOADRT
 
 *
 * Print
@@ -353,6 +365,7 @@ PRINT0
 * Open File
        LI   R2,PDATA
        BL   @OPENFL
+       JEQ  PRTERR
 * Change I/O op-code to write
        LI   R0,PAB
        BL   @VDPADR
@@ -432,7 +445,7 @@ PRNT3B
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
+       JEQ  PRTERR
 * End of paragraph?
        C    R7,*R5
        JHE  PRINT4
@@ -452,21 +465,30 @@ PRINT4
        MOV  @LINLST,R0
        C    R2,*R0
        JL   PRINT1
-*
+* Yes, close file
        BL   @CLOSFL
+       JEQ  PRTERR
+* No Error (move to R0 later)
+       CLR  R3
+PRTRT
 * If original mode was not window mode,
 * wrap all paragraphs in the original mode
        MOV  *R10+,@WINMOD
        JEQ  PRINT5
        BL   @WRAPDC
 PRINT5
-* No Error
-       CLR  R0
 *
        LIMI 2
+* Restore error/non-error to R0
+       MOV  R3,R0
 *
        MOV  *R10+,R11
        RT
+*
+* Report Printing error
+PRTERR BL   @DSPERR
+       MOV  R0,R3
+       JMP  PRTRT
 
 *
 * Open file
@@ -498,13 +520,14 @@ OPENFL
        MOVB R2,@VDPWD
 * Store pointer name length
        MOV  @LNGADR,@PNTR
+* Remove element from stack early
+* so EQ status bit is still set after returning from this method.
+       MOV  *R10+,R11
 * Open file
        SB   @STATUS,@STATUS
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
 *
-       MOV  *R10+,R11
        RT
 
 *
@@ -517,13 +540,14 @@ CLOSFL
        LI   R0,PAB
        BL   @VDPADR
        MOVB @CLOSE,@VDPWD
+* Remove element from stack early
+* so EQ status bit is still set after returning from this method.
+       MOV  *R10+,R11
 * Close the file
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       BL   @CHKERR
 *
-       MOV  *R10+,R11
        RT
 
 *
@@ -568,11 +592,18 @@ MSGNUM DATA MSG0,MSG1,MSG2,MSG3
        DATA MSG4,MSG5,MSG6,MSG7
 ERRSTS DATA >2000
 *
-* Report errors if any
+* Write an already determined error
 *
-CHKERR
-       JNE  NOERR
-* An error occurred
+WRTERR 
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R2,*R10
+       JMP  WERR
+*
+* Report errors on screen
+*
+DSPERR
        DECT R10
        MOV  R11,*R10
        DECT R10
@@ -588,18 +619,16 @@ CHKERR
        AI   R2,MSGNUM
        MOV  *R2,R2
 * Write messsage
-WRTERR CLR  R0
+WERR   CLR  R0
        BL   @VDPADR
        MOV  R2,R0
        BL   @VDPINV
 * Clear error
        SB   @STATUS,@STATUS
-* Return to caller. Skip rest of print routine.
-       LIMI 2
 * Record Error
        SETO R0
 * Exit fast.
 * Restore stack trace to position when we entered the IO routine.
-       MOV  R12,R10
+       MOV  *R10+,R2
        MOV  *R10+,R11
-NOERR  RT
+       RT
