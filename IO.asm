@@ -74,7 +74,7 @@ READ   BYTE >02
 WRITE  BYTE >03
 *
 CR     BYTE 13
-EOD    BYTE 4                               * End of document
+ETX    BYTE 3                               * End of document
 YES    TEXT 'Y'
 NO     TEXT 'N'
 *
@@ -195,8 +195,8 @@ SAVE3  INC  R3
        JMP  SAVBYT
 * Document complete
 SAVEDN
-* Write EOD character
-       MOVB @EOD,@VDPWD
+* Write ETX character
+       MOVB @ETX,@VDPWD
 * Write record
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
@@ -276,7 +276,7 @@ LOADBY
        CB   R5,@CR
        JEQ  NEWPAR
 * Reached end of document?
-       CB   R5,@EOD
+       CB   R5,@ETX
        JEQ  LOADDN
 * No, grow the paragraph's allocated block, if necessary.
 * Let R0 be the address of the paragraph.
