@@ -583,17 +583,6 @@ CHKERR
        BL   @VDPRAD
        MOVB @VDPRD,R2
        SRL  R2,13
-*       JNE  CHKE2
-* If PAB status is 0, check COND bit in status byte
-*       MOVB @STATUS,R0
-*       COC  @ERRSTS,R0
-*       JEQ  CHKE2
-* No error occurred
-*       MOV  *R10+,R2
-*       MOV  *R10+,R11
-*       RT
-CHKE2
-* Error occurred
 * Let R2 = address of error messsage
        SLA  R2,1
        AI   R2,MSGNUM
