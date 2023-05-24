@@ -253,7 +253,7 @@ DRWCR9 MOV  *R10+,R11
 * Invert Character
 *
 INVCHR
-       DEC  R10
+       DECT R10
        MOV  R11,*R10
 *
        LI   R0,PATLOW

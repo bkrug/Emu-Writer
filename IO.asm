@@ -339,14 +339,13 @@ WRGVER LI   R2,MSGVER
 *
 PRINT  DECT R10
        MOV  R11,*R10
-       DECT R10
-       MOV  @WINMOD,*R10
 * Save stack restore point
        MOV  R10,R12
 * Turn off interrupts
        LIMI 0
 * If not already in Window Mode, wrap all paragraphs
-       MOV  *R10,*R10
+       DECT R10
+       MOV  @WINMOD,*R10
        JEQ  PRINT0
        CLR  @WINMOD
        BL   @WRAPDC
@@ -572,6 +571,8 @@ ERRSTS DATA >2000
 * Report errors if any
 *
 CHKERR
+       JNE  NOERR
+* An error occurred
        DECT R10
        MOV  R11,*R10
        DECT R10
@@ -582,15 +583,15 @@ CHKERR
        BL   @VDPRAD
        MOVB @VDPRD,R2
        SRL  R2,13
-       JNE  CHKE2
+*       JNE  CHKE2
 * If PAB status is 0, check COND bit in status byte
-       MOVB @STATUS,R0
-       COC  @ERRSTS,R0
-       JEQ  CHKE2
+*       MOVB @STATUS,R0
+*       COC  @ERRSTS,R0
+*       JEQ  CHKE2
 * No error occurred
-       MOV  *R10+,R2
-       MOV  *R10+,R11
-       RT
+*       MOV  *R10+,R2
+*       MOV  *R10+,R11
+*       RT
 CHKE2
 * Error occurred
 * Let R2 = address of error messsage
@@ -612,4 +613,4 @@ WRTERR CLR  R0
 * Restore stack trace to position when we entered the IO routine.
        MOV  R12,R10
        MOV  *R10+,R11
-       RT
+NOERR  RT
