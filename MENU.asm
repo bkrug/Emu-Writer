@@ -37,7 +37,7 @@ TXTTTL DATA TXTTT1
        BYTE 0
        BYTE 0
        BYTE 0
-       TEXT '          Released Anyary 2023'
+       TEXT '           Released June 2023'
        BYTE 0
        TEXT '    Press ENTER or SPACE to continue'
        BYTE 0
