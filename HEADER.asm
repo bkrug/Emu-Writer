@@ -2,10 +2,15 @@
 *
        REF  VDPADR
        REF  VDPINV,VDPSPI
-       REF  STSWIN
+       REF  STSWIN,ERRMEM
        REF  SCRNWD
 
 ADJHDR
+       LI   R2,MEMFUL
+       COC  @ERRMEM,R0
+       JEQ  WRTHDR
+*
+       LI   R2,TEXT1
        COC  @STSWIN,R0
        JEQ  WRTHDR
        RT
@@ -24,7 +29,7 @@ WRTHDR
 *
        CLR  R0
        BL   @VDPADR
-       LI   R0,TEXT1
+       MOV  R2,R0
        BL   @VDPINV
 *
        MOV  *R10+,R0
@@ -32,5 +37,7 @@ WRTHDR
        RT
 
 TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
+       BYTE 0
+MEMFUL TEXT 'Memory Full'
        BYTE 0
        EVEN

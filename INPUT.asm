@@ -278,7 +278,7 @@ ENTR2  CLR  @CHRPAX
 * is no remaining buffer space.
 * Do not reprocess the key that cause the overflow.
 RTERR  MOV  @KEYRD,@KEYWRT
-       SOC  @ERRMEM,@2(13)
+       SOC  @ERRMEM,*R13
        RTWP
 
 *
