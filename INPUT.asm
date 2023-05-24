@@ -345,9 +345,9 @@ DELC2  MOV  @LINLST,R9
        BLWP @BUFGRW
        CI   R0,>FFFF
        JEQ  RTERR
-* Let R3 = address of new paragraph
+* Let R3 = (possibly new) address of first paragraph
        MOV  R0,R3
-* Copy bytes from second old paragraph
+* Copy bytes from second paragraph
        MOV  R4,R0
        C    *R0+,*R0+
        MOV  R3,R1

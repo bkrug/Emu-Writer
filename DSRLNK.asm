@@ -3,7 +3,6 @@
        REF  DSRLWS
 
 * TODO: Figure out how much of this is constants and how much is variables
-A2028  DATA A2676                  fstlow
 A2032  DATA >0000                  cru base for dsr
 A2034  DATA >0000                  dsr address   "
 A2036  DATA >0000                  name size     "
@@ -15,10 +14,9 @@ A209A  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 A20FC  DATA >2000
 A20FE  TEXT '.'
 A20FF  BYTE >AA
-A2676  BSS  6        K-P            ?   not loaded
        EVEN
 
-* This programs "local" version of DSRLNK
+* This program's "local" version of DSRLNK
 DSRLCL
 A2120  DATA A209A,A22B2            dsrlnk wp,pc
 *                                  dsrlnk wp A209A
