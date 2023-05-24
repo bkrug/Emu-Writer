@@ -130,7 +130,7 @@ SAVE   DECT R10
 * Open File
        LI   R2,SDATA
        BL   @OPENFL
-       JEQ  SAVERR
+       JEQ  SLERR
 * Change I/O op-code to write
        LI   R0,PAB
        BL   @VDPADR
@@ -186,7 +186,7 @@ SAVE3  INC  R3
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       JEQ  SAVERR
+       JEQ  SLERR
 * Re-set VDP write position
        LI   R0,PABBUF
        BL   @VDPADR
@@ -202,10 +202,10 @@ SAVEDN
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       JEQ  SAVERR
+       JEQ  SLERR
 *
        BL   @CLOSFL
-       JEQ  SAVERR
+       JEQ  SLERR
 * No Error
        CLR  R0
 *
@@ -214,7 +214,7 @@ SAVERT LIMI 2
        MOV  *R10+,R11
        RT
 *
-SAVERR BL   @DSPERR
+SLERR  BL   @DSPERR
        JMP  SAVERT
 
 *
@@ -231,7 +231,7 @@ LOAD   DECT R10
 * Open File
        LI   R2,LDATA
        BL   @OPENFL
-       JEQ  LODERR
+       JEQ  SLERR
 * Change I/O op-code to read
        LI   R0,PAB
        BL   @VDPADR
@@ -240,7 +240,7 @@ LOAD   DECT R10
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       JEQ  LODERR
+       JEQ  SLERR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPRAD
@@ -270,7 +270,7 @@ LOADR
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       JEQ  LODERR
+       JEQ  SLERR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPRAD
@@ -320,7 +320,7 @@ LOAD1
        JMP  LOADR
 * Reached End of Document
 LOADDN BL   @CLOSFL
-       JEQ  LODERR
+       JEQ  SLERR
 * Wrap all paragraphs
        BL   @WRAPDC
 * No Error
@@ -330,9 +330,6 @@ LOADRT LIMI 2
 *
        MOV  *R10+,R11
        RT
-*
-LODERR BL   @DSPERR
-       JMP  LOADRT
 *
 * File Header Missing
 *
@@ -597,8 +594,6 @@ ERRSTS DATA >2000
 WRTERR 
        DECT R10
        MOV  R11,*R10
-       DECT R10
-       MOV  R2,*R10
        JMP  WERR
 *
 * Report errors on screen
@@ -606,8 +601,6 @@ WRTERR
 DSPERR
        DECT R10
        MOV  R11,*R10
-       DECT R10
-       MOV  R2,*R10
 * Read status from VDP RAM
 * Let R2 = error number in range 0-7
        LI   R0,PAB+1
@@ -629,6 +622,5 @@ WERR   CLR  R0
        SETO R0
 * Exit fast.
 * Restore stack trace to position when we entered the IO routine.
-       MOV  *R10+,R2
        MOV  *R10+,R11
        RT
