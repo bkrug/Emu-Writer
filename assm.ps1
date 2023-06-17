@@ -20,10 +20,10 @@ xas99.py -l `
     TESTFRAM.obj.temp `
     ACTTST.obj.temp `
     ACT.obj.temp `
-    MEMBUF.obj.temp `
+    MEMBUF.noheader.obj `
     VAR.obj.temp `
     CONST.obj.temp `
-    ARRAY.obj.temp `
+    ARRAY.noheader.obj `
     -o ACTRUN.obj
 
 xas99.py -l `
@@ -48,10 +48,10 @@ xas99.py -l `
     INPTTST.obj.temp `
     TESTUTIL.obj.temp `
     INPUT.obj.temp `
-    MEMBUF.obj.temp `
+    MEMBUF.noheader.obj `
     VAR.obj.temp `
     CONST.obj.temp `
-    ARRAY.obj.temp `
+    ARRAY.noheader.obj `
     WRAP.obj.temp `
     ACT.obj.temp `
     -o INPTRUN.obj
@@ -76,10 +76,10 @@ xas99.py -l `
     TESTFRAM.obj.temp `
     WRAPTST.obj.temp `
     WRAP.obj.temp `
-    MEMBUF.obj.temp `
+    MEMBUF.noheader.obj `
     VAR.obj.temp `
     CONST.obj.temp `
-    ARRAY.obj.temp `
+    ARRAY.noheader.obj `
     -o WRAPRUN.obj
 
 write-host 'Linking Key Buffer Test Program'
@@ -95,8 +95,8 @@ write-host 'Linking Main Program'
 xas99.py -i -a ">2000" -l `
     MAIN.obj.temp `
     CONST.obj.temp `
-    MEMBUF.obj.temp `
-    ARRAY.obj.temp `
+    MEMBUF.noheader.obj `
+    ARRAY.noheader.obj `
     INPUT.obj.temp `
     WRAP.obj.temp `
     POSUPD.obj.temp `
@@ -125,7 +125,7 @@ xdm99.py $diskImage -a 'EMUWRITER' -f PROGRAM
 
 # Add TIFILES header to all object files
 $objectFiles = Get-ChildItem ".\" -Filter *.obj |
-               Where-Object { $_.Name -ne 'ARRAY.obj' -and $_.Name -ne 'MEMBUF.obj' }
+               Where-Object { $_.Name.EndsWith('.noheader.obj') -ne 1 }
 ForEach($objectFile in $objectFiles) {
     xdm99.py -T $objectFile.Name -f DIS/FIX80 -o $objectFile.Name
 }

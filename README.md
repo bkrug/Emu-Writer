@@ -38,3 +38,10 @@ EMU-WRITER -- Be a little late to the party.
 EMU-WRITER -- WYSIWhaaaaaat?
 
 EMU-WRITER -- You didn't think you needed it, but now you know for sure.
+
+### TODO
+
+* Consider adding a defrag operation that runs every 64/60s seconds.
+* Move more variables to the scratch PAD.
+* Identify code in MAIN.asm that can be moved to the physical end of the program and eventually overwritten.
+* Move the variables in DSRLNK.asm to VAR.asm
