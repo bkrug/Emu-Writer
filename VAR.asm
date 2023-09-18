@@ -11,6 +11,7 @@
        DEF  LOOKWS,ARRYWS
        DEF  WRAPWS
        DEF  INPTWS,POSUWS,DISPWS
+       DEF  A208C
        DEF  DSRLWS,MAINWS
        DEF  STACK
 *
@@ -45,6 +46,7 @@
 *
        TEXT 'WORKSPCE'
 MAINWS EQU  >8300
+A208C  BSS  14                     dsr name buffer - needs to be direclty in front of DSRLNK's workspace
 LOOKWS
 DSRLWS
 ARRYWS BSS  >10

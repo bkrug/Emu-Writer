@@ -1,5 +1,5 @@
        DEF  DSRLCL
-* TODO: replace A209A with DSRLWS
+       REF  A208C
        REF  DSRLWS
        REF  VDPRAD                 Ref from VDP
 
@@ -13,15 +13,13 @@
 * TODO: Move more of the VAR section to the scratch PAD.
 *
 
-* TODO: Figure out how much of this is constants and how much is variables
+* TODO: Move these, they are variables
 A2032  DATA >0000                  cru base for dsr
 A2034  DATA >0000                  dsr address   "
 A2036  DATA >0000                  name size     "
 A2038  DATA >0000                  e o name ptr  "
 A203A  DATA >0000                  counts        "
-A208C  DATA 0,0,0,0                dsr name buffer
-A2094  DATA 0,0,0                  workspaces
-A209A  DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+* TODO: confirm that these are constants
 A20FC  DATA >2000
 A20FE  TEXT '.'
 A20FF  BYTE >AA
@@ -29,8 +27,8 @@ A20FF  BYTE >AA
 
 * This program's "local" version of DSRLNK
 DSRLCL
-A2120  DATA A209A,A22B2            dsrlnk wp,pc
-*                                  dsrlnk wp A209A
+A2120  DATA DSRLWS,A22B2           dsrlnk wp,pc
+*                                  dsrlnk wp DSRLWS
 A22B2  MOV  *14+,5                 ======
        SZCB @A20FC,15              >20 eq=0
        MOV  @>8356,0
@@ -78,7 +76,9 @@ A2316  AI   12,>0100
        LI   2,>4000
        CB   *2,@A20FF              >AA = header
        JNE  A2310                  no: next card
-       A    @A209A+10,2            old r5: offset
+       LI   R0,DSRLWS
+       AI   R0,10
+       A    *R0,2                  old r5: offset
        JMP  A2340
 A233A  MOV  @>83D2,2               next sub
        SBO  0                      card on
@@ -105,7 +105,7 @@ A2364  INC  1                      same name
        JMP  A233A                  skip or next
 *PA
        SBZ  0                      card off
-       LWPI A209A
+       LWPI DSRLWS
        MOV  9,0
 *       BLWP @VSBR                  read pab status
        BL   @VDPRAD
@@ -113,7 +113,7 @@ A2364  INC  1                      same name
        SRL  1,13
        JNE  A238E                  err
        RTWP
-A2388  LWPI A209A                  errors
+A2388  LWPI DSRLWS                  errors
 A238C  CLR  1                      code 0
 A238E  SWPB 1
        MOVB 1,*13                  code in r0
