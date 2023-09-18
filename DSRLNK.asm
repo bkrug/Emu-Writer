@@ -1,6 +1,10 @@
        DEF  DSRLCL
 * TODO: replace A209A with DSRLWS
        REF  DSRLWS
+       REF  VDPRAD                 Ref from VDP
+
+       COPY 'CPUADR.asm'
+
 *
 * As far as I can tell,
 * This code uses Scratch PAD address >8354-8357
@@ -32,7 +36,9 @@ A22B2  MOV  *14+,5                 ======
        MOV  @>8356,0
        MOV  0,9
        AI   9,-8                   pab status
-       BLWP @A2114                 vsbr: read size
+*       BLWP @VSBR                  vsbr: read size
+       BL   @VDPRAD
+       MOVB @VDPRD,1
        MOVB 1,3
        SRL  3,8
        SETO 4
@@ -41,7 +47,9 @@ A22D0  INC  0
        INC  4
        C    4,3
        JEQ  A22E4                  full size
-       BLWP @A2114                 vsbr
+*       BLWP @VSBR                 vsbr
+       BL   @VDPRAD
+       MOVB @VDPRD,1
        MOVB 1,*2+                  copy 1 char
        CB   1,@A20FE               is it .
        JNE  A22D0
@@ -99,7 +107,9 @@ A2364  INC  1                      same name
        SBZ  0                      card off
        LWPI A209A
        MOV  9,0
-       BLWP @A2114                 read pab status
+*       BLWP @VSBR                  read pab status
+       BL   @VDPRAD
+       MOVB @VDPRD,1       
        SRL  1,13
        JNE  A238E                  err
        RTWP
@@ -109,20 +119,3 @@ A238E  SWPB 1
        MOVB 1,*13                  code in r0
        SOCB @A20FC,15              eq=1
        RTWP
-
-*
-* VSBR
-*
-A2114  DATA A2094,A220E            vsbr
-A220E  BL   @A2240                 ====
-       MOVB @>8800,@>0002(13)
-       RTWP
-
-A2240  CLR  1                      vdp read
-A2242  MOV  *13,2                  --------
-       MOVB @A2094+5,@>8C02
-       SOC  1,2
-       MOVB 2,@>8C02
-       MOV  @>0002(13),1           fetch old r1,r2
-       MOV  @>0004(13),2
-       B    *11
