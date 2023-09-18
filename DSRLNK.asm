@@ -1,5 +1,11 @@
        DEF  DSRLCL
-       REF  A208C
+*
+       REF  A2032                  cru base for dsr
+       REF  A2034                  dsr address   "
+       REF  A2036                  name size     "
+       REF  A2038                  e o name ptr  "
+       REF  A203A                  counts        "
+       REF  A208C                  dsr name buffer
        REF  DSRLWS
        REF  VDPRAD                 Ref from VDP
 
@@ -10,15 +16,8 @@
 * This code uses Scratch PAD address >8354-8357
 * and areas above >83C0 which we already know
 * belong to the Interrpreter and GPL workspaces.
-* TODO: Move more of the VAR section to the scratch PAD.
 *
 
-* TODO: Move these, they are variables
-A2032  DATA >0000                  cru base for dsr
-A2034  DATA >0000                  dsr address   "
-A2036  DATA >0000                  name size     "
-A2038  DATA >0000                  e o name ptr  "
-A203A  DATA >0000                  counts        "
 * TODO: confirm that these are constants
 A20FC  DATA >2000
 A20FE  TEXT '.'

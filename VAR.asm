@@ -11,8 +11,7 @@
        DEF  LOOKWS,ARRYWS
        DEF  WRAPWS
        DEF  INPTWS,POSUWS,DISPWS
-       DEF  A208C
-       DEF  DSRLWS,MAINWS
+       DEF  MAINWS
        DEF  STACK
 *
        DEF  VARBEG,VAREND
@@ -22,6 +21,14 @@
        DEF  LINLST,FMTLST,MGNLST
 * MAIN.TXT
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
+* DSRLNK.asm
+       DEF  A2032                  cru base for dsr
+       DEF  A2034                  dsr address   "
+       DEF  A2036                  name size     "
+       DEF  A2038                  e o name ptr  "
+       DEF  A203A                  counts        "
+       DEF  A208C                  dsr name buffer
+       DEF  DSRLWS
 * WRAP.TXT
        DEF  LNWDT1,LNWDTH,WINMOD
 * INPUT.TXT
@@ -46,9 +53,7 @@
 *
        TEXT 'WORKSPCE'
 MAINWS EQU  >8300
-A208C  BSS  14                     dsr name buffer - needs to be direclty in front of DSRLNK's workspace
 LOOKWS
-DSRLWS
 ARRYWS BSS  >10
 STRWS  BSS  >20
 WRAPWS BSS  >20
@@ -85,6 +90,15 @@ CUROLD BSS  2
 CURMOD BSS  2
 CURRPL BSS  1
        EVEN
+
+* DSRLNK.asm
+A2032  BSS  2                  cru base for dsr
+A2034  BSS  2                  dsr address   "
+A2036  BSS  2                  name size     "
+A2038  BSS  2                  e o name ptr  "
+A203A  BSS  2                  counts        "
+A208C  BSS  14                 dsr name buffer - needs to be direclty in front of DSRLNK's workspace
+DSRLWS BSS  >20
 
 * WRAP.TXT
 * Width of first paragraph line
