@@ -1,6 +1,8 @@
        DEF  RUNTST
 * Mocks
        DEF  VDPADR,VDPWRT
+       DEF  MNUHK
+       DEF  MNUINT,PRINT
 *
        REF  INPUT
 
@@ -1621,6 +1623,9 @@ PSCCSM TEXT 'Test .... succeeded.'
 PSCCSE
 
 ******* MOCKS **************
+MNUHK
+MNUINT
+PRINT
 * These VDP routines should do nothing
 VDPADR
 VDPWRT RT
