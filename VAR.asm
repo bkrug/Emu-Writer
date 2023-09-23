@@ -166,7 +166,7 @@ CURMNU BSS  2
 FLDVAL BSS  80
 FLDVE
 VAREND
-       TEXT 'ENDOFPROG'
+       TEXT 'ENDOFPRG'
 
 *
 * Buffer for text
