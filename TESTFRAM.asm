@@ -3,12 +3,12 @@
 * Creates HEX value as text string
        DEF  MAKETX
 * Prints text at screen bottom
-	   DEF  PRINTL
+       DEF  PRINTL
 *******
 * Assert block contents are equal
-	   DEF  ABLCK
+       DEF  ABLCK
 * Assert Ones Corresponding, Zeros Corresponding
-	   DEF  AOC,AZC
+       DEF  AOC,AZC
 * Assert Words Equal, Words Not Equal
        DEF  AEQ,ANEQ
 * Assert Word Logical Low
