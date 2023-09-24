@@ -6,7 +6,7 @@
 * Workspace
        REF  WRAPWS
 * Constants
-       REF  SPACE,DASH,SIX
+       REF  SPACE,DASH
        REF  FMTLEN,MGNLEN
        REF  ERRMEM,STSPAR
        REF  SCRNWD

@@ -1,10 +1,12 @@
 DELKEY EQU  >03
 INSKEY EQU  >04
-CLRKEY EQU  >07                 * Isn't this really the erase key?
+CLRKEY EQU  >07                 * TODO: Isn't this really the erase key?
 BCKKEY EQU  >08
 FWDKEY EQU  >09
 UPPKEY EQU  >0B
 DWNKEY EQU  >0A
+LF     EQU  >0A
+CR     EQU  >0D
 ENTER  EQU  >0D
 ESCKEY EQU  >0F
 SPCBAR EQU  >20
