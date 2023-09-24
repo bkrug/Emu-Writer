@@ -121,6 +121,10 @@ PAR    DATA 0
        TEXT ''
 PAREND
 
+*
+* An interrupt routine to scan for keys
+* and increment the time for the cursor to flash
+*
 INTRPT
 * Decrease cursor time
        DEC   @CURTIM
