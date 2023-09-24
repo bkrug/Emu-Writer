@@ -5,7 +5,6 @@
        REF  TIMER,PREVKY
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
        REF  NOKEY
-       REF  USRISR
        REF  SCANRT
 
 * Keyboard device to be checked

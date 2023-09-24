@@ -1,16 +1,18 @@
        DEF  RUNTST
 *
        REF  VSBW,VMBW
-	REF  KEYDVC,KEYPRS,USRISR
+	REF  KEYDVC,KEYPRS
 	REF  NOKEY,PREVKY,TIMER
 	REF  KEYINT
 	REF  KEYSTR,KEYEND,KEYWRT,KEYRD
-	   
+
+       COPY 'CPUADR.asm'
+
 RUNTST
 * Define the buffer locations
        LI   R0,KEYSTR
        MOV  R0,@KEYWRT
-	   MOV  R0,@KEYRD
+       MOV  R0,@KEYRD
 * Define the interupt routine
        LI   R0,KEYINT
        MOV  R0,@USRISR

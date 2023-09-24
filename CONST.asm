@@ -1,6 +1,5 @@
        DEF  FMTLEN,MGNLEN
        DEF  FORTY,SCRNWD
-       DEF  USRISR
        DEF  STSTYP,STSENT,STSDCR
        DEF  STSPAR,STSWIN
        DEF  STSARW
@@ -25,9 +24,6 @@ MGNLEN
 * Number of bytes in each entry of the
 * format list.
 FMTLEN DATA 8
-* Address defining address of user-
-* defined service routine
-USRISR EQU  >83C4
 
 SCRNWD
 FORTY  DATA 40
