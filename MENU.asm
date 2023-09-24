@@ -1,6 +1,9 @@
        DEF  MNUHOM,MNUFL,MNUTTL,MNUHK
+*
        REF  FRMSAV,FRMLOD,FRMPRT,FRMNEW
        REF  FRMQIT
+*
+       REF  FRMMGN
 
        COPY 'EQUKEY.asm'
 
@@ -68,6 +71,8 @@ TXTHM  DATA TXTHM1
        BYTE 0
        TEXT 'File'
        BYTE 0
+       TEXT 'Margins'
+       BYTE 0
 *       TEXT 'paGe'
 *       BYTE 0
 *       TEXT 'pAragraph'
@@ -78,6 +83,10 @@ KEYHM  DATA KEYHM1
        TEXT 'F'
        BYTE NXTMNU
        DATA MNUFL
+*
+       TEXT 'M'
+       BYTE NXTMNU
+       DATA FRMMGN
 *
        BYTE ESCKEY
        BYTE NXTMNU          * When pressing escape key from home menu

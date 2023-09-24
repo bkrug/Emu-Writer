@@ -1,9 +1,10 @@
-       DEF  FRMSAV,FRMLOD,FRMPRT,FRMNEW
-       DEF  FRMQIT
+       DEF  FRMSAV,FRMLOD,FRMPRT,FRMNEW,FRMQIT
+       DEF  FRMMGN
 *
        REF  MNUFL
        REF  SAVE,LOAD,PRINT,MYBNEW
        REF  MYBQIT
+       REF  MNUHOM
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -183,3 +184,45 @@ FLDQT  DATA FLDQT1
        DATA 40+27           * Field position on screen
        DATA 1               * Length of field
 FLDQT1 EVEN
+
+*
+*
+*
+HOTKEY TEXT 'FCTN+9: Previous Menu'
+       BYTE 0
+       EVEN
+
+FRMMGN DATA TXTMG           * String List
+       DATA KEYMG           * Key List
+       DATA FLDMG           * Field List
+       DATA HOTKEY
+       TEXT 'MARGINS'
+       BYTE 0
+       EVEN
+
+TXTMG  DATA TXTMG1
+       BYTE 0
+       TEXT 'Left Margin'
+       BYTE 0
+       TEXT 'Right Margin'
+       BYTE 0
+TXTMG1 EVEN
+
+KEYMG  DATA KEYMG1
+*
+       BYTE ENTER
+       BYTE NXTRTN
+       DATA 0               * EDTMGN
+*
+       BYTE ESCKEY
+       BYTE NXTMNU
+       DATA MNUHOM
+KEYMG1
+
+FLDMG  DATA FLDMG1
+       DATA 40+13           * Field position on screen
+       DATA 3               * Length of field
+*
+       DATA 80+13           * Field position on screen
+       DATA 3               * Length of field
+FLDMG1 EVEN
