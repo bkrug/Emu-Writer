@@ -14,16 +14,20 @@
        REF  CURMNU,STACK
        REF  MNUTTL
        REF  WRTHDR
+       REF  IOSTRT,IOEND
 *
 
        COPY 'CPUADR.asm'
        COPY 'EQUVDPADR.asm'
 
-INIT
+*
 * Initialize Program
+*
+INIT
        LWPI MAINWS
        LI   R10,STACK
 *
+       BL   @STORCH
        BL   @INVCHR
        BL   @INTMEM
        BL   @INTDOC
@@ -122,4 +126,23 @@ NOQUIT BYTE >80
        TEXT 'ENDOFINIT'
        EVEN
 
+*
+* Store executable code in cache
+*
+STORCH
+       DECT R10
+       MOV  R11,*R10
+* Write code to VDP cache
+       LI   R0,>2000
+       BL   @VDPADR
+       LI   R1,IOSTRT
+       LI   R2,VDPWD
+STOR1
+       MOVB *R1+,*R2
+       CI   R1,IOEND
+       JL   STOR1
+*
+       MOV  *R10+,R11
+       RT
+       
        END

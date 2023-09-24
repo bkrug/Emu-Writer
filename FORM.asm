@@ -11,6 +11,19 @@ HKYFIL TEXT 'FCTN+9: File Menu'
        BYTE 0
 
 *
+* Cache Table
+*
+* Word 1: Address in VDP RAM to load from
+* Word 2: Address in loaded code in CPU to branch to
+*
+IO     EQU  >2000
+CCHPRT DATA IO,PRINT
+CCHLOD DATA IO,LOAD
+CCHSAV DATA IO,SAVE
+CCHNEW DATA IO,MYBNEW
+CCHQIT DATA IO,MYBQIT
+
+*
 * Save Form
 *
 FRMSAV DATA TXTSV           * String List
@@ -29,8 +42,8 @@ TXTSV1 EVEN
 KEYSV  DATA KEYSV1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA SAVE
+       BYTE NXTCCH
+       DATA CCHSAV
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -61,8 +74,8 @@ TXTLD1 EVEN
 KEYLD  DATA KEYLD1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA LOAD
+       BYTE NXTCCH
+       DATA CCHLOD
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -89,8 +102,8 @@ TXTPR1 EVEN
 KEYPR  DATA KEYPR1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA PRINT
+       BYTE NXTCCH
+       DATA CCHPRT
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -124,8 +137,8 @@ TXTNW1 EVEN
 KEYNW  DATA KEYNW1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA MYBNEW
+       BYTE NXTCCH
+       DATA CCHNEW
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -157,8 +170,8 @@ TXTQT1 EVEN
 KEYQT  DATA KEYQT1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA MYBQIT
+       BYTE NXTCCH
+       DATA CCHQIT
 *
        BYTE ESCKEY
        BYTE NXTMNU

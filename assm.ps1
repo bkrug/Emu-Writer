@@ -106,13 +106,13 @@ xas99.py -i -a ">2000" -l `
     LOOK.obj.temp `
     ACT.obj.temp `
     DSRLNK.obj.temp `
-    IO.obj.temp `
     MENU.obj.temp `
     MENULOGIC.obj.temp `
     FORM.obj.temp `
     HEADER.obj.temp `
     VAR.obj.temp `
     INIT.obj.temp `
+    IO.obj.temp `
     -o EMUWRITER
 
 Remove-Item *.obj.temp

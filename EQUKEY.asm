@@ -15,6 +15,8 @@ FCTN0  EQU  >BC
 NXTMNU EQU  0
 * If key pressed, go to routine
 NXTRTN EQU  2
+* If key pressed, load routine from cache and branch to it
+NXTCCH EQU  4
 
 * When Menu header contains 0 in the
 * field address, skip field logic.

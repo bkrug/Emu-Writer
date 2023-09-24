@@ -1,3 +1,4 @@
+       DEF  IOSTRT,IOEND
        DEF  SAVE,LOAD,PRINT,MYBNEW
        DEF  MYBQIT
 *
@@ -11,10 +12,14 @@
        REF  WRAP,INTDOC
        REF  CURMNU
 
-PAB    EQU  >480
-PABBUF EQU  >500
 *
        COPY 'CPUADR.asm'
+*
+IOSTRT
+       XORG LOADED
+*
+PAB    EQU  >480
+PABBUF EQU  >500
 *
 FIXED  EQU  >00
 VARIAB EQU  >10
@@ -617,3 +622,4 @@ WERR   CLR  R0
 * Restore stack trace to position when we entered the IO routine.
        MOV  *R10+,R11
        RT
+IOEND

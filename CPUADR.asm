@@ -1,3 +1,4 @@
+LOADED EQU  >3800        Address to load executable code from cache
 VDPWA  EQU  >8C02        VDP RAM write address
 VDPRD  EQU  >8800        VDP RAM read data
 VDPWD  EQU  >8C00        VDP RAM write data

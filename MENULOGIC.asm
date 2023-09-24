@@ -4,7 +4,7 @@
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
-       REF  VDPADR                        From VDP.asm
+       REF  VDPADR,VDPRAD                 From VDP.asm
        REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   From VDP.asm
        REF  VDPREA,VDPWRT                 From VDP.asm
        REF  STSWIN,STSTYP,STSARW
@@ -277,7 +277,7 @@ KEY9
 * Let R1 = parameter for handling key
 * Might be address of a menu, form, or external routine
        MOV  *R3,R1
-* Brand to routine for handling key
+* Branch to routine for handling key
        BL   *R0
 * If error occurred, stay in menu
        MOV  @CURMNU,R2
@@ -353,6 +353,7 @@ DEL2
 *
 NXTLST DATA GOMNU
        DATA GORTN
+       DATA GOCCH
 
 *
 * Switch to meu specified by a particular key
@@ -377,3 +378,29 @@ GORTN
 *
 GORTN1 MOV  *R10+,R11
        RT
+
+*
+* Load a routine from cache and branch to it
+GOCCH
+       DECT R10
+       MOV  R11,*R10
+* Let R4 = cache object to load/branch to
+       MOV  R1,R4
+* Read code from VDP cache
+       MOV  *R4,R0
+       BL   @VDPRAD
+       LI   R1,VDPRD
+       LI   R2,LOADED
+       LI   R3,>800
+GOCCH2
+       MOVB *R1,*R2+
+       DEC  R3
+       JNE  GOCCH2
+* Branch to address in CPU RAM
+       MOV  @2(R4),R1
+       BL   @GORTN
+*
+GOCCH9 MOV  *R10+,R11
+       RT
+
+       END
