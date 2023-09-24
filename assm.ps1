@@ -123,6 +123,7 @@ write-host 'Creating disk image'
 $diskImage = 'EmuWriter.dsk'
 xdm99.py -X sssd $diskImage
 xdm99.py $diskImage -a 'EMUWRITER' -f PROGRAM
+xdm99.py $diskImage -a 'EMUWRITES' -f PROGRAM
 
 # Add TIFILES header to all object files
 $objectFiles = Get-ChildItem ".\" -Filter *.obj |
@@ -133,3 +134,4 @@ ForEach($objectFile in $objectFiles) {
 
 # Add TIFILES header to EMUWRITER
 xdm99.py -T 'EMUWRITER' -f PROGRAM -o EMUWRITER
+xdm99.py -T 'EMUWRITES' -f PROGRAM -o EMUWRITES

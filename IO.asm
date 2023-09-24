@@ -15,6 +15,7 @@
 *
        COPY 'CPUADR.asm'
 *
+       AORG >A000
 IOSTRT
        XORG LOADED
 *

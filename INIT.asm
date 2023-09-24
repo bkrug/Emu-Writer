@@ -137,10 +137,11 @@ STORCH
        BL   @VDPADR
        LI   R1,IOSTRT
        LI   R2,VDPWD
+       LI   R3,>800
 STOR1
        MOVB *R1+,*R2
-       CI   R1,IOEND
-       JL   STOR1
+       DEC  R3
+       JNE  STOR1
 *
        MOV  *R10+,R11
        RT
