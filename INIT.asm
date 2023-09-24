@@ -133,7 +133,7 @@ STORCH
        DECT R10
        MOV  R11,*R10
 * Write code to VDP cache
-       LI   R0,>2000
+       LI   R0,VDPCCH
        BL   @VDPADR
        LI   R1,IOSTRT
        LI   R2,VDPWD

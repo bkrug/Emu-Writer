@@ -7,3 +7,5 @@ PNTR   EQU  >8356        PAB length pointer address
 STATUS EQU  >837C
 INTSTP EQU  >83C2        First four bits enable/disable interrupt steps
 REG1CP EQU  >83D4        Address holding a copy of VDP Register 1
+
+VDPCCH EQU  >1000        VDP address for storing executable code

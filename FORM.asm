@@ -5,6 +5,7 @@
        REF  SAVE,LOAD,PRINT,MYBNEW
        REF  MYBQIT
 
+       COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
 HKYFIL TEXT 'FCTN+9: File Menu'
@@ -16,7 +17,7 @@ HKYFIL TEXT 'FCTN+9: File Menu'
 * Word 1: Address in VDP RAM to load from
 * Word 2: Address in loaded code in CPU to branch to
 *
-IO     EQU  >2000
+IO     EQU  VDPCCH
 CCHPRT DATA IO,PRINT
 CCHLOD DATA IO,LOAD
 CCHSAV DATA IO,SAVE
