@@ -53,16 +53,18 @@
 *
        TEXT 'WORKSPCE'
 MAINWS EQU  >8300
-LOOKWS
-ARRYWS BSS  >10
-STRWS  BSS  >20
+LOOKWS EQU  >8320
+ARRYWS EQU  >8320
+STRWS  EQU  >8330
 WRAPWS BSS  >20
 INPTWS
 POSUWS
 DISPWS BSS  >20
-       TEXT 'STACK '
-       BSS  >40
-STACK
+
+*
+* >40-byte stack (>8380-83BF)
+*
+STACK  EQU  >83C0
 
 *
 * Areas for changeable values
