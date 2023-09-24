@@ -1,49 +1,27 @@
-       DEF  START,DRWCUR,INTDOC,INTPAR
+       DEF  DRWCUR,INTDOC,INTPAR
+       DEF  MAIN,INTRPT,DRWCR2
 *
-       REF  VARBEG,VAREND
-       REF  KEYDVC,USRISR
+       REF  INIT
        REF  KEYINT
-       REF  KEYSTR,KEYEND,KEYWRT,KEYRD
-       REF  MAINWS
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
        REF  PARINX,CHRPAX
-       REF  INSTMD
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  LINLST,MGNLST,FMTLST
-       REF  VDPTXT,VDPSPC
        REF  VDPADR,VDPRAD,VDPWRT
-       REF  VDPRAD
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
-       REF  CURINS,CHRCUR,CURMOD,WINMOD
-       REF  CURMNU,STACK
-       REF  ENTMNU,MNUTTL
-       REF  WRTHDR,ADJHDR
+       REF  CHRCUR,CURMOD
+       REF  CURMNU
+       REF  ENTMNU
+       REF  ADJHDR
 *
 
        COPY 'CPUADR.asm'
        COPY 'EQUVDPADR.asm'
 
-START
-* Initialize Program
-       LWPI MAINWS
-       LI   R10,STACK
-*
-       BL   @INVCHR
-       BL   @INTMEM
-       BL   @INTDOC
-       BL   @INTKEY
-       BL   @VDPTXT
-       BL   @INTSCN
-       BL   @WRTHDR
-*
-       SETO @WINMOD
-       LI   R0,MNUTTL
-       MOV  R0,@CURMNU
-       MOVB @NOQUIT,@INTSTP
-       LIMI 2
+BEGIN  B    @INIT
 *
 * Main program loop while program runs
 *
@@ -83,15 +61,6 @@ MAIN3
        LIMI 2
 *
        JMP  MAIN
-
-*
-* Initialize Memory to zero
-*
-INTMEM LI   R0,VARBEG
-IMLP   CLR  *R0+
-       CI   R0,VAREND
-       JL   IMLP
-       RT
 
 *
 * Initialize Document values
@@ -152,53 +121,12 @@ PAR    DATA 0
        TEXT ''
 PAREND
 
-*
-* Initialize Key Scanning
-*
-INTKEY
-* Define the buffer locations
-       LI   R0,KEYSTR
-       MOV  R0,@KEYWRT
-       MOV  R0,@KEYRD
-* Define the interupt routine
-       LI   R0,INTRPT
-       MOV  R0,@USRISR
-* Specify whole keyboard
-       CLR  R0
-       MOVB R0,@KEYDVC
-*
-       RT
-
 INTRPT
 * Decrease cursor time
        DEC   @CURTIM
 * Call key scanning interupt
 * (which is responsible for return)
        B     @KEYINT
-       
-* 
-* Initialize screen
-*
-INTSCN DECT R10
-       MOV  R11,*R10
-* Clear screen
-       CLR  R0
-       BL   @VDPADR
-       LI   R1,24*40
-       BL   @VDPSPC
-* Define cursor pattern
-       LI   R0,>7F*8+>801
-       BL   @VDPADR
-       LI   R0,CURINS
-       LI   R1,7
-       BL   @VDPWRT
-* Set cursor to visible
-       SETO @CURMOD
-* Set position steps
-       BLWP @POSUPD
-* Draw cursor and return to caller
-       SOC  @STSTYP,R0
-       BL   @DRWCR2
 
 *
 * Draw the cursor on screen
@@ -248,37 +176,5 @@ DRWCR5 LI   R1,1
 *
 DRWCR9 MOV  *R10+,R11
        RT
-
-*
-* Invert Character
-*
-INVCHR
-       DECT R10
-       MOV  R11,*R10
-*
-       LI   R0,PATLOW
-       BL   @VDPRAD
-*
-       LI   R0,MEMBEG
-       INCT R0
-       LI   R1,>0400
-INVLP  MOVB @VDPRD,R2
-       INV  R2
-       MOVB R2,*R0+
-       DEC  R1
-       JNE  INVLP
-*
-       LI   R0,PATHGH
-       BL   @VDPADR
-       LI   R0,MEMBEG
-       INCT R0
-       LI   R1,>400
-       BL   @VDPWRT
-*
-       MOV  *R10+,R11
-       RT
-
-NOQUIT BYTE >80
-       EVEN
 
        END

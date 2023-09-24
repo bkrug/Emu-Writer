@@ -112,6 +112,7 @@ xas99.py -i -a ">2000" -l `
     FORM.obj.temp `
     HEADER.obj.temp `
     VAR.obj.temp `
+    INIT.obj.temp `
     -o EMUWRITER
 
 Remove-Item *.obj.temp
