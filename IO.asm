@@ -7,9 +7,9 @@
        REF  INTDOC,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
        REF  VDPSPC,VDPINV
-       REF  LINLST
-       REF  ARYADR,BUFGRW
-       REF  FLDVAL,WINMOD
+       REF  LINLST,MGNLST                         From VAR.asm
+       REF  FLDVAL,WINMOD                         "
+       REF  ARYADR,BUFGRW                         From ARRAY.asm
        REF  WRAP,INTDOC
        REF  CURMNU
 
@@ -384,10 +384,11 @@ LENP3  MOV  R5,R0
        CLR  R8
        S    *R1,R8
        A    *R4,R8
-PRINT3       
+PRINT3
+* Let R1 = left margin length
+       BL   @GETMGN
 * Increase record length by size of left margin
 * Truncate the record length if it is greater than 254
-       LI   R1,10
        A    R1,R8
        CI   R8,MAXPRT
        JLE  PRNT3B
@@ -453,6 +454,49 @@ PRINT5
 PRTERR BL   @DSPERR
        MOV  R0,R3
        JMP  PRTRT
+
+*
+* Get Left margin
+*
+* Input:
+*   R2 - index of paragraph
+* Output:
+*   R1 - length of margin
+*
+GETMGN DECT R10
+       MOV  R3,*R10
+       DECT R10
+       MOV  R4,*R10
+       DECT R10
+       MOV  R5,*R10
+* Let R3 = left margin
+* Let R4 = length of MGNLST
+* Let R5 = index in MGNLST
+       LI   R3,10
+       MOV  @MGNLST,R0
+       MOV  *R0,R4
+       CLR  R5
+* No, look at next element
+GM1    MOV  R5,R1
+       BLWP @ARYADR
+* If index out of range, return most recent margin
+       JEQ  GM2
+* Earlier or same paragraph?
+       C    *R1,R2
+       JH   GM2
+* Yes, save margin
+       MOVB @4(R1),R3
+       SRL  R3,8
+* Look at next MGNLST entry
+       INC  R5
+       JMP  GM1
+* Let R1 = left margin
+GM2    MOV  R3,R1
+*
+       MOV  *R10+,R5
+       MOV  *R10+,R4
+       MOV  *R10+,R3
+       RT
 
 *
 * Open file
