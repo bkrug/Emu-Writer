@@ -19,9 +19,6 @@ MGNSRT
 EDTMGN
        DECT R10
        MOV  R11,*R10
-* Debug code. Always inserting at index 0.
-       CLR  R2
-       JMP  EM2
 * Let R2 = index of MGNLST element
 * Let R3 = address of MGNLST element
 * Let R4 = element count
