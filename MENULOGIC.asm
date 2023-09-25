@@ -67,26 +67,10 @@ MNULP
 * Let R7 = Document Status
        CLR  R7
        SOC  @STSTYP,R7
-* Initialize Field Value
-       LI   R1,FLDVAL
-MNULP0 SB   *R1,*R1+
-       CI   R1,FLDVE
-       JL   MNULP0
-* Let R9 = address within first field
-* If no fields exist for this menu, set R9 to 0
-       CLR  R9
-       CLR  @CURSCN
-       MOV  @CURMNU,R2
-       MOV  @FIELDS(R2),R1
-       JEQ  MNULP1
-       LI   R9,FLDVAL
-* Set cursor position on screen
-       MOV  @SCRNWD,R0
-       SLA  R0,1
-       A    @2(R1),R0
-       MOV  R0,@CURSCN
+* Initialize form fields
+       BL   @INTFLD
 * Display new menu, and process keys until user leaves menu
-MNULP1 BL   @MNUDSP
+       BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
        JNE  MNULP
@@ -103,6 +87,9 @@ MNULP1 BL   @MNUDSP
        MOV  *R10+,R11
        RT
 
+*
+* Display text of menu
+*
 MNUDSP
        DECT R10
        MOV  R11,*R10
@@ -169,11 +156,9 @@ DSP1   BL   @VDPSTR
 *
 KEYWT  DECT R10
        MOV  R11,*R10
-*
-KEY1
 * Let R3 = address of key list (for navigtion)
 * Let R4 = end of key list
-       MOV  @MNUKEY(R2),R3
+KEY1   MOV  @MNUKEY(R2),R3
        MOV  *R3+,R4
 * Let R5 (high byte) = key pressed
        BL   @GETKEY
@@ -193,6 +178,7 @@ KEY2   CB   *R3,R5
 * Increment KEYRD so we see next key
 KEY8   BL   @INCKRD
        JMP  KEY1
+* Navigate within menu system based on element in key list
 KEY9   BL   @MNUNAV
 * Let R2 = address of new menu header
        MOV  @CURMNU,R2
@@ -204,8 +190,37 @@ KEY9   BL   @MNUNAV
        RT
 
 *
+* Initialize form fields
+* Let R9 = memory address within FLDVAL
+*
+INTFLD
+* Initialize Field Value
+       LI   R1,FLDVAL
+INITF1 SB   *R1,*R1+
+       CI   R1,FLDVE
+       JL   INITF1
+* Let R9 = memory address within FLDVAL
+* If no fields exist for this menu, set R9 to 0
+       CLR  R9
+       CLR  @CURSCN
+       MOV  @CURMNU,R2
+       MOV  @FIELDS(R2),R1
+       JEQ  INITF2
+       LI   R9,FLDVAL
+* Set cursor position on screen
+       MOV  @SCRNWD,R0
+       SLA  R0,1
+       A    @2(R1),R0
+       MOV  R0,@CURSCN
+*
+INITF2
+       RT
+
+*
 * Get Key Press
 *
+* Input:
+*   R7 - document status
 * Changed: R0,R7
 * Ouput: R5 (high byte)
 *
