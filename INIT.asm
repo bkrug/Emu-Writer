@@ -15,6 +15,8 @@
        REF  MNUTTL
        REF  WRTHDR
        REF  IOSTRT,IOEND
+       REF  FRSHST,FRSHED
+       REF  CACHES
 *
 
        COPY 'CPUADR.asm'
@@ -132,18 +134,36 @@ NOQUIT BYTE >80
 STORCH
        DECT R10
        MOV  R11,*R10
-* Write code to VDP cache
+* Initialize VDP write address
        LI   R0,VDPCCH
        BL   @VDPADR
-       LI   R1,IOSTRT
-       LI   R2,VDPWD
-       LI   R3,>800
-STOR1
-       MOVB *R1+,*R2
-       DEC  R3
-       JNE  STOR1
 *
+       LI   R4,TOCACH
+       LI   R5,CACHES
+       LI   R6,VDPCCH
+* Update VDP RAM address in CACHES for this particular cache
+* Later, we need to know where to load from.
+STOR1  MOV  *R5,R7
+STOR2  MOV  R6,*R5+
+       INCT R5
+       C    *R5,R7
+       JEQ  STOR2
+* Write code to VDP cache
+       MOV  *R4+,R1
+       LI   R2,VDPWD
+       MOV  *R4+,R3
+STOR3  MOVB *R1+,*R2
+       INC  R6
+       C    R1,R3
+       JL   STOR3
+* End of loop?
+       CI   R4,TOCEND
+       JL   STOR1
+* Yes
        MOV  *R10+,R11
        RT
+TOCACH DATA IOSTRT,IOEND
+       DATA FRSHST,FRSHED
+TOCEND
        
        END

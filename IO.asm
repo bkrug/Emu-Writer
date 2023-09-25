@@ -1,4 +1,5 @@
        DEF  IOSTRT,IOEND
+       DEF  FRSHST,FRSHED
        DEF  SAVE,LOAD,PRINT,MYBNEW
        DEF  MYBQIT
 *
@@ -81,8 +82,6 @@ WRITE  BYTE >03
 *
 CR     BYTE 13
 ETX    BYTE 3                               * End of document
-YES    TEXT 'Y'
-NO     TEXT 'N'
 *
 * This goes at the beginning of each Emu-Writer file
 * If the HDR does not match, this is not an Emu-Writer file
@@ -92,37 +91,6 @@ FLEHDR TEXT 'DocOfEmuWriter'
 FLEVER BYTE 1,1
 HDREND
        EVEN
-
-*
-* Quit
-*
-MYBQIT DECT R10
-       MOV  R11,*R10
-*
-       CB   @FLDVAL,@YES
-       JNE  CHKNO
-       BLWP @>0000
-*
-
-*
-* New Document
-*
-MYBNEW DECT R10
-       MOV  R11,*R10
-*
-       CB   @FLDVAL,@YES
-       JEQ  MYBNY
-*
-CHKNO  CB   @FLDVAL,@NO
-       JEQ  MYBNN
-*
-       SETO R0
-       JMP  MYBNRT
-*
-MYBNY  BL   @INTDOC
-MYBNN  CLR  R0
-MYBNRT MOV  *R10+,R11
-       RT
 
 *
 * Save
@@ -623,4 +591,50 @@ WERR   CLR  R0
 * Restore stack trace to position when we entered the IO routine.
        MOV  *R10+,R11
        RT
-IOEND
+
+IOEND  AORG
+
+*
+* Not really IO routines, but they are on the same menu.
+*
+
+FRSHST
+       XORG LOADED
+
+YES    TEXT 'Y'
+NO     TEXT 'N'
+       EVEN
+
+*
+* Quit
+*
+MYBQIT DECT R10
+       MOV  R11,*R10
+*
+       CB   @FLDVAL,@YES
+       JNE  CHKNO
+       LWPI 0
+       BLWP @>0000
+*
+
+*
+* New Document
+*
+MYBNEW DECT R10
+       MOV  R11,*R10
+*
+       CB   @FLDVAL,@YES
+       JEQ  MYBNY
+*
+CHKNO  CB   @FLDVAL,@NO
+       JEQ  MYBNN
+*
+       SETO R0
+       JMP  MYBNRT
+*
+MYBNY  BL   @INTDOC
+MYBNN  CLR  R0
+MYBNRT MOV  *R10+,R11
+       RT
+
+FRSHED AORG

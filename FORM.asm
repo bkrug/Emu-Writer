@@ -1,5 +1,6 @@
        DEF  FRMSAV,FRMLOD,FRMPRT,FRMNEW,FRMQIT
        DEF  FRMMGN
+       DEF  CACHES
 *
        REF  MNUFL
        REF  SAVE,LOAD,PRINT,MYBNEW
@@ -11,6 +12,7 @@
 
 HKYFIL TEXT 'FCTN+9: File Menu'
        BYTE 0
+       EVEN
 
 *
 * Cache Table
@@ -18,12 +20,18 @@ HKYFIL TEXT 'FCTN+9: File Menu'
 * Word 1: Address in VDP RAM to load from
 * Word 2: Address in loaded code in CPU to branch to
 *
-IO     EQU  VDPCCH
-CCHPRT DATA IO,PRINT
-CCHLOD DATA IO,LOAD
-CCHSAV DATA IO,SAVE
-CCHNEW DATA IO,MYBNEW
-CCHQIT DATA IO,MYBQIT
+* At compile-time, Word #1 is incorrect,
+* but STORCH is supposed to fix it for us at startup.
+* For now each routine in the same cache needs to have
+* the same (meaningless) number.
+*
+CACHES
+CCHPRT DATA 0,PRINT
+CCHLOD DATA 0,LOAD
+CCHSAV DATA 0,SAVE
+CCHNEW DATA 1,MYBNEW
+CCHQIT DATA 1,MYBQIT
+       DATA -1
 
 *
 * Save Form
