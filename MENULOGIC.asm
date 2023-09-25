@@ -1,4 +1,4 @@
-       DEF  MNUINT,ENTMNU,LODMNU
+       DEF  MNUINT,ENTMNU
 *
        REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "
@@ -38,18 +38,6 @@ KEYTXT EQU  6
 MNUINT
 * Skip the most recently read key
        BL   @INCKRD
-* Load menus from VDP cache
-       LI   R0,CCHMHM
-       MOV  *R0,R0
-* Duplicate code of: BL   @LOADCH
-       BL   @VDPRAD
-       LI   R1,VDPRD
-       LI   R2,LOADED
-       LI   R3,>800
-MNUIN1
-       MOVB *R1,*R2+
-       DEC  R3
-       JNE  MNUIN1
 * Select Home menu as start menu
        LI   R0,MNUHOM
        MOV  R0,@CURMNU
@@ -74,14 +62,14 @@ ENTMNU
        MOV  R0,@CURRPL
        DECT R10
        MOV  R0,@CURSCN
-* Load menus from VDP cache
-       BL   @LODMNU
 *
        CLR  @CURMOD
 MNULP
 * Let R7 = Document Status
        CLR  R7
        SOC  @STSTYP,R7
+* Load menus from VDP cache
+       BL   @LODMNU
 * Initialize form fields
        BL   @INTFLD
 * Display new menu, and process keys until user leaves menu
@@ -594,33 +582,12 @@ NXTLST DATA GOMNU
 *
 * Switch to menu specified by a particular key
 GOMNU
-       DECT R10
-       MOV  R11,*R10
-* Load menus from VDP cache
-       BL   @LODMNU
-* Specify new menu
-       MOV  R1,@CURMNU
-* No error
-       CLR  R0
-*
-       MOV  *R10+,R11
-       RT
-
-*
-* Switch to form specified by a particular key
 GOFRM
-       DECT R10
-       MOV  R11,*R10
-* Load forms from VDP cache
-       LI   R0,CCHFSV
-       MOV  *R0,R0
-       BL   @LOADCH
 * Specify new menu
        MOV  R1,@CURMNU
 * No error
        CLR  R0
 *
-       MOV  *R10+,R11
        RT
 
 *
@@ -672,6 +639,10 @@ LOADCH
        MOV  R11,*R10
        DECT R10
        MOV  R1,*R10
+       DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R3,*R10
 *
        BL   @VDPRAD
        LI   R1,VDPRD
@@ -682,6 +653,8 @@ GOCCH2
        DEC  R3
        JNE  GOCCH2
 *
+       MOV  *R10+,R3
+       MOV  *R10+,R2
        MOV  *R10+,R1
        MOV  *R10+,R11
        RT

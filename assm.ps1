@@ -114,7 +114,6 @@ xas99.py -i -a ">2000" -l `
     IO.obj.temp `
     EDTMGN.obj.temp `
     MENU.obj.temp `
-    FORM.obj.temp `
     -o EMUWRITER
 
 Remove-Item *.obj.temp
