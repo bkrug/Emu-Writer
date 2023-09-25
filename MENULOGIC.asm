@@ -170,86 +170,22 @@ DSP1   BL   @VDPSTR
 KEYWT  DECT R10
        MOV  R11,*R10
 * Let R5 (high byte) = key pressed
-KEYWT1 BL   @GETKEY
-* make uppercase
-       CB   R5,@LOWA
-       JL   KEY1
-       CB   R5,@LOWZ
-       JH   KEY1
-       AI   R5,->2000   
-* compare to key list
+KEY0   BL   @GETKEY
+* Is the detected key in the key list?
+* Is it used to navigate within between menus?
 KEY1   CB   *R3,R5
        JEQ  KEY9
        AI   R3,4
        C    R3,R4
        JL   KEY1
-* Found key does not match list
-* Is there a field on this menu?
+* No, is there a field on this menu?
        MOV  @FIELDS(R2),R0
        JEQ  KEY8
 * Yes, type or move cursor in field
-       LIMI 0
-* Is key displayable?
-       CB   R5,@SPACE
-       JLE  KEY4
-       CB   R5,@ASCHGH
-       JH   KEY4
-* Yes, record keystroke
-       MOVB R5,*R9+
-* Set document status to "typed"
-       SOC  @STSTYP,R7
-*
-       JMP  KEY5
-* Not a typeable key
-KEY4
-       CB   R5,@DELRGT
-       JL   KEY7
-       CB   R5,@ARWRGT
-       JH   KEY7
-* Let R0 = address of arrow or delete key routine
-       MOVB R5,R0
-       SB   @DELRGT,R0
-       SRL  R0,8
-       SLA  R0,1
-       AI   R0,SPCKEY
-       MOV  *R0,R0
-       JEQ  KEY5
-* Handle arrow or delete key
-       BL   *R0
-KEY5
-* Let R3 = screen address of first field
-* Let R4 = length of field
-       MOV  @FIELDS(R2),R0
-       INCT R0
-       MOV  @SCRNWD,R3
-       SLA  R3,1
-       A    *R0+,R3
-       MOV  *R0,R4
-* Write field value to VDP
-       MOV  R3,R0
-       BL   @VDPADR
-       LI   R0,FLDVAL
-       MOV  R4,R1
-       BL   @VDPWRT
-* Don't let cursor go past edge of field
-       LI   R0,FLDVAL
-       A    R4,R0
-       DEC  R0
-       C    R9,R0
-       JL   KEY7
-       MOV  R0,R9
-KEY7
-* Let R1 = position within FLDVAL
-       LI   R1,FLDVAL
-       NEG  R1
-       A    R9,R1
-* Recalculate cursor position
-       MOV  R3,@CURSCN
-       A    R1,@CURSCN
+       BL   @TYPEKY
 * Increment KEYRD so we see next key
-       LIMI 2
 KEY8   BL   @INCKRD
-       JMP  KEYWT1
+       JMP  KEY0
 KEY9
 * Menu item key pressed, increment key buffer position
        BL   @INCKRD
@@ -267,7 +203,7 @@ KEY9
 * If error occurred, stay in menu
        MOV  @CURMNU,R2
        MOV  R0,R0
-       JNE  KEYWT1
+       JNE  KEY0
 *
        MOV  *R10+,R11
        RT
@@ -298,6 +234,82 @@ GETK1
 * Key press found
        MOV  @KEYRD,R5
        MOVB *R5,R5
+* make uppercase
+       CB   R5,@LOWA
+       JL   GETK2
+       CB   R5,@LOWZ
+       JH   GETK2
+       AI   R5,->2000
+GETK2
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Type key press in a form field
+*
+TYPEKY DECT R10
+       MOV  R11,*R10
+*
+       LIMI 0
+* Is key displayable?
+       CB   R5,@SPACE
+       JLE  TYPE1
+       CB   R5,@ASCHGH
+       JH   TYPE1
+* Yes, record keystroke
+       MOVB R5,*R9+
+* Set document status to "typed"
+       SOC  @STSTYP,R7
+*
+       JMP  TYPE2
+* Not a typeable key
+TYPE1
+       CB   R5,@DELRGT
+       JL   TYPE3
+       CB   R5,@ARWRGT
+       JH   TYPE3
+* Let R0 = address of arrow or delete key routine
+       MOVB R5,R0
+       SB   @DELRGT,R0
+       SRL  R0,8
+       SLA  R0,1
+       AI   R0,SPCKEY
+       MOV  *R0,R0
+       JEQ  TYPE2
+* Handle arrow or delete key
+       BL   *R0
+TYPE2
+* Let R3 = screen address of first field
+* Let R4 = length of field
+       MOV  @FIELDS(R2),R0
+       INCT R0
+       MOV  @SCRNWD,R3
+       SLA  R3,1
+       A    *R0+,R3
+       MOV  *R0,R4
+* Write field value to VDP
+       MOV  R3,R0
+       BL   @VDPADR
+       LI   R0,FLDVAL
+       MOV  R4,R1
+       BL   @VDPWRT
+* Don't let cursor go past edge of field
+       LI   R0,FLDVAL
+       A    R4,R0
+       DEC  R0
+       C    R9,R0
+       JL   TYPE3
+       MOV  R0,R9
+TYPE3
+* Let R1 = position within FLDVAL
+       LI   R1,FLDVAL
+       NEG  R1
+       A    R9,R1
+* Recalculate cursor position
+       MOV  R3,@CURSCN
+       A    R1,@CURSCN
+       LIMI 2
 *
        MOV  *R10+,R11
        RT
