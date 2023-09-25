@@ -170,7 +170,7 @@ DSP1   BL   @VDPSTR
 KEYWT  DECT R10
        MOV  R11,*R10
 *
-KEY0
+KEY1
 * Let R3 = address of key list (for navigtion)
 * Let R4 = end of key list
        MOV  @MNUKEY(R2),R3
@@ -180,11 +180,11 @@ KEY0
 * Let R3 = address within key list
 * Is the detected key in the key list?
 * Is it used to navigate within between menus?
-KEY1   CB   *R3,R5
+KEY2   CB   *R3,R5
        JEQ  KEY9
        AI   R3,4
        C    R3,R4
-       JL   KEY1
+       JL   KEY2
 * No, is there a field on this menu?
        MOV  @FIELDS(R2),R0
        JEQ  KEY8
@@ -192,12 +192,12 @@ KEY1   CB   *R3,R5
        BL   @TYPEKY
 * Increment KEYRD so we see next key
 KEY8   BL   @INCKRD
-       JMP  KEY0
+       JMP  KEY1
 KEY9   BL   @MNUNAV
 * If error occurred, stay in menu
        MOV  @CURMNU,R2
        MOV  R0,R0
-       JNE  KEY0
+       JNE  KEY1
 *
        MOV  *R10+,R11
        RT
