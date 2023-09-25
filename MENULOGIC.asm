@@ -161,9 +161,12 @@ DSP1   BL   @VDPSTR
 *
 KEYWT  DECT R10
        MOV  R11,*R10
+KEY1
+* Load Menu data from cache, just in case we are returning from an error.
+       BL   @LODMNU
 * Let R3 = address of key list (for navigtion)
 * Let R4 = end of key list
-KEY1   MOV  @MNUKEY(R2),R3
+       MOV  @MNUKEY(R2),R3
        MOV  *R3+,R4
 * Let R5 (high byte) = key pressed
        BL   @GETKEY
