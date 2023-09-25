@@ -31,7 +31,7 @@ TXTTTL DATA TXTTT1
        BYTE 0
        TEXT '               EmuWriter'
        BYTE 0
-       TEXT '                  v0.1'
+       TEXT '                  v0.2'
        BYTE 0
        TEXT '             ============='
        BYTE 0
@@ -40,7 +40,7 @@ TXTTTL DATA TXTTT1
        BYTE 0
        BYTE 0
        BYTE 0
-       TEXT '           Released June 2023'
+       TEXT '           Released Month 202x'
        BYTE 0
        TEXT '    Press ENTER or SPACE to continue'
        BYTE 0
