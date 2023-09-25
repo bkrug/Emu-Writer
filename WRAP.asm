@@ -50,7 +50,7 @@ MGN1   S    @MGNLEN,R8
        C    *R8,*R13
        JH   MGN1
 * We found current margin entry
-* Let R0 = index
+* Let R0 = indent
 * Let R1 = paragraph width
 MGN2   INCT R8
        MOV  *R8+,R0

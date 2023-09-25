@@ -2,10 +2,9 @@
        DEF  FRMMGN
        DEF  CACHES
 *
-       REF  MNUFL
-       REF  SAVE,LOAD,PRINT,MYBNEW
-       REF  MYBQIT
-       REF  MNUHOM
+       REF  MNUHOM,MNUFL                          From MENU.asm
+       REF  SAVE,LOAD,PRINT,MYBNEW,MYBQIT         From IO.asm
+       REF  EDTMGN                                From EDTMGN.asm
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -31,6 +30,7 @@ CCHLOD DATA 0,LOAD
 CCHSAV DATA 0,SAVE
 CCHNEW DATA 1,MYBNEW
 CCHQIT DATA 1,MYBQIT
+CCHMGN DATA 2,EDTMGN
        DATA -1
 
 *
@@ -219,8 +219,8 @@ TXTMG1 EVEN
 KEYMG  DATA KEYMG1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA 0               * EDTMGN
+       BYTE NXTCCH
+       DATA CCHMGN
 *
        BYTE ESCKEY
        BYTE NXTMNU

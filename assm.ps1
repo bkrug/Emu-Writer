@@ -113,6 +113,7 @@ xas99.py -i -a ">2000" -l `
     VAR.obj.temp `
     INIT.obj.temp `
     IO.obj.temp `
+    EDTMGN.obj.temp `
     -o EMUWRITER
 
 Remove-Item *.obj.temp
@@ -122,8 +123,11 @@ Remove-Item *.lst
 write-host 'Creating disk image'
 $diskImage = 'EmuWriter.dsk'
 xdm99.py -X sssd $diskImage
-xdm99.py $diskImage -a 'EMUWRITER' -f PROGRAM
-xdm99.py $diskImage -a 'EMUWRITES' -f PROGRAM
+$programFiles = Get-ChildItem ".\" -Filter EMUWRITE* |
+         Where-Object { $_.Name -ne 'EmuWriter.dsk' }
+ForEach($programFile in $programFiles) {
+    xdm99.py $diskImage -a $programFile.Name -f PROGRAM
+}
 
 # Add TIFILES header to all object files
 $objectFiles = Get-ChildItem ".\" -Filter *.obj |
@@ -133,5 +137,6 @@ ForEach($objectFile in $objectFiles) {
 }
 
 # Add TIFILES header to EMUWRITER
-xdm99.py -T 'EMUWRITER' -f PROGRAM -o EMUWRITER
-xdm99.py -T 'EMUWRITES' -f PROGRAM -o EMUWRITES
+ForEach($programFile in $programFiles) {
+    xdm99.py -T $programFile.Name -f PROGRAM -o $programFile.Name
+}

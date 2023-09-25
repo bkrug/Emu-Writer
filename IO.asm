@@ -517,6 +517,7 @@ CLOSFL
 *
 * Wrap all paragraphs
 *
+* TODO: This is duplicate code
 WRAPDC
        MOV  @LINLST,R2
        CLR  R0
