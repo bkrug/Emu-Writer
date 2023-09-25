@@ -153,6 +153,8 @@ DSP1   BL   @VDPSTR
 *
 * Input:
 *   R2 - Address of menu header 
+*   R8 - index of field in form
+*   R9 - memory address in FLDVAL
 *
 KEYWT  DECT R10
        MOV  R11,*R10
@@ -191,6 +193,7 @@ KEY9   BL   @MNUNAV
 
 *
 * Initialize form fields
+* Let R8 = index of field in form
 * Let R9 = memory address within FLDVAL
 *
 INTFLD
@@ -199,6 +202,8 @@ INTFLD
 INITF1 SB   *R1,*R1+
        CI   R1,FLDVE
        JL   INITF1
+* Let R8 = 0 for first field
+       CLR  R8
 * Let R9 = memory address within FLDVAL
 * If no fields exist for this menu, set R9 to 0
        CLR  R9
@@ -256,13 +261,16 @@ GETK2
 *
 * Input:
 *   R5 (high byte) - detected key press
-*   R7 - Document status?
-*   R9 - memory address within FLDVAL
-* Changed: R0, R1, R3, R4, R7
-* Output: R9
+*   R7 - Document status
+*   R8 - index of field in form
+*   R9 - memory address in FLDVAL
+* Changed: R0, R1
+* Output:
 *   R3 - screen address of first field
 *   R4 - Length of field
-*   R9 - memory address within FLDVAL
+*   R7 - Document status
+*   R8 - index of field in form
+*   R9 - memory address in FLDVAL
 *
 TYPEKY DECT R10
        MOV  R11,*R10
@@ -300,14 +308,11 @@ TYPE2
 * Let R4 = Length of current field
        BL   @DSPVAL
 * Don't let cursor go past edge of field
-* Let R0 = final position within the field
-* Let R9 = no greater than R0
-       LI   R0,FLDVAL
-       A    R4,R0
-       DEC  R0
-       C    R9,R0
+* Let R9 = no greater than R1
+       BL   @MINMAX
+       C    R9,R1
        JL   TYPE3
-       MOV  R0,R9
+       MOV  R1,R9
 TYPE3
 * Let R1 = index of cursor relative to FLDVAL
        LI   R1,FLDVAL
@@ -319,6 +324,39 @@ TYPE3
        LIMI 2
 *
        MOV  *R10+,R11
+       RT
+
+*
+* Get Minimum and Maximum cursor position in FLDVAL
+*
+* Input:
+*   R8 - index of current field
+* Output:
+*   R0 - Minimum
+*   R1 - Maximum
+MINMAX DECT R10
+       MOV  R3,*R10
+       DECT R10
+       MOV  R2,*R10
+* Let R3 = address pointing to length of some field
+       MOV  @FIELDS(R2),R3
+       AI   R3,4
+* Let R0 = first position within the field
+       CLR  R0
+       MOV  R8,R2
+       JEQ  MM2
+MM1    A    *R3,R0
+       AI   R3,4
+       DEC  R2
+       JNE  MM1
+MM2    AI   R0,FLDVAL
+* Let R1 = final position within the field
+       MOV  R0,R1
+       A    *R3,R1
+       DEC  R1
+*
+       MOV  *R10+,R2
+       MOV  *R10+,R3
        RT
 
 *
