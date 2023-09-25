@@ -194,11 +194,12 @@ KEY2   CB   *R3,R5
 KEY8   BL   @INCKRD
        JMP  KEY1
 KEY9   BL   @MNUNAV
-* If error occurred, stay in menu
+* Let R2 = address of new menu header
        MOV  @CURMNU,R2
+* If error occurred, stay in menu
        MOV  R0,R0
        JNE  KEY1
-*
+* else, done processing this menu
        MOV  *R10+,R11
        RT
 
@@ -238,9 +239,15 @@ GETK2
 *
 * Type key press in a form field
 *
-* Input: R5, R7, R9
-* Changed: R0, R1, R3, R4
+* Input:
+*   R5 (high byte) - detected key press
+*   R7 - Document status?
+*   R9 - memory address within FLDVAL
+* Changed: R0, R1, R3, R4, R7
 * Output: R9
+*   R3 - screen address of first field
+*   R4 - Length of field
+*   R9 - memory address within FLDVAL
 *
 TYPEKY DECT R10
        MOV  R11,*R10
@@ -274,6 +281,43 @@ TYPE1
 * Handle arrow or delete key
        BL   *R0
 TYPE2
+* Redisplay field values
+* Let R4 = Length of current field
+       BL   @DSPVAL
+* Don't let cursor go past edge of field
+* Let R0 = final position within the field
+* Let R9 = no greater than R0
+       LI   R0,FLDVAL
+       A    R4,R0
+       DEC  R0
+       C    R9,R0
+       JL   TYPE3
+       MOV  R0,R9
+TYPE3
+* Let R1 = index of cursor relative to FLDVAL
+       LI   R1,FLDVAL
+       NEG  R1
+       A    R9,R1
+* Recalculate cursor position
+       MOV  R3,@CURSCN
+       A    R1,@CURSCN
+       LIMI 2
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Redisplay field values
+*
+* Input: R2
+* Changed: R0, R1, R3
+* Output:
+*   R3 - screen address of first field
+*   R4 - Length of field
+*
+DSPVAL
+       DECT R10
+       MOV  R11,*R10
 * Let R3 = screen address of first field
 * Let R4 = length of field
        MOV  @FIELDS(R2),R0
@@ -288,22 +332,6 @@ TYPE2
        LI   R0,FLDVAL
        MOV  R4,R1
        BL   @VDPWRT
-* Don't let cursor go past edge of field
-       LI   R0,FLDVAL
-       A    R4,R0
-       DEC  R0
-       C    R9,R0
-       JL   TYPE3
-       MOV  R0,R9
-TYPE3
-* Let R1 = position within FLDVAL
-       LI   R1,FLDVAL
-       NEG  R1
-       A    R9,R1
-* Recalculate cursor position
-       MOV  R3,@CURSCN
-       A    R1,@CURSCN
-       LIMI 2
 *
        MOV  *R10+,R11
        RT
