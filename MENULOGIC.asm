@@ -20,7 +20,7 @@
 MINCTRL BYTE DELKEY
 DELLFT BYTE CLRKEY
 ARWLFT BYTE BCKKEY
-MAXCTL BYTE DWNKEY
+MAXCTL BYTE UPPKEY
 SPACE  TEXT ' '
 LOWA   TEXT 'a'
 LOWZ   TEXT 'z'
@@ -298,7 +298,7 @@ TYPE1
        SB   @MINCTRL,R0
        SRL  R0,8
        SLA  R0,1
-       AI   R0,SPCKEY
+       AI   R0,CTLRTN
        MOV  *R0,R0
        JEQ  TYPE2
 * Handle arrow or delete key
@@ -439,7 +439,7 @@ DSPV1  MOV  @SCRNWD,R3
 *
 * Arrow and delete keys pressed in form field
 *
-SPCKEY
+CTLRTN
 * Delete key in form field
        DATA FWDDEL
 *
@@ -452,6 +452,8 @@ SPCKEY
        DATA RGTSPC
 * Down arrow
        DATA NXTFLD
+* Up arrow
+       DATA PRVFLD
 
 LFTSPC
 * Don't move left of field start
@@ -472,12 +474,12 @@ RGTSPC
 RGTRT  RT
 
 NXTFLD
-* Let R1 = field count
+* Let R1 = index of last field
        MOV  @FIELDS(R2),R0
-       MOV  *R0,R1
+       MOV  *R0+,R1
        S    R0,R1
-       DECT R1
        SRA  R1,2
+       DEC  R1
 * Is R8 already final field?
        C    R8,R1
        JHE  NFRT
@@ -486,6 +488,18 @@ NXTFLD
 * Cursor guaranteed to move
        SOC  @STSARW,R7
 NFRT   RT
+
+PRVFLD
+* Is this alredy first field?
+       MOV  R8,R8
+       JEQ  PFRT
+* No
+       DEC  R8
+* Force cursor to beginning of field
+       LI   R9,FLDVAL
+* Cursor guaranteed to move
+       SOC  @STSARW,R7
+PFRT   RT
 
 BCKDEL 
        DECT R10
