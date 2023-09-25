@@ -509,7 +509,8 @@ BCKDEL
        DECT R10
        MOV  R11,*R10
 * Don't move left of field start
-       CI   R9,FLDVAL
+       BL   @MINMAX
+       C    R9,R0
        JLE  BCKRT
 *
        BL   @LFTSPC
@@ -519,17 +520,24 @@ BCKRT  MOV  *R10+,R11
        RT
 
 FWDDEL
-       MOV  R9,R0
-       MOV  R0,R1
-       INC  R1
-DEL1   CI   R1,FLDVE
-       JHE  DEL2
-       MOVB *R1+,*R0+
+       DECT R10
+       MOV  R11,*R10
+*
+       BL   @MINMAX
+*       
+       MOV  R9,R5
+       MOV  R5,R6
+       INC  R6
+DEL1   C    R6,R1
+       JH   DEL2
+       MOVB *R6+,*R5+
        JMP  DEL1
-DEL2
+* Clear out the last char
+DEL2   SB   *R5,*R5
 *
        SOC  @STSTYP,R7
 *
+       MOV  *R10+,R11       
        RT
 
 *
