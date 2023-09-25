@@ -1,12 +1,13 @@
-       DEF  MNUINT,ENTMNU
+       DEF  MNUINT,ENTMNU,LOADCH
 *
        REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPRAD                 From VDP.asm
-       REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   From VDP.asm
-       REF  VDPREA,VDPWRT                 From VDP.asm
+       REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   "
+       REF  VDPREA,VDPWRT                 "
+       REF  CCHMHM,CCHFSV                 From CACHETBL.asm
        REF  STSWIN,STSTYP,STSARW
        REF  DRWCUR
        REF  CUROLD,CURRPL,CURMOD
@@ -37,6 +38,18 @@ KEYTXT EQU  6
 MNUINT
 * Skip the most recently read key
        BL   @INCKRD
+* Load menus from VDP cache
+       LI   R0,CCHMHM
+       MOV  *R0,R0
+* Duplicate code of: BL   @LOADCH
+       BL   @VDPRAD
+       LI   R1,VDPRD
+       LI   R2,LOADED
+       LI   R3,>800
+MNUIN1
+       MOVB *R1,*R2+
+       DEC  R3
+       JNE  MNUIN1
 * Select Home menu as start menu
        LI   R0,MNUHOM
        MOV  R0,@CURMNU
@@ -61,6 +74,10 @@ ENTMNU
        MOV  R0,@CURRPL
        DECT R10
        MOV  R0,@CURSCN
+* Load menus from VDP cache
+       LI   R0,CCHMHM
+       MOV  *R0,R0
+       BL   @LOADCH
 *
        CLR  @CURMOD
 MNULP
@@ -75,14 +92,14 @@ MNULP
        MOV  @CURMNU,R0
        JNE  MNULP
 * Set document status as if window has moved
-* Redraw the entire screen
-       MOV  *R10+,R0
-       SOC  @STSWIN,R0
 *
        MOV  *R10+,@CURSCN
        MOV  *R10+,@CURRPL
        MOV  *R10+,@CURMOD
        MOV  *R10+,@CUROLD
+* Redraw the entire screen
+       MOV  *R10+,R0
+       SOC  @STSWIN,R0
 *
        MOV  *R10+,R11
        RT
@@ -572,16 +589,42 @@ MNUNAV
 * According to menu's key list
 *
 NXTLST DATA GOMNU
+       DATA GOFRM
        DATA GORTN
        DATA GOCCH
 
 *
-* Switch to meu specified by a particular key
+* Switch to menu specified by a particular key
 GOMNU
+       DECT R10
+       MOV  R11,*R10
+* Load menus from VDP cache
+       LI   R0,CCHMHM
+       MOV  *R0,R0
+       BL   @LOADCH
 * Specify new menu
        MOV  R1,@CURMNU
 * No error
        CLR  R0
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Switch to form specified by a particular key
+GOFRM
+       DECT R10
+       MOV  R11,*R10
+* Load forms from VDP cache
+       LI   R0,CCHFSV
+       MOV  *R0,R0
+       BL   @LOADCH
+* Specify new menu
+       MOV  R1,@CURMNU
+* No error
+       CLR  R0
+*
+       MOV  *R10+,R11
        RT
 
 *
@@ -608,6 +651,26 @@ GOCCH
        MOV  R1,R4
 * Read code from VDP cache
        MOV  *R4,R0
+       BL   @LOADCH
+* Branch to address in CPU RAM
+       MOV  @2(R4),R1
+       BL   @GORTN
+*
+GOCCH9 MOV  *R10+,R11
+       RT
+
+*
+* Load a cache from VDP
+*
+* Input:
+*   R0 - VDP RAM address
+*
+LOADCH
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R1,*R10
+*
        BL   @VDPRAD
        LI   R1,VDPRD
        LI   R2,LOADED
@@ -616,11 +679,9 @@ GOCCH2
        MOVB *R1,*R2+
        DEC  R3
        JNE  GOCCH2
-* Branch to address in CPU RAM
-       MOV  @2(R4),R1
-       BL   @GORTN
 *
-GOCCH9 MOV  *R10+,R11
+       MOV  *R10+,R1
+       MOV  *R10+,R11
        RT
 
        END

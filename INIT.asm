@@ -17,7 +17,10 @@
        REF  IOSTRT,IOEND
        REF  FRSHST,FRSHED
        REF  MGNSRT,MGNEND
-       REF  CACHES
+       REF  MNUSTR,MNUEND
+       REF  FRMSRT,FRMEND
+       REF  CACHES,CCHMHM
+       REF  LOADCH
 *
 
        COPY 'CPUADR.asm'
@@ -40,9 +43,15 @@ INIT
        BL   @WRTHDR
 *
        SETO @WINMOD
+       MOVB @NOQUIT,@INTSTP
+* Load menus from VDP cache
+       LI   R0,CCHMHM
+       MOV  *R0,R0
+       BL   @LOADCH
+* Select title menu
        LI   R0,MNUTTL
        MOV  R0,@CURMNU
-       MOVB @NOQUIT,@INTSTP
+*
        LIMI 2
        B    @MAIN
 
@@ -166,6 +175,8 @@ STOR3  MOVB *R1+,*R2
 TOCACH DATA IOSTRT,IOEND
        DATA FRSHST,FRSHED
        DATA MGNSRT,MGNEND
+       DATA MNUSTR,MNUEND
+       DATA FRMSRT,FRMEND
 TOCEND
        
        END

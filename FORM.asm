@@ -1,37 +1,24 @@
        DEF  FRMSAV,FRMLOD,FRMPRT,FRMNEW,FRMQIT
        DEF  FRMMGN
-       DEF  CACHES
+       DEF  FRMSRT,FRMEND
 *
        REF  MNUHOM,MNUFL                          From MENU.asm
        REF  SAVE,LOAD,PRINT,MYBNEW,MYBQIT         From IO.asm
        REF  EDTMGN                                From EDTMGN.asm
+       REF  CCHPRT,CCHLOD,CCHSAV                  From CACHETBL.asm
+       REF  CCHNEW,CCHQIT                         "
+       REF  CCHMGN                                "
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
+       AORG >C000
+FRMSRT
+       XORG LOADED
+
 HKYFIL TEXT 'FCTN+9: File Menu'
        BYTE 0
        EVEN
-
-*
-* Cache Table
-*
-* Word 1: Address in VDP RAM to load from
-* Word 2: Address in loaded code in CPU to branch to
-*
-* At compile-time, Word #1 is incorrect,
-* but STORCH is supposed to fix it for us at startup.
-* For now each routine in the same cache needs to have
-* the same (meaningless) number.
-*
-CACHES
-CCHPRT DATA 0,PRINT
-CCHLOD DATA 0,LOAD
-CCHSAV DATA 0,SAVE
-CCHNEW DATA 1,MYBNEW
-CCHQIT DATA 1,MYBQIT
-CCHMGN DATA 2,EDTMGN
-       DATA -1
 
 *
 * Save Form
@@ -235,3 +222,5 @@ FLDMG  DATA FLDMG1
        DATA 80+13           * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
+
+FRMEND AORG

@@ -17,10 +17,12 @@ CR     EQU  >0D
 
 * If key pressed, go to menu
 NXTMNU EQU  0
+* If key pressed, go to form
+NXTFRM EQU  2
 * If key pressed, go to routine
-NXTRTN EQU  2
+NXTRTN EQU  4
 * If key pressed, load routine from cache and branch to it
-NXTCCH EQU  4
+NXTCCH EQU  6
 
 * When Menu header contains 0 in the
 * field address, skip field logic.

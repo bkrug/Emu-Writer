@@ -1,11 +1,16 @@
        DEF  MNUHOM,MNUFL,MNUTTL,MNUHK
+       DEF  MNUSTR,MNUEND
 *
        REF  FRMSAV,FRMLOD,FRMPRT,FRMNEW
        REF  FRMQIT
-*
        REF  FRMMGN
 
+       COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
+
+       AORG >C800
+MNUSTR
+       XORG LOADED
 
 HOTKEY TEXT 'FCTN+9: Previous Menu'
        BYTE 0
@@ -85,7 +90,7 @@ KEYHM  DATA KEYHM1
        DATA MNUFL
 *
        TEXT 'M'
-       BYTE NXTMNU
+       BYTE NXTFRM
        DATA FRMMGN
 *
        BYTE ESCKEY
@@ -119,23 +124,23 @@ TXTFL1 EVEN
 
 KEYFL  DATA KEYFL1
        TEXT 'N'
-       BYTE NXTMNU
+       BYTE NXTFRM
        DATA FRMNEW
 *
        TEXT 'S'
-       BYTE NXTMNU
+       BYTE NXTFRM
        DATA FRMSAV
 *
        TEXT 'L'
-       BYTE NXTMNU
+       BYTE NXTFRM
        DATA FRMLOD
 *
        TEXT 'P'
-       BYTE NXTMNU
+       BYTE NXTFRM
        DATA FRMPRT
 *
        TEXT 'Q'
-       BYTE NXTMNU
+       BYTE NXTFRM
        DATA FRMQIT
 *
        BYTE ESCKEY
@@ -170,3 +175,5 @@ KEYHK  DATA KEYHK1
        BYTE NXTMNU          * When pressing escape key from home menu
        DATA 0               * Set the current menu to 0, so we leave menu mode
 KEYHK1
+
+MNUEND AORG
