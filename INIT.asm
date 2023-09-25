@@ -20,7 +20,7 @@
        REF  MNUSTR,MNUEND
        REF  FRMSRT,FRMEND
        REF  CACHES,CCHMHM
-       REF  LOADCH
+       REF  LODMNU
 *
 
        COPY 'CPUADR.asm'
@@ -45,9 +45,7 @@ INIT
        SETO @WINMOD
        MOVB @NOQUIT,@INTSTP
 * Load menus from VDP cache
-       LI   R0,CCHMHM
-       MOV  *R0,R0
-       BL   @LOADCH
+       BL   @LODMNU
 * Select title menu
        LI   R0,MNUTTL
        MOV  R0,@CURMNU

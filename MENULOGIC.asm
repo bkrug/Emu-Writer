@@ -1,4 +1,4 @@
-       DEF  MNUINT,ENTMNU,LOADCH
+       DEF  MNUINT,ENTMNU,LODMNU
 *
        REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "
@@ -75,9 +75,7 @@ ENTMNU
        DECT R10
        MOV  R0,@CURSCN
 * Load menus from VDP cache
-       LI   R0,CCHMHM
-       MOV  *R0,R0
-       BL   @LOADCH
+       BL   @LODMNU
 *
        CLR  @CURMOD
 MNULP
@@ -599,9 +597,7 @@ GOMNU
        DECT R10
        MOV  R11,*R10
 * Load menus from VDP cache
-       LI   R0,CCHMHM
-       MOV  *R0,R0
-       BL   @LOADCH
+       BL   @LODMNU
 * Specify new menu
        MOV  R1,@CURMNU
 * No error
@@ -659,6 +655,12 @@ GOCCH
 GOCCH9 MOV  *R10+,R11
        RT
 
+*
+* Load Menu cache from VDP
+*
+LODMNU
+       LI   R0,CCHMHM
+       MOV  *R0,R0
 *
 * Load a cache from VDP
 *
