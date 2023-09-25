@@ -3,15 +3,16 @@ INSKEY EQU  >04
 CLRKEY EQU  >07                 * TODO: Isn't this really the erase key?
 BCKKEY EQU  >08
 FWDKEY EQU  >09
-UPPKEY EQU  >0B
 DWNKEY EQU  >0A
-LF     EQU  >0A
-CR     EQU  >0D
+UPPKEY EQU  >0B
 ENTER  EQU  >0D
 ESCKEY EQU  >0F
 SPCBAR EQU  >20
 CTRLY  EQU  >99
 FCTN0  EQU  >BC
+
+LF     EQU  >0A
+CR     EQU  >0D
 
 * If key pressed, go to menu
 NXTMNU EQU  0

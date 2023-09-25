@@ -17,10 +17,10 @@
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
-DELRGT BYTE DELKEY
+MINCTRL BYTE DELKEY
 DELLFT BYTE CLRKEY
 ARWLFT BYTE BCKKEY
-ARWRGT BYTE FWDKEY
+MAXCTL BYTE DWNKEY
 SPACE  TEXT ' '
 LOWA   TEXT 'a'
 LOWZ   TEXT 'z'
@@ -289,13 +289,13 @@ TYPEKY DECT R10
        JMP  TYPE2
 * Not a typeable key
 TYPE1
-       CB   R5,@DELRGT
-       JL   TYPE3
-       CB   R5,@ARWRGT
-       JH   TYPE3
+       CB   R5,@MINCTRL
+       JL   TYPE5
+       CB   R5,@MAXCTL
+       JH   TYPE5
 * Let R0 = address of arrow or delete key routine
        MOVB R5,R0
-       SB   @DELRGT,R0
+       SB   @MINCTRL,R0
        SRL  R0,8
        SLA  R0,1
        AI   R0,SPCKEY
@@ -308,20 +308,19 @@ TYPE2
 * Let R4 = Length of current field
        BL   @DSPVAL
 * Don't let cursor go past edge of field
-* Let R9 = no greater than R1
+* Let R9 = no less than R0, no greater than R1
        BL   @MINMAX
-       C    R9,R1
-       JL   TYPE3
+       C    R9,R0
+       JHE  TYPE3
+       MOV  R0,R9
+TYPE3  C    R9,R1
+       JL   TYPE4
        MOV  R1,R9
-TYPE3
-* Let R1 = index of cursor relative to FLDVAL
-       LI   R1,FLDVAL
-       NEG  R1
-       A    R9,R1
+TYPE4
 * Recalculate cursor position
-       MOV  R3,@CURSCN
-       A    R1,@CURSCN
-       LIMI 2
+       BL   @CALCUR
+*
+TYPE5  LIMI 2
 *
        MOV  *R10+,R11
        RT
@@ -360,6 +359,36 @@ MM2    AI   R0,FLDVAL
        RT
 
 *
+* Calculate cursor position
+*
+* Input:
+*   R0 - min position in FLDVAL
+*   R1 - max position in FLDVAL
+*   R8 - index of current field
+*   R9 - address within FLDVAL
+CALCUR DECT R10
+       MOV  R3,*R10
+       DECT R10
+       MOV  R4,*R10
+* Let R3 = address of current field
+       MOV  R8,R3
+       SLA  R3,2
+       A    @FIELDS(R2),R3
+       INCT R3
+* Let R4 = index of char in field
+       MOV  R9,R4
+       S    R0,R4
+* Recalculate cursor position
+       MOV  *R3,R3
+       A    R4,R3
+       AI   R3,80
+       MOV  R3,@CURSCN
+*
+       MOV  *R10+,R4
+       MOV  *R10+,R3
+       RT
+
+*
 * Redisplay field values
 *
 * Input: R2
@@ -371,21 +400,39 @@ MM2    AI   R0,FLDVAL
 DSPVAL
        DECT R10
        MOV  R11,*R10
+       DECT R10
+       MOV  R5,*R10
+       DECT R10
+       MOV  R6,*R10
+       DECT R10
+       MOV  R7,*R10
+* Let R5 = address of some field
+* Let R6 = end of field list
+       MOV  @FIELDS(R2),R5
+       MOV  *R5+,R6
+* Let R7 = position within FLDVAL
+       LI   R7,FLDVAL
 * Let R3 = screen address of first field
 * Let R4 = length of field
-       MOV  @FIELDS(R2),R0
-       INCT R0
-       MOV  @SCRNWD,R3
+DSPV1  MOV  @SCRNWD,R3
        SLA  R3,1
-       A    *R0+,R3
-       MOV  *R0,R4
+       A    *R5+,R3
+       MOV  *R5+,R4
 * Write field value to VDP
        MOV  R3,R0
        BL   @VDPADR
-       LI   R0,FLDVAL
+       MOV  R7,R0
        MOV  R4,R1
        BL   @VDPWRT
+* Update position within FLDVAL
+       A    R4,R7
+* Was that the last field?
+       C    R5,R6
+       JL   DSPV1
 *
+       MOV  *R10+,R7
+       MOV  *R10+,R6
+       MOV  *R10+,R5
        MOV  *R10+,R11
        RT
 
@@ -403,6 +450,8 @@ SPCKEY
        DATA LFTSPC
 * Right arrow
        DATA RGTSPC
+* Down arrow
+       DATA NXTFLD
 
 LFTSPC
 * Don't move left of field start
@@ -421,6 +470,22 @@ RGTSPC
        INC  R9
        SOC  @STSARW,R7
 RGTRT  RT
+
+NXTFLD
+* Let R1 = field count
+       MOV  @FIELDS(R2),R0
+       MOV  *R0,R1
+       S    R0,R1
+       DECT R1
+       SRA  R1,2
+* Is R8 already final field?
+       C    R8,R1
+       JHE  NFRT
+* No, pick next field
+       INC  R8
+* Cursor guaranteed to move
+       SOC  @STSARW,R7
+NFRT   RT
 
 BCKDEL 
        DECT R10
