@@ -1,3 +1,4 @@
+TABKEY EQU  >01
 DELKEY EQU  >03
 INSKEY EQU  >04
 CLRKEY EQU  >07                 * TODO: Isn't this really the erase key?

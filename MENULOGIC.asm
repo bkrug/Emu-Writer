@@ -17,7 +17,7 @@
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
-MINCTRL BYTE DELKEY
+MINCTL BYTE TABKEY
 DELLFT BYTE CLRKEY
 ARWLFT BYTE BCKKEY
 MAXCTL BYTE UPPKEY
@@ -289,13 +289,13 @@ TYPEKY DECT R10
        JMP  TYPE2
 * Not a typeable key
 TYPE1
-       CB   R5,@MINCTRL
+       CB   R5,@MINCTL
        JL   TYPE5
        CB   R5,@MAXCTL
        JH   TYPE5
 * Let R0 = address of arrow or delete key routine
        MOVB R5,R0
-       SB   @MINCTRL,R0
+       SB   @MINCTL,R0
        SRL  R0,8
        SLA  R0,1
        AI   R0,CTLRTN
@@ -440,11 +440,15 @@ DSPV1  MOV  @SCRNWD,R3
 * Arrow and delete keys pressed in form field
 *
 CTLRTN
-* Delete key in form field
+* Tab key
+       DATA NXTFLD
+*
+       DATA 0
+* Delete key
        DATA FWDDEL
 *
        DATA 0,0,0
-* Backspace Delete key in form field
+* Backspace Delete key
        DATA BCKDEL
 * Left arrow
        DATA LFTSPC
