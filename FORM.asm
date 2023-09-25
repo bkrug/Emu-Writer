@@ -220,6 +220,7 @@ KEYMG  DATA KEYMG1
 KEYMG1
 
 FLDMG  DATA FLDMG1
+*
        DATA 40+13           * Field position on screen
        DATA 3               * Length of field
 *

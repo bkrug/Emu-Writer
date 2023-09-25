@@ -85,7 +85,7 @@ MNULP0 SB   *R1,*R1+
        SLA  R0,1
        A    @2(R1),R0
        MOV  R0,@CURSCN
-* Menu loop
+* Display new menu, and process keys until user leaves menu
 MNULP1 BL   @MNUDSP
        BL   @KEYWT
        MOV  @CURMNU,R0
@@ -169,23 +169,8 @@ DSP1   BL   @VDPSTR
 *
 KEYWT  DECT R10
        MOV  R11,*R10
-* Let R3 = address of keys
-* Let R4 = end of keys
-KEYLP  MOV  @MNUKEY(R2),R3
-       MOV  *R3+,R4
-* Process cursor
-       MOV  @CURSCN,R0
-       JEQ  KEY0
-       MOV  R7,R0
-       BL   @DRWCUR
-       CLR  R7
-KEY0       
-* Wait for key press
-       C    @KEYRD,@KEYWRT
-       JEQ  KEYLP
-* Key press found
-       MOV  @KEYRD,R5
-       MOVB *R5,R5
+* Let R5 (high byte) = key pressed
+KEYWT1 BL   @GETKEY
 * make uppercase
        CB   R5,@LOWA
        JL   KEY1
@@ -264,7 +249,7 @@ KEY7
 * Increment KEYRD so we see next key
        LIMI 2
 KEY8   BL   @INCKRD
-       JMP  KEYLP
+       JMP  KEYWT1
 KEY9
 * Menu item key pressed, increment key buffer position
        BL   @INCKRD
@@ -282,7 +267,37 @@ KEY9
 * If error occurred, stay in menu
        MOV  @CURMNU,R2
        MOV  R0,R0
-       JNE  KEYLP
+       JNE  KEYWT1
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Get Key Press
+*
+* Input: R2
+* Changed: R3,R4,R0,R7
+* Ouput: R5 (high byte)
+*
+GETKEY DECT R10
+       MOV  R11,*R10
+* Let R3 = address of keys
+* Let R4 = end of keys
+KEYLP  MOV  @MNUKEY(R2),R3
+       MOV  *R3+,R4
+* Process cursor
+       MOV  @CURSCN,R0
+       JEQ  GETK1
+       MOV  R7,R0
+       BL   @DRWCUR
+       CLR  R7
+GETK1
+* Wait for key press
+       C    @KEYRD,@KEYWRT
+       JEQ  KEYLP
+* Key press found
+       MOV  @KEYRD,R5
+       MOVB *R5,R5
 *
        MOV  *R10+,R11
        RT
