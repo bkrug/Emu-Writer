@@ -169,8 +169,15 @@ DSP1   BL   @VDPSTR
 *
 KEYWT  DECT R10
        MOV  R11,*R10
+*
+KEY0
+* Let R3 = address of key list (for navigtion)
+* Let R4 = end of key list
+       MOV  @MNUKEY(R2),R3
+       MOV  *R3+,R4
 * Let R5 (high byte) = key pressed
-KEY0   BL   @GETKEY
+       BL   @GETKEY
+* Let R3 = address within key list
 * Is the detected key in the key list?
 * Is it used to navigate within between menus?
 KEY1   CB   *R3,R5
@@ -186,20 +193,7 @@ KEY1   CB   *R3,R5
 * Increment KEYRD so we see next key
 KEY8   BL   @INCKRD
        JMP  KEY0
-KEY9
-* Menu item key pressed, increment key buffer position
-       BL   @INCKRD
-* Let R0 = address of routine to handle key
-       INC  R3
-       MOVB *R3+,R0
-       SRL  R0,8
-       AI   R0,NXTLST
-       MOV  *R0,R0
-* Let R1 = parameter for handling key
-* Might be address of a menu, form, or external routine
-       MOV  *R3,R1
-* Branch to routine for handling key
-       BL   *R0
+KEY9   BL   @MNUNAV
 * If error occurred, stay in menu
        MOV  @CURMNU,R2
        MOV  R0,R0
@@ -211,17 +205,13 @@ KEY9
 *
 * Get Key Press
 *
-* Input: R2
-* Changed: R3,R4,R0,R7
+* Changed: R0,R7
 * Ouput: R5 (high byte)
 *
 GETKEY DECT R10
        MOV  R11,*R10
-* Let R3 = address of keys
-* Let R4 = end of keys
-KEYLP  MOV  @MNUKEY(R2),R3
-       MOV  *R3+,R4
 * Process cursor
+KEYLP
        MOV  @CURSCN,R0
        JEQ  GETK1
        MOV  R7,R0
@@ -247,6 +237,10 @@ GETK2
 
 *
 * Type key press in a form field
+*
+* Input: R5, R7, R9
+* Changed: R0, R1, R3, R4
+* Output: R9
 *
 TYPEKY DECT R10
        MOV  R11,*R10
@@ -372,6 +366,33 @@ DEL2
 *
        SOC  @STSTYP,R7
 *
+       RT
+
+*
+* Navigate within menu system based on element in key list
+*
+* Input: R3 - address of element in key list
+* Changed: R1,R3
+* Output: R0 - non-zero in case of error
+*
+MNUNAV
+       DECT R10
+       MOV  R11,*R10
+* Menu item key pressed, increment key buffer position
+       BL   @INCKRD
+* Let R0 = address of menu navigation routine
+       INC  R3
+       MOVB *R3+,R0
+       SRL  R0,8
+       AI   R0,NXTLST
+       MOV  *R0,R0
+* Let R1 = parameter for menu navigation
+* Might be address of a menu, form, or external routine
+       MOV  *R3,R1
+* Branch to menu navigation routine
+       BL   *R0
+*
+       MOV  *R10+,R11
        RT
 
 *
