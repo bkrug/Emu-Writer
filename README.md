@@ -9,7 +9,7 @@ This project is a strange form of fun and a vanity project, not something that i
 
 Emu-writer distinguishes itself from TI-Writer with the following featues.
 
-* When you wish to insert text into the middle of a paragraph, just move the cursort to the desired location and start typing.
+* When you wish to insert text into the middle of a paragraph, just move the cursor to the desired location and start typing.
 No need to press FCTN+2 followed by CTRL+2
 * FCTN+3 is used as a backspace-delete key.
 * FCTN+0 is used to switch between Vertical mode and Windowed mode.
@@ -26,7 +26,7 @@ The user has to know how to wield the Editor's margin-and-tab configuration in a
 
 ### External Dependencies
 
-MEMBUF.O and ARRAY.O - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
+MEMBUF.noheader.obj and ARRAY.noheader.obj - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
 These contain routines for allocating and de-allocating space for variable-length objects like strings and arrays.
 
 ### Taglines
