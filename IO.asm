@@ -442,7 +442,12 @@ PRTRT
 * wrap all paragraphs in the original mode
        MOV  *R10+,@WINMOD
        JEQ  PRINT5
+* Store R1 in case it contains address of error message
+       DECT R10
+       MOV  R1,*R10
        BL   @WRAPDC
+       MOV  *R10+,R1
+*       
 PRINT5
 *
        LIMI 2
@@ -625,14 +630,12 @@ DSPERR
        SLA  R2,1
        AI   R2,MSGNUM
        MOV  *R2,R2
-* Write messsage
-WERR   CLR  R0
-       BL   @VDPADR
-       MOV  R2,R0
-       BL   @VDPINV
+* Let R1 = address of error message
+* MENULOGIC uses this
+WERR   MOV  R2,R1
 * Clear error
        SB   @STATUS,@STATUS
-* Record Error
+* Record Error for MENULOGIC
        SETO R0
 * Exit fast.
 * Restore stack trace to position when we entered the IO routine.

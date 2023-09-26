@@ -604,9 +604,22 @@ GORTN
 *
        BL   *R1
        MOV  R0,R0
-* If no error occurred, clear current menu and return to editor
-       JNE  GORTN1
+* Did error occur?
+       JNE  GORERR
+* No, so clear current menu and return to editor
        CLR  @CURMNU
+       JMP  GORTN1
+* Yes, so display the error message
+GORERR
+       DECT R10
+       MOV  R0,*R10
+*
+       CLR  R0
+       BL   @VDPADR
+       MOV  R1,R0
+       BL   @VDPINV
+*
+       MOV  *R10+,R0
 *
 GORTN1 MOV  *R10+,R11
        RT
