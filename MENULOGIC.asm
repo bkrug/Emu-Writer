@@ -146,9 +146,11 @@ DSP1   BL   @VDPSTR
        MOV  R0,R3
        C    R0,R4
        JL   DSP1
+* display field values
+       BL   @DSPVAL
 *
        LIMI 2
-       MOV  *R10+,R11       
+       MOV  *R10+,R11
        RT
 
 *
@@ -415,6 +417,7 @@ DSPVAL
 * Let R5 = address of some field
 * Let R6 = end of field list
        MOV  @FIELDS(R2),R5
+       JEQ  DSPRT
        MOV  *R5+,R6
 * Let R7 = position within FLDVAL
        LI   R7,FLDVAL
@@ -436,7 +439,7 @@ DSPV1  MOV  @SCRNWD,R3
        C    R5,R6
        JL   DSPV1
 *
-       MOV  *R10+,R7
+DSPRT  MOV  *R10+,R7
        MOV  *R10+,R6
        MOV  *R10+,R5
        MOV  *R10+,R11

@@ -9,4 +9,5 @@ INTSTP EQU  >83C2        First four bits enable/disable interrupt steps
 USRISR EQU  >83C4        Address defining address of user-defined service routine
 REG1CP EQU  >83D4        Address holding a copy of VDP Register 1
 
+PATTBL EQU  >800         Address of pattern table
 VDPCCH EQU  >1000        VDP address for storing executable code

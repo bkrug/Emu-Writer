@@ -40,6 +40,7 @@ INIT
        BL   @VDPTXT
        BL   @INTSCN
        BL   @WRTHDR
+       BL   @FRMFLD
 *
        SETO @WINMOD
        MOVB @NOQUIT,@INTSTP
@@ -172,5 +173,27 @@ TOCACH DATA IOSTRT,IOEND
        DATA MGNSRT,MGNEND
        DATA MNUSTR,MNUEND
 TOCEND
-       
+
+*
+* Define char 0 as a dotted line
+*
+FRMFLD
+       DECT R10
+       MOV  R11,*R10
+*
+       LI   R0,PATTBL
+       BL   @VDPADR
+       CLR  R0
+       LI   R1,VDPWD
+       LI   R2,7
+FRM1   MOVB R0,*R1
+       DEC  R2
+       JNE  FRM1
+*
+       LI   R0,>5500
+       MOVB R0,*R1
+*
+       MOV  *R10+,R11
+       RT
+
        END
