@@ -49,11 +49,16 @@ EM2    MOV  @MGNLST,R0
 * Let R4 = left margin
 EM9    LI   R0,FLDVAL
        BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
+*
        MOV  R1,R4
 * Let R5 = right margin
        LI   R0,FLDVAL
        AI   R0,3
        BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
        MOV  R1,R5
 * Let R5 = paragraph width
 * Assume a page width of 80
@@ -119,6 +124,11 @@ PRSINT
 * Is next digit empty?
 PI1    MOVB *R0+,R4
        JEQ  PI2
+* Is next char a digit?
+       CB   R4,@ZERO
+       JL   PTERR
+       CB   R4,@NINE
+       JH   PTERR
 * No, multiply previous calculations by 10
        MPY  @TEN,R1
        MOV  R2,R1
@@ -132,11 +142,24 @@ PI1    MOVB *R0+,R4
 * Finished
 PI2    MOV  *R10+,R4
        MOV  *R10+,R3
+* Set EQU status bit to false
+       CLR  R0
+       RT
+* Error: This is not a number
+PTERR
+       LI   R1,NUMERR
+       SETO R0
+*
+       MOV  *R10+,R4
+       MOV  *R10+,R3
        RT
 *
 TEN    DATA 10
 ZERO   TEXT '0'
+NINE   TEXT '9'
 MGNERR TEXT 'Page width minus margins must be > 10'
+       BYTE 0
+NUMERR TEXT 'Margins must be numbers'
        BYTE 0
        EVEN
 
