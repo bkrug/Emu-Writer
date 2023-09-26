@@ -60,6 +60,9 @@ EM9    LI   R0,FLDVAL
        NEG  R5
        AI   R5,80
        S    R4,R5
+* Validate margin sizes
+       BL   @MGNSIZ
+       JEQ  EM10
 * Set left margin and page width in MGNLST element
        SLA  R4,8
        SLA  R5,8
@@ -70,7 +73,7 @@ EM9    LI   R0,FLDVAL
 * No Error
        CLR  R0
 *
-       MOV  *R10+,R11
+EM10   MOV  *R10+,R11
        RT
 
 *
@@ -133,7 +136,28 @@ PI2    MOV  *R10+,R4
 *
 TEN    DATA 10
 ZERO   TEXT '0'
+MGNERR TEXT 'Page width minus margins must be > 10'
+       BYTE 0
        EVEN
 
+*
+* Validate that the combined left/right margin size is okay
+*
+* Input
+*   R5: paragraph width
+*
+MGNSIZ
+* Is combined left/right margin small enough?
+       CI   R5,9
+       JGT  MGNRT
+* No, set error message
+       SETO R0
+       LI   R1,MGNERR
+* Set EQU status bit to indicate error
+       S    R2,R2
+       RT
+* Reset EQU status bit to indicate no error
+MGNRT  LI   R2,-1
+       RT
 
 MGNEND AORG
