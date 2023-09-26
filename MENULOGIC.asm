@@ -613,10 +613,15 @@ GORTN
 GORERR
        DECT R10
        MOV  R0,*R10
+       MOV  R1,R2
 *
        CLR  R0
        BL   @VDPADR
-       MOV  R1,R0
+       MOV  @SCRNWD,R1
+       BL   @VDPSPI
+       CLR  R0
+       BL   @VDPADR
+       MOV  R2,R0
        BL   @VDPINV
 *
        MOV  *R10+,R0
