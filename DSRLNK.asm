@@ -18,7 +18,6 @@
 * belong to the Interrpreter and GPL workspaces.
 *
 
-* TODO: confirm that these are constants
 A20FC  DATA >2000
 A20FE  TEXT '.'
 A20FF  BYTE >AA

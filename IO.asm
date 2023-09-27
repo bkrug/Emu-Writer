@@ -11,6 +11,7 @@
        REF  FLDVAL,WINMOD                         "
        REF  ARYADR,BUFGRW                         From ARRAY.asm
        REF  WRAP,INTDOC
+       REF  WRAPDC                                From UTIL.asm
        REF  CURMNU
 
 *
@@ -563,24 +564,6 @@ CLOSFL
        BLWP @DSRLCL
        DATA 8
 *
-       RT
-
-*
-* Wrap all paragraphs
-*
-* TODO: This is duplicate code
-WRAPDC
-       MOV  @LINLST,R2
-       CLR  R0
-WRAPLP C    R0,*R2
-       JHE  WRAPDN
-       CLR  R1
-       BLWP @WRAP
-       CI   R0,>FFFF
-       JEQ  WRAPDN
-       INC  R0
-       JMP  WRAPLP
-WRAPDN
        RT
 
 MSGNOT TEXT 'Error: File not an EmuWriter document'
