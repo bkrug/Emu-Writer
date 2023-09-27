@@ -2,7 +2,7 @@
 *
        REF  VDPADR
        REF  VDPINV,VDPSPI
-       REF  STSWIN,ERRMEM
+       REF  STSWIN,STSDSH,ERRMEM
        REF  SCRNWD
        REF  GETMGN                From UTIL.asm
        REF  PARINX                From VAR.asm
@@ -17,6 +17,8 @@ ADJHDR
 *
        LI   R2,TEXT1
        COC  @STSWIN,R0
+       JEQ  WRTHDR
+       COC  @STSDSH,R0
        JEQ  WRTHDR
        RT
 *

@@ -2,7 +2,7 @@
 *
        REF  LINLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
-       REF  STSARW
+       REF  STSARW,STSDSH
 
 *
 * Move the cursor up by one line
@@ -23,6 +23,7 @@ UPSP1  MOV  @PARINX,R0
        JEQ  ARRWRT
 * Move up to previous paragraph
        DEC  @PARINX
+       SOC  @STSDSH,*R13
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
@@ -52,6 +53,7 @@ DWNSP1 MOV  @LINLST,R0
 * Move down to next paragraph
        INC  @PARINX
        CLR  @LININX
+       SOC  @STSDSH,*R13
 * Recalculate R3 & R4
 DWNSP2 BL   @PARADR
 *

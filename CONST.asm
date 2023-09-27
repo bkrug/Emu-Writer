@@ -1,8 +1,7 @@
        DEF  FMTLEN,MGNLEN
        DEF  FORTY,SCRNWD
-       DEF  STSTYP,STSENT,STSDCR
-       DEF  STSPAR,STSWIN
-       DEF  STSARW
+       DEF  STSTYP,STSENT,STSDCR,STSPAR
+       DEF  STSWIN,STSDSH,STSARW
        DEF  ERRMEM
        DEF  CHRMIN,CHRMAX
        DEF  SPACE,DASH,CHRCUR,ENDINP,NOKEY
@@ -39,8 +38,10 @@ STSDCR DATA >4
 STSPAR DATA >8
 * Window Moved
 STSWIN DATA >10
+* Redisplay dashboard line (margins, fonts)
+STSDSH DATA >20
 * Arrow Key Pressed
-STSARW DATA >20
+STSARW DATA >40
 * Insufficient Memory Error
 ERRMEM DATA >8000
 
