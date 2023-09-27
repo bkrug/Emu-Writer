@@ -9,14 +9,13 @@
        REF  SPACE,DASH
        REF  FMTLEN,MGNLEN
        REF  ERRMEM,STSPAR
-       REF  SCRNWD
 * Variables
        REF  LNWDT1,LNWDTH,WINMOD
 
 * This data is a work around for the "first DATA word is 0 bug"
-* TODO: Write an issue to Ralph B.'s github
        DATA >1234
 
+       COPY 'EQUKEY.asm'
 MAXIDT EQU  21
 
 *
@@ -67,8 +66,7 @@ MGN2C
        MOV  @WINMOD,R3
        JEQ  MGN2Z
 * No, we are in vertical mode
-       MOV  @SCRNWD,R1
-       DEC  R1
+       LI   R1,SCRNWD-1
 * Also make sure indent is in range -20 to +20
        LI   R3,MAXIDT
        C    R0,R3

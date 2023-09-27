@@ -3,7 +3,6 @@
        REF  VDPADR
        REF  VDPINV,VDPSPI
        REF  STSWIN,STSDSH,ERRMEM
-       REF  SCRNWD
        REF  GETMGN                From UTIL.asm
        REF  PARINX                From VAR.asm
 
@@ -30,8 +29,7 @@ WRTHDR
 * Clear header
        CLR  R0
        BL   @VDPADR
-       MOV  @SCRNWD,R1
-       SLA  R1,1
+       LI   R1,2*SCRNWD
        BL   @VDPSPI
 * Draw first line
        CLR  R0
@@ -39,7 +37,7 @@ WRTHDR
        MOV  R2,R0
        BL   @VDPINV
 * Draw second line
-       MOV  @SCRNWD,R0
+       LI   R0,SCRNWD
        BL   @VDPADR
 *
        LI   R0,TEXT2
@@ -55,8 +53,7 @@ WRTHDR
 CONMGN AI   R0,4
 * Convert Left Margin to ASCII
 * Let R4 = copy of left margin
-       MOV  @SCRNWD,R3
-       AI   R3,3
+       LI   R3,SCRNWD+3
        MOVB *R0+,R2
        MOVB R2,R4
        BL   @DRWNUM
@@ -65,7 +62,7 @@ CONMGN AI   R0,4
        SB   *R0+,R2
        SB   R4,R2
 * Convert Right Margin to ASCII
-       AI   R3,6
+       LI   R3,SCRNWD+9
        BL   @DRWNUM
 *
        MOV  *R10+,R0

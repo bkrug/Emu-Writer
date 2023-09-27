@@ -29,3 +29,4 @@ NXTCCH EQU  6
 NOFLDS EQU  0
 
 DFLTPG EQU  80        Default Page Width
+SCRNWD EQU  40

@@ -17,7 +17,7 @@
        REF  ERRMEM
        REF  FORTY
 
-SCRNWD EQU  40
+       COPY 'EQUKEY.asm'
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4

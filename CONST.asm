@@ -1,5 +1,5 @@
        DEF  FMTLEN,MGNLEN
-       DEF  FORTY,SCRNWD
+       DEF  FORTY
        DEF  STSTYP,STSENT,STSDCR,STSPAR
        DEF  STSWIN,STSDSH,STSARW
        DEF  ERRMEM
@@ -24,7 +24,6 @@ MGNLEN
 * format list.
 FMTLEN DATA 8
 
-SCRNWD
 FORTY  DATA 40
 
 * Document status codes

@@ -13,7 +13,6 @@
        REF  CUROLD,CURRPL,CURMOD
        REF  CURSCN
        REF  BUFALC,BUFREE
-       REF  SCRNWD
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -102,11 +101,10 @@ MNUDSP
        CLR  R0
        BL   @VDPADR
 *
-       MOV  @SCRNWD,R1
-       SLA  R1,1
+       LI   R1,2*SCRNWD
        BL   @VDPSPI
 *
-       MOV  @SCRNWD,R0
+       LI   R0,SCRNWD
        LI   R2,22
        MPY  R2,R0
        BL   @VDPSPC
@@ -123,14 +121,14 @@ MNUDSP
        MOV  @KEYTXT(R2),R0
        BL   @VDPINV
 * Write Hot keys
-       MOV  @SCRNWD,R0
+       LI   R0,SCRNWD
        BL   @VDPADR
 *
        MOV  R2,R0
        AI   R0,8
        BL   @VDPINV
 * Set VDP address for strings
-       MOV  @SCRNWD,R0
+       LI   R0,SCRNWD
        SLA  R0,1
        BL   @VDPADR
 * Write strings
@@ -139,7 +137,7 @@ DSP1   BL   @VDPSTR
 *
        MOV  R3,R1
        S    R0,R1
-       A    @SCRNWD,R1
+       AI   R1,SCRNWD
        BL   @VDPSPC
 *
        INC  R0
@@ -221,8 +219,7 @@ INITF1 SB   *R1,*R1+
        JEQ  INITF2
        LI   R9,FLDVAL
 * Set cursor position on screen
-       MOV  @SCRNWD,R0
-       SLA  R0,1
+       LI   R0,2*SCRNWD
        A    @2(R1),R0
        MOV  R0,@CURSCN
 *
@@ -389,7 +386,7 @@ CALCUR DECT R10
 * Recalculate cursor position
        MOV  *R3,R3
        A    R4,R3
-       AI   R3,80
+       AI   R3,2*SCRNWD
        MOV  R3,@CURSCN
 *
        MOV  *R10+,R4
@@ -423,8 +420,7 @@ DSPVAL
        LI   R7,FLDVAL
 * Let R3 = screen address of first field
 * Let R4 = length of field
-DSPV1  MOV  @SCRNWD,R3
-       SLA  R3,1
+DSPV1  LI   R3,2*SCRNWD
        A    *R5+,R3
        MOV  *R5+,R4
 * Write field value to VDP
@@ -617,7 +613,7 @@ GORERR
 *
        CLR  R0
        BL   @VDPADR
-       MOV  @SCRNWD,R1
+       LI   R1,SCRNWD
        BL   @VDPSPI
        CLR  R0
        BL   @VDPADR
