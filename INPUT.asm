@@ -29,6 +29,7 @@
 *
        REF  WRAP,MNUHK
        REF  CURMNU
+       REF  WRAPDC                        From UTIL.asm
 
 * This data is a work around for the "first DATA word is 0 if REFed bug"
        DATA >1234
@@ -482,19 +483,9 @@ WINVRT
        CLR  @WINOFF
 WV1
 * Wrap all paragraphs
-* TODO: this is duplicate code. See also IO.asm
-       MOV  @LINLST,R2
-       CLR  R0
-WRAPLP C    R0,*R2
-       JHE  WRAPDN
-       CLR  R1
-       BLWP @WRAP
-       CI   R0,>FFFF
-       JNE  WRAPL1
-       B    @RTERR  
-WRAPL1 INC  R0
-       JMP  WRAPLP
-WRAPDN
+       MOV  R11,R12
+       BL   @WRAPDC
+       MOV  R12,R11
 * Set document status to redraw window
        SOC  @STSWIN,*R13
 *
