@@ -107,6 +107,7 @@ xas99.py -i -a ">2000" -l `
     ACT.obj.temp `
     DSRLNK.obj.temp `
     MENULOGIC.obj.temp `
+    UTIL.obj.temp `
     HEADER.obj.temp `
     VAR.obj.temp `
     CACHETBL.obj.temp `

@@ -27,3 +27,5 @@ NXTCCH EQU  6
 * When Menu header contains 0 in the
 * field address, skip field logic.
 NOFLDS EQU  0
+
+DFLTPG EQU  80        Default Page Width
