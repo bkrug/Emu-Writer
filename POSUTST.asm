@@ -224,6 +224,7 @@ POS2
        LI   R2,POS1MS
        LI   R3,POS1ME-POS1MS
        BLWP @AEQ
+*
        LI   R0,0
        MOV  @CHRLIX,R1
        LI   R2,POS1NS
