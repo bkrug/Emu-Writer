@@ -21,10 +21,8 @@
 IOSTRT
        XORG LOADED
 *
-* TODO: Store PAB directly after the screen image table, thus in the same 1 KB block.
-* TODO: Store PABBUF in an unused portion of the Pattern Table (probably over ASCII >80->9F)
-PAB    EQU  >480
-PABBUF EQU  >500
+PAB    EQU  >3C0
+PABBUF EQU  PATTBL+>400
 *
 FIXED  EQU  >00
 VARIAB EQU  >10
