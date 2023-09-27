@@ -2,9 +2,11 @@
 * Misc. Utils
 *
        DEF  GETMGN
+       DEF  WRAPDC,WRAPDW
 *
-       REF  MGNLST
+       REF  MGNLST,LINLST
        REF  ARYADR
+       REF  WRAP
 
 *
 * Get address of margin data for a paragraph
@@ -40,6 +42,26 @@ GMNONE CLR  R0
 *
 GMRT   MOV  *R10+,R3
        MOV  *R10+,R2
+       RT
+
+*
+* WRAPDC = Wrap all paragraphs in document
+* No Input
+*
+* WRAPDW = Wrap all paragraphs down from given paragraph
+* Input
+*   R0 = starting paragraph
+*
+WRAPDC CLR  R0
+WRAPDW MOV  @LINLST,R2
+WRAPLP C    R0,*R2
+       JHE  WRAPDN
+       CLR  R1
+       BLWP @WRAP
+       JEQ  WRAPDN             * If memory error occurs, stop wrapping
+       INC  R0
+       JMP  WRAPLP
+WRAPDN
        RT
 
        END

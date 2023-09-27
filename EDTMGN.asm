@@ -5,6 +5,7 @@
        REF  FLDVAL                        "
        REF  ARYINS,ARYDEL                 From ARRAY.asm
        REF  WRAP                          From WRAP.asm
+       REF  WRAPDw                        From UTIL.asm
 
        COPY 'CPUADR.asm'
 
@@ -73,8 +74,9 @@ EM9    LI   R0,FLDVAL
        SLA  R5,8
        MOVB R4,@LEFT(R3)
        MOVB R5,@PWIDTH(R3)
-*
-       BL   @WRAPDC
+* Re-wrap, this and lower paragraphs
+       MOV  @PARINX,R0
+       BL   @WRAPDw
 * No Error
        CLR  R0
 *
@@ -85,24 +87,6 @@ EM10   MOV  *R10+,R11
 * An error occurred
 *
 EMERR  SETO R0
-       RT
-
-*
-* Wrap all paragraphs
-*
-* TODO: This is duplicate code
-WRAPDC
-       MOV  @LINLST,R2
-       CLR  R0
-WRAPLP C    R0,*R2
-       JHE  WRAPDN
-       CLR  R1
-       BLWP @WRAP
-       CI   R0,>FFFF
-       JEQ  WRAPDN
-       INC  R0
-       JMP  WRAPLP
-WRAPDN
        RT
 
 *
