@@ -21,6 +21,8 @@
        DEF  LINLST,FMTLST,MGNLST
 * MAIN.TXT
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
+* IO.TXT
+       DEF  VER2
 * DSRLNK.asm
        DEF  A2032                  cru base for dsr
        DEF  A2034                  dsr address   "
@@ -91,6 +93,9 @@ CURTIM BSS  2
 CUROLD BSS  2
 CURMOD BSS  2
 CURRPL BSS  1
+
+* IO.TXT
+VER2   BSS  1
        EVEN
 
 * DSRLNK.asm

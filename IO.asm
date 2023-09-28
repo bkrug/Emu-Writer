@@ -9,7 +9,8 @@
        REF  VDPSPC,VDPINV
        REF  LINLST,MGNLST                         From VAR.asm
        REF  FLDVAL,WINMOD                         "
-       REF  ARYADR,BUFGRW                         From ARRAY.asm
+       REF  VER2                                  "
+       REF  ARYADR,BUFGRW,BUFALC                  From ARRAY.asm
        REF  WRAP,INTDOC
        REF  WRAPDC                                From UTIL.asm
        REF  CURMNU
@@ -89,8 +90,10 @@ ETX    BYTE 3                               * End of document
 * If the first byte of the version is high, the version is incompatible
 * If the second byte of the version is high, we can still load the file
 FLEHDR TEXT 'DocOfEmuWriter'
-FLEVER BYTE 1,1
+FLEVER BYTE 1,2
 HDREND
+* Format version that introduced margins
+VERMGN BYTE 2
        EVEN
 
 *
@@ -259,7 +262,7 @@ LOAD   DECT R10
        MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-       JEQ  SLERR
+       JEQ  LODERR
 * Set VDP read position
        LI   R0,PABBUF
        BL   @VDPRAD
@@ -276,35 +279,26 @@ LOAD3  MOVB @VDPRD,R0
        JH   WRGVER
 * Read next byte of Format-Version
 * If it is too high, file merely has extra data we can't use
-       MOVB @VDPRD,R0
+       MOVB @VDPRD,@VER2
 * Since this is a valid file, purge the old file
        BL   @INTDOC
-* Let R4 = number of record bytes remaining to read
+* Let R4 = number of record bytes remaining to read (from this record)
        LI   R4,FIXSAV-HDREND+FLEHDR
 * Let R3 = address of first element in paragraph list
        MOV  @LINLST,R3
        C    *R3+,*R3+
-*
-       JMP  LOADBY
-LOADR
-* Read record
-       MOV  @LNGADR,@PNTR
-       BLWP @DSRLCL
-       DATA 8
-       JEQ  SLERR
-* Set VDP read position
-       LI   R0,PABBUF
-       BL   @VDPRAD
-* Let R4 = number of record bytes remaining to read
-       LI   R4,FIXSAV
+* Read one byte from record
 LOADBY
-* Is next char a CR?
        MOVB @VDPRD,R5
+* If we ran out of bytes, load another record
+       BL   @LODCHK
+       JEQ  LODERR
+* Is next char a CR?
        CB   R5,@CR
        JEQ  NEWPAR
 * Reached end of document?
        CB   R5,@ETX
-       JEQ  LOADDN
+       JEQ  LODMGN
 * No, grow the paragraph's allocated block, if necessary.
 * Let R0 be the address of the paragraph.
 * Let R1 be the length of the paragraph plus one new character
@@ -312,7 +306,6 @@ LOADBY
        MOV  *R0,R1
        AI   R1,5
        BLWP @BUFGRW
-       CI   R0,>FFFF
        JEQ  LOADDN
 * Store new paragraph address
        MOV  R0,*R3
@@ -324,7 +317,7 @@ LOADBY
        MOVB R5,*R6
 * Increase paragraph length by one.
        INC  *R0
-       JMP  LOAD1
+       JMP  LOADBY
 NEWPAR
 * Start new pararaph
 * Let R3 = address of element in paragraph list
@@ -332,16 +325,54 @@ NEWPAR
        BL   @INTPAR
        MOV  R1,R3
        MOV  R5,R4
-LOAD1
-* Decrease remaining char to read
-       DEC  R4
-* Reached end of record?
-       JNE  LOADBY
-* Yes, load another record
-       JMP  LOADR
+*
+       JMP  LOADBY
+* Read margin if VER2 is high Enough
+LODMGN CB   @VER2,@VERMGN
+       JL   LOADDN
+* Skip page width / height bytes
+       MOVB @VDPRD,R5
+       BL   @LODCHK
+       JEQ  LODERR
+*
+       MOVB @VDPRD,R5
+       BL   @LODCHK
+       JEQ  LODERR
+* Let R5 = number of elements in array
+       MOVB @VDPRD,R5
+       BL   @LODCHK
+       JEQ  LODERR
+       SWPB R5
+*
+       MOVB @VDPRD,R5
+       BL   @LODCHK
+       JEQ  LODERR
+       SWPB R5
+* Let R3 = number of bytes to read for margins
+       MOV  R5,R3
+       SLA  R3,3
+       AI   R3,4
+* Reserve space in buffer
+       MOV  R3,R0
+       BLWP @BUFALC
+       JEQ  LOADDN
+       MOV  R0,@MGNLST
+* Let R3 = end of allocated space
+       A    R0,R3
+* Save element count
+       MOVB R5,*R0+
+       SWPB R5
+       MOVB R5,*R0+
+* Read rest of margin data
+       MOVB @VDPRD,*R0+
+LODM1  BL   @LODCHK
+       JEQ  LODERR
+       MOVB @VDPRD,*R0+
+       C    R0,R3
+       JL   LODM1
 * Reached End of Document
 LOADDN BL   @CLOSFL
-       JEQ  SLERR
+       JEQ  LODERR
 * Wrap all paragraphs
        BL   @WRAPDC
 * No Error
@@ -362,6 +393,41 @@ HDRMSS LI   R2,MSGNOT
 WRGVER LI   R2,MSGVER
        BL   @WRTERR
        JMP  LOADRT
+
+LODERR BL   @DSPERR
+       B    @SAVERT
+
+* If byte count has reached 0,
+* read Save file record from disk.
+*
+* Input:
+*   R4 = number of bytes to read from VDP
+* Changed: R0
+* Output:
+*   R4 = either decremented or 64
+LODCHK DECT R10
+       MOV  R11,*R10
+* Decrease remaining char to read
+       DEC  R4
+* Reached end of record?
+       JNE  LODC1
+* Read record from file
+       MOV  @LNGADR,@PNTR
+       BLWP @DSRLCL
+       DATA 8
+       JEQ  LODCER
+* Set VDP read position
+       LI   R0,PABBUF
+       BL   @VDPRAD
+* Let R4 = number of record bytes remaining to read
+       LI   R4,FIXSAV
+*
+LODC1  MOV  *R10+,R11 
+       RT
+* Return with EQ bit set
+LODCER MOV  *R10+,R11
+       S    R0,R0
+       RT
 
 *
 * Print
