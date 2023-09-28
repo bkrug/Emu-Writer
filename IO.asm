@@ -151,30 +151,15 @@ SAVECR
 * Write CR to VDP RAM
        MOVB @CR,@VDPWD
 * Enough bytes to write record?
-SAVE3  INC  R3
-       CI   R3,FIXSAV
-* If not, next byte
-       JL   SAVBYT
-* If yes, write record
-       MOV  @LNGADR,@PNTR
-       BLWP @DSRLCL
-       DATA 8
+SAVE3  BL   @SAVCHK
        JEQ  SLERR
-* Re-set VDP write position
-       LI   R0,PABBUF
-       BL   @VDPADR
-*
-       CLR  R3
-*
        JMP  SAVBYT
 * Document complete
 SAVEDN
 * Write ETX character
        MOVB @ETX,@VDPWD
-* Write record
-       MOV  @LNGADR,@PNTR
-       BLWP @DSRLCL
-       DATA 8
+* Write final record
+       BL   @SAVWRT
        JEQ  SLERR
 *
        BL   @CLOSFL
@@ -189,6 +174,44 @@ SAVERT LIMI 2
 *
 SLERR  BL   @DSPERR
        JMP  SAVERT
+
+* If byte count has reached 64,
+* write Save file record to disk.
+*
+* Input:
+*   R3 = number of bytes already in VDP
+* Changed: R0
+* Output:
+*   R3 = either incremented or 0
+SAVCHK DECT R10
+       MOV  R11,*R10
+* One more byte was written
+       INC  R3
+* Have we written a full record?
+       CI   R3,FIXSAV
+       JL   CHKRT
+* Yes, write record
+       BL   @SAVWRT
+       JEQ  CHKERR
+* Re-set VDP write position
+       LI   R0,PABBUF
+       BL   @VDPADR
+* Clear byte counter
+       CLR  R3
+*
+CHKRT  MOV  *R10+,R11
+       RT
+* Return with EQ bit set
+CHKERR MOV  *R10+,R11
+       S    R0,R0
+       RT
+
+* Write one record
+SAVWRT MOV  @LNGADR,@PNTR
+       BLWP @DSRLCL
+       DATA 8
+*
+       RT
 
 *
 * Load
