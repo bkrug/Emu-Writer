@@ -142,7 +142,7 @@ SAVECR
 * Prepare for next paragraph
        INCT R1
        DEC  R2
-       JEQ  SAVEDN
+       JEQ  DOCDN
 * Let R4 = address within paragraph
 * Let R5 = remaining bytes in paragraph
        MOV  *R1,R4
@@ -155,9 +155,33 @@ SAVE3  BL   @SAVCHK
        JEQ  SLERR
        JMP  SAVBYT
 * Document complete
-SAVEDN
+DOCDN
 * Write ETX character
        MOVB @ETX,@VDPWD
+       BL   @SAVCHK
+* Write Page Width & Page Height to file
+* 80-columns 66-lines
+       LI   R4,>5042
+       MOV  R4,@VDPWD
+       BL   @SAVCHK
+       SWPB R4
+       MOV  R4,@VDPWD
+       BL   @SAVCHK
+* Save Margins
+* Let R2 = end of Margin Array
+* R3 continues to = number of bytes sent to VDP so far
+* Let R4 = address in Margin Array
+SAVMGN MOV  @MGNLST,R4
+       MOV  *R4,R2
+       SLA  R2,3
+       C    *R2+,*R2+
+       A    R4,R2
+* Save each byte from Margin list sequentially
+       MOVB *R4+,@VDPWD
+SAVM1  BL   @SAVCHK
+       MOVB *R4+,@VDPWD
+       C    R4,R2
+       JL   SAVM1
 * Write final record
        BL   @SAVWRT
        JEQ  SLERR
