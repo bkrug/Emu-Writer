@@ -159,14 +159,17 @@ DOCDN
 * Write ETX character
        MOVB @ETX,@VDPWD
        BL   @SAVCHK
+       JEQ  SLERR
 * Write Page Width & Page Height to file
 * 80-columns 66-lines
        LI   R4,>5042
        MOV  R4,@VDPWD
        BL   @SAVCHK
+       JEQ  SLERR
        SWPB R4
        MOV  R4,@VDPWD
        BL   @SAVCHK
+       JEQ  SLERR
 * Save Margins
 * Let R2 = end of Margin Array
 * R3 continues to = number of bytes sent to VDP so far
@@ -179,6 +182,7 @@ SAVMGN MOV  @MGNLST,R4
 * Save each byte from Margin list sequentially
        MOVB *R4+,@VDPWD
 SAVM1  BL   @SAVCHK
+       JEQ  SLERR
        MOVB *R4+,@VDPWD
        C    R4,R2
        JL   SAVM1
@@ -234,7 +238,6 @@ CHKERR MOV  *R10+,R11
 SAVWRT MOV  @LNGADR,@PNTR
        BLWP @DSRLCL
        DATA 8
-*
        RT
 
 *
