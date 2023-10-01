@@ -54,6 +54,7 @@ xas99.py -l `
     ARRAY.noheader.obj `
     WRAP.obj.temp `
     ACT.obj.temp `
+    UTIL.obj.temp `
     -o INPTRUN.obj
 
 xas99.py -l `
