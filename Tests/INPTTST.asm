@@ -124,6 +124,10 @@ RUNTST BLWP @OPENF
        BL   @TSTINT
        BL   @TST17
 * ---
+* User splits two paragraphs that are
+* before the first margin entry.
+       BL   @TSTINT
+       BL   @TST20
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1621,6 +1625,60 @@ PSUCCS MOV  R3,R0
 PSCCSM TEXT 'Test .... succeeded.'
        EVEN
 PSCCSE
+
+*
+* Effects of carriage return on margins
+*
+TST20
+* Test 20
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       LI   R1,MGN20D
+TXT20A MOV  *R1+,*R0+
+       CI   R1,MGN20D+20
+       JL   TXT20A
+* Copy test keypresses to stream
+       LI   R0,KEYL12
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+*
+       LI   R0,MGN20N+20
+       MOV  @MGNLST,R1
+       LI   R2,MGN20N
+       LI   R3,20
+       BL   @STRCMP
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN20D DATA 2,3
+       DATA 3,>1112,>1314,>1516
+       DATA 5,>2122,>2324,>2526
+MGN20N DATA 2,3
+       DATA 4,>1112,>1314,>1516
+       DATA 6,>2122,>2324,>2526
 
 ******* MOCKS **************
 MNUHK
