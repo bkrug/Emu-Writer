@@ -5,13 +5,16 @@
 # Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 # Assemble the files
-$files = Get-ChildItem ".\" -Filter *.asm |
+$files1 = Get-ChildItem ".\" -Filter *.asm |
          Where-Object { $_.Name -ne 'LOADTSTS.asm' }
+$files2 = Get-ChildItem ".\Tests\" -Filter *.asm |
+         Where-Object { $_.Name -ne 'LOADTSTS.asm' }
+$files = $files1 + $files2
 ForEach($file in $files) {
     write-host 'Assembling' $file.Name
     $listFile = $file.Name.Replace(".asm", "") + ".lst"
     $objFile = $file.Name.Replace(".asm", "") + ".obj.temp"
-    xas99.py -q -S -R $file.Name -L $listFile -o $objFile
+    xas99.py -q -S -R $file.FullName -L $listFile -o $objFile
 }
 
 write-host 'Linking Unit Test Runners'
