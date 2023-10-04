@@ -208,10 +208,9 @@ FWRDRT SOC  @STSARW,*R13
 ISENTR
 *
        INC  @PARINX
-* Break a paragraph in two.
 * Update the Margin List
 * Let R0 = address of first Margin List entry
-* Let R1 = Get end of Margin List
+* Let R1 = address following end of Margin List
        MOV  @MGNLST,R0
        MOV  *R0,R1
        SLA  R1,MGNPWR
@@ -230,6 +229,7 @@ ENTR1  C    R0,R1
        INC  *R0
        AI   R0,MGNLNG
        JMP  ENTR1
+* Break a paragraph in two.
 * Create space in paragraph list.
 ENTR2  MOV  @LINLST,R0
        MOV  @PARINX,R1

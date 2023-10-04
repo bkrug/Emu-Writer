@@ -132,6 +132,10 @@ RUNTST BLWP @OPENF
 * between margin entries.
        BL   @TSTINT
        BL   @TST21
+* User splits two paragraphs that are
+* after all margin entries.
+       BL   @TSTINT
+       BL   @TST22
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1641,6 +1645,8 @@ TST20
 * The original paragraph is earlier
 * than any entry in the margin list.
        MOV  R11,R12
+* Set test number.
+       LI   R3,20
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1727,6 +1733,8 @@ TXT21A MOV  *R1+,*R0+
        LI   R2,MGN21N
        LI   R3,5*8+4
        BL   @STRCMP
+* Set test number.
+       LI   R3,21
 *
        BL   @PSUCCS
 *
@@ -1746,6 +1754,60 @@ MGN21N DATA 5,3
        DATA 2,>3132,>3334,>3536
        DATA 4,>4142,>4344,>4546
        DATA 5,>5152,>5354,>5556
+
+TST22
+* Test 22
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph follows all
+* entries in the margin list.
+       MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN22D
+TXT22A MOV  *R1+,*R0+
+       CI   R1,2*8+4+MGN22D
+       JL   TXT22A
+* Copy test keypresses to stream
+       LI   R0,KEYL12
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BLWP @INPUT
+* Assert
+       LI   R0,2*8+4+MGN22N
+       MOV  @MGNLST,R1
+       LI   R2,MGN22N
+       LI   R3,2*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,22
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN22D DATA 2,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+MGN22N DATA 2,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
 
 ******* MOCKS **************
 MNUHK
