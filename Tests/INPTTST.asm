@@ -1179,8 +1179,8 @@ TST12  MOV  R11,R12
        LI   R0,0
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -1223,8 +1223,8 @@ TST12  MOV  R11,R12
 
 
 * input from the keyboard.
-KEYL12 BYTE ENTER
-KEY12E
+KEYENT BYTE ENTER
+KEYENU
 
 ERR12  MOV  R1,R0
        LI   R1,ERR12N
@@ -1253,8 +1253,8 @@ TST13  MOV  R11,R12
        LI   R0,149
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -1332,8 +1332,8 @@ TST14  MOV  R11,R12
        LI   R0,406
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -1486,8 +1486,8 @@ TST17  MOV  R11,R12
        LI   R0,231
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -1665,8 +1665,8 @@ TXT20A MOV  *R1+,*R0+
        CI   R1,MGN20D+20
        JL   TXT20A
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -1721,8 +1721,8 @@ TXT21A MOV  *R1+,*R0+
        CI   R1,5*8+4+MGN21D
        JL   TXT21A
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -1781,8 +1781,8 @@ TXT22A MOV  *R1+,*R0+
        CI   R1,2*8+4+MGN22D
        JL   TXT22A
 * Copy test keypresses to stream
-       LI   R0,KEYL12
-       LI   R1,KEY12E
+       LI   R0,KEYENT
+       LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
 * Act
