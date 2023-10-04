@@ -1649,6 +1649,7 @@ TST20
        MOV  @MGNLST,R0
        BLWP @ARYADD
        BLWP @ARYADD
+       MOV  R0,@MGNLST
        LI   R1,MGN20D
 TXT20A MOV  *R1+,*R0+
        CI   R1,MGN20D+20

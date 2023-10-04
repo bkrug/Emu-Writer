@@ -30,3 +30,8 @@ NOFLDS EQU  0
 
 DFLTPG EQU  80        Default Page Width
 SCRNWD EQU  40
+
+*
+* Array lengths
+MGNLNG EQU  8
+MGNPWR EQU  3
