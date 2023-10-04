@@ -128,6 +128,10 @@ RUNTST BLWP @OPENF
 * before the first margin entry.
        BL   @TSTINT
        BL   @TST20
+* User splits two paragraphs that are
+* between margin entries.
+       BL   @TSTINT
+       BL   @TST21
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1680,6 +1684,68 @@ MGN20D DATA 2,3
 MGN20N DATA 2,3
        DATA 4,>1112,>1314,>1516
        DATA 6,>2122,>2324,>2526
+
+TST21
+* Test 21
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is between
+* entries in the margin list, and
+* also has its own entry.
+       MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN21D
+TXT21A MOV  *R1+,*R0+
+       CI   R1,5*8+4+MGN21D
+       JL   TXT21A
+* Copy test keypresses to stream
+       LI   R0,KEYL12
+       LI   R1,KEY12E
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+*
+       LI   R0,5*8+4+MGN21N
+       MOV  @MGNLST,R1
+       LI   R2,MGN21N
+       LI   R3,5*8+4
+       BL   @STRCMP
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN21D DATA 5,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+       DATA 2,>3132,>3334,>3536
+       DATA 3,>4142,>4344,>4546
+       DATA 4,>5152,>5354,>5556
+MGN21N DATA 5,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+       DATA 2,>3132,>3334,>3536
+       DATA 4,>4142,>4344,>4546
+       DATA 5,>5152,>5354,>5556
 
 ******* MOCKS **************
 MNUHK

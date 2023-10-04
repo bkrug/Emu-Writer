@@ -218,16 +218,14 @@ ISENTR
        C    *R0+,*R0+
        A    R0,R1
 * Find first Margin List equal to or above new PARINX value
-ENTR0
-       C    R0,R1
+ENTR0  C    R0,R1
        JHE  ENTR2
        C    *R0,@PARINX
        JHE  ENTR1
        AI   R0,MGNLNG
        JMP  ENTR0
 * Increment all later entries
-ENTR1
-       C    R0,R1
+ENTR1  C    R0,R1
        JHE  ENTR2
        INC  *R0
        AI   R0,MGNLNG
