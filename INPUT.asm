@@ -325,7 +325,7 @@ DELC1  MOVB *R5+,*R4+
        C    *R1+,*R1+
        BLWP @BUFSRK
 *
-       RT
+       B    *R12
 * If this is the end of document,
 * delete nothing.
 DELC2  MOV  @LINLST,R9
