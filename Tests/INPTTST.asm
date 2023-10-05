@@ -136,6 +136,9 @@ RUNTST BLWP @OPENF
 * after all margin entries.
        BL   @TSTINT
        BL   @TST22
+* User merges two paragraphs.
+       BL   @TSTINT
+       BL   @TST23
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -753,8 +756,8 @@ TST18  MOV  R11,R12
        LI   R0,8
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-       LI   R0,KYL18
-       LI   R1,KYL18E
+       LI   R0,KYDEL
+       LI   R1,KYDELE
        CLR  R2
        BL   @CPYKEY
 * Run routine
@@ -797,8 +800,8 @@ TST18  MOV  R11,R12
 
 * input from the keyboard.
 * Delete key.
-KYL18  BYTE DELKEY
-KYL18E
+KYDEL  BYTE DELKEY
+KYDELE
 
 * Deleted the "i" from "history"
 EXP18  DATA EXP18A-EXP18-4,WRAP2
@@ -1808,6 +1811,61 @@ MGN22D DATA 2,3
 MGN22N DATA 2,3
        DATA 0,>1112,>1314,>1516
        DATA 1,>2122,>2324,>2526
+
+TST23
+* Test 23
+* -------
+* User presses delete to merge two
+* paragraphs. Later paragraph has no
+* margin entry
+       MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,1
+       MOV  R0,@PARINX
+       LI   R0,9
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN23D
+TXT23A MOV  *R1+,*R0+
+       CI   R1,3*8+4+MGN23D
+       JL   TXT23A
+* Copy test keypresses to stream
+       LI   R0,KEYENT
+       LI   R1,KEYENU
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BLWP @INPUT
+* Assert
+       LI   R0,3*8+4+MGN23N
+       MOV  @MGNLST,R1
+       LI   R2,MGN23N
+       LI   R3,3*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,22
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN23D DATA 3,3
+       DATA 0,>1112,>1314,>1516
+       DATA 3,>2122,>2324,>2526
+       DATA 4,>3122,>3334,>3536
+MGN23N DATA 3,3
+       DATA 0,>1112,>1314,>1516
+       DATA 2,>2122,>2324,>2526
+       DATA 3,>3122,>3334,>3536
 
 ******* MOCKS **************
 MNUHK
