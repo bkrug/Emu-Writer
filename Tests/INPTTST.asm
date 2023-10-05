@@ -137,8 +137,13 @@ RUNTST BLWP @OPENF
        BL   @TSTINT
        BL   @TST22
 * User merges two paragraphs.
+* No margin list entries are deleted.
        BL   @TSTINT
        BL   @TST23
+* User merges two paragraphs.
+* Delete an extra margin list entry.
+       BL   @TSTINT
+       BL   @TST24
 * Write notification on screen.
        BL   @WREND
        BLWP @CLOSEF
@@ -1860,12 +1865,67 @@ TXT23A MOV  *R1+,*R0+
 * the document. Go with it.
 MGN23D DATA 3,3
        DATA 0,>1112,>1314,>1516
-       DATA 3,>2122,>2324,>2526
+       DATA 2,>2122,>2324,>2526
        DATA 4,>3122,>3334,>3536
 MGN23N DATA 3,3
        DATA 0,>1112,>1314,>1516
        DATA 2,>2122,>2324,>2526
        DATA 3,>3122,>3334,>3536
+
+TST24
+* Test 24
+* -------
+* User presses delete to merge two
+* paragraphs. Later paragraph has a
+* margin entry, that must be deleted
+       MOV  R11,R12
+* Set position values
+       CLR  @INSTMD
+       LI   R0,1
+       MOV  R0,@PARINX
+       LI   R0,9
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN24D
+TXT24A MOV  *R1+,*R0+
+       CI   R1,3*8+4+MGN24D
+       JL   TXT24A
+* Copy test keypresses to stream
+       LI   R0,KYDEL
+       LI   R1,KYDELE
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BLWP @INPUT
+* Assert
+       LI   R0,2*8+4+MGN24N
+       MOV  @MGNLST,R1
+       LI   R2,MGN24N
+       LI   R3,2*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,24
+*
+       BL   @PSUCCS
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN24D DATA 3,3
+       DATA 1,>1112,>1314,>1516
+       DATA 2,>2122,>2324,>2526
+       DATA 3,>3122,>3334,>3536
+MGN24N DATA 3,3
+       DATA 1,>1112,>1314,>1516
+       DATA 2,>3122,>3334,>3536
 
 ******* MOCKS **************
 MNUHK
