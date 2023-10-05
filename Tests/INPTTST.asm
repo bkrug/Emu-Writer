@@ -1837,8 +1837,8 @@ TXT23A MOV  *R1+,*R0+
        CI   R1,3*8+4+MGN23D
        JL   TXT23A
 * Copy test keypresses to stream
-       LI   R0,KEYENT
-       LI   R1,KEYENU
+       LI   R0,KYDEL
+       LI   R1,KYDELE
        CLR  R2
        BL   @CPYKEY
 * Act
@@ -1850,7 +1850,7 @@ TXT23A MOV  *R1+,*R0+
        LI   R3,3*8+4
        BL   @STRCMP
 * Set test number.
-       LI   R3,22
+       LI   R3,23
 *
        BL   @PSUCCS
 *

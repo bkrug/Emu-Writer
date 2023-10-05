@@ -289,7 +289,7 @@ RTERR  MOV  @KEYRD,@KEYWRT
 *
 * Delete key was pressed.
 *
-DELCHR
+DELCHR MOV  R11,R12
 * Set document status bit
        SOC  @STSTYP,*R13
 *
@@ -379,8 +379,12 @@ DELC2  MOV  @LINLST,R9
        INC  R1
        BLWP @ARYDEL
 * Update Margin List
+       LI   R2,-1
+       MOV  @PARINX,R3
+       INC  R3
+       BL   @UPDMGN
 * 
-DELC3  RT
+DELC3  B    *R12
        
 
 
