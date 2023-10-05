@@ -208,30 +208,9 @@ FWRDRT SOC  @STSARW,*R13
 ISENTR
 *
        INC  @PARINX
-* Update the Margin List
-* Let R0 = address of first Margin List entry
-* Let R1 = address following end of Margin List
-       MOV  @MGNLST,R0
-       MOV  *R0,R1
-       SLA  R1,MGNPWR
-       C    *R0+,*R0+
-       A    R0,R1
-* Find first Margin List equal to or above new PARINX value
-ENTR0  C    R0,R1
-       JHE  ENTR2
-       C    *R0,@PARINX
-       JHE  ENTR1
-       AI   R0,MGNLNG
-       JMP  ENTR0
-* Increment all later entries
-ENTR1  C    R0,R1
-       JHE  ENTR2
-       INC  *R0
-       AI   R0,MGNLNG
-       JMP  ENTR1
 * Break a paragraph in two.
 * Create space in paragraph list.
-ENTR2  MOV  @LINLST,R0
+       MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYINS
        CI   R0,>FFFF
@@ -288,6 +267,8 @@ ENTR3  CLR  @CHRPAX
        C    *R1+,*R1+
 *
        BLWP @BUFSRK
+* Update margins
+       BL   @UPDMGN
 * Set document-status bit
        SOC  @STSENT,*R13
 * We processed a key, so move KEYRD
@@ -519,5 +500,30 @@ SHOWHK
        LI   R0,MNUHK
        MOV  R0,@CURMNU
        RT
+
+* Update the Margin List
+* Input R2 = +1 or -1
+UPDMGN
+* Let R0 = address of first Margin List entry
+* Let R1 = address following end of Margin List
+       MOV  @MGNLST,R0
+       MOV  *R0,R1
+       SLA  R1,MGNPWR
+       C    *R0+,*R0+
+       A    R0,R1
+* Find first Margin List equal to or above new PARINX value
+UM1    C    R0,R1
+       JHE  MGNRT
+       C    *R0,@PARINX
+       JHE  UM2
+       AI   R0,MGNLNG
+       JMP  UM1
+* Increment all later entries
+UM2    C    R0,R1
+       JHE  MGNRT
+       INC  *R0
+       AI   R0,MGNLNG
+       JMP  UM2
+MGNRT  RT
 
        END
