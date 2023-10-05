@@ -268,6 +268,8 @@ ENTR3  CLR  @CHRPAX
 *
        BLWP @BUFSRK
 * Update margins
+       LI   R2,1
+       MOV  @PARINX,R3
        BL   @UPDMGN
 * Set document-status bit
        SOC  @STSENT,*R13
@@ -376,6 +378,7 @@ DELC2  MOV  @LINLST,R9
        MOV  @PARINX,R1
        INC  R1
        BLWP @ARYDEL
+* Update Margin List
 * 
 DELC3  RT
        
@@ -501,8 +504,12 @@ SHOWHK
        MOV  R0,@CURMNU
        RT
 
+*
 * Update the Margin List
-* Input R2 = +1 or -1
+* Input
+*    R2: +1 or -1
+*    R3: paragraph index to start with
+*
 UPDMGN
 * Let R0 = address of first Margin List entry
 * Let R1 = address following end of Margin List
@@ -514,14 +521,14 @@ UPDMGN
 * Find first Margin List equal to or above new PARINX value
 UM1    C    R0,R1
        JHE  MGNRT
-       C    *R0,@PARINX
+       C    *R0,R3
        JHE  UM2
        AI   R0,MGNLNG
        JMP  UM1
-* Increment all later entries
+* Increment/Decrement all later entries
 UM2    C    R0,R1
        JHE  MGNRT
-       INC  *R0
+       A    R2,*R0
        AI   R0,MGNLNG
        JMP  UM2
 MGNRT  RT
