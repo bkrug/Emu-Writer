@@ -333,7 +333,7 @@ DELC2  MOV  @LINLST,R9
        MOV  @PARINX,R10
        INC  R10
        C    R10,*R9
-       JEQ  DELC3
+       JEQ  DELCRT
 * Merge two paragraphs
 * Set document status
        SOC  @STSDCR,*R13
@@ -384,25 +384,24 @@ DELC2  MOV  @LINLST,R9
        MOV  @PARINX,R3
        INCT R3
        BL   @UPDMGN
-* Do we have two margin entries pointing
-* same paragraph?
+* Find any pair of MGNLST entries with
+* matching paragraph indeces, and
+* delete the earlier of the pair.
        MOV  @MGNLST,R0
        MOV  *R0,R2
        DECT R2
-       JLT  DELC3
-DELC4  MOV  @MGNLST,R0
-       MOV  R2,R1
+       JLT  DELCRT
+DELC4  MOV  R2,R1
        BLWP @ARYADR
        C    *R1,@MGNLNG(R1)
        JNE  DELC5
-       MOV  @MGNLST,R0
        MOV  R2,R1
        BLWP @ARYDEL
 DELC5  DEC  R2
        JGT  DELC4
        JEQ  DELC4
 * 
-DELC3  B    *R12
+DELCRT B    *R12
        
 
 * User typed some text.
