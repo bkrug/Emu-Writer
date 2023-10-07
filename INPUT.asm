@@ -6,6 +6,7 @@
        REF  BUFSRK
        REF  VDPADR,VDPWRT
        REF  WINMOD,WINOFF
+       REF  GETMGN                             * From UTIL.asm
 
 * Key stroke routines in another file
        REF  UPUPSP,DOWNSP
@@ -381,12 +382,28 @@ DELC2  MOV  @LINLST,R9
 * Update Margin List
        LI   R2,-1
        MOV  @PARINX,R3
-       INC  R3
+       INCT R3
        BL   @UPDMGN
+* Do we have two margin entries pointing
+* same paragraph?
+       MOV  @MGNLST,R0
+       MOV  *R0,R2
+       DECT R2
+       JLT  DELC3
+DELC4  MOV  @MGNLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+       C    *R1,@MGNLNG(R1)
+       JNE  DELC5
+       MOV  @MGNLST,R0
+       MOV  R2,R1
+       BLWP @ARYDEL
+DELC5  DEC  R2
+       JGT  DELC4
+       JEQ  DELC4
 * 
 DELC3  B    *R12
        
-
 
 * User typed some text.
 * Put it in the buffer.
