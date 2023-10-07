@@ -487,7 +487,7 @@ RPLTXT
 * Backspace Delete
 *
 BCKDEL
-       MOV  R11,R12
+       MOV  R11,R8
 * Is this the beginning of document?
        MOV  @PARINX,R0
        A    @CHRPAX,R0
@@ -495,7 +495,7 @@ BCKDEL
 * No, delete previous character
        BL   @BACKSP
        BL   @DELCHR
-BCKDL1 B    *R12
+BCKDL1 B    *R8
 
 *
 * Swap between windowed and vertical mode
