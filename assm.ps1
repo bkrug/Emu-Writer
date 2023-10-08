@@ -5,7 +5,7 @@
 # Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 # Assemble the files
-$files1 = Get-ChildItem ".\" -Filter *.asm |
+$files1 = Get-ChildItem ".\Src\" -Filter *.asm |
          Where-Object { $_.Name -ne 'LOADTSTS.asm' }
 $files2 = Get-ChildItem ".\Tests\" -Filter *.asm |
          Where-Object { $_.Name -ne 'LOADTSTS.asm' }
