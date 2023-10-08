@@ -3,11 +3,12 @@
 *
        REF  PARINX,MGNLST,LINLST          From VAR.asm
        REF  FLDVAL                        "
-       REF  ARYINS,ARYDEL                 From ARRAY.asm
+       REF  ARYINS,ARYDEL,ARYADR          From ARRAY.asm
        REF  WRAP                          From WRAP.asm
        REF  WRAPDw                        From UTIL.asm
 
        COPY 'CPUADR.asm'
+       COPY 'EQUKEY.asm'
 
 INDENT EQU  3
 LEFT   EQU  4
@@ -74,9 +75,31 @@ EM9    LI   R0,FLDVAL
        SLA  R5,8
        MOVB R4,@LEFT(R3)
        MOVB R5,@PWIDTH(R3)
+* Search any duplicate entries and delete them.
+* Let R0 = begining of MGNLST
+* Let R2 = index of current element
+       MOV  @MGNLST,R0
+       MOV  *R0,R2
+       DECT R2
+       JLT  DUP3
+* Compare left margin and paragraph width
+* for each element
+DUP1   MOV  R2,R1
+       BLWP @ARYADR
+       C    @4(R1),@MGNLNG+4(R1)
+       JNE  DUP2
+* Delete duplicate
+       MOV  R2,R1
+       INC  R1
+       BLWP @ARYDEL
+* Get ready for next element
+DUP2   DEC  R2
+       JGT  DUP1
+       JEQ  DUP1
+DUP3  
 * Re-wrap, this and lower paragraphs
        MOV  @PARINX,R0
-       BL   @WRAPDw
+       BL   @WRAPDW
 * No Error
        CLR  R0
 *
