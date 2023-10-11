@@ -27,7 +27,8 @@ NOHTKY BYTE 0
 MNUTTL DATA TXTTTL
        DATA KEYTTL
        DATA NOFLDS
-       DATA NOHTKY
+       DATA NOHTKY          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT ''
        BYTE 0
 
@@ -72,7 +73,8 @@ KEYTT1
 MNUHOM DATA TXTHM
        DATA KEYHM
        DATA NOFLDS
-       DATA HKYHOM
+       DATA HKYHOM          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'HOME'
        BYTE 0
 
@@ -82,10 +84,6 @@ TXTHM  DATA TXTHM1
        BYTE 0
        TEXT 'Margins'
        BYTE 0
-*       TEXT 'paGe'
-*       BYTE 0
-*       TEXT 'pAragraph'
-*       BYTE 0
 TXTHM1 EVEN
 
 KEYHM  DATA KEYHM1
@@ -108,7 +106,8 @@ KEYHM1
 MNUFL  DATA TXTFL
        DATA KEYFL
        DATA NOFLDS
-       DATA HOTKEY
+       DATA HOTKEY          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'FILE'
        BYTE 0
 
@@ -158,7 +157,8 @@ KEYFL1
 MNUHK  DATA TXTHK
        DATA KEYHK
        DATA NOFLDS
-       DATA HKYHOM
+       DATA HKYHOM          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'Hot Keys'
        BYTE 0
 
@@ -195,6 +195,7 @@ FRMSAV DATA TXTSV           * String List
        DATA KEYSV           * Key List
        DATA FLDSV           * Field List
        DATA HKYFIL          * Hotkey Text
+       DATA 0               * Form Population Logic
        TEXT 'SAVE'
        BYTE 0
 
@@ -226,7 +227,8 @@ FLDSV1 EVEN
 FRMLOD DATA TXTLD           * String List
        DATA KEYLD           * Key List
        DATA FLDSV           * Same Field List as Save screen
-       DATA HKYFIL
+       DATA HKYFIL          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'LOAD'
        BYTE 0
 
@@ -253,7 +255,8 @@ KEYLD1
 FRMPRT DATA TXTPR           * String List
        DATA KEYPR           * Key List
        DATA FLDPR           * Field List
-       DATA HKYFIL
+       DATA HKYFIL          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'PRINT'
        BYTE 0
        EVEN
@@ -286,7 +289,8 @@ FLDPR1 EVEN
 FRMNEW DATA TXTNW           * String List
        DATA KEYNW           * Key List
        DATA FLDNW           * Field List
-       DATA HKYFIL
+       DATA HKYFIL          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'NEW DOCUMENT'
        BYTE 0
        EVEN
@@ -321,7 +325,8 @@ FLDNW1 EVEN
 FRMQIT DATA TXTQT           * String List
        DATA KEYQT           * Key List
        DATA FLDQT           * Field List
-       DATA HKYFIL
+       DATA HKYFIL          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'QUIT'
        BYTE 0
        EVEN
@@ -351,11 +356,11 @@ FLDQT1 EVEN
 *
 * Margin Form
 *
-
 FRMMGN DATA TXTMG           * String List
        DATA KEYMG           * Key List
        DATA FLDMG           * Field List
-       DATA HOTKEY
+       DATA HOTKEY          * Address of string to display hotkeys
+       DATA 0               * Form Population Logic
        TEXT 'MARGINS'
        BYTE 0
        EVEN

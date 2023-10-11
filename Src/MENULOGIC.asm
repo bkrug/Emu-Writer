@@ -30,6 +30,7 @@ ASCHGH BYTE 126
 MNUKEY EQU  2
 FIELDS EQU  4
 KEYTXT EQU  6
+MSETUP EQU  8
 
 *
 * Initialize home menu
@@ -114,18 +115,18 @@ MNUDSP
        MOV  @CURMNU,R2
        MOV  *R2,R3
        MOV  *R3+,R4
-* Write title
+* Write Hot keys
        CLR  R0
        BL   @VDPADR
 *
        MOV  @KEYTXT(R2),R0
        BL   @VDPINV
-* Write Hot keys
+* Write title
        LI   R0,SCRNWD
        BL   @VDPADR
 *
        MOV  R2,R0
-       AI   R0,8
+       AI   R0,10
        BL   @VDPINV
 * Set VDP address for strings
        LI   R0,SCRNWD
