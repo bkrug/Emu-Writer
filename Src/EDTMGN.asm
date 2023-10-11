@@ -10,10 +10,6 @@
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
-INDENT EQU  3
-LEFT   EQU  4
-PWIDTH EQU  5         Paragraph width
-
        AORG >B000
 MGNSRT
        XORG LOADED

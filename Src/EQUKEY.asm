@@ -35,3 +35,9 @@ SCRNWD EQU  40
 * Array lengths
 MGNLNG EQU  8
 MGNPWR EQU  3
+
+*
+* Indexes in margin entry
+INDENT EQU  3
+LEFT   EQU  4
+PWIDTH EQU  5         Paragraph width

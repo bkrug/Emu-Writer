@@ -31,6 +31,7 @@ MNUKEY EQU  2
 FIELDS EQU  4
 KEYTXT EQU  6
 MSETUP EQU  8
+MTITLE EQU  10
 
 *
 * Initialize home menu
@@ -126,7 +127,7 @@ MNUDSP
        BL   @VDPADR
 *
        MOV  R2,R0
-       AI   R0,10
+       AI   R0,MTITLE
        BL   @VDPINV
 * Set VDP address for strings
        LI   R0,SCRNWD
@@ -145,6 +146,12 @@ DSP1   BL   @VDPSTR
        MOV  R0,R3
        C    R0,R4
        JL   DSP1
+* If a pre-rendering routine is defined,
+* Fill in the contents of FLDVAL
+       MOV  @MSETUP(R2),R12
+       JEQ  DSP2
+       BL   *R12
+DSP2
 * display field values
        BL   @DSPVAL
 *

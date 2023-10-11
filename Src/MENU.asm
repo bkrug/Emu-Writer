@@ -7,7 +7,10 @@
        REF  EDTMGN                                From EDTMGN.asm
        REF  CCHPRT,CCHLOD,CCHSAV                  From CACHETBL.asm
        REF  CCHNEW,CCHQIT                         "
-       REF  CCHMGN                                "       
+       REF  CCHMGN                                "
+       REF  PARINX,FLDVAL                         From VAR.asm
+       REF  GETMGN,BYTSTR                         From UTIL.asm
+       REF  BUFCPY                                From MEMBUF
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
@@ -360,7 +363,7 @@ FRMMGN DATA TXTMG           * String List
        DATA KEYMG           * Key List
        DATA FLDMG           * Field List
        DATA HOTKEY          * Address of string to display hotkeys
-       DATA 0               * Form Population Logic
+       DATA POPMG           * Form Population Logic
        TEXT 'MARGINS'
        BYTE 0
        EVEN
@@ -392,5 +395,56 @@ FLDMG  DATA FLDMG1
        DATA 80+13           * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
+
+MGNDFT TEXT '10'
+       BYTE 0
+       TEXT '10'
+       BYTE 0
+POPMG  DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R3,*R10
+       DECT R10
+       MOV  R4,*R10
+       DECT R10
+       MOV  R5,*R10
+       DECT R10
+       MOV  R6,*R10
+       DECT R10
+       MOV  R11,*R10
+* Let R0 = address of current margin data
+       MOV  @PARINX,R0
+       BL   @GETMGN
+* Is there a margin entry for this paragraph?
+       MOV  R0,R6
+       JEQ  POPMGD
+* Yes, populate FLDVAL
+* Left Margin
+       MOVB @LEFT(R6),R1
+       LI   R2,FLDVAL
+       BL   @BYTSTR
+* Right Margin
+       LI   R1,DFLTPG
+       SLA  R1,8
+       SB   @LEFT(R6),R1
+       SB   @PWIDTH(R6),R1
+       LI   R2,FLDVAL
+       AI   R2,3
+       BL   @BYTSTR
+       JMP  POPMGR
+* Populate with defaults
+POPMGD LI   R0,MGNDFT
+       LI   R1,FLDVAL
+       MOV  *R0+,*R1+
+       MOV  *R0+,*R1+
+       MOV  *R0,*R1
+*
+POPMGR MOV  *R10+,R11
+       MOV  *R10+,R6
+       MOV  *R10+,R5
+       MOV  *R10+,R4
+       MOV  *R10+,R3
+       MOV  *R10+,R2
+       RT
 
 MNUEND AORG

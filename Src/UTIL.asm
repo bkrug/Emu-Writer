@@ -3,6 +3,7 @@
 *
        DEF  GETMGN
        DEF  WRAPDC,WRAPDW
+       DEF  BYTSTR
 *
        REF  MGNLST,LINLST
        REF  ARYADR
@@ -62,6 +63,38 @@ WRAPLP C    R0,*R2
        INC  R0
        JMP  WRAPLP
 WRAPDN
+       RT
+
+*
+* Convert Byte to String
+*
+* Input:
+*    R1 - byte to convert
+*    R2 - Address of 3-char string
+*
+TEN    DATA 10
+BYTSTR
+* Let R5 = address of char (starting from end)
+       MOV  R2,R5
+       INCT R5
+* Let R3 & R4 be used to divide byte value by 10
+       CLR  R3
+       MOVB R1,R4
+       SRL  R4,8
+* Divide value by 10
+BS1    DIV  @TEN,R3
+* Convert remainder to ASCII
+       AI   R4,'0'
+       SLA  R4,8
+* Store new char
+       MOVB R4,*R5
+* Prepare for next iteration
+       DEC  R5
+       MOV  R3,R4
+       CLR  R3
+* Check if we should loop
+       C    R5,R2
+       JHE  BS1
        RT
 
        END
