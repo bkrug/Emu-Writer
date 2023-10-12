@@ -1,11 +1,3 @@
-#
-# It would be nice for the assembly script to be in Python
-# instead of powershell, so that the rest of the homebrew
-# community can use it even if they are not in a Windows environment.
-#
-# Moving it is a work in progress.
-#
-
 # Run this script with XAS99 to assemble all files
 # See https://endlos99.github.io/xdt99/
 #
@@ -110,3 +102,29 @@ for file in glob.glob("*.lst"):
     os.remove(file)
 for file in glob.glob("*.obj.temp"):
     os.remove(file)
+
+# Create disk image
+print("Creating disk image")
+disk_image = 'EmuWriter.dsk'
+os.system("xdm99.py -X sssd " + disk_image)
+program_files = glob.glob("EMUWRITE*")
+for program_file in program_files:
+    if not program_file.endswith(".dsk"):
+        add_command_1 = "xdm99.py {disk_image} -a {program_file} -f PROGRAM"
+        add_command_2 = add_command_1.format(disk_image = disk_image, program_file = program_file)
+        os.system(add_command_2)
+
+# Add TIFILES header to all object files
+print("Add TIFILES header")
+for file in glob.glob("*.obj"):
+    if not file.endswith(".noheader.obj"):
+        header_command_1 = "xdm99.py -T {object_file} -f DIS/FIX80 -o {object_file}"
+        header_command_2 = header_command_1.format(object_file = file)
+        os.system(header_command_2)
+
+# Add TIFILES header to EMUWRITER
+for program_file in program_files:
+    if not program_file.endswith(".dsk"):
+        header_command_1 = "xdm99.py -T {program_file} -f PROGRAM -o {program_file}"
+        header_command_2 = header_command_1.format(program_file = program_file)
+        os.system(header_command_2)
