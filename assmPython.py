@@ -16,7 +16,7 @@ from subprocess import check_output
 from itertools import chain
 
 #Functions
-def link_files(linked_file, include_membuf, object_files):
+def link_test_files(linked_file, include_membuf, object_files):
     unlinked_files = []
     for object_file in object_files:
         unlinked_files.append(object_file + ".obj.temp")
@@ -33,32 +33,42 @@ files1 = os.scandir(".//Src")
 files2 = os.scandir(".//Tests")
 files = chain(files1, files2)
 
-for fileObj in files:
-    if fileObj.name == "LOADTSTS.asm":
+for file_obj in files:
+    if file_obj.name == "LOADTSTS.asm":
         continue
     else:
-        print("Assembling " + fileObj.name)
-        listFile = fileObj.name.replace(".asm", ".lst")
-        objFile = fileObj.name.replace(".asm", ".obj.temp")
-        assembleCommand1 = "xas99.py -q -S -R {sourceFile} -L {listFile} -o {objFile}"
-        assembleCommand2 = assembleCommand1.format(sourceFile = fileObj.path, listFile = listFile, objFile = objFile)
-        os.system(assembleCommand2)
+        print("Assembling " + file_obj.name)
+        list_file = file_obj.name.replace(".asm", ".lst")
+        obj_file = file_obj.name.replace(".asm", ".obj.temp")
+        assemble_command_1 = "xas99.py -q -S -R {source} -L {list} -o {obj}"
+        assemble_command_2 = assemble_command_1.format(source = file_obj.path, list = list_file, obj = obj_file)
+        os.system(assemble_command_2)
 
 print("Linking Unit Test Runners")
 temp_files = [ "TESTFRAM", "ACTTST", "ACT", "VAR", "CONST" ]
-link_files("ACTRUN.obj", True, temp_files)
+link_test_files("ACTRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "DISPTST", "DISP", "VAR", "CONST" ]
-link_files("DISPRUN.obj", True, temp_files)
+link_test_files("DISPRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "VAR", "CONST" ]
-link_files("DISPARUN.obj", False, temp_files)
+link_test_files("DISPARUN.obj", False, temp_files)
 
 temp_files = [ "INPTTST", "TESTUTIL", "INPUT", "WRAP", "ACT", "UTIL", "VAR", "CONST" ]
-link_files("INPTRUN.obj", True, temp_files)
+link_test_files("INPTRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "LOOKTST", "LOOK", "VAR", "CONST" ]
-link_files("LOOKRUN.obj", False, temp_files)
+link_test_files("LOOKRUN.obj", False, temp_files)
+
+temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "VAR", "CONST" ]
+link_test_files("POSRUN.obj", False, temp_files)
+
+temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "VAR", "CONST" ]
+link_test_files("WRAPRUN.obj", True, temp_files)
+
+print("Linking Key Buffer Test Program")
+temp_files = [ "KEYTST", "TESTUTIL", "KEY", "VAR", "CONST" ]
+link_test_files("KEYRUN.obj", False, temp_files)
 
 #Clean up
 for file in glob.glob("*.lst"):
