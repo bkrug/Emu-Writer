@@ -147,7 +147,7 @@ DSP1   BL   @VDPSTR
        C    R0,R4
        JL   DSP1
 * If a pre-rendering routine is defined,
-* Fill in the contents of FLDVAL
+* fill in the contents of FLDVAL
        MOV  @MSETUP(R2),R12
        JEQ  DSP2
        BL   *R12

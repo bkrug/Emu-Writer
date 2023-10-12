@@ -1,3 +1,11 @@
+#
+# It would be nice for the assembly script to be in Python
+# instead of powershell, so that the rest of the homebrew
+# community can use it even if they are not in a Windows environment.
+#
+# Moving it is a work in progress.
+#
+
 import os
 from subprocess import check_output
 

@@ -14,6 +14,9 @@
 MGNSRT
        XORG LOADED
 
+* TODO: Try to do validation first,
+* and insert the new array element later.
+
 EDTMGN
        DECT R10
        MOV  R11,*R10
@@ -132,7 +135,7 @@ PI1    MOVB *R0+,R4
        JL   PTERR
        CB   R4,@NINE
        JH   PTERR
-* No, multiply previous calculations by 10
+* Yes, multiply previous calculations by 10
        MPY  @TEN,R1
        MOV  R2,R1
 * Convert digit to number and add to R1
@@ -142,16 +145,23 @@ PI1    MOVB *R0+,R4
 * Have we already converted three digits?
        DEC  R3
        JH   PI1
-* Finished
-PI2    MOV  *R10+,R4
+PI2
+* Did we find at least one digit?
+       CI   R3,3
+       JEQ  PTREQ
+* Yes, so restore values from stack and return
+       MOV  *R10+,R4
        MOV  *R10+,R3
 * Set EQU status bit to false
        CLR  R0
        RT
+* Error: Field is empty
+PTREQ  LI   R1,REQERR
+       JMP  PTERR1       
 * Error: This is not a number
 PTERR
        LI   R1,NUMERR
-       SETO R0
+PTERR1 SETO R0
 *
        MOV  *R10+,R4
        MOV  *R10+,R3
@@ -163,6 +173,8 @@ NINE   TEXT '9'
 MGNERR TEXT 'Page width minus margins must be > 10'
        BYTE 0
 NUMERR TEXT 'Margins must be numbers'
+       BYTE 0
+REQERR TEXT 'All fields are required'
        BYTE 0
        EVEN
 
