@@ -12,19 +12,29 @@
 # If you can't run powershell scripts research this command locally:
 # Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 import os, glob
-from subprocess import check_output
 from itertools import chain
 
 #Functions
-def link_test_files(linked_file, include_membuf, object_files):
+def get_unlinked_string(include_membuf, object_files):
     unlinked_files = []
     for object_file in object_files:
         unlinked_files.append(object_file + ".obj.temp")
+    # These can't be the first files in the list because the first byte is not the program start
+    # These can't be at the end, because the main program gets auto-split into smaller pieces
     if include_membuf == True:
-        unlinked_files.append("MEMBUF.noheader.obj")    
-        unlinked_files.append("ARRAY.noheader.obj")
-    unlinked_files_string = " ".join(unlinked_files)
+        unlinked_files.insert(1, "MEMBUF.noheader.obj")    
+        unlinked_files.insert(2, "ARRAY.noheader.obj")
+    return " ".join(unlinked_files)
+
+def link_test_files(linked_file, include_membuf, object_files):
+    unlinked_files_string = get_unlinked_string(include_membuf, object_files)
     link_command_1 = "xas99.py -l {source} -o {output}"
+    link_command_2 = link_command_1.format(source = unlinked_files_string, output = linked_file)
+    os.system(link_command_2)
+
+def link_main_files(linked_file, include_membuf, object_files):
+    unlinked_files_string = get_unlinked_string(include_membuf, object_files)
+    link_command_1 = "xas99.py -i -a \">2000\" -l {source} -o {output}"
     link_command_2 = link_command_1.format(source = unlinked_files_string, output = linked_file)
     os.system(link_command_2)
 
@@ -69,6 +79,31 @@ link_test_files("WRAPRUN.obj", True, temp_files)
 print("Linking Key Buffer Test Program")
 temp_files = [ "KEYTST", "TESTUTIL", "KEY", "VAR", "CONST" ]
 link_test_files("KEYRUN.obj", False, temp_files)
+
+print("Linking Main Program")
+temp_files = [
+    "MAIN",
+    "CONST",
+    "INPUT",
+    "WRAP",
+    "POSUPD",
+    "DISP",
+    "KEY",
+    "VDP",
+    "LOOK",
+    "ACT",
+    "DSRLNK",
+    "MENULOGIC",
+    "UTIL",
+    "HEADER",
+    "VAR",
+    "CACHETBL",
+    "INIT",
+    "IO",
+    "EDTMGN",
+    "MENU"
+]
+link_main_files("EMUWRITER", True, temp_files)
 
 #Clean up
 for file in glob.glob("*.lst"):
