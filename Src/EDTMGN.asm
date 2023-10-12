@@ -3,7 +3,8 @@
 *
        REF  PARINX,MGNLST,LINLST          From VAR.asm
        REF  FLDVAL                        "
-       REF  ARYINS,ARYDEL,ARYADR          From ARRAY.asm
+       REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
+       REF  ARYINS,ARYDEL,ARYADR          From ARRAY
        REF  WRAP                          From WRAP.asm
        REF  WRAPDw                        From UTIL.asm
 
@@ -14,39 +15,17 @@
 MGNSRT
        XORG LOADED
 
-* TODO: Try to do validation first,
-* and insert the new array element later.
-
 EDTMGN
        DECT R10
        MOV  R11,*R10
-* Let R2 = index of MGNLST element
-* Let R3 = address of MGNLST element
-* Let R4 = element count
-       CLR  R2
-       MOV  @MGNLST,R4
-       MOV  R4,R3
-       C    *R3+,*R3+
-       MOV  *R4,R4
-* Do we need to insert element at end of list?
-       JEQ  EM2
-* Find first MGNLST element for matching or later paragraph
-EM1    C    *R3,@PARINX
-       JH   EM2
-       JEQ  EM9
-       AI   R3,8
-       INC  R2
-       C    R2,R4
-       JL   EM1
-* We need to insert a new element
-EM2    MOV  @MGNLST,R0
-       MOV  R2,R1
-       BLWP @ARYINS
+* Allocate enough space for a MGNLST element
+* Let R6 = address of allocated space
+       LI   R0,MGNLNG
+       BLWP @BUFALC
        JEQ  EMERR
-       MOV  R0,@MGNLST
-       MOV  R1,R3
-* Set paragraph index of new element
-       MOV  @PARINX,*R3
+       MOV  R0,R6
+* Set Paragraph Index
+       MOV  @PARINX,*R6
 * Let R4 = left margin
 EM9    LI   R0,FLDVAL
        BL   @PRSINT
@@ -72,9 +51,47 @@ EM9    LI   R0,FLDVAL
 * Set left margin and page width in MGNLST element
        SLA  R4,8
        SLA  R5,8
-       MOVB R4,@LEFT(R3)
-       MOVB R5,@PWIDTH(R3)
+       MOVB R4,@LEFT(R6)
+       MOVB R5,@PWIDTH(R6)
+*
+* Create or Edit Margin List entry
+*
+* Let R2 = index of MGNLST element
+* Let R3 = address of MGNLST element
+* Let R4 = element count
+       CLR  R2
+       MOV  @MGNLST,R4
+       MOV  R4,R3
+       C    *R3+,*R3+
+       MOV  *R4,R4
+* Do we need to insert element at end of list?
+       JEQ  EM2
+* Find first MGNLST element for matching or later paragraph
+EM1    C    *R3,@PARINX
+       JH   EM2
+       JEQ  EM9
+       AI   R3,8
+       INC  R2
+       C    R2,R4
+       JL   EM1
+* We need to insert a new element
+EM2    MOV  @MGNLST,R0
+       MOV  R2,R1
+       BLWP @ARYINS
+       JEQ  EMERR
+       MOV  R0,@MGNLST
+       MOV  R1,R3
+* Copy margin data to actual MGNLST
+       MOV  R6,R0
+       MOV  R3,R1
+       LI   R2,MGNLNG
+       BLWP @BUFCPY
+* Deallocate temp workspace
+       MOV  R6,R0
+       BLWP @BUFREE
+*
 * Search any duplicate entries and delete them.
+*
 * Let R0 = begining of MGNLST
 * Let R2 = index of current element
        MOV  @MGNLST,R0
