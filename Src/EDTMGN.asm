@@ -22,6 +22,7 @@ EDTMGN
 * Allocate enough space for a MGNLST element
 *
 * Let R6 = address of allocated space
+       CLR  R6
        LI   R0,MGNLNG
        BLWP @BUFALC
        JEQ  EMERR
@@ -92,9 +93,6 @@ EM9
        MOV  R3,R1
        LI   R2,MGNLNG
        BLWP @BUFCPY
-* Deallocate temp workspace
-       MOV  R6,R0
-       BLWP @BUFREE
 *
 * Search any duplicate entries and delete them.
 *
@@ -125,13 +123,26 @@ DUP3
 * No Error
        CLR  R0
 * Leave routine regardless of if an error occurred or not.
-EM10   MOV  *R10+,R11
+EM10   DECT R10
+       MOV  R0,*R10
+* Deallocate temp workspace
+       MOV  R6,R0
+       BLWP @BUFREE
+*
+       MOV  *R10+,R0
+       MOV  *R10+,R11
        RT
 
 *
-* An error occurred
+* An out-of-memeory error occurred
 *
-EMERR  SETO R0
+EMERR
+* Deallocate temp workspace
+       MOV  R6,R0
+       JEQ  EMERR1
+       BLWP @BUFREE
+*
+EMERR1 SETO R0
        RT
 
 *
