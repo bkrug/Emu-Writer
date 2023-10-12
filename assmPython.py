@@ -6,6 +6,11 @@
 # Moving it is a work in progress.
 #
 
+# Run this script with XAS99 to assemble all files
+# See https://endlos99.github.io/xdt99/
+#
+# If you can't run powershell scripts research this command locally:
+# Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 import os
 from subprocess import check_output
 from itertools import chain
@@ -22,7 +27,11 @@ for fileObj in files:
         print("Assembling " + fileObj.name)
         listFile = fileObj.name.replace(".asm", ".lst")
         objFile = fileObj.name.replace(".asm", ".obj.temp")
-        assembleCommand = "xas99.py -q -S -R " + fileObj.path + " -L " + listFile + " -o " + objFile
-        shellOutput = check_output(assembleCommand, shell=True)
+        assembleCommand1 = "xas99.py -q -S -R {sourceFile} -L {listFile} -o {objFile}"
+        assembleCommand2 = assembleCommand1.format(sourceFile = fileObj.path, listFile = listFile, objFile = objFile)
+        shellOutput = check_output(assembleCommand2, shell=True)
         if len(shellOutput) == 0:
             print(shellOutput)
+
+print("Linking Unit Test Runners")
+
