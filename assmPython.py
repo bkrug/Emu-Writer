@@ -7,10 +7,15 @@ import os, glob
 from itertools import chain
 
 #Functions
+WORK_FOLDER = "./Fiad/"
+
+def get_work_file(filename):
+    return WORK_FOLDER + filename
+
 def get_unlinked_string(include_membuf, object_files):
     unlinked_files = []
     for object_file in object_files:
-        unlinked_files.append(object_file + ".obj.temp")
+        unlinked_files.append(get_work_file(object_file + ".obj.temp"))
     # These can't be the first files in the list because the first byte is not the program start
     # These can't be at the end, because the main program gets auto-split into smaller pieces
     if include_membuf == True:
@@ -21,13 +26,13 @@ def get_unlinked_string(include_membuf, object_files):
 def link_test_files(linked_file, include_membuf, object_files):
     unlinked_files_string = get_unlinked_string(include_membuf, object_files)
     link_command_1 = "xas99.py -l {source} -o {output}"
-    link_command_2 = link_command_1.format(source = unlinked_files_string, output = linked_file)
+    link_command_2 = link_command_1.format(source = unlinked_files_string, output = get_work_file(linked_file))
     os.system(link_command_2)
 
 def link_main_files(linked_file, include_membuf, object_files):
     unlinked_files_string = get_unlinked_string(include_membuf, object_files)
     link_command_1 = "xas99.py -i -a \">2000\" -l {source} -o {output}"
-    link_command_2 = link_command_1.format(source = unlinked_files_string, output = linked_file)
+    link_command_2 = link_command_1.format(source = unlinked_files_string, output = get_work_file(linked_file))
     os.system(link_command_2)
 
 #Assemble Src and Tests
@@ -40,8 +45,8 @@ for file_obj in files:
         continue
     else:
         print("Assembling " + file_obj.name)
-        list_file = file_obj.name.replace(".asm", ".lst")
-        obj_file = file_obj.name.replace(".asm", ".obj.temp")
+        list_file = get_work_file(file_obj.name.replace(".asm", ".lst"))
+        obj_file = get_work_file(file_obj.name.replace(".asm", ".obj.temp"))
         assemble_command_1 = "xas99.py -q -S -R {source} -L {list} -o {obj}"
         assemble_command_2 = assemble_command_1.format(source = file_obj.path, list = list_file, obj = obj_file)
         os.system(assemble_command_2)
@@ -98,16 +103,16 @@ temp_files = [
 link_main_files("EMUWRITER", True, temp_files)
 
 #Clean up
-for file in glob.glob("*.lst"):
+for file in glob.glob(WORK_FOLDER + "*.lst"):
     os.remove(file)
-for file in glob.glob("*.obj.temp"):
+for file in glob.glob(WORK_FOLDER + "*.obj.temp"):
     os.remove(file)
 
 # Create disk image
 print("Creating disk image")
 disk_image = 'EmuWriter.dsk'
 os.system("xdm99.py -X sssd " + disk_image)
-program_files = glob.glob("EMUWRITE*")
+program_files = glob.glob(WORK_FOLDER + "EMUWRITE*")
 for program_file in program_files:
     if not program_file.endswith(".dsk"):
         add_command_1 = "xdm99.py {disk_image} -a {program_file} -f PROGRAM"
@@ -116,7 +121,7 @@ for program_file in program_files:
 
 # Add TIFILES header to all object files
 print("Add TIFILES header")
-for file in glob.glob("*.obj"):
+for file in glob.glob(WORK_FOLDER + "*.obj"):
     if not file.endswith(".noheader.obj"):
         header_command_1 = "xdm99.py -T {object_file} -f DIS/FIX80 -o {object_file}"
         header_command_2 = header_command_1.format(object_file = file)
