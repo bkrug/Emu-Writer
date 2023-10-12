@@ -120,7 +120,7 @@ for program_file in program_files:
         os.system(add_command_2)
 
 # Add TIFILES header to all object files
-print("Add TIFILES header")
+print("Adding TIFILES header")
 for file in glob.glob(WORK_FOLDER + "*.obj"):
     if not file.endswith(".noheader.obj"):
         header_command_1 = "xdm99.py -T {object_file} -f DIS/FIX80 -o {object_file}"

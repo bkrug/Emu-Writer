@@ -18,7 +18,9 @@ MGNSRT
 EDTMGN
        DECT R10
        MOV  R11,*R10
+*
 * Allocate enough space for a MGNLST element
+*
 * Let R6 = address of allocated space
        LI   R0,MGNLNG
        BLWP @BUFALC
@@ -26,8 +28,11 @@ EDTMGN
        MOV  R0,R6
 * Set Paragraph Index
        MOV  @PARINX,*R6
+*
+* Read user input
+*
 * Let R4 = left margin
-EM9    LI   R0,FLDVAL
+       LI   R0,FLDVAL
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
@@ -81,6 +86,7 @@ EM2    MOV  @MGNLST,R0
        JEQ  EMERR
        MOV  R0,@MGNLST
        MOV  R1,R3
+EM9
 * Copy margin data to actual MGNLST
        MOV  R6,R0
        MOV  R3,R1
@@ -118,7 +124,7 @@ DUP3
        BL   @WRAPDW
 * No Error
        CLR  R0
-*
+* Leave routine regardless of if an error occurred or not.
 EM10   MOV  *R10+,R11
        RT
 
