@@ -21,6 +21,16 @@ SCRNED
 * Empty Margin List
 *
 EMPLST DATA 0,3
+*
+* Margin List with 5-char indent
+*
+MGN5   DATA 1,3
+       DATA 0,>0005,>0A0A,>0A0A
+*
+* Margin List with 32-char indent
+*
+MGN32  DATA 1,3
+       DATA 0,>0020,>0A0A,>0A0A
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Window moved.
@@ -29,6 +39,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * User deleted a carriage return.
        DATA DSP12
        TEXT 'DSP12 '
+* Display one indented paragraph. No horizontal offset.
+       DATA DSP13
+       TEXT 'DSP13 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -404,6 +417,141 @@ SCRN12 TEXT '                                        '
        TEXT 'campaigned for an end to European coloni'
        TEXT 'Africa and the political unification of '
        TEXT 'He envisioned a unified Africa as a one_'
+
+*
+* Only should redraw the current
+* paragraph, which is in middle of the
+* screen. Draw the left most portion.
+*
+DSP13
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL13
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN13
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL13 DATA 6,1
+       DATA PAR13A
+       DATA PAR13B
+       DATA PAR13C
+       DATA PAR13D
+       DATA PAR13E
+       DATA PAR13F
+
+PAR13A DATA -1
+       DATA WRP13A
+       TEXT '...'
+       EVEN
+WRP13A DATA 3,1,-1,-1,-1
+PAR13B DATA -1
+       DATA WRP13B
+       TEXT '...'
+       EVEN
+WRP13B DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR13C DATA -1
+       DATA WRP13C
+       TEXT '...'
+       EVEN
+WRP13C DATA 5,1,-1,-1,-1,-1,-1
+PAR13D DATA -1
+       DATA WRP13D
+       TEXT '...'
+       EVEN
+WRP13D DATA 5,1,-1,-1,-1,-1,-1
+PAR13E DATA 468
+       DATA WRP13E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP13E DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR13F DATA -1
+       DATA WRP13F
+       TEXT '...'
+       EVEN
+WRP13F DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN13 TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '     Marcus Mosiah Garvey Jr. ONH (17 Au'
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
 
 ********
 
