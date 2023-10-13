@@ -16,7 +16,6 @@
        DATA >1234
 
        COPY 'EQUKEY.asm'
-MAXIDT EQU  21
 
 *
 * Wrap

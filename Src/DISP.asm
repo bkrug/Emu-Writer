@@ -13,7 +13,7 @@
        REF  DISPWS
        REF  LINLST,FMTLST,MGNLST
        REF  PARINX
-       REF  WINOFF,WINPAR,WINLIN
+       REF  WINOFF,WINPAR,WINLIN,WINMOD
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN
        REF  ERRMEM
@@ -221,6 +221,14 @@ WRTLIN DECT R10
        MOVB @INDENT(R8),R8
        SRL  R8,8
        JEQ  WRTMG9               * Is Indent zero?
+* If in vertical mode, do not let indent exceed max value
+       MOV  @WINMOD,R0
+       JEQ  WRTMG1
+       LI   R0,MAXIDT
+       C    R8,R0
+       JLE  WRTMG1
+       MOV  R0,R8
+WRTMG1
 * Let R1 = indent spaces on screen
        MOV  R8,R1
        S    @WINOFF,R1

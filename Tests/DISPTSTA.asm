@@ -6,7 +6,7 @@
        REF  AEQ,ANEQ,AL
        REF  DISP,LINLST,FMTLST,MGNLST
        REF  PARINX
-       REF  WINOFF,WINPAR,WINLIN
+       REF  WINOFF,WINPAR,WINLIN,WINMOD
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN
        REF  ERRMEM
@@ -78,6 +78,7 @@ DSP11
        MOV  R0,@WINPAR
        LI   R0,4
        MOV  R0,@WINLIN
+       CLR  @WINMOD
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -265,6 +266,7 @@ DSP12
        MOV  R0,@WINPAR
        LI   R0,5
        MOV  R0,@WINLIN
+       CLR  @WINMOD
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -448,6 +450,7 @@ DSP13
        MOV  R0,@WINPAR
        LI   R0,3
        MOV  R0,@WINLIN
+       CLR  @WINMOD
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act
@@ -583,6 +586,7 @@ DSP14
        MOV  R0,@WINPAR
        LI   R0,3
        MOV  R0,@WINLIN
+       CLR  @WINMOD
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act
@@ -721,6 +725,7 @@ DSP15
        MOV  R0,@WINPAR
        LI   R0,0
        MOV  R0,@WINLIN
+       CLR  @WINMOD
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act

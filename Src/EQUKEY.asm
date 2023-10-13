@@ -37,6 +37,8 @@ SCRNWD EQU  40
 MGNLNG EQU  8
 MGNPWR EQU  3
 
+MAXIDT EQU  21        Max indent in vertical mode
+
 *
 * Indexes in margin entry
 INDENT EQU  3
