@@ -212,28 +212,37 @@ WRTLIN DECT R10
        MOV  R11,*R10
 * Let R8 = size of indent
        CLR  R8
-* Should we write indent?
        MOV  R2,R2
-       JNE  WRTMG9
+       JNE  WRTMG9               * First Line?
        MOV  R9,R0
        BL   @GETMGN
        MOV  R0,R8
-       JEQ  WRTMG9
+       JEQ  WRTMG9               * No margin entry?
        MOVB @INDENT(R8),R8
-       JEQ  WRTMG9
-* Yes, write indent spaces
-* Let R8 = size of indent
        SRL  R8,8
+       JEQ  WRTMG9               * Is Indent zero?
+* Let R1 = indent spaces on screen
        MOV  R8,R1
+       S    @WINOFF,R1
+       JLT  WRTMG9
+       JEQ  WRTMG9
+* R1 > 0, draw indent
        BL   @VDPSPC
 WRTMG9
 * Set R0 & R1 parameters for starting
 * position and length of text
-       BL   @GETALG       
+       BL   @GETALG
        BL   *R7
-* Let R8 = number of columns right of indent
+* Let R8 = max columns we can fit on screen
+       MOV  R2,R2
+       JNE  WRTMX
+       S    @WINOFF,R8
+       JLT  WRTMX
        NEG  R8
        AI   R8,SCRNWD
+       JMP  WRTMX1
+WRTMX  LI   R8,SCRNWD
+WRTMX1
 * Length must be >= 0 and <= R8
        MOV  R1,R1
        JGT  WRTL1
@@ -319,15 +328,25 @@ PONELN MOV  R3,R0
 * Input: 
 *  R3 - paragraph text address
 *  R5 - wrap list element address
+*  R8 - left indent
 * Output:
 * R0, R1, R5
-PFSTLN MOV  R3,R0
-       A    @WINOFF,R0
+PFSTLN DECT R10
+       MOV  R2,*R10
+* Let R2 = horizontal offset
+       MOV  @WINOFF,R2
+       JEQ  PFST1
+       S    R8,R2
+PFST1
+*
+       MOV  R3,R0
+       A    R2,R0
 *
        INCT R5
        MOV  *R5,R1
-       S    @WINOFF,R1
+       S    R2,R1
 *
+       MOV  *R10+,R2
        RT
       
 *
