@@ -46,7 +46,7 @@ Assembly Results:
   * Someday it would be nice to be able to run all unit tests as a single program, but for now you need to run each group of tests.
 * You might wonder why the EMUWRITER program is followed by so many other E/A 5 programs like EMUWRITES. This has to do with how the program is stoed in RAM after loading it from a disk.
   * EMUWRITER is stored at address >2000 and occupies 6 KB.
-  * The other EMUWRITE* programs are loaded intially loaded into VDP RAM. Each of them can be pulled into the 2KB space at address >3800, when there is a need to execute them.
+  * The other EMUWRITE* programs are intially loaded into VDP RAM. Each of them can be pulled into the 2KB space at address >3800, when there is a need to execute them.
   * This design is meant to reserve the upper 24 KB of the TI-99's expansion RAM for the user's document. The executable code is starting to grow beyond the lower 8 KB of the expansion RAM.
 
 ### Taglines
