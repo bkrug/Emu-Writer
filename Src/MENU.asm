@@ -374,6 +374,8 @@ TXTMG  DATA TXTMG1
        BYTE 0
        TEXT 'Right Margin'
        BYTE 0
+       TEXT 'Indent'
+       BYTE 0
 TXTMG1 EVEN
 
 KEYMG  DATA KEYMG1
@@ -388,11 +390,14 @@ KEYMG  DATA KEYMG1
 KEYMG1
 
 FLDMG  DATA FLDMG1
-*
+* Left Margin
        DATA 40+13           * Field position on screen
        DATA 3               * Length of field
-*
+* Right Margin
        DATA 80+13           * Field position on screen
+       DATA 3               * Length of field
+* Indent
+       DATA 120+13          * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
 
@@ -400,6 +405,9 @@ MGNDFT TEXT '10'
        BYTE 0
        TEXT '10'
        BYTE 0
+       TEXT '0'
+       BYTE 0,0
+MGNEND
 POPMG  DECT R10
        MOV  R2,*R10
        DECT R10
@@ -431,11 +439,16 @@ POPMG  DECT R10
        LI   R2,FLDVAL
        AI   R2,3
        BL   @BYTSTR
+* Indent
+       MOVB @INDENT(R6),R1
+       LI   R2,FLDVAL
+       AI   R2,6
+       BL   @BYTSTR
        JMP  POPMGR
 * Populate with defaults
 POPMGD LI   R0,MGNDFT
        LI   R1,FLDVAL
-       LI   R2,6
+       LI   R2,MGNEND-MGNDFT
        BLWP @BUFCPY
 *
 POPMGR MOV  *R10+,R11
