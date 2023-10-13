@@ -14,6 +14,7 @@
 *
 * Input:
 *   R0 - index of paragraph
+* Changed: R1
 * Output:
 *   R0 - address of margin data
 *

@@ -7,6 +7,8 @@
        DEF  DISP
 * Methods for writing to VDP
        REF  VDPADR,VDPWRT,VDPSPC
+* From UTIL
+       REF  GETMGN
 *
        REF  DISPWS
        REF  LINLST,FMTLST,MGNLST
@@ -21,9 +23,12 @@
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4
+* Let R10 = Stack position
+       MOV  @20(R13),R10
+*
        BL   @NOTHIN
 * Let R9 = starting paragraph index
-* Let R10 = starting screen row
+* Let R12 = starting screen row
 * Set initial VDP address
        BL   @STRPAR
        BL   @SCRNRW
@@ -61,8 +66,8 @@ DISP2
 * Write a row of text
        BL   @WRTLIN
 * Track screen-row
-       INC  R10
-       CI   R10,24
+       INC  R12
+       CI   R12,24
        JHE  DISP3
 * No longer on first paragraph-line
        INC  R2
@@ -129,19 +134,20 @@ SP2    MOV  @WINPAR,R9
        RT
 
 *
-* Let R10 = starting screen row
+* Let R12 = starting screen row
 *
-SCRNRW MOV  R11,R12
+SCRNRW DECT R10
+       MOV  R11,*R10
 * If cursor's paragraph is at top of
 * screen, then only skip screen header.
-       CLR  R10
+       CLR  R12
        C    @WINPAR,R9
        JEQ  SROW2
 *
        MOV  @WINPAR,R1
-* Let R10 total screen rows to skip
-       MOV  @WINLIN,R10
-       NEG  R10
+* Let R12 total screen rows to skip
+       MOV  @WINLIN,R12
+       NEG  R12
 * Let R3 = paragraph address
 SROW1  MOV  R1,R3
        BL   @PARADR
@@ -149,8 +155,8 @@ SROW1  MOV  R1,R3
        INCT R3
        MOV  *R3,R3
 * Add paragraph length to row count
-       A    *R3,R10
-       INC  R10
+       A    *R3,R12
+       INC  R12
 * Keep going until we reach the
 * cursor's paragraph
        INC  R1
@@ -158,24 +164,27 @@ SROW1  MOV  R1,R3
        JL   SROW1
 * Skip two rows that are reserved for
 * document information.
-SROW2  INCT R10
+SROW2  INCT R12
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
        
 *
 * Set VDP write address so that the
 * routine can redraw the current
 * paragraph.
 *
-VDPSTR MOV  R11,R12
-* Let R0 = R10 * screen width
-       MOV  R10,R2
+VDPSTR DECT R10
+       MOV  R11,*R10
+* Let R0 = R12 * screen width
+       MOV  R12,R2
        MPY  @FORTY,R2
        MOV  R3,R0
 * Set VDP write address
        BL   @VDPADR
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 *
 * Get paragraph address from index
@@ -197,19 +206,41 @@ PARADR SLA  R3,1
 *
 * Input:
 * R2,R3,R4,R5,R6
+* R9 = current paragraph index
 *
-WRTLIN MOV  R11,R12
+WRTLIN DECT R10
+       MOV  R11,*R10
+* Let R8 = size of indent
+       CLR  R8
+* Should we write indent?
+*       MOV  R2,R2
+*       JNE  WRTMG9
+*       MOV  R9,R0
+*       BL   @GETMGN
+*       MOV  R0,R8
+*       JEQ  WRTMG9
+*       MOVB @INDENT(R8),R8
+*       JEQ  WRTMG9
+* Yes, write indent spaces
+* Let R8 = size of indent
+*       SRL  R8,8
+*       MOV  R8,R1
+*       BL   @VDPSPC
+WRTMG9
 * Set R0 & R1 parameters for starting
 * position and length of text
        BL   @GETALG       
        BL   *R7
-* Length must be in 0-40 range
+* Let R8 = number of columns right of indent
+       NEG  R8
+       AI   R8,SCRNWD
+* Length must be >= 0 and <= R8
        MOV  R1,R1
        JGT  WRTL1
        CLR  R1
-WRTL1  CI   R1,SCRNWD
+WRTL1  C    R1,R8
        JLE  WRTL2
-       LI   R1,SCRNWD
+       MOV  R8,R1
 WRTL2
 * Write visible chars to screen.
        MOV  R1,R7
@@ -217,10 +248,11 @@ WRTL2
 * Write trailing spaces
        MOV  R7,R1
        NEG  R1
-       AI   R1,SCRNWD
+       A    R8,R1
        BL   @VDPSPC
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 *
 * Get algorithm appropriate for
@@ -268,7 +300,7 @@ ALGLST
 *
 * Input:
 *  R3 - paragraph text address
-*  R4 - length or paragraph
+*  R4 - length of paragraph
 * Output:
 * R0, R1
 PONELN MOV  R3,R0
@@ -346,7 +378,8 @@ PLSTLN
 * Decide wether or not to continue
 * by drawing the next paragraph.
 *
-NXTPAR MOV  R11,R12
+NXTPAR DECT R10
+       MOV  R11,*R10
 * If paragraph line-count changed,
 * continue drawing the screen.
        MOV  *R13,R0
@@ -359,11 +392,15 @@ NXTPAR MOV  R11,R12
        COC  @STSDCR,R0
        JEQ  NXT1
 * Don't write next paragraph
-NXTNO  LI   R0,-1
-       B    *R12
+NXTNO
+       MOV  *R10+,R11
+       LI   R0,-1
+       RT
 * Write next paragraph
-NXTYES S    R0,R0
-       B    *R12
+NXTYES
+       MOV  *R10+,R11
+       S    R0,R0
+       RT
 *
 NXT1
 * Don't read past document-end
@@ -372,7 +409,7 @@ NXT1
        JL   NXTYES
 * Clear remaining screen
        LI   R0,24
-       S    R10,R0
+       S    R12,R0
        MPY  @FORTY,R0
        BL   @VDPSPC
 *
