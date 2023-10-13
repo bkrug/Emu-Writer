@@ -229,8 +229,9 @@ WRTLIN DECT R10
 * R1 > 0, draw indent
        BL   @VDPSPC
 WRTMG9
-* Set R0 & R1 parameters for starting
-* position and length of text
+* According to algorithm derived in GETALG,
+* Let R0 = starting position
+* Let R1 = length of text
        BL   @GETALG
        BL   *R7
 * Let R8 = max columns we can fit on screen

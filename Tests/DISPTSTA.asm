@@ -42,9 +42,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Display one indented paragraph. No horizontal offset.
        DATA DSP13
        TEXT 'DSP13 '
-* Display one indented paragraph. horizontal offset of 20.
+* Display one indented paragraph with horizontal offset.
        DATA DSP14
        TEXT 'DSP14 '
+* One-line intented paragraph with horizontal offset.
+       DATA DSP15
+       TEXT 'DSP15 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -688,6 +691,117 @@ SCRN14 TEXT '                                        '
        TEXT 't of Africa. Ideologically a black      '
        TEXT 'Africanist, his ideas came to be known  '
        TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+*
+* Redraw only the current paragraph.
+* It has one line, longer than screen-
+* width, in the middle of the screen.
+*
+DSP15
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL15
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN15
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL15 DATA 6,1
+       DATA PAR15A
+       DATA PAR15B
+       DATA PAR15C
+       DATA PAR15D
+       DATA PAR15E
+       DATA PAR15F
+
+PAR15A DATA -1
+       DATA WRP15A
+       TEXT '...'
+       EVEN
+WRP15A DATA 9,1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR15B DATA -1
+       DATA WRP15B
+       TEXT '...'
+       EVEN
+WRP15B DATA 10,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR15C DATA -1
+       DATA WRP15C
+       TEXT '...'
+       EVEN
+WRP15C DATA 5,1,-1,-1,-1,-1,-1
+PAR15D DATA 63
+       DATA WRP15D
+       TEXT 'SpaceX Nasa Mission: Astronaut capsule '
+       TEXT 'docks with space station'
+       EVEN
+WRP15D DATA 0,1
+PAR15E DATA -1
+       DATA WRP15E
+       TEXT '...'
+       EVEN
+WRP15E DATA 8,1,-1,-1,-1,-1,-1,-1,-1,-1   
+PAR15F DATA -1
+       DATA WRP15F
+       TEXT '...'
+       EVEN
+WRP15F DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN15 TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'ule docks with space station            '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
