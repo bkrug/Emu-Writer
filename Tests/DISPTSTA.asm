@@ -42,12 +42,15 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Display one indented paragraph. No horizontal offset.
        DATA DSP13
        TEXT 'DSP13 '
-* Display one indented paragraph with horizontal offset.
+* Display indented paragraph with horizontal offset.
        DATA DSP14
        TEXT 'DSP14 '
 * One-line intented paragraph with horizontal offset.
        DATA DSP15
        TEXT 'DSP15 '
+* Display paragraph with horizontal offset smaller than indent.
+       DATA DSP16
+       TEXT 'DSP16 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -807,6 +810,145 @@ SCRN15 TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT 'ule docks with space station            '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+*
+* Redraw one paragraph with first-line indent of 5.
+* Horizontal offset of 20.
+* You won't see the indent on screen, but the char are offset by 5.
+*
+DSP16
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL16
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,20
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+       CLR  @WINMOD
+       LI   R0,MGN32
+       MOV  R0,@MGNLST
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN16
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL16 DATA 6,1
+       DATA PAR16A
+       DATA PAR16B
+       DATA PAR16C
+       DATA PAR16D
+       DATA PAR16E
+       DATA PAR16F
+
+PAR16A DATA -1
+       DATA WRP16A
+       TEXT '...'
+       EVEN
+WRP16A DATA 3,1,-1,-1,-1
+PAR16B DATA -1
+       DATA WRP16B
+       TEXT '...'
+       EVEN
+WRP16B DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR16C DATA -1
+       DATA WRP16C
+       TEXT '...'
+       EVEN
+WRP16C DATA 5,1,-1,-1,-1,-1,-1
+PAR16D DATA -1
+       DATA WRP16D
+       TEXT '...'
+       EVEN
+WRP16D DATA 5,1,-1,-1,-1,-1,-1
+PAR16E DATA 468
+       DATA WRP16E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP16E DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR16F DATA -1
+       DATA WRP16F
+       TEXT '...'
+       EVEN
+WRP16F DATA 6,1,-1,-1,-1,-1,-1
+
+* Note the subtle difference between SCRN16 and SCRN7
+* Only the first-line looks different because SCRN16
+* has a 32-char indent.
+SCRN16 TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '            Marcus Mosiah Garvey Jr. ONH'
+       TEXT 'ical activist, publisher, journalist,   '
+       TEXT 'ator. He was the founder and first      '
+       TEXT ' the Universal Negro Improvement        '
+       TEXT 'can Communities League (UNIA_ACL,       '
+       TEXT 'IA), through which he declared himself  '
+       TEXT 't of Africa. Ideologically a black      '
+       TEXT 'Africanist, his ideas came to be known  '
+       TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
