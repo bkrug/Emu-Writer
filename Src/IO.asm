@@ -12,11 +12,12 @@
        REF  VER2                                  "
        REF  ARYADR,BUFGRW,BUFALC                  From ARRAY.asm
        REF  WRAP,INTDOC
-       REF  WRAPDC                                From UTIL.asm
+       REF  WRAPDC,GETMGN                         From UTIL.asm
        REF  CURMNU
 
 *
        COPY 'CPUADR.asm'
+       COPY 'EQUKEY.asm'
 *
        AORG >A000
 IOSTRT
@@ -82,7 +83,7 @@ CLOSE  BYTE >01
 READ   BYTE >02
 WRITE  BYTE >03
 *
-CR     BYTE 13
+CARRET BYTE CR
 ETX    BYTE 3                               * End of document
 *
 * This goes at the beginning of each Emu-Writer file
@@ -152,7 +153,7 @@ SAVECR
        MOV  *R4,R5
        AI   R4,4
 * Write CR to VDP RAM
-       MOVB @CR,@VDPWD
+       MOVB @CARRET,@VDPWD
 * Enough bytes to write record?
 SAVE3  BL   @SAVCHK
        JEQ  SLERR
@@ -294,7 +295,7 @@ LOADBY
        BL   @LODCHK
        JEQ  LODERR
 * Is next char a CR?
-       CB   R5,@CR
+       CB   R5,@CARRET
        JEQ  NEWPAR
 * Reached end of document?
        CB   R5,@ETX
@@ -502,8 +503,17 @@ LENP3  MOV  R5,R0
        S    *R1,R8
        A    *R4,R8
 PRINT3
+* Let R0 = address of MGNLST entry
 * Let R1 = left margin length
+       MOV  R2,R0
        BL   @GETMGN
+       MOV  R0,R1
+       JEQ  PRTMG1
+       MOVB @LEFT(R1),R1
+       SRL  R1,8
+       JMP  PRTMG2
+PRTMG1 LI   R1,DFLTLF
+PRTMG2
 * Increase record length by size of left margin
 * Truncate the record length if it is greater than 254
        A    R1,R8
@@ -576,49 +586,6 @@ PRINT5
 PRTERR BL   @DSPERR
        MOV  R0,R3
        JMP  PRTRT
-
-*
-* Get Left margin
-*
-* Input:
-*   R2 - index of paragraph
-* Output:
-*   R1 - length of margin
-*
-GETMGN DECT R10
-       MOV  R3,*R10
-       DECT R10
-       MOV  R4,*R10
-       DECT R10
-       MOV  R5,*R10
-* Let R3 = left margin
-* Let R4 = length of MGNLST
-* Let R5 = index in MGNLST
-       LI   R3,10
-       MOV  @MGNLST,R0
-       MOV  *R0,R4
-       CLR  R5
-* No, look at next element
-GM1    MOV  R5,R1
-       BLWP @ARYADR
-* If index out of range, return most recent margin
-       JEQ  GM2
-* Earlier or same paragraph?
-       C    *R1,R2
-       JH   GM2
-* Yes, save margin
-       MOVB @4(R1),R3
-       SRL  R3,8
-* Look at next MGNLST entry
-       INC  R5
-       JMP  GM1
-* Let R1 = left margin
-GM2    MOV  R3,R1
-*
-       MOV  *R10+,R5
-       MOV  *R10+,R4
-       MOV  *R10+,R3
-       RT
 
 *
 * Open file
