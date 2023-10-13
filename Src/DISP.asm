@@ -325,9 +325,12 @@ ALGLST
 PONELN DECT R10
        MOV  R2,*R10
 * Let R2 = horizontal offset
+* either zero or (Window Offset - indent), whichever is greater
        MOV  @WINOFF,R2
        JEQ  PONE1
        S    R8,R2
+       JGT  PONE1
+       CLR  R2
 PONE1
 *
        MOV  R3,R0
@@ -354,9 +357,12 @@ PONE1
 PFSTLN DECT R10
        MOV  R2,*R10
 * Let R2 = horizontal offset
+* either zero or (Window Offset - indent), whichever is greater
        MOV  @WINOFF,R2
        JEQ  PFST1
        S    R8,R2
+       JGT  PFST1
+       CLR  R2
 PFST1
 *
        MOV  R3,R0
