@@ -311,14 +311,25 @@ ALGLST
 * Input:
 *  R3 - paragraph text address
 *  R4 - length of paragraph
+*  R8 - left indent
 * Output:
 * R0, R1
-PONELN MOV  R3,R0
-       A    @WINOFF,R0
+PONELN DECT R10
+       MOV  R2,*R10
+* Let R2 = horizontal offset
+       MOV  @WINOFF,R2
+       JEQ  PONE1
+       S    R8,R2
+PONE1
+*
+       MOV  R3,R0
+       A    R2,R0
 * Let R1 be the length of paragraph 
 * minus window offset
        MOV  R4,R1
-       S    @WINOFF,R1
+       S    R2,R1
+*
+       MOV  *R10+,R2
        RT
 
 *
