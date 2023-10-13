@@ -503,28 +503,9 @@ LENP3  MOV  R5,R0
        S    *R1,R8
        A    *R4,R8
 PRINT3
-* Let R0 = address of MGNLST entry
-* Let R1 = left margin length
-       MOV  R2,R0
-       BL   @GETMGN
-       MOV  R0,R1
-       JEQ  PRTMG1
-       MOVB @LEFT(R1),R1
-       SRL  R1,8
-       JMP  PRTMG2
-PRTMG1 LI   R1,DFLTLF
-PRTMG2
-* Increase record length by size of left margin
-* Truncate the record length if it is greater than 254
-       A    R1,R8
-       CI   R8,MAXPRT
-       JLE  PRNT3B
-       LI   R8,MAXPRT
-PRNT3B
+* Write left white-space to VDP RAM
+       BL   @PRTMG
 * Write record (following left margin) to VDP RAM
-       LI   R0,PABBUF
-       BL   @VDPADR
-       BL   @VDPSPC
        MOV  R6,R0
        MOV  R8,R1
        BL   @VDPWRT
@@ -586,6 +567,51 @@ PRINT5
 PRTERR BL   @DSPERR
        MOV  R0,R3
        JMP  PRTRT
+
+*
+* Write enough spaces to the buffer
+* for left margin and indent
+*
+* Input:
+*      R2 = current paragraph
+*      R7 = current line in paragraph
+*      R8 = size of record
+* Output:
+*      R8 = increased according to left margin
+*
+PRTMG  DECT R10
+       MOV  R11,*R10
+* Let R0 = address of MGNLST entry
+* Let R1 = either left margin length
+*          or left margin + first line indent
+       MOV  R2,R0
+       BL   @GETMGN
+       MOV  R0,R1
+       JEQ  PRTMG2
+       MOVB @LEFT(R1),R0
+       MOV  R7,R7
+       JNE  PRTMG1
+       AB   @INDENT(R1),R0
+PRTMG1 SRL  R0,8
+       MOV  R0,R1
+       JMP  PRTMG3
+PRTMG2 LI   R1,DFLTLF
+PRTMG3
+* Increase record length by size of left margin
+* Truncate the record length if it is greater than 254
+       A    R1,R8
+       CI   R8,MAXPRT
+       JLE  PRTMG4
+       LI   R8,MAXPRT
+PRTMG4
+* Write spaces to VDP RAM,
+* according to number in R1
+       LI   R0,PABBUF
+       BL   @VDPADR
+       BL   @VDPSPC
+*
+       MOV  *R10+,R11
+       RT
 
 *
 * Open file
