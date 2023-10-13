@@ -433,12 +433,10 @@ POPMG  DECT R10
        BL   @BYTSTR
        JMP  POPMGR
 * Populate with defaults
-* TODO: why can't we use BUFCPY here?
 POPMGD LI   R0,MGNDFT
        LI   R1,FLDVAL
-       MOV  *R0+,*R1+
-       MOV  *R0+,*R1+
-       MOV  *R0,*R1
+       LI   R2,6
+       BLWP @BUFCPY
 *
 POPMGR MOV  *R10+,R11
        MOV  *R10+,R6
