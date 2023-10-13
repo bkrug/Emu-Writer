@@ -41,3 +41,8 @@ MGNPWR EQU  3
 INDENT EQU  3
 LEFT   EQU  4
 PWIDTH EQU  5         Paragraph width
+
+*
+* Locations in FLDVAL for different margin fields
+FRIGHT EQU 3
+FINDNT EQU 6

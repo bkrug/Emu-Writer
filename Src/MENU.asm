@@ -437,12 +437,12 @@ POPMG  DECT R10
        SB   @LEFT(R6),R1
        SB   @PWIDTH(R6),R1
        LI   R2,FLDVAL
-       AI   R2,3
+       AI   R2,FRIGHT
        BL   @BYTSTR
 * Indent
        MOVB @INDENT(R6),R1
        LI   R2,FLDVAL
-       AI   R2,6
+       AI   R2,FINDNT
        BL   @BYTSTR
        JMP  POPMGR
 * Populate with defaults

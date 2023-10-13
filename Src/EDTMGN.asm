@@ -30,18 +30,17 @@ EDTMGN
 * Set Paragraph Index
        MOV  @PARINX,*R6
 *
-* Read user input
+* Read user input for left/right margin
 *
 * Let R4 = left margin
        LI   R0,FLDVAL
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-*
        MOV  R1,R4
 * Let R5 = right margin
        LI   R0,FLDVAL
-       AI   R0,3
+       AI   R0,FRIGHT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
@@ -54,11 +53,24 @@ EDTMGN
 * Validate margin sizes
        BL   @MGNSIZ
        JEQ  EM10
-* Set left margin and page width in MGNLST element
+* Set left margin and paragraph width in MGNLST element
        SLA  R4,8
        SLA  R5,8
        MOVB R4,@LEFT(R6)
        MOVB R5,@PWIDTH(R6)
+*
+* Read user input for indent
+*
+* Let R4 = indent
+       LI   R0,FLDVAL
+       AI   R0,FINDNT
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
+       MOV  R1,R4
+* Set indent in MGNLST entry
+       SLA  R4,8
+       MOVB R4,@INDENT(R6)
 *
 * Create or Edit Margin List entry
 *
