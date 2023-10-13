@@ -213,19 +213,19 @@ WRTLIN DECT R10
 * Let R8 = size of indent
        CLR  R8
 * Should we write indent?
-*       MOV  R2,R2
-*       JNE  WRTMG9
-*       MOV  R9,R0
-*       BL   @GETMGN
-*       MOV  R0,R8
-*       JEQ  WRTMG9
-*       MOVB @INDENT(R8),R8
-*       JEQ  WRTMG9
+       MOV  R2,R2
+       JNE  WRTMG9
+       MOV  R9,R0
+       BL   @GETMGN
+       MOV  R0,R8
+       JEQ  WRTMG9
+       MOVB @INDENT(R8),R8
+       JEQ  WRTMG9
 * Yes, write indent spaces
 * Let R8 = size of indent
-*       SRL  R8,8
-*       MOV  R8,R1
-*       BL   @VDPSPC
+       SRL  R8,8
+       MOV  R8,R1
+       BL   @VDPSPC
 WRTMG9
 * Set R0 & R1 parameters for starting
 * position and length of text
