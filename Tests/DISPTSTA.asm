@@ -17,8 +17,15 @@
        TEXT 'SIMULATED SCREEN'
 MKSCRN BSS  24*40
 SCRNED
+*
+* Empty Margin List
+*
+EMPLST DATA 0,3
 
 TSTLST DATA TSTEND-TSTLST-2/8
+* Window moved.
+       DATA DSP11
+       TEXT 'DSP11 '
 * User deleted a carriage return.
        DATA DSP12
        TEXT 'DSP12 '
@@ -27,6 +34,189 @@ RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
 RSLTFE
        EVEN
+
+*
+* Window has moved, draw to the end of
+* the screen or document.
+*
+DSP11
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PARG and the window is 
+* at PARE.
+       LI   R0,PARL11
+       MOV  R0,@LINLST
+       LI   R0,6
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,4
+       MOV  R0,@WINPAR
+       LI   R0,4
+       MOV  R0,@WINLIN
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
+* Act
+* Imply that the window has moved.
+       CLR  R0
+       SOC  @STSWIN,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN11
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL11 DATA 8,1
+       DATA PAR11A
+       DATA PAR11B
+       DATA PAR11C
+       DATA PAR11D
+       DATA PAR11E
+       DATA PAR11F
+       DATA PAR11G
+       DATA PAR11H
+
+PAR11A DATA -1
+       DATA WRP11A
+       TEXT '...'
+       EVEN
+WRP11A DATA 3,1,-1,-1,-1
+PAR11B DATA -1
+       DATA WRP11B
+       TEXT '...'
+       EVEN
+WRP11B DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR11C DATA -1
+       DATA WRP11C
+       TEXT '...'
+       EVEN
+WRP11C DATA 5,1,-1,-1,-1,-1,-1
+PAR11D DATA -1
+       DATA WRP11D
+       TEXT '...'
+       EVEN
+WRP11D DATA 5,1,-1,-1,-1,-1,-1
+PAR11E DATA 468
+       DATA WRP11E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP11E DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR11F DATA 316
+       DATA WRP11F
+       TEXT 'Garvey was born to a moderately '
+       TEXT 'prosperous Afro-Jamaican '
+       TEXT 'family in Saint Ann"s Bay, Colony '
+       TEXT 'of Jamaica and apprenticed '
+       TEXT 'into the print trade as a teenager. '
+       TEXT 'Working in Kingston, he '
+       TEXT 'became involved in trade unionism '
+       TEXT 'before living briefly in '
+       TEXT 'Costa Rica, Panama, and England. '
+       TEXT 'Returning to Jamaica, he '
+       TEXT 'founded UNIA in 1914.'
+       EVEN
+WRP11F DATA 5,1
+       DATA 57
+       DATA 57+61
+       DATA 57+61+60
+       DATA 57+61+60+59
+       DATA 57+61+60+59+58
+PAR11G DATA 279
+       DATA WRP11G
+       TEXT 'In 1916, he moved to the United States and '
+       TEXT 'established a '
+       TEXT 'UNIA branch in New York City"s Harlem '
+       TEXT 'district. Emphasising '
+       TEXT 'unity between Africans and the African '
+       TEXT 'diaspora, he '
+       TEXT 'campaigned for an end to European colonial '
+       TEXT 'rule across '
+       TEXT 'Africa and the political unification of '
+       TEXT 'the continent.'
+WRP11G DATA 4,1
+       DATA 57
+       DATA 57+60
+       DATA 57+60+52
+       DATA 57+60+52+55
+PAR11H DATA 274
+       DATA WRP11H
+       TEXT 'He envisioned a unified Africa as a '
+       TEXT 'one_party state, '
+       TEXT 'governed by himself, that would enact '
+       TEXT 'laws to ensure black '
+       TEXT 'racial purity. Although he never visited '
+       TEXT 'the continent, he '
+       TEXT 'was committed to the Back_to_Africa '
+       TEXT 'movement, arguing that '
+       TEXT 'many African_Americans should migrate '
+       TEXT 'there.'
+WRP11H DATA 4,1
+       DATA 53
+       DATA 53+59
+       DATA 53+59+59
+       DATA 53+59+59+59
+
+SCRN11 TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT 'Garvey was born to a moderately prospero'
+       TEXT 'family in Saint Ann"s Bay, Colony of Jam'
+       TEXT 'into the print trade as a teenager. Work'
+       TEXT 'became involved in trade unionism before'
+       TEXT 'Costa Rica, Panama, and England. Returni'
+       TEXT 'founded UNIA in 1914.                   '
+       TEXT 'In 1916, he moved to the United States a'
+       TEXT 'UNIA branch in New York City"s Harlem di'
+       TEXT 'unity between Africans and the African d'
+       TEXT 'campaigned for an end to European coloni'
+       TEXT 'Africa and the political unification of '
+       TEXT 'He envisioned a unified Africa as a one_'
+       TEXT 'governed by himself, that would enact la'
+       TEXT 'racial purity. Although he never visited'
+       TEXT 'was committed to the Back_to_Africa move'
+       TEXT 'many African_Americans should migrate th'
+       TEXT '                                        '
 
 *
 * The user pressed deleted a carriage
@@ -56,6 +246,8 @@ DSP12
        MOV  R0,@WINPAR
        LI   R0,5
        MOV  R0,@WINLIN
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
 * Imply that the user delted a CR.
        CLR  R0
