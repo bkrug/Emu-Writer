@@ -42,6 +42,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Display one indented paragraph. No horizontal offset.
        DATA DSP13
        TEXT 'DSP13 '
+* Display one indented paragraph. horizontal offset of 20.
+       DATA DSP14
+       TEXT 'DSP14 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -419,9 +422,8 @@ SCRN12 TEXT '                                        '
        TEXT 'He envisioned a unified Africa as a one_'
 
 *
-* Only should redraw the current
-* paragraph, which is in middle of the
-* screen. Draw the left most portion.
+* Draw a single paragraph with no offset
+* and an indent of 5.
 *
 DSP13
 * Arrange
@@ -548,6 +550,144 @@ SCRN13 TEXT '                                        '
        TEXT 'Provisional President of Africa. Ideolog'
        TEXT 'nationalist and Pan_Africanist, his idea'
        TEXT 'as Garveyism.                           '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+*
+* Redraw one paragraph with first-line indent of 5.
+* Horizontal offset of 20.
+* You won't see the indent on screen, but the char are offset by 5.
+*
+DSP14
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL14
+       MOV  R0,@LINLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,20
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,3
+       MOV  R0,@WINLIN
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN14
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL14 DATA 6,1
+       DATA PAR14A
+       DATA PAR14B
+       DATA PAR14C
+       DATA PAR14D
+       DATA PAR14E
+       DATA PAR14F
+
+PAR14A DATA -1
+       DATA WRP14A
+       TEXT '...'
+       EVEN
+WRP14A DATA 3,1,-1,-1,-1
+PAR14B DATA -1
+       DATA WRP14B
+       TEXT '...'
+       EVEN
+WRP14B DATA 17,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1
+PAR14C DATA -1
+       DATA WRP14C
+       TEXT '...'
+       EVEN
+WRP14C DATA 5,1,-1,-1,-1,-1,-1
+PAR14D DATA -1
+       DATA WRP14D
+       TEXT '...'
+       EVEN
+WRP14D DATA 5,1,-1,-1,-1,-1,-1
+PAR14E DATA 468
+       DATA WRP14E
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
+       EVEN
+WRP14E DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR14F DATA -1
+       DATA WRP14F
+       TEXT '...'
+       EVEN
+WRP14F DATA 6,1,-1,-1,-1,-1,-1
+
+* Note the subtle difference between SCRN14 and SCRN7
+* Only the first-line looks different because SCRN14
+* has a 5-char indent.
+SCRN14 TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'arvey Jr. ONH (17 August 1887 to 10 June'
+       TEXT 'ical activist, publisher, journalist,   '
+       TEXT 'ator. He was the founder and first      '
+       TEXT ' the Universal Negro Improvement        '
+       TEXT 'can Communities League (UNIA_ACL,       '
+       TEXT 'IA), through which he declared himself  '
+       TEXT 't of Africa. Ideologically a black      '
+       TEXT 'Africanist, his ideas came to be known  '
+       TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
