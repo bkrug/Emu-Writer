@@ -118,7 +118,9 @@ EM9
 * for each element
 DUP1   MOV  R2,R1
        BLWP @ARYADR
-       C    @4(R1),@MGNLNG+4(R1)
+       CB   @INDENT(R1),@MGNLNG+INDENT(R1)
+       JNE  DUP2
+       C    @LEFT(R1),@MGNLNG+LEFT(R1)
        JNE  DUP2
 * Delete duplicate
        MOV  R2,R1

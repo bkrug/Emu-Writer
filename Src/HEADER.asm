@@ -48,9 +48,13 @@ WRTHDR
 * If R0 = 0, then use defaults.
        MOV  R0,R0
        JNE  CONMGN
-       LI   R0,DFLTMG-4
-* Let R0 = address of left margin
-CONMGN AI   R0,4
+       LI   R0,DFLTMG-2
+* Let R0 = address of indent
+CONMGN AI   R0,3
+* Convert Indent to ASCII
+       LI   R3,SCRNWD+15
+       MOVB *R0+,R2
+       BL   @DRWNUM
 * Convert Left Margin to ASCII
 * Let R4 = copy of left margin
        LI   R3,SCRNWD+3
@@ -102,11 +106,11 @@ DRWNUM DECT R10
        RT
 
 TEN    DATA 10
-* Default Left Margin, Paragraph Width, Top Margin, Document Height
-DFLTMG DATA >0A3C,>0A36
+* Empty Byte, Default Indent, Left Margin, Paragraph Width, Top Margin, Document Height
+DFLTMG DATA >0000,>0A3C,>0A36
 TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
        BYTE 0
-TEXT2  TEXT 'LM:   RM:'
+TEXT2  TEXT 'LM:   RM:   IN:'
        BYTE 0
 MEMFUL TEXT 'Memory Full'
        BYTE 0
