@@ -27,8 +27,7 @@ POSUPD DATA POSUWS,POSUPD+4
 	BL   @UPCURS
        RTWP
       
-* Width of screen in characters
-SCRNWD EQU  20
+       COPY 'EQUKEY.asm'
 
 *
 * Update LININX and CHRLIX
@@ -80,7 +79,7 @@ POS3   MOV  R3,@LININX
 *
 UPWOFF
 * Let R1 equal half of the window size
-       LI   R1,SCRNWD
+       LI   R1,SCRNWD/2
 * If window is to the right of the
 * cursor, move it left.
 UPW0   C    @WINOFF,@CHRLIX
@@ -91,7 +90,7 @@ UPW0   C    @WINOFF,@CHRLIX
 * If window is to the left of the
 * cursor, move it right.
 UPW1   MOV  @CHRLIX,R0
-       AI   R0,-2*SCRNWD
+       AI   R0,-SCRNWD
 UPW2   C    @WINOFF,R0
        JGT  UPW3
        SOC  @STSWIN,*R13
