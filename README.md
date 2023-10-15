@@ -35,8 +35,31 @@ These contain routines for allocating and de-allocating space for variable-lengt
 * XDT99 is required. (https://endlos99.github.io/xdt99/)
 * Run the script "assm.py" and it will assemble the main program and the test programs.
   * Have Python and XDT99 included in your system's Path. The script is setup assuming that you can type "xas99.py" from a command line without specifying a folder.
+ 
+*Finding the path to Python*
 
-Assembly Results:
+In your Python interpreter, type the following commands:
+
+```
+import os
+import sys
+os.path.dirname(sys.executable)
+```
+
+*Running Python Scripts from Powershell*
+
+First, add the xas99 folder to your System PATH variables.
+
+Then, associate *.py files with python.
+Run the following commands at a shell prompt:
+
+```
+assoc .py=PythonScript
+ftype PythonScript=C:\bin\python.exe "%1" %*
+```
+
+*Assembly Results*
+
 * Assembled code is placed in two places:
   * "Fiad" folder. You will be able to see each individual program as a file with the TIFILES header. 
   * "EmuWriter.dsk" image in the root folder
