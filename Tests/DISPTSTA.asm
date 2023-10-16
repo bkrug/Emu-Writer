@@ -51,6 +51,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Display paragraph with horizontal offset smaller than indent.
        DATA DSP16
        TEXT 'DSP16 '
+* One-line  paragraph with horizontal offset smaller than indent.
+       DATA DSP17
+       TEXT 'DSP17 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -704,9 +707,8 @@ SCRN14 TEXT '                                        '
        TEXT '                                        '
 
 *
-* Redraw only the current paragraph.
-* It has one line, longer than screen-
-* width, in the middle of the screen.
+* Draw a one-line paragrah.
+* I has an indent and the window is offset by 40.
 *
 DSP15
 * Arrange
@@ -949,6 +951,117 @@ SCRN16 TEXT '                                        '
        TEXT 't of Africa. Ideologically a black      '
        TEXT 'Africanist, his ideas came to be known  '
        TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+
+*
+* Draw a one-line paragrah.
+* It has an indent larger than the window offset.
+*
+DSP17
+* Arrange
+       LI   R12,STACK
+       DECT R12
+       MOV  R11,*R12
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently in
+* the paragraph PAR1E and that 
+* paragraph is in the screen middle.
+       LI   R0,PARL17
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,20
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       CLR  @WINMOD
+       LI   R0,MGN32
+       MOV  R0,@MGNLST
+* Act
+* Imply that the current paragraph
+* recieved new characters, but line
+* count is unchanged.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN17
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R12+,R11
+       RT
+
+PARL17 DATA 6,1
+       DATA PAR17A
+       DATA PAR17B
+       DATA PAR17C
+       DATA PAR17D
+       DATA PAR17E
+       DATA PAR17F
+
+PAR17A DATA -1
+       DATA WRP17A
+       TEXT '...'
+       EVEN
+WRP17A DATA 9,1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR17B DATA -1
+       DATA WRP17B
+       TEXT '...'
+       EVEN
+WRP17B DATA 10,1
+       DATA -1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+PAR17C DATA -1
+       DATA WRP17C
+       TEXT '...'
+       EVEN
+WRP17C DATA 5,1,-1,-1,-1,-1,-1
+PAR17D DATA 63
+       DATA WRP17D
+       TEXT 'SpaceX Nasa Mission: Astronaut capsule '
+       TEXT 'docks with space station'
+       EVEN
+WRP17D DATA 0,1
+PAR17E DATA -1
+       DATA WRP17E
+       TEXT '...'
+       EVEN
+WRP17E DATA 8,1,-1,-1,-1,-1,-1,-1,-1,-1   
+PAR17F DATA -1
+       DATA WRP17F
+       TEXT '...'
+       EVEN
+WRP17F DATA 6,1,-1,-1,-1,-1,-1
+
+SCRN17 TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '            SpaceX Nasa Mission: Astrona'
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
