@@ -8,7 +8,7 @@
 * Document Status
        REF  STSWIN
 * Vars
-       REF  LINLST
+       REF  LINLST,MGNLST
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
@@ -62,6 +62,17 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * based on an empty paragraph.
        DATA POSA
        TEXT 'POSA  '
+* Calculate LININX and CHRLIX when
+* cursor is on the first line of an
+* indented paragraph.
+       DATA POSB
+       TEXT 'POSB  '
+* Calculate LININX and CHRLIX when
+* cursor is on the first line of an
+* indented paragraph, and just past
+* the right edge of the screen.
+       DATA POSC
+       TEXT 'POSC  '
 * When CHRLIX is 12 and horizontal
 * offset is 0, offset should not change.
        DATA HOF1
@@ -176,6 +187,16 @@ RSLTFE
 FAKEAD DATA >FFFE
 
 *
+* Empty Margin List
+*
+EMPLST DATA 0,3
+*
+* Margin List with 5-char indent
+*
+MGN5   DATA 1,3
+       DATA 0,>0005,>0A0A,>0A0A
+
+*
 * Calculate LININX and CHRLIX
 * based on PARINX and CHRPAX
 *
@@ -187,6 +208,8 @@ POS1
        MOV  R0,@PARINX
        LI   R0,53
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -215,6 +238,8 @@ POS2
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -244,6 +269,8 @@ POS3
        MOV  R0,@PARINX
        LI   R0,45+41+45+46+33-1
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -272,6 +299,8 @@ POS4
        MOV  R0,@PARINX
        LI   R0,45+41+45+46
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -300,6 +329,8 @@ POS5
        MOV  R0,@PARINX
        LI   R0,45+41+45-1
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -360,6 +391,8 @@ POS6
        MOV  R0,@PARINX
        LI   R0,90
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -410,6 +443,8 @@ POS7
        MOV  R0,@PARINX
        LI   R0,55
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -460,6 +495,8 @@ POS8
        MOV  R0,@PARINX
        LI   R0,45+41+17
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -507,6 +544,8 @@ POS9
        MOV  R0,@PARINX
        LI   R0,6
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -550,6 +589,8 @@ POSA
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -581,6 +622,72 @@ POSAP  DATA 11
        EVEN
 POSAPE
 POSAW  DATA 0,1
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line.
+*
+POSB
+       LI   R0,POS1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,2
+       MOV  R0,@CHRPAX
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,2+5
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line.
+*
+POSC
+       LI   R0,POS1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,38
+       MOV  R0,@CHRPAX
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+       CLR  @WINOFF
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,38+5
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,OFRGT
+       LI   R3,OFRGTE-OFRGT
+       BLWP @AEQ
+       RT
 
 *
 * When CHRLIX is 12 and horizontal
