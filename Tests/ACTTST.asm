@@ -1,6 +1,6 @@
        DEF  TSTLST,RSLTFL
 *
-       REF  LINLST
+       REF  LINLST,MGNLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
        REF  STSARW
 * Assert methods
@@ -45,6 +45,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * STSARW should be set to true
        DATA UP11
        TEXT 'UP11  '
+* Move up to 1st line when paragraph is indented
+       DATA UP12
+       TEXT 'UP12  '
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '
@@ -73,6 +76,16 @@ RSLTFL BYTE RSLTFE-RSLTFL-1
 RSLTFE
        EVEN
 FRAMRT DATA 0
+
+*
+* Empty Margin List
+*
+EMPLST DATA 0,3
+*
+* Margin List with 5-char indent
+*
+MGN5   DATA 1,3
+       DATA 0,>0005,>0A0A,>0A0A
 
 **** Mock document ****
 
@@ -139,6 +152,8 @@ UP1    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,40
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -175,6 +190,8 @@ UP2    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,25
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -211,6 +228,8 @@ UP3    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,3
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -247,6 +266,8 @@ UP4    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,15
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -282,6 +303,8 @@ UP5    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,5
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -317,6 +340,8 @@ UP6    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,8
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -352,6 +377,8 @@ UP7    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,51
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -389,6 +416,8 @@ UP8    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,56
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -423,6 +452,8 @@ UP9    MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,40
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -459,6 +490,8 @@ UP10   MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,15
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @UPUPSP
 * Assert
@@ -493,10 +526,12 @@ UP11   MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,40
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * R0 of the caller's workspace is a
 * document status byte
-	   LI   R13,MOCKWS
-	   CLR  *R13
+	LI   R13,MOCKWS
+	CLR  *R13
 * Act
        BL   @UPUPSP
 * Assert
@@ -505,6 +540,43 @@ UP11   MOV  R11,@FRAMRT
        LI   R2,TYPM
        LI   R3,TYPME-TYPM
        BLWP @AOC
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
+* Move from second to first line in the
+* same paragraph.
+* Paragraph's first line is indented.
+*
+UP12   MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+25
+       MOV  R0,@CHRPAX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,25
+       MOV  R0,@CHRLIX
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,25-5
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
 *
        MOV  @FRAMRT,R11
        RT
@@ -524,6 +596,8 @@ DOWN1  MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,40
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
@@ -557,6 +631,8 @@ DOWN2  MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,0
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
@@ -590,6 +666,8 @@ DOWN3  MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,24
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
@@ -625,6 +703,8 @@ DOWN4  MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,53
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
@@ -660,6 +740,8 @@ DOWN5  MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,57
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
@@ -694,6 +776,8 @@ DOWN6  MOV  R11,@FRAMRT
        MOV  R0,@LININX
        LI   R0,15
        MOV  R0,@CHRLIX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
@@ -732,6 +816,8 @@ DOWN7  MOV  R11,@FRAMRT
 * document status byte
 	   LI   R13,MOCKWS
 	   CLR  *R13
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        BL   @DOWNSP
 * Assert
