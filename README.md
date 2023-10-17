@@ -84,4 +84,7 @@ EMU-WRITER -- You didn't think you needed it, but now you know for sure.
 
 ### TODO
 
+* Add ACT and POSUPD tests for situations where paragraph is indented, but cursor is not on first line.
+* Add ACT and POSUPD tests for situations where indent is larger than 20 and we are in vertical mode.
+* The appear to be three places where calls to GETMGN are only used to get the indent.
 * Consider adding a defrag operation that runs every 64/60s seconds.
