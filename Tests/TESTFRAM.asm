@@ -21,7 +21,7 @@
 * Next 6 bytes: ASCII name of test
        REF  TSTLST
 * Name of results output file
-	   REF  RSLTFL
+       REF  RSLTFL
 *
        REF  VMBW,VMBR,VSBW,DSRLNK
 
@@ -29,8 +29,11 @@ RUNTST B    @RUNT
 
 PASSED DATA >0000
 FAILED DATA >0000
+* Workspace used by the Test Framework
 WORKSP BSS  >20
+* Workspace used by each individual test
 TSTWS  BSS  >20
+*
 STACK  BSS  >100
 
 * Number of tests to run
@@ -41,7 +44,7 @@ TSTADR DATA 0
 * Run all tests
 * ----------------------
 RUNT   LWPI WORKSP
-       LI   R12,STACK
+       LI   R10,STACK
 * Open test result file
        BL   @OPENF
 * Display test start message
@@ -113,23 +116,23 @@ FAILT  INC  @FAILED
 * R0: Word to convert
 * R1: Address of output text (4 bytes)
 MAKETX DATA WORKSP,MAKEP
-MAKEP  LI   R12,STACK
+MAKEP  LI   R10,STACK
        MOV  *R13,R0
        MOV  @2(R13),R1
        BL   @MAKEHX
        RTWP
-MAKEHX MOV  R11,*R12+
+MAKEHX MOV  R11,*R10+
        BL   @MAKEP1
        SWPB R0
        BL   @MAKEP1
        SWPB R0
 * return
-       DECT R12
-       MOV  *R12,R11
+       DECT R10
+       MOV  *R10,R11
        RT
  
-MAKEP1 MOV  R11,*R12+
-       MOV  R4,*R12+
+MAKEP1 MOV  R11,*R10+
+       MOV  R4,*R10+
 * High Nibble
        MOVB R0,R4
        SRL  R4,4
@@ -144,10 +147,10 @@ MAKEP1 MOV  R11,*R12+
        MOVB R4,*R1
        INC  R1
 * Return
-       DECT R12
-       MOV  *R12,R4
-       DECT R12
-       MOV  *R12,R11
+       DECT R10
+       MOV  *R10,R4
+       DECT R10
+       MOV  *R10,R11
        RT
 * Convert Byte to ASCII code
 CONVB  CI   R4,>0A00
@@ -169,30 +172,30 @@ LINLNG DATA 32
 SCRN   BSS  >300
 CLRTXT TEXT '                                '
        EVEN
-PRINTP LI   R12,STACK
+PRINTP LI   R10,STACK
        MOV  *R13,R0
        MOV  @2(R13),R1
        BL   @WRITEF
        BL   @SCRLP
        RTWP
 
-SCRLPT MOV  R11,*R12+
+SCRLPT MOV  R11,*R10+
 * If text length > 23*32, limit it.
        CI   R1,23*32
-	   JLE  SCROL0
-	   LI   R1,23*32
+       JLE  SCROL0
+       LI   R1,23*32
 *
 SCROL0 BL   @WRITEF
        BL   @SCRLP
-       DECT R12
-       MOV  *R12,R11
+       DECT R10
+       MOV  *R10,R11
        RT
        
-SCRLP  MOV  R11,*R12+
-       MOV  R8,*R12+
-       MOV  R9,*R12+
-       MOV  R2,*R12+
-       MOV  R3,*R12+
+SCRLP  MOV  R11,*R10+
+       MOV  R8,*R10+
+       MOV  R9,*R10+
+       MOV  R2,*R10+
+       MOV  R3,*R10+
  
        MOV  R0,R8
        MOV  R1,R9
@@ -232,16 +235,16 @@ SCROL1 SLA  R0,5
        MOV  R8,R0
        MOV  R9,R1
 * return
-SCRLRT DECT R12
-       MOV  *R12,R3
-       DECT R12
-       MOV  *R12,R2
-       DECT R12
-       MOV  *R12,R9
-       DECT R12
-       MOV  *R12,R8
-       DECT R12
-       MOV  *R12,R11
+SCRLRT DECT R10
+       MOV  *R10,R3
+       DECT R10
+       MOV  *R10,R2
+       DECT R10
+       MOV  *R10,R9
+       DECT R10
+       MOV  *R10,R8
+       DECT R10
+       MOV  *R10,R11
        RT
  
 * Open file
@@ -293,11 +296,11 @@ OPENF
 WRTMSG TEXT 'Writing stuff to disk.'
 WRTM0  EVEN
 WRITEF
-       MOV  R0,*R12+
-       MOV  R1,*R12+
-       MOV  R2,*R12+
-       MOV  R6,*R12+
-       MOV  R11,*R12+
+       MOV  R0,*R10+
+       MOV  R1,*R10+
+       MOV  R2,*R10+
+       MOV  R6,*R10+
+       MOV  R11,*R10+
 * Write line to VDP RAM
        MOV  R1,R2
        MOV  R0,R1
@@ -321,16 +324,16 @@ WRITEF
 *
        BL   @ERRORF
  
-       DECT R12
-       MOV  *R12,R11
-       DECT R12
-       MOV  *R12,R6
-       DECT R12
-       MOV  *R12,R2
-       DECT R12
-       MOV  *R12,R1
-       DECT R12
-       MOV  *R12,R0
+       DECT R10
+       MOV  *R10,R11
+       DECT R10
+       MOV  *R10,R6
+       DECT R10
+       MOV  *R10,R2
+       DECT R10
+       MOV  *R10,R1
+       DECT R10
+       MOV  *R10,R0
        RT
  
 * Close file
@@ -357,9 +360,9 @@ ERR0
 ZEROCR BYTE '0'
        EVEN
 ERRORF
-       MOV  R0,*R12+
-       MOV  R1,*R12+
-       MOV  R11,*R12+
+       MOV  R0,*R10+
+       MOV  R1,*R10+
+       MOV  R11,*R10+
        MOV  R0,R0
        JNE  ERR2
        LI   R0,ERRGEN
@@ -385,12 +388,12 @@ ERR1   LI   R0,ERRMSG
        BL   @SCRLP
 * Return
 ERRRT
-       DECT R12
-       MOV  *R12,R11
-       DECT R12
-       MOV  *R12,R1
-       DECT R12
-       MOV  *R12,R0
+       DECT R10
+       MOV  *R10,R11
+       DECT R10
+       MOV  *R10,R1
+       DECT R10
+       MOV  *R10,R0
        RT
 
 ********************************
@@ -423,22 +426,22 @@ ABLCKP
 * Compare each 16-bit word
 AB1    C    *R0+,*R1+
        JNE  ABFL
-	   INCT R5
-	   C    R5,R2
-	   JL   AB1
+       INCT R5
+       C    R5,R2
+       JL   AB1
 * Report success
        RTWP
 * Report Failure
 * Backtrack to unmatching bytes.
 ABFL   DECT R0
-	   DECT R1
+       DECT R1
 * 
-	   MOV  R1,R6
+       MOV  R1,R6
 * Convert values to Hexadecimal Text.
 * R0 already contains address of 
 * the expected value
        MOV  *R0,R0
-	   LI   R1,ABLM1
+       LI   R1,ABLM1
        BL   @MAKEHX
 * the actual value is copied from R6
        MOV  *R6,R0
@@ -446,8 +449,8 @@ ABFL   DECT R0
        BL   @MAKEHX
 * 
        MOV  R5,R0
-	   LI   R1,ABLM3
-	   BL   @MAKEHX
+       LI   R1,ABLM3
+       BL   @MAKEHX
 * Display standard failure message
        LI   R0,ABLMES
        LI   R1,ABLME-ABLMES
@@ -455,9 +458,9 @@ ABFL   DECT R0
 * Display user-defined failure message
        MOV  @6(13),R0
        MOV  @8(13),R1
-	   CI   R1,>200
-	   JL   AB2
-	   LI   R1,>200
+       CI   R1,>200
+       JL   AB2
+       LI   R1,>200
 AB2    BL   @SCRLPT
 * Don't return to the test being run. No
 * need to run extra assertions
@@ -481,7 +484,7 @@ AOCM1  BSS  >4
        TEXT ' B: '
 AOCM2  BSS  >4
        TEXT ' Ones in A should have '
-	   TEXT 'corresponding ones in B.'
+       TEXT 'corresponding ones in B.'
 AOCME  EVEN
 AOCP
 * Copy Parameters
@@ -513,7 +516,7 @@ AZCM1  BSS  >4
        TEXT ' B: '
 AZCM2  BSS  >4
        TEXT ' Ones in A should have '
-	   TEXT 'corresponding zeros in B.'
+       TEXT 'corresponding zeros in B.'
 AZCME  EVEN
 AZCP
 * Copy Parameters
@@ -613,7 +616,7 @@ ALS    RTWP
 * routines.
 * ----------------------
 * Copy Parameters to Registers
-COPYP  LI   R12,STACK
+COPYP  LI   R10,STACK
        MOV  *R13+,R0
        MOV  *R13+,R1
        MOV  *R13+,R2
@@ -631,20 +634,20 @@ COPYP  LI   R12,STACK
 * +04: Dest address of actual text
 * +06: Address of standard failure message
 * +08: length of failure message
-RF     
-       MOV  R11,R10
+RF
+       MOV  R11,R9
        MOV  R1,R4
 * Convert values to Hexadecimal Text.
 * R0 already contains the expected value
-       MOV  *R10+,R1
+       MOV  *R5+,R1
        BL   @MAKEHX
 * the actual value is copied from R4
        MOV  R4,R0
-       MOV  *R10+,R1
+       MOV  *R5+,R1
        BL   @MAKEHX
 * Display standard failure message
-       MOV  *R10+,R0
-       MOV  *R10+,R1
+       MOV  *R5+,R0
+       MOV  *R5+,R1
        BL   @SCRLPT
 * Display user-defined failure message
        MOV  R2,R0
