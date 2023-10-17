@@ -67,8 +67,8 @@ link_test_files("INPTRUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "LOOKTST", "LOOK", "VAR", "CONST" ]
 link_test_files("LOOKRUN.obj", False, temp_files)
 
-temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "VAR", "CONST" ]
-link_test_files("POSRUN.obj", False, temp_files)
+temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "WRAP", "VAR", "CONST" ]
+link_test_files("POSRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "VAR", "CONST" ]
 link_test_files("WRAPRUN.obj", True, temp_files)

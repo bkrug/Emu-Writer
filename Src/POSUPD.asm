@@ -6,7 +6,9 @@
 *
        REF  STSWIN
 *
-       REF  LINLST
+       REF  GETMGN                     From UTIL.asm
+*
+       REF  LINLST,MGNLST
        REF  ARYADR
        REF  FORTY
        REF  PARINX,CHRPAX
@@ -21,6 +23,9 @@
 * Output:
 *  R0 - New Document Status
 POSUPD DATA POSUWS,POSUPD+4
+* Let R10 = stack position
+       MOV  @20(R13),R10
+*
        BL   @UPINDX
        BL   @UPWOFF
        BL   @UPWTOP
@@ -37,6 +42,8 @@ POSUPD DATA POSUWS,POSUPD+4
 * current line.
 *
 UPINDX
+       DECT R10
+       MOV  R11,*R10
 * Let R1 = address of current paragraph
        MOV  @LINLST,R0
        C    *R0+,*R0+
@@ -69,9 +76,26 @@ POS2   MOV  R3,R3
        JEQ  POS3
        DECT R2
        S    *R2,R4
+POS3
+* If cursor is on first line
+* and a MGNLST entry exists for this paragraph,
+* increase R4 by size of paragrah indent.
+       MOV  R3,R3
+       JNE  POS4
+       MOV  @PARINX,R0
+       BL   @GETMGN
+       MOV  R0,R0
+       JEQ  POS4
+       AI   R0,INDENT
+       MOVB *R0,R0
+       SRL  R0,8
+       A    R0,R4
+POS4
 *
-POS3   MOV  R3,@LININX
+       MOV  R3,@LININX
        MOV  R4,@CHRLIX
+*
+       MOV  *R10+,R11
        RT
 
 *
