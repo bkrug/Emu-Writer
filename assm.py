@@ -41,15 +41,12 @@ files2 = os.scandir(".//Tests")
 files = chain(files1, files2)
 
 for file_obj in files:
-    if file_obj.name == "LOADTSTS.asm":
-        continue
-    else:
-        print("Assembling " + file_obj.name)
-        list_file = get_work_file(file_obj.name.replace(".asm", ".lst"))
-        obj_file = get_work_file(file_obj.name.replace(".asm", ".obj.temp"))
-        assemble_command_1 = "xas99.py -q -S -R {source} -L {list} -o {obj}"
-        assemble_command_2 = assemble_command_1.format(source = file_obj.path, list = list_file, obj = obj_file)
-        os.system(assemble_command_2)
+    print("Assembling " + file_obj.name)
+    list_file = get_work_file(file_obj.name.replace(".asm", ".lst"))
+    obj_file = get_work_file(file_obj.name.replace(".asm", ".obj.temp"))
+    assemble_command_1 = "xas99.py -q -S -R {source} -L {list} -o {obj}"
+    assemble_command_2 = assemble_command_1.format(source = file_obj.path, list = list_file, obj = obj_file)
+    os.system(assemble_command_2)
 
 print("Linking Unit Test Runners")
 temp_files = [ "TESTFRAM", "ACTTST", "ACT", "VAR", "CONST" ]
