@@ -3,6 +3,9 @@
        REF  LINLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
        REF  STSARW,STSDSH
+       REF  GETMGN                               From UTIL.asm
+
+       COPY 'EQUKEY.asm'
 
 *
 * Move the cursor up by one line
@@ -94,8 +97,21 @@ ADJC2  MOV  R5,R7
        JL   ADJC3
        MOV  R6,R7
        DEC  R7
+ADJC3
+* If this is the first line of indented paragraph,
+* decrease R7 by the indent.
+       MOV  R5,R5
+       JNE  ADJC4
+       MOV  @PARINX,R0
+       BL   @GETMGN
+       MOV  R0,R1
+       JEQ  ADJC4
+       MOVB @INDENT(R1),R0
+       SRL  R0,8
+       S    R0,R7
+ADJC4
 * update CHRPAX and CHRLIX
-ADJC3  MOV  R7,@CHRPAX
+       MOV  R7,@CHRPAX
        S    R5,R7
        MOV  R7,@CHRLIX
 * Edit document status

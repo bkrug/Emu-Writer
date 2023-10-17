@@ -49,7 +49,7 @@ for file_obj in files:
     os.system(assemble_command_2)
 
 print("Linking Unit Test Runners")
-temp_files = [ "TESTFRAM", "ACTTST", "ACT", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "ACTTST", "ACT", "UTIL", "WRAP", "VAR", "CONST" ]
 link_test_files("ACTRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "DISPTST", "DISP", "UTIL", "WRAP", "VAR", "CONST" ]
