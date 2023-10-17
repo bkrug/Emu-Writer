@@ -33,8 +33,10 @@ FAILED DATA >0000
 WORKSP BSS  >20
 * Workspace used by each individual test
 TSTWS  BSS  >20
-*
-STACK  BSS  >100
+* Stack used by the Test Framework
+STACK  BSS  >80
+* Stack potentially used by the tests
+TSTSCK BSS  >80
 
 * Number of tests to run
 TSTCNT DATA 0
@@ -68,6 +70,7 @@ TSTL05 CLR  *R0+
        JL   TSTL05
        LWPI TSTWS
 * Branch and link to the next test
+       LI   R10,TSTSCK
        MOV  @TSTADR,R11
        MOV  *R11,R11
        BL   *R11
