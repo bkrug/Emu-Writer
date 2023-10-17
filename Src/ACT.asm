@@ -109,6 +109,9 @@ ADJC3
        MOVB @INDENT(R1),R0
        SRL  R0,8
        S    R0,R7
+* Prevent CHRPAX from being negative
+       JGT  ADJC4
+       CLR  R7
 ADJC4
 * update CHRPAX and CHRLIX
        MOV  R7,@CHRPAX
