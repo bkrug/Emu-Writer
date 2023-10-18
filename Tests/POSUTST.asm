@@ -73,6 +73,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * the right edge of the screen.
        DATA POSC
        TEXT 'POSC  '
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line besides first line, in an
+* indented paragraph.
+       DATA POSD
+       TEXT 'POSD  '
 * When CHRLIX is 12 and horizontal
 * offset is 0, offset should not change.
        DATA HOF1
@@ -686,6 +692,37 @@ POSC
        MOV  @WINOFF,R1
        LI   R2,OFRGT
        LI   R3,OFRGTE-OFRGT
+       BLWP @AEQ
+       RT
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line besides the first line in and
+* indented paragraph.
+*
+POSD
+       LI   R0,POS1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,45+41+45+46
+       MOV  R0,@CHRPAX
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,4
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,0
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
        BLWP @AEQ
        RT
 
