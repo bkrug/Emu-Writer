@@ -12,7 +12,9 @@
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
-       REF  CURSCN
+       REF  CURSCN,WINMOD
+
+       COPY '../Src/EQUKEY.asm'
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Calculate LININX and CHRLIX
@@ -79,6 +81,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * indented paragraph.
        DATA POSD
        TEXT 'POSD  '
+* Calculate LININX and CHRLIX when
+* cursor is on the first line of an
+* indented paragraph, in vertical mode,
+* and an index is larger than 20.
+       DATA POSE
+       TEXT 'POSE  '
 * When CHRLIX is 12 and horizontal
 * offset is 0, offset should not change.
        DATA HOF1
@@ -201,6 +209,11 @@ EMPLST DATA 0,3
 *
 MGN5   DATA 1,3
        DATA 0,>0005,>0A0A,>0A0A
+*
+* Margin List with 5-char indent
+*
+MGN32  DATA 1,3
+       DATA 0,>0020,>0A0A,>0A0A
 
 *
 * Calculate LININX and CHRLIX
@@ -720,6 +733,37 @@ POSD
        LI   R3,POS1ME-POS1MS
        BLWP @AEQ
        LI   R0,0
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*
+* Calculate LININX and CHRLIX
+* when cursor is at the beginning of a
+* line.
+*
+POSE
+       LI   R0,POS1L
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,2
+       MOV  R0,@CHRPAX
+       LI   R0,MGN32
+       MOV  R0,@MGNLST
+       SETO @WINMOD
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,0
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,2+MAXIDT
        MOV  @CHRLIX,R1
        LI   R2,POS1NS
        LI   R3,POS1NE-POS1NS

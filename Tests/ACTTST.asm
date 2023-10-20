@@ -63,7 +63,7 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move up to 1st line when paragraph is indented
 * by more than 20 chars in vertical mode.
        DATA UP16
-       TEXT 'UP16  '       
+       TEXT 'UP16  '
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '

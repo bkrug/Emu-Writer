@@ -5,7 +5,7 @@ My own attempt at a word processor for the TI-99/4a.
 The goal of this project is to understand how a word processor would be written on older technology.
 It's fun to imagine that it will be better than TI-Writter/Word-Processor,
 but it's not going to be better than a product available to you to run in Windows or Linux.
-This project is a strange form of fun and a vanity project, not something that is practicle.
+This project is a strange form of fun and a vanity project, not something that is practical.
 
 Emu-writer distinguishes itself from TI-Writer with the following featues.
 
@@ -66,7 +66,7 @@ ftype PythonScript=C:\bin\python.exe "%1" %*
 * the EMUWRITER program is run as an E/A 5 program
 * the unit test programs (which have the suffix RUN.obj) are run as E/A 3 programs.
   * Use the program name "RUNTST".
-  * Someday it would be nice to be able to run all unit tests as a single program, but for now you need to run each group of tests.
+  * Someday it would be nice to be able to run all unit tests as a single program, but for now you need to run each group of tests individualy.
 * You might wonder why the EMUWRITER program is followed by so many other E/A 5 programs like EMUWRITES. This has to do with how the program is stored in RAM after loading it from a disk.
   * EMUWRITER is stored at address >2000 and occupies 6 KB.
   * The other EMUWRITE* programs are intially loaded into VDP RAM. Each of them can be pulled into the 2KB space at address >3800, when there is a need to execute them.
