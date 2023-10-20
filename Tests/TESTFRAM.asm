@@ -638,7 +638,7 @@ COPYP  LI   R10,STACK
 * +06: Address of standard failure message
 * +08: length of failure message
 RF
-       MOV  R11,R9
+       MOV  R11,R5
        MOV  R1,R4
 * Convert values to Hexadecimal Text.
 * R0 already contains the expected value
