@@ -59,6 +59,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move up to end of 1st line when paragraph is indented
        DATA UP15
        TEXT 'UP15  '
+* Move up to 1st line when paragraph is indented
+* by more than 20 chars in vertical mode.
+       DATA UP16
+       TEXT 'UP16  '       
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '
@@ -97,6 +101,11 @@ EMPLST DATA 0,3
 *
 MGN5   DATA 1,3
        DATA 0,>0005,>0A0A,>0A0A
+*
+* Margin List with 30-char indent
+*
+MGN30  DATA 1,3
+       DATA 0,>001E,>0A0A,>0A0A
 
 **** Mock document ****
 
@@ -705,6 +714,46 @@ UP15   MOV  R11,@FRAMRT
        BLWP @AEQ
 *
        LI   R0,58-5
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
+* Move from second to first line in the
+* same paragraph.
+* Paragraph's first line is indented by
+* more than 20 characters.
+* This is vertical mode so indent only
+* appears to be 20 characters.
+*
+UP16   MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+25
+       MOV  R0,@CHRPAX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,25
+       MOV  R0,@CHRLIX
+       LI   R0,MGN30
+       MOV  R0,@MGNLST
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,25-20
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
