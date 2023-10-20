@@ -97,26 +97,26 @@ ADJC2
 * If this is the first line of indented paragraph,
 * decrease R7 by the indent.
        MOV  R5,R5
-       JNE  ADJC4
+       JNE  ADJC3
        MOV  @PARINX,R0
        BL   @GETMGN
        MOV  R0,R1
-       JEQ  ADJC4
+       JEQ  ADJC3
        MOVB @INDENT(R1),R0
        SRL  R0,8
        S    R0,R7
 * Prevent CHRPAX from being negative
-       JGT  ADJC4
+       JGT  ADJC3
        CLR  R7
-ADJC4
+ADJC3
 * If new line is too shorter than previous,
 * avoid wrapping around to the next line.
 * Just move to the end of the new line.
        C    R7,R6
-       JL   ADJC3
+       JL   ADJC4
        MOV  R6,R7
        DEC  R7
-ADJC3
+ADJC4
 * update CHRPAX and CHRLIX
        MOV  R7,@CHRPAX
        S    R5,R7
