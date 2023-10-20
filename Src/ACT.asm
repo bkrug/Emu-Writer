@@ -1,8 +1,9 @@
        DEF  UPUPSP,DOWNSP
 *
-       REF  LINLST
-       REF  PARINX,CHRPAX,LININX,CHRLIX
-       REF  STSARW,STSDSH
+       REF  LINLST                               From VAR.asm
+       REF  PARINX,CHRPAX,LININX,CHRLIX          "
+       REF  STSARW,STSDSH                        "
+       REF  WINMOD                               "
        REF  GETMGN                               From UTIL.asm
 
        COPY 'EQUKEY.asm'
@@ -94,29 +95,39 @@ ADJC2
 * Let R7 = new CHRPAX
        MOV  R5,R7
        A    @CHRLIX,R7
-* If this is the first line of indented paragraph,
-* decrease R7 by the indent.
+* Is this the first line of an indented
+* paragraph?
+* Let R0 = the indent
        MOV  R5,R5
-       JNE  ADJC3
+       JNE  ADJC4
        MOV  @PARINX,R0
        BL   @GETMGN
        MOV  R0,R1
-       JEQ  ADJC3
+       JEQ  ADJC4
+* Yes, is this vertical mode and is the
+* indent greater than the max?
        MOVB @INDENT(R1),R0
        SRL  R0,8
-       S    R0,R7
+       MOV  @WINMOD,@WINMOD
+       JEQ  ADJ3
+       CI   R0,MAXIDT
+       JLE  ADJ3
+* Yes, decrease indent.
+       LI   R0,MAXIDT
+* Decrease R7 by the indent.
+ADJ3   S    R0,R7
 * Prevent CHRPAX from being negative
-       JGT  ADJC3
+       JGT  ADJC4
        CLR  R7
-ADJC3
+ADJC4
 * If new line is too shorter than previous,
 * avoid wrapping around to the next line.
 * Just move to the end of the new line.
        C    R7,R6
-       JL   ADJC4
+       JL   ADJC5
        MOV  R6,R7
        DEC  R7
-ADJC4
+ADJC5
 * update CHRPAX and CHRLIX
        MOV  R7,@CHRPAX
        S    R5,R7

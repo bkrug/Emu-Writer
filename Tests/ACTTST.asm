@@ -3,6 +3,7 @@
        REF  LINLST,MGNLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
        REF  STSARW
+       REF  WINMOD
 * Assert methods
        REF  AEQ,AOC
 * Tested methods
@@ -744,6 +745,7 @@ UP16   MOV  R11,@FRAMRT
        MOV  R0,@CHRLIX
        LI   R0,MGN30
        MOV  R0,@MGNLST
+       SETO @WINMOD
 * Act
        BL   @UPUPSP
 * Assert
