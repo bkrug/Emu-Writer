@@ -14,7 +14,7 @@
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
-       REF  CURSCN
+       REF  CURSCN,WINMOD
 
        TEXT 'POSUPD' 
 *
@@ -79,18 +79,26 @@ POS2   MOV  R3,R3
 POS3
 * If cursor is on first line
 * and a MGNLST entry exists for this paragraph,
-* increase R4 by size of paragrah indent.
+* Let R0 = size of indent.
        MOV  R3,R3
-       JNE  POS4
+       JNE  POS5
        MOV  @PARINX,R0
        BL   @GETMGN
        MOV  R0,R0
-       JEQ  POS4
+       JEQ  POS5
        AI   R0,INDENT
        MOVB *R0,R0
        SRL  R0,8
-       A    R0,R4
-POS4
+* If this is vertical mode, and the indent is
+* larger than MAXIDT, then reduce it to MAXIDT
+       MOV  @WINMOD,@WINMOD
+       JEQ  POS4
+       CI   R0,MAXIDT
+       JLE  POS4
+       LI   R0,MAXIDT
+* increase R4 by size of paragrah indent.
+POS4   A    R0,R4
+POS5
 *
        MOV  R3,@LININX
        MOV  R4,@CHRLIX
