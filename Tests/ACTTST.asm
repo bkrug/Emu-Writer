@@ -56,6 +56,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * First line is indented, but indent does not effect 2nd line.
        DATA UP14
        TEXT 'UP14  '
+* Move up to end of 1st line when paragraph is indented
+       DATA UP15
+       TEXT 'UP15  '
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '
@@ -657,6 +660,51 @@ UP14   MOV  R11,@FRAMRT
        BLWP @AEQ
 *
        LI   R0,61+40
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  @FRAMRT,R11
+       RT
+
+*
+* Move from second to end of first line
+* in the same paragraph.
+* Without indent 1st line is shorter
+* than 2nd.
+* With indent 1st line is longer than
+* 2nd.
+* Cursor should appear to user to go
+* straight up.
+*
+UP15   MOV  R11,@FRAMRT
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@LINLST
+       LI   R0,0
+       MOV  R0,@PARINX
+* 1st line has 56 characters without indent,
+* 61 characters with indent.
+* Cursor is at position 58 on 2nd line.
+       LI   R0,56+58
+       MOV  R0,@CHRPAX
+       LI   R0,1
+       MOV  R0,@LININX
+       LI   R0,58
+       MOV  R0,@CHRLIX
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,0
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,58-5
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM

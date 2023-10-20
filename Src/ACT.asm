@@ -90,14 +90,10 @@ ADJC1  C    *R4,@LININX
        JNE  ADJC2
        MOV  *R3,R6
        INC  R6
+ADJC2
 * Let R7 = new CHRPAX
-ADJC2  MOV  R5,R7
+       MOV  R5,R7
        A    @CHRLIX,R7
-       C    R7,R6
-       JL   ADJC3
-       MOV  R6,R7
-       DEC  R7
-ADJC3
 * If this is the first line of indented paragraph,
 * decrease R7 by the indent.
        MOV  R5,R5
@@ -113,6 +109,14 @@ ADJC3
        JGT  ADJC4
        CLR  R7
 ADJC4
+* If new line is too shorter than previous,
+* avoid wrapping around to the next line.
+* Just move to the end of the new line.
+       C    R7,R6
+       JL   ADJC3
+       MOV  R6,R7
+       DEC  R7
+ADJC3
 * update CHRPAX and CHRLIX
        MOV  R7,@CHRPAX
        S    R5,R7
