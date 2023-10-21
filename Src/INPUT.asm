@@ -51,20 +51,20 @@ INPUT  DATA INPTWS,INPUT+4
        CLR  @INPTMD
        JMP  INPTBG
 *
-INPUT1 MOV  @KEYRD,R10
+INPUT1 MOV  @KEYRD,R4
 * Handle visible character key strokes
-       CB   *R10,@CHRMIN
+       CB   *R4,@CHRMIN
        JL   KEYBRC
-       CB   *R10,@CHRMAX
+       CB   *R4,@CHRMAX
        JH   KEYBRC
        B    @ADDTXT
 * Branch to non-typing routine specified
-* by key code in R10
+* by key code in R4
 * Let R0 = Address of element within ROUTKY
 * that corresponds to the pressed key
 KEYBRC LI   R0,ROUTKY
        MOV  R0,R2
-KYBRC2 CB   *R10,*R0+
+KYBRC2 CB   *R4,*R0+
        JEQ  KYBRC3
        CI   R0,ROUTKE
        JL   KYBRC2
