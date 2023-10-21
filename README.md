@@ -85,5 +85,4 @@ EMU-WRITER -- You didn't think you needed it, but now you know for sure.
 ### TODO
 
 * Validate Page width, page height, and indent.
-* There appear to be three places where calls to GETMGN are only used to get the indent.
 * Consider adding a defrag operation that runs every 64/60s seconds.

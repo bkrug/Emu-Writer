@@ -67,7 +67,7 @@ GETIDT DECT R10
        MOV  R2,*R10
 * Let R2 = desired paragrah
 * Let R0 = indent of zero
-       MOV  R2,R0
+       MOV  R0,R2
        CLR  R0
 * Is this the first line of a paragraph?
        MOV  R1,R1
