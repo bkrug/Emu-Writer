@@ -395,7 +395,7 @@ LODCER MOV  *R10+,R11
 * Read Margin from file
 REDMGN DECT R10
        MOV  R11,*R10
-* Skip page width / height bytes
+* Read page width / height bytes
        MOVB @VDPRD,@PGWDTH
        BL   @LODCHK
        JEQ  MGNERR
