@@ -34,6 +34,7 @@ EDTMGN
 *
 * Let R4 = left margin
        LI   R0,FLDVAL
+       AI   R0,FLEFT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10

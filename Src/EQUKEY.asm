@@ -48,5 +48,7 @@ PWIDTH EQU  5         Paragraph width
 
 *
 * Locations in FLDVAL for different margin fields
-FRIGHT EQU 3
-FINDNT EQU 6
+FPHGHT EQU 3
+FLEFT  EQU 6
+FRIGHT EQU 9
+FINDNT EQU 12

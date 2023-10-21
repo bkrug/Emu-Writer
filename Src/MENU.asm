@@ -371,6 +371,17 @@ FRMMGN DATA TXTMG           * String List
 
 TXTMG  DATA TXTMG1
        BYTE 0
+       TEXT 'Settings applying to the whole document'
+       BYTE 0
+       TEXT 'Page Width (characters)'
+       BYTE 0
+       TEXT 'Page Height (lines)'
+       BYTE 0
+       BYTE 0
+       TEXT 'Settings applying from the current'
+       BYTE 0
+       TEXT 'paragraph onwards:'
+       BYTE 0
        TEXT 'Left Margin'
        BYTE 0
        TEXT 'Right Margin'
@@ -391,14 +402,20 @@ KEYMG  DATA KEYMG1
 KEYMG1
 
 FLDMG  DATA FLDMG1
+* Page Width (characters)
+       DATA 80+24           * Field position on screen
+       DATA 3               * Length of field
+* Page Height (lines)
+       DATA 120+24          * Field position on screen
+       DATA 3               * Length of field
 * Left Margin
-       DATA 40+13           * Field position on screen
+       DATA 280+13          * Field position on screen
        DATA 3               * Length of field
 * Right Margin
-       DATA 80+13           * Field position on screen
+       DATA 320+13          * Field position on screen
        DATA 3               * Length of field
 * Indent
-       DATA 120+13          * Field position on screen
+       DATA 360+13          * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
 
@@ -431,6 +448,7 @@ POPMG  DECT R10
 * Left Margin
        MOVB @LEFT(R6),R1
        LI   R2,FLDVAL
+       AI   R2,FLEFT
        BL   @BYTSTR
 * Right Margin
        MOV  @PGWDTH,R1
@@ -449,6 +467,7 @@ POPMG  DECT R10
 * Populate with defaults
 POPMGD LI   R0,MGNDFT
        LI   R1,FLDVAL
+       AI   R1,FLEFT
        LI   R2,MGNEND-MGNDFT
        BLWP @BUFCPY
 *

@@ -11,6 +11,7 @@
        REF  ERRMEM,STSPAR
 * Variables
        REF  LNWDT1,LNWDTH,WINMOD
+       REF  PGWDTH
 
 * This data is a work around for the "first DATA word is 0 bug"
        DATA >1234
@@ -59,7 +60,8 @@ MGN2   INCT R8
        JMP  MGN2C
 * Set default paragraph width and indents
 MGN2B  CLR  R0
-       LI   R1,60
+       MOV  @PGWDTH,R1
+       AI   R1,2*-10
 MGN2C
 * Are we in windowed mode?
        MOV  @WINMOD,R3
