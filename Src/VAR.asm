@@ -19,6 +19,7 @@
        DEF  BUFADR,BUFEND
 * Arrays
        DEF  LINLST,FMTLST,MGNLST
+       DEF  PGHGHT,PGWDTH
 * MAIN.TXT
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
 * IO.TXT
@@ -80,6 +81,9 @@ LINLST BSS  2
 FMTLST BSS  2
 * Address of margin list
 MGNLST BSS  2
+* Page height and width in lines and characters
+PGHGHT BSS  2
+PGWDTH BSS  2
 
 * MEMBUF.O
 * holds block size

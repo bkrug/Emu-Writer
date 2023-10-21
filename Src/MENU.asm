@@ -9,6 +9,7 @@
        REF  CCHNEW,CCHQIT                         "
        REF  CCHMGN                                "
        REF  PARINX,FLDVAL                         From VAR.asm
+       REF  PGWDTH                                "
        REF  GETMGN,BYTSTR                         From UTIL.asm
        REF  BUFCPY                                From MEMBUF
 
@@ -432,7 +433,7 @@ POPMG  DECT R10
        LI   R2,FLDVAL
        BL   @BYTSTR
 * Right Margin
-       LI   R1,DFLTPG
+       MOV  @PGWDTH,R1
        SLA  R1,8
        SB   @LEFT(R6),R1
        SB   @PWIDTH(R6),R1

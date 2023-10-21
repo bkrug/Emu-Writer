@@ -10,6 +10,7 @@
        REF  LINLST,MGNLST                         From VAR.asm
        REF  FLDVAL,WINMOD                         "
        REF  VER2                                  "
+       REF  PGHGHT,PGWDTH                         "
        REF  ARYADR,BUFGRW,BUFALC                  From ARRAY.asm
        REF  WRAP,INTDOC
        REF  WRAPDC,GETMGN                         From UTIL.asm
@@ -165,13 +166,14 @@ DOCDN
        BL   @SAVCHK
        JEQ  SLERR
 * Write Page Width & Page Height to file
-* 80-columns 66-lines
-       LI   R4,>5042
-       MOV  R4,@VDPWD
+       MOV  @PGWDTH,R4
+       SLA  R4,8
+       MOVB R4,@VDPWD
        BL   @SAVCHK
        JEQ  SLERR
-       SWPB R4
-       MOV  R4,@VDPWD
+       MOV  @PGHGHT,R4
+       SLA  R4,8
+       MOVB R4,@VDPWD
        BL   @SAVCHK
        JEQ  SLERR
 * Save Margins

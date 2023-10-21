@@ -28,6 +28,7 @@ NXTCCH EQU  6
 * field address, skip field logic.
 NOFLDS EQU  0
 
+DFLTHT EQU  66        Default Page Height
 DFLTPG EQU  80        Default Page Width
 DFLTLF EQU  10        Default Left Margin
 SCRNWD EQU  40

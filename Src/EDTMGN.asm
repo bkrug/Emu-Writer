@@ -2,7 +2,7 @@
        DEF  MGNSRT,MGNEND
 *
        REF  PARINX,MGNLST,LINLST          From VAR.asm
-       REF  FLDVAL                        "
+       REF  FLDVAL,PGWDTH                 "
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
        REF  WRAP                          From WRAP.asm
@@ -46,9 +46,8 @@ EDTMGN
        JNE  EM10
        MOV  R1,R5
 * Let R5 = paragraph width
-* Assume a page width of 80
        NEG  R5
-       AI   R5,80
+       A    @PGWDTH,R5
        S    R4,R5
 * Validate margin sizes
        BL   @MGNSIZ
