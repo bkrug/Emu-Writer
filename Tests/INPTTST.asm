@@ -613,8 +613,6 @@ EXP4B
 TST5   MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,5
 * Set position values
        CLR  @INSTMD
 TST5A  LI   R0,2
@@ -683,8 +681,6 @@ TST6   MOV  R11,R12
        BL   @TSTINT
 *
        SETO @INSTMD
-* Set test number.
-       LI   R3,6
 *
        B    @TST5A
 
@@ -696,8 +692,6 @@ TST6   MOV  R11,R12
 TST7   MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,7
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -745,8 +739,6 @@ KEYL7E
 TST18  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,18
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -823,8 +815,6 @@ EXP18A
 TST19  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,19
 * Set position values
        CLR  @INSTMD
        LI   R0,0
@@ -903,8 +893,6 @@ TST19N EVEN
 TST8   MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,8
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -966,8 +954,6 @@ TST8ME EVEN
 TST9   MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,9
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1014,8 +1000,6 @@ TST9   MOV  R11,R12
 TST10  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,10
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1076,8 +1060,6 @@ KEY10E
 TST11  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,11
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1124,8 +1106,6 @@ TST11  MOV  R11,R12
 TST15  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,15
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1177,8 +1157,6 @@ KEY15E
 TST12  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,12
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1271,8 +1249,6 @@ TST13  MOV  R11,R12
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
-* Set test number.
-       LI   R3,>1000+13
 * Test earlier paragraph
        AI   R1,4
        LI   R2,EXP13A
@@ -1283,8 +1259,6 @@ TST13  MOV  R11,R12
        LI   R1,3
        BLWP @ARYADR
        MOV  *R1,R1
-* Set test number.
-       LI   R3,13
 * Test later paragraph
        AI   R1,4
        LI   R2,EXP13C
@@ -1330,8 +1304,6 @@ EXP13D
 TST14  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,14
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1400,8 +1372,6 @@ ERR14O
 TST16  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,16
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1484,8 +1454,6 @@ KEY16E
 TST17  MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,17
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1539,8 +1507,6 @@ TST20
        MOV  R11,R12
 * Initialize Test Data
        BL   @TSTINT
-* Set test number.
-       LI   R3,20
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1627,8 +1593,6 @@ TXT21A MOV  *R1+,*R0+
        LI   R2,MGN21N
        LI   R3,5*8+4
        BL   @STRCMP
-* Set test number.
-       LI   R3,21
 *
        B    *R12
 
@@ -1687,8 +1651,6 @@ TXT22A MOV  *R1+,*R0+
        LI   R2,MGN22N
        LI   R3,2*8+4
        BL   @STRCMP
-* Set test number.
-       LI   R3,22
 *
        B    *R12
 
@@ -1740,8 +1702,6 @@ TXT23A MOV  *R1+,*R0+
        LI   R2,MGN23N
        LI   R3,3*8+4
        BL   @STRCMP
-* Set test number.
-       LI   R3,23
 *
        B    *R12
 
@@ -1796,8 +1756,6 @@ TXT24A MOV  *R1+,*R0+
        LI   R2,MGN24N
        LI   R3,2*8+4
        BL   @STRCMP
-* Set test number.
-       LI   R3,24
 *
        B    *R12
 
