@@ -329,46 +329,9 @@ NEWPAR
 * Read margin if VER2 is high Enough
 LODMGN CB   @VER2,@VERMGN
        JL   LOADDN
-* Skip page width / height bytes
-       MOVB @VDPRD,R5
-       BL   @LODCHK
+* Read page size and margins
+       BL   @REDMGN
        JEQ  LODERR
-*
-       MOVB @VDPRD,R5
-       BL   @LODCHK
-       JEQ  LODERR
-* Let R5 = number of elements in array
-       MOVB @VDPRD,R5
-       BL   @LODCHK
-       JEQ  LODERR
-       SWPB R5
-*
-       MOVB @VDPRD,R5
-       BL   @LODCHK
-       JEQ  LODERR
-       SWPB R5
-* Let R3 = number of bytes to read for margins
-       MOV  R5,R3
-       SLA  R3,3
-       AI   R3,4
-* Reserve space in buffer
-       MOV  R3,R0
-       BLWP @BUFALC
-       JEQ  LOADDN
-       MOV  R0,@MGNLST
-* Let R3 = end of allocated space
-       A    R0,R3
-* Save element count
-       MOVB R5,*R0+
-       SWPB R5
-       MOVB R5,*R0+
-* Read rest of margin data
-       MOVB @VDPRD,*R0+
-LODM1  BL   @LODCHK
-       JEQ  LODERR
-       MOVB @VDPRD,*R0+
-       C    R0,R3
-       JL   LODM1
 * Reached End of Document
 LOADDN BL   @CLOSFL
        JEQ  LODERR
@@ -427,6 +390,58 @@ LODC1  MOV  *R10+,R11
 LODCER MOV  *R10+,R11
        S    R0,R0
        RT
+
+*
+* Read Margin from file
+REDMGN DECT R10
+       MOV  R11,*R10
+* Skip page width / height bytes
+       MOVB @VDPRD,@PGWDTH
+       BL   @LODCHK
+       JEQ  MGNERR
+*
+       MOVB @VDPRD,@PGHGHT
+       BL   @LODCHK
+       JEQ  MGNERR
+* Let R5 = number of elements in array
+       MOVB @VDPRD,R5
+       BL   @LODCHK
+       JEQ  MGNERR
+       SWPB R5
+*
+       MOVB @VDPRD,R5
+       BL   @LODCHK
+       JEQ  MGNERR
+       SWPB R5
+* Let R3 = number of bytes to read for margins
+       MOV  R5,R3
+       SLA  R3,3
+       AI   R3,4
+* Reserve space in buffer
+       MOV  R3,R0
+       BLWP @BUFALC
+       JEQ  MGNDN
+       MOV  R0,@MGNLST
+* Let R3 = end of allocated space
+       A    R0,R3
+* Save element count
+       MOVB R5,*R0+
+       SWPB R5
+       MOVB R5,*R0+
+* Read rest of margin data
+       MOVB @VDPRD,*R0+
+LODM1  BL   @LODCHK
+       JEQ  MGNERR
+       MOVB @VDPRD,*R0+
+       C    R0,R3
+       JL   LODM1
+*
+MGNDN  MOV  *R10+,R11
+       RT
+* Return with EQ stats bit checked
+MGNERR S    R0,R0
+       MOV  *R10+,R11
+       RT      
 
 *
 * Print
