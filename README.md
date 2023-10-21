@@ -86,4 +86,5 @@ EMU-WRITER -- You didn't think you needed it, but now you know for sure.
 
 * Validate Page width, page height, and indent.
 * Make INPUT use main workspace isntead of its own.
+* In screen header, display a character to indicate vertical or windowed mode.
 * Consider adding a defrag operation that runs every 64/60s seconds.

@@ -9,6 +9,7 @@
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  LINLST,MGNLST,FMTLST
+       REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP,STSENT,STSWIN,STSARW
        REF  CURTIM,CUROLD,CURRPL,CURSCN
@@ -20,6 +21,7 @@
 
        COPY 'CPUADR.asm'
        COPY 'EQUVDPADR.asm'
+       COPY 'EQUKEY.asm'
 
 BEGIN  B    @INIT
 *
@@ -30,27 +32,13 @@ MAIN
        CLR  R0
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
-       JEQ  MAIN0
+       JEQ  MAIN1
        BL   @ENTMNU
+MAIN1
 * Process user input
-MAIN0  BLWP @INPUT
-* Wrap the previous paragraph if needed
-       MOV  R0,R1
-	MOV  R0,R2
-       COC  @STSENT,R2
-       JNE  MAIN1
-       MOV  @PARINX,R0
-       DEC  R0
-       BLWP @WRAP
-* Wrap the current paragraph if needed
-MAIN1  COC  @STSENT,R2
-       JEQ  MAIN2
-       COC  @STSTYP,R2
-       JNE  MAIN3
-MAIN2  MOV  @PARINX,R0
-       BLWP @WRAP
-       MOV  R1,R0
-MAIN3
+       BLWP @INPUT
+* Wrap current or previous paragraphs if needed
+       BL   @MYWRAP
 * Update cursor and window positions
        BLWP @POSUPD
 * Redisplay the screen
@@ -71,6 +59,11 @@ MAIN3
 *  R1 - Address in LINLST
 *  R4 - Address of paragraph
 INTDOC
+* Set default page size
+       LI   R0,DFLTHT*>100
+       MOVB R0,@PGHGHT
+       LI   R0,DFLTPG*>100
+       MOVB R0,@PGWDTH
 * Initialize buffer.
        LI   R0,MEMBEG
        LI   R1,MEMEND
@@ -131,6 +124,32 @@ INTRPT
 * Call key scanning interupt
 * (which is responsible for return)
        B     @KEYINT
+
+*
+* Wrap paragraphs if needed
+*
+MYWRAP
+* Let R1 & R2 = copies of document status
+       MOV  R0,R1
+	MOV  R0,R2
+* If user pressed enter,
+* wrap the previous paragraph.
+       COC  @STSENT,R2
+       JNE  WRAP1
+       MOV  @PARINX,R0
+       DEC  R0
+       BLWP @WRAP
+* If the user pressed enter or typed something,
+* wrap the current paragraph.
+WRAP1  COC  @STSENT,R2
+       JEQ  WRAP2
+       COC  @STSTYP,R2
+       JNE  WRAP3
+WRAP2  MOV  @PARINX,R0
+       BLWP @WRAP
+       MOV  R1,R0
+*
+WRAP3  RT
 
 *
 * Draw the cursor on screen

@@ -10,7 +10,6 @@
        REF  VDPTXT,VDPSPC
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP
-       REF  PGHGHT,PGWDTH
        REF  CURINS,CURMOD,WINMOD
        REF  CURMNU,STACK
        REF  MNUTTL
@@ -44,10 +43,6 @@ INIT
        BL   @WRTHDR
        BL   @FRMFLD
 * Set default values
-       LI   R0,DFLTHT*>100
-       MOVB R0,@PGHGHT
-       LI   R0,DFLTPG*>100
-       MOVB R0,@PGWDTH
        SETO @WINMOD
 * Don't let user use FCTN+= to restart computer
        MOVB @NOQUIT,@INTSTP
