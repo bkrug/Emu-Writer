@@ -6,7 +6,7 @@
 *
        REF  STSWIN
 *
-       REF  GETMGN                     From UTIL.asm
+       REF  GETIDT                     From UTIL.asm
 *
        REF  LINLST,MGNLST
        REF  ARYADR
@@ -77,25 +77,10 @@ POS2   MOV  R3,R3
        DECT R2
        S    *R2,R4
 POS3
-* If cursor is on first line
-* and a MGNLST entry exists for this paragraph,
-* Let R0 = size of indent.
-       MOV  R3,R3
-       JNE  POS5
+* Let R0 = the indent for this line
        MOV  @PARINX,R0
-       BL   @GETMGN
-       MOV  R0,R0
-       JEQ  POS5
-       AI   R0,INDENT
-       MOVB *R0,R0
-       SRL  R0,8
-* If this is vertical mode, and the indent is
-* larger than MAXIDT, then reduce it to MAXIDT
-       MOV  @WINMOD,@WINMOD
-       JEQ  POS4
-       CI   R0,MAXIDT
-       JLE  POS4
-       LI   R0,MAXIDT
+       MOV  R3,R1
+       BL   @GETIDT
 * increase R4 by size of paragrah indent.
 POS4   A    R0,R4
 POS5

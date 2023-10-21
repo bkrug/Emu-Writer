@@ -6,7 +6,6 @@
        REF  BUFSRK
        REF  VDPADR,VDPWRT
        REF  WINMOD,WINOFF
-       REF  GETMGN                             * From UTIL.asm
 
 * Key stroke routines in another file
        REF  UPUPSP,DOWNSP

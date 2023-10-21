@@ -4,7 +4,7 @@
        REF  PARINX,CHRPAX,LININX,CHRLIX          "
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
-       REF  GETMGN                               From UTIL.asm
+       REF  GETIDT                               From UTIL.asm
 
        COPY 'EQUKEY.asm'
 
@@ -95,25 +95,10 @@ ADJC2
 * Let R7 = new CHRPAX
        MOV  R5,R7
        A    @CHRLIX,R7
-* Is this the first line of an indented
-* paragraph?
-* Let R0 = the indent
-       MOV  R5,R5
-       JNE  ADJC4
+* Let R0 = the indent for this line
        MOV  @PARINX,R0
-       BL   @GETMGN
-       MOV  R0,R1
-       JEQ  ADJC4
-* Yes, is this vertical mode and is the
-* indent greater than the max?
-       MOVB @INDENT(R1),R0
-       SRL  R0,8
-       MOV  @WINMOD,@WINMOD
-       JEQ  ADJ3
-       CI   R0,MAXIDT
-       JLE  ADJ3
-* Yes, decrease indent.
-       LI   R0,MAXIDT
+       MOV  R5,R1
+       BL   @GETIDT
 * Decrease R7 by the indent.
 ADJ3   S    R0,R7
 * Prevent CHRPAX from being negative

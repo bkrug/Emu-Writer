@@ -8,7 +8,7 @@
 * Methods for writing to VDP
        REF  VDPADR,VDPWRT,VDPSPC
 * From UTIL
-       REF  GETMGN
+       REF  GETIDT
 *
        REF  DISPWS
        REF  LINLST,FMTLST,MGNLST
@@ -211,24 +211,10 @@ PARADR SLA  R3,1
 WRTLIN DECT R10
        MOV  R11,*R10
 * Let R8 = size of indent
-       CLR  R8
-       MOV  R2,R2
-       JNE  WRTMG9               * First Line?
        MOV  R9,R0
-       BL   @GETMGN
+       MOV  R2,R1
+       BL   @GETIDT
        MOV  R0,R8
-       JEQ  WRTMG9               * No margin entry?
-       MOVB @INDENT(R8),R8
-       SRL  R8,8
-       JEQ  WRTMG9               * Is Indent zero?
-* If in vertical mode, do not let indent exceed max value
-       MOV  @WINMOD,R0
-       JEQ  WRTMG1
-       LI   R0,MAXIDT
-       C    R8,R0
-       JLE  WRTMG1
-       MOV  R0,R8
-WRTMG1
 * Let R1 = indent spaces on screen
        MOV  R8,R1
        S    @WINOFF,R1
