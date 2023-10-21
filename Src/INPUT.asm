@@ -405,7 +405,6 @@ DELCRT B    *R12
 
 * User typed some text.
 * Put it in the buffer.
-* R10 hold address of next input key
 ADDTXT
 * Set input mode if currently unset
        C    @INPTMD,@INPTNN
@@ -476,7 +475,8 @@ INS1   MOV  R0,*R6
        BLWP @BUFCPY
 RPLTXT
 * put keystroke in new space
-       MOVB *R10,*R0
+       MOV  @KEYRD,R2
+       MOVB *R2,*R0
 * Increase character index.
        INC  @CHRPAX
 *
