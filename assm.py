@@ -71,7 +71,7 @@ temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "VAR", "CONST" ]
 link_test_files("WRAPRUN.obj", True, temp_files)
 
 print("Linking Key Buffer Test Program")
-temp_files = [ "KEYTST", "TESTUTIL", "KEY", "VAR", "CONST" ]
+temp_files = [ "KEYTST", "KEY", "VAR", "CONST" ]
 link_test_files("KEYRUN.obj", False, temp_files)
 
 print("Linking Main Program")
