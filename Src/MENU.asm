@@ -9,7 +9,7 @@
        REF  CCHNEW,CCHQIT                         "
        REF  CCHMGN                                "
        REF  PARINX,FLDVAL                         From VAR.asm
-       REF  PGWDTH                                "
+       REF  PGWDTH,PGHGHT                         "
        REF  GETMGN,BYTSTR                         From UTIL.asm
        REF  BUFCPY                                From MEMBUF
 
@@ -371,16 +371,14 @@ FRMMGN DATA TXTMG           * String List
 
 TXTMG  DATA TXTMG1
        BYTE 0
-       TEXT 'Settings applying to the whole document'
+       TEXT 'APPLIES TO WHOLE DOCUMENT:'
        BYTE 0
        TEXT 'Page Width (characters)'
        BYTE 0
        TEXT 'Page Height (lines)'
        BYTE 0
        BYTE 0
-       TEXT 'Settings applying from the current'
-       BYTE 0
-       TEXT 'paragraph onwards:'
+       TEXT 'APPLIES FROM CURRENT PARAGRAPH ONWARDS:'
        BYTE 0
        TEXT 'Left Margin'
        BYTE 0
@@ -409,13 +407,13 @@ FLDMG  DATA FLDMG1
        DATA 120+24          * Field position on screen
        DATA 3               * Length of field
 * Left Margin
-       DATA 280+13          * Field position on screen
+       DATA 240+13          * Field position on screen
        DATA 3               * Length of field
 * Right Margin
-       DATA 320+13          * Field position on screen
+       DATA 280+13          * Field position on screen
        DATA 3               * Length of field
 * Indent
-       DATA 360+13          * Field position on screen
+       DATA 320+13          * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
 
@@ -438,6 +436,15 @@ POPMG  DECT R10
        MOV  R6,*R10
        DECT R10
        MOV  R11,*R10
+* Populate Page Width
+       MOVB @PGWDTH,R1
+       LI   R2,FLDVAL
+       BL   @BYTSTR
+* Populate Page Height
+       MOVB @PGHGHT,R1
+       LI   R2,FLDVAL
+       AI   R2,FPHGHT
+       BL   @BYTSTR
 * Let R0 = address of current margin data
        MOV  @PARINX,R0
        BL   @GETMGN

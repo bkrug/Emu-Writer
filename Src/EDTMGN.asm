@@ -2,7 +2,7 @@
        DEF  MGNSRT,MGNEND
 *
        REF  PARINX,MGNLST,LINLST          From VAR.asm
-       REF  FLDVAL,PGWDTH                 "
+       REF  FLDVAL,PGWDTH,PGHGHT          "
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
        REF  WRAP                          From WRAP.asm
@@ -18,6 +18,21 @@ MGNSRT
 EDTMGN
        DECT R10
        MOV  R11,*R10
+* Record Page Width
+       LI   R0,FLDVAL
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
+       SLA  R1,8
+       MOVB R1,@PGWDTH
+* Record Page Height
+       LI   R0,FLDVAL
+       AI   R0,FPHGHT
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
+       SLA  R1,8
+       MOVB R1,@PGHGHT
 *
 * Allocate enough space for a MGNLST element
 *
@@ -107,32 +122,8 @@ EM9
        MOV  R3,R1
        LI   R2,MGNLNG
        BLWP @BUFCPY
-*
 * Search any duplicate entries and delete them.
-*
-* Let R0 = begining of MGNLST
-* Let R2 = index of current element
-       MOV  @MGNLST,R0
-       MOV  *R0,R2
-       DECT R2
-       JLT  DUP3
-* Compare left margin and paragraph width
-* for each element
-DUP1   MOV  R2,R1
-       BLWP @ARYADR
-       CB   @INDENT(R1),@MGNLNG+INDENT(R1)
-       JNE  DUP2
-       C    @LEFT(R1),@MGNLNG+LEFT(R1)
-       JNE  DUP2
-* Delete duplicate
-       MOV  R2,R1
-       INC  R1
-       BLWP @ARYDEL
-* Get ready for next element
-DUP2   DEC  R2
-       JGT  DUP1
-       JEQ  DUP1
-DUP3  
+       BL   @DELDUP
 * Re-wrap, this and lower paragraphs
        MOV  @PARINX,R0
        BL   @WRAPDW
@@ -246,6 +237,35 @@ MGNSIZ
        RT
 * Reset EQU status bit to indicate no error
 MGNRT  LI   R2,-1
+       RT
+
+*
+* Search any duplicate entries and delete them.
+*
+DELDUP
+* Let R0 = begining of MGNLST
+* Let R2 = index of current element
+       MOV  @MGNLST,R0
+       MOV  *R0,R2
+       DECT R2
+       JLT  DUP3
+* Compare left margin and paragraph width
+* for each element
+DUP1   MOV  R2,R1
+       BLWP @ARYADR
+       CB   @INDENT(R1),@MGNLNG+INDENT(R1)
+       JNE  DUP2
+       C    @LEFT(R1),@MGNLNG+LEFT(R1)
+       JNE  DUP2
+* Delete duplicate
+       MOV  R2,R1
+       INC  R1
+       BLWP @ARYDEL
+* Get ready for next element
+DUP2   DEC  R2
+       JGT  DUP1
+       JEQ  DUP1
+DUP3
        RT
 
 MGNEND AORG

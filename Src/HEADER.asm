@@ -63,8 +63,7 @@ CONMGN AI   R0,3
        MOVB R2,R4
        BL   @DRWNUM
 * Let R2 = page width - paragraph width - left margin
-       MOV  @PGWDTH,R2
-       SLA  R2,8
+       MOVB @PGWDTH,R2
        SB   *R0+,R2
        SB   R4,R2
 * Convert Right Margin to ASCII
