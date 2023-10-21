@@ -286,8 +286,6 @@ LPRINX TEXT 'PARINX'
 LCRPAX TEXT 'CHRPAX'
 LKEYRD TEXT 'KEYRD '
 PARLEN TEXT 'PARLEN'
-PARMSG TEXT 'Paragraph contents wrong.'
-PAREND
 
 ****************************************
 *
@@ -325,12 +323,11 @@ TST1   MOV  R11,R12
        BLWP @ARYADR
        MOV  *R1,R1
 * Test paragraph contents
-       LI   R0,EXP1A+4
        AI   R1,4
-       LI   R2,EXP1B-EXP1A-4
-       LI   R3,PARMSG
-       LI   R4,PAREND-PARMSG
-       BLWP @ABLCK
+       LI   R2,EXP1A+4
+       LI   R0,EXP1B
+       LI   R3,1
+       BL   @STRCMP
 * Test position values.
 * Only CHRPAX should have
 * changed due to cursor moving.
