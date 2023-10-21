@@ -329,9 +329,9 @@ DELC1  MOVB *R5+,*R4+
 * If this is the end of document,
 * delete nothing.
 DELC2  MOV  @LINLST,R9
-       MOV  @PARINX,R10
-       INC  R10
-       C    R10,*R9
+       MOV  @PARINX,R5
+       INC  R5
+       C    R5,*R9
        JEQ  DELCRT
 * Merge two paragraphs
 * Set document status
