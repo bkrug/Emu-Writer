@@ -1,4 +1,3 @@
-       DEF  FMTLEN,MGNLEN
        DEF  FORTY
        DEF  STSTYP,STSENT,STSDCR,STSPAR
        DEF  STSWIN,STSDSH,STSARW
@@ -17,12 +16,6 @@
 * use or not.
 * It is defined in MEMBUF.O
 * BLKUSE DATA >8000
-* Number of bytes in each entry of the
-* margin list.
-MGNLEN
-* Number of bytes in each entry of the
-* format list.
-FMTLEN DATA 8
 
 FORTY  DATA 40
 

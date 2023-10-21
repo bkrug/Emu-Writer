@@ -7,7 +7,6 @@
        REF  WRAPWS
 * Constants
        REF  SPACE,DASH
-       REF  FMTLEN,MGNLEN
        REF  ERRMEM,STSPAR
 * Variables
        REF  LNWDT1,LNWDTH,WINMOD
@@ -43,7 +42,7 @@ WRAP   DATA WRAPWS,WRAP+4
 * Move backwards through margin list
 * Find the entry for our target
 * paragraph, or the entry before it.
-MGN1   S    @MGNLEN,R8
+MGN1   AI   R8,-MGNLNG
        C    R8,R9
        JL   MGN2B
        C    *R8,*R13
