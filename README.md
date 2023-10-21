@@ -85,4 +85,5 @@ EMU-WRITER -- You didn't think you needed it, but now you know for sure.
 ### TODO
 
 * Validate Page width, page height, and indent.
+* Make INPUT use main workspace isntead of its own.
 * Consider adding a defrag operation that runs every 64/60s seconds.

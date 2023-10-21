@@ -12,6 +12,9 @@
 * Move the cursor up by one line
 *
 UPUPSP MOV  R11,R12
+* TODO: This is one of the weirdest spots 
+* to suddenly give ourselves access to the stack.
+       MOV  @20(R13),R10
 *
        MOV  @LININX,R0
        JEQ  UPSP1
@@ -39,6 +42,9 @@ UPSP2  JMP  ADJCHR
 * Move the cursor down by one line
 *
 DOWNSP MOV  R11,R12
+* TODO: This is one of the weirdest spots 
+* to suddenly give ourselves access to the stack.
+       MOV  @20(R13),R10
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
