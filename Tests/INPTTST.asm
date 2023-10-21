@@ -319,7 +319,7 @@ TST1   MOV  R11,R12
 * Act
        BLWP @INPUT
 * Assert
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -395,7 +395,7 @@ TST2   MOV  R11,R12
        BLWP @INPUT
 * Store document status
        MOV  R0,R5
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -493,7 +493,7 @@ TST3   MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -564,7 +564,7 @@ TST4   MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -632,7 +632,7 @@ TST5A  LI   R0,2
 * Act
        BLWP @INPUT
 * Assert
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -711,7 +711,7 @@ TST7   MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -758,7 +758,7 @@ TST18  MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -780,7 +780,7 @@ TST18  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 * Paragraph should be shorter
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -836,7 +836,7 @@ TST19  MOV  R11,R12
        BLWP @INPUT
 * Save document status
        MOV  R0,R5
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,0
        BLWP @ARYADR
@@ -858,7 +858,7 @@ TST19  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 * Paragraph should be longer
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,0
        BLWP @ARYADR
@@ -914,7 +914,7 @@ TST8   MOV  R11,R12
        BLWP @INPUT
 * Save document status
        MOV  R0,R5
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -973,7 +973,7 @@ TST9   MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -1021,7 +1021,7 @@ TST10  MOV  R11,R12
        BLWP @INPUT
 * Save document status
        MOV  R0,R5
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -1079,7 +1079,7 @@ TST11  MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
@@ -1125,7 +1125,7 @@ TST15  MOV  R11,R12
        BL   @CPYKEY
 * Run routine
        BLWP @INPUT
-* Get address of paragraph now
+* Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
