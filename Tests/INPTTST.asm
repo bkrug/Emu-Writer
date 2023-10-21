@@ -5,7 +5,7 @@
        DEF  MNUINT,PRINT
 
 * Assert Routine
-       REF  AEQ,AZC,AOC
+       REF  AEQ,AZC,AOC,ABLCK
 
 *
        REF  INPUT
@@ -286,6 +286,8 @@ LPRINX TEXT 'PARINX'
 LCRPAX TEXT 'CHRPAX'
 LKEYRD TEXT 'KEYRD '
 PARLEN TEXT 'PARLEN'
+PARMSG TEXT 'Paragraph contents wrong.'
+PAREND
 
 ****************************************
 *
@@ -316,30 +318,33 @@ TST1   MOV  R11,R12
        BL   @CPYKEY
 * Act
        BLWP @INPUT
+* Assert
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
-* Assert
 * Test paragraph contents
+       LI   R0,EXP1A+4
        AI   R1,4
-       LI   R2,EXP1A+4
-       LI   R0,EXP1B
-       LI   R3,1
-       BL   @STRCMP
+       LI   R2,EXP1B-EXP1A-4
+       LI   R3,PARMSG
+       LI   R4,PAREND-PARMSG
+       BLWP @ABLCK
 * Test position values.
 * Only CHRPAX should have
 * changed due to cursor moving.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,7+12
+       LI   R0,7+12
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
@@ -624,8 +629,9 @@ TST5A  LI   R0,2
        LI   R1,KEYL5E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
