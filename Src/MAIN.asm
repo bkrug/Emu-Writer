@@ -29,6 +29,11 @@ BEGIN  B    @INIT
 *
 MAIN
 * Clear the document status register
+* TODO:
+* Create address labeled DOCSTS
+* Here add code "CLR @DOCSTS" and "MOV @DOCSTS,R0"
+* BLWP functions can continue to use *R13 referencing R10
+* BL functions can use "LI R13,DOCSTS" and continue to use *R13
        CLR  R0
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
