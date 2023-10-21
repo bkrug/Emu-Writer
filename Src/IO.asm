@@ -166,14 +166,10 @@ DOCDN
        BL   @SAVCHK
        JEQ  SLERR
 * Write Page Width & Page Height to file
-       MOV  @PGWDTH,R4
-       SLA  R4,8
-       MOVB R4,@VDPWD
+       MOVB @PGWDTH,@VDPWD
        BL   @SAVCHK
        JEQ  SLERR
-       MOV  @PGHGHT,R4
-       SLA  R4,8
-       MOVB R4,@VDPWD
+       MOV  @PGHGHT,@VDPWD
        BL   @SAVCHK
        JEQ  SLERR
 * Save Margins

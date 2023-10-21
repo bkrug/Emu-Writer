@@ -60,7 +60,8 @@ MGN2   INCT R8
        JMP  MGN2C
 * Set default paragraph width and indents
 MGN2B  CLR  R0
-       MOV  @PGWDTH,R1
+       MOVB @PGWDTH,R1
+       SRL  R1,8
        AI   R1,2*-10
 MGN2C
 * Are we in windowed mode?

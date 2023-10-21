@@ -47,8 +47,10 @@ EDTMGN
        JNE  EM10
        MOV  R1,R5
 * Let R5 = paragraph width
+       MOVB @PGWDTH,R0
+       SRL  R0,8
        NEG  R5
-       A    @PGWDTH,R5
+       A    R0,R5
        S    R4,R5
 * Validate margin sizes
        BL   @MGNSIZ

@@ -82,8 +82,8 @@ FMTLST BSS  2
 * Address of margin list
 MGNLST BSS  2
 * Page height and width in lines and characters
-PGHGHT BSS  2
-PGWDTH BSS  2
+PGHGHT BSS  1
+PGWDTH BSS  1
 
 * MEMBUF.O
 * holds block size
