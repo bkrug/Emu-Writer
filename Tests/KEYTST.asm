@@ -30,12 +30,12 @@ RUNTST
 LOOP
 * Copy keys from buffer to record
 KEYCPY C    @KEYRD,@KEYWRT
-	   JEQ  SCRNWR
-	   MOV  @KEYRD,R0
-	   MOVB *R0+,*R12+
-	   CI   R0,KEYEND
-	   JL   KEYCP1
-	   LI   R0,KEYSTR
+       JEQ  SCRNWR
+       MOV  @KEYRD,R0
+       MOVB *R0+,*R12+
+       CI   R0,KEYEND
+       JL   KEYCP1
+       LI   R0,KEYSTR
 KEYCP1 MOV  R0,@KEYRD
        JMP  KEYCPY
 * Disable interrupts before writing
@@ -45,7 +45,7 @@ SCRNWR LIMI 0
        CLR  R0
        LI   R1,KEYSTR
        LI   R2,KEYEND
-	   S    R1,R2
+       S    R1,R2
        BLWP @VMBW
 * Write PREVKY and TIMER to Row 23
        MOVB @PREVKY,R0
@@ -61,19 +61,19 @@ SCRNWR LIMI 0
        BLWP @VMBW
 * Write recorded keys to the screen Row 1-22
        LI   R0,>20
-	   LI   R1,KEYREC
-	   LI   R2,22*32
-	   BLWP @VMBW
+       LI   R1,KEYREC
+       LI   R2,22*32
+       BLWP @VMBW
 * Re-enable interrupts
        LIMI 2
 * Wait until delay end before copying
 * keypresses from buffer to record.
        DEC  R11
-	   JNE  SCRNWR
+       JNE  SCRNWR
 * Delay to simulate a busy system
        MOV  @BSYDLY,R11
        JMP  LOOP
-	   
+       
 BSYDLY DATA >40
 
 * Make Hexadecimal Text
@@ -131,7 +131,7 @@ TIMHX  TEXT 'ABCD.ABC'
 KEYREC TEXT 'We"re in the money. '
        TEXT 'We"re in the money. '
        TEXT 'We"ve got a lot of what it takes '
-	   TEXT 'to get alonggg.'
+       TEXT 'to get alonggg.'
        BSS  22*32
 
        END
