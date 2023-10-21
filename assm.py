@@ -58,7 +58,7 @@ link_test_files("DISPRUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "UTIL", "WRAP", "VAR", "CONST" ]
 link_test_files("DISPARUN.obj", True, temp_files)
 
-temp_files = [ "INPTTST", "TESTUTIL", "INPUT", "WRAP", "ACT", "UTIL", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "WRAP", "ACT", "UTIL", "VAR", "CONST" ]
 link_test_files("INPTRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "LOOKTST", "LOOK", "VAR", "CONST" ]

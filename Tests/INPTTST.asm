@@ -1,11 +1,16 @@
-       DEF  RUNTST
+       DEF  TSTLST,RSLTFL
 * Mocks
        DEF  VDPADR,VDPWRT
        DEF  MNUHK
        DEF  MNUINT,PRINT
+
+* Assert Routine
+       REF  AEQ,AZC,AOC
+
 *
        REF  INPUT
 
+* from VAR.asm
        REF  LINLST,FMTLST,MGNLST
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -40,132 +45,112 @@ DWNKEY EQU  >0A
 *
 ENTER  EQU  >0D
 
-RUNTST BLWP @OPENF
-* Write notification on screen.
-       BL   @WRTST
-* Run each test
+TSTLST DATA TSTEND-TSTLST-2/8
 *
 * User inserted some text and overwrote
 * some other text
-       BL   @TSTINT
-       BL   @TST1
+       DATA TST1
+       TEXT 'TST1  '
 * User inserted some text.
 * Outputs STSTYP set, STSENT reset.
-       BL   @TSTINT
-       BL   @TST2
+       DATA TST2
+       TEXT 'TST2  '
 * User inserted some text and pressed
 * an arrow key. The arrow key is not
 * immediately processed.
-       BL   @TSTINT
-       BL   @TST3
+       DATA TST3
+       TEXT 'TST3  '
 * User inserted some text.
 * The key stream will wrap around.
-       BL   @TSTINT
-       BL   @TST4
+       DATA TST4
+       TEXT 'TST4  '
 * User inserted some text at the end of 
 * a paragraph
-       BL   @TSTINT
-       BL   @TST5
+       DATA TST5
+       TEXT 'TST5  '
 * User inserted some text at the end of 
 * a paragraph, while in overwrite mode
-       BL   @TSTINT
-       BL   @TST6
+       DATA TST6
+       TEXT 'TST6  '
 * Insert a character that the system
 * doesn't recognize. Output should not
 * be affected.
-       BL   @TSTINT
-       BL   @TST7
+       DATA TST7
+       TEXT 'TST7  '
 * Delete the character at the cursor
 * position.
-       BL   @TSTINT
-       BL   @TST18
+       DATA TST18
+       TEXT 'TST18 '
 * Delete a carriage return
-       BL   @TSTINT
-       BL   @TST19
+       DATA TST19
+       TEXT 'TST19 '
 * ---
 * User pressed the backspace from middle
 * of paragraph.
-       BL   @TSTINT
-       BL   @TST8
+       DATA TST8
+       TEXT 'TST8  '
 * User pressed the backspace from start
 * of paragraph.
-       BL   @TSTINT
-       BL   @TST9
+       DATA TST9
+       TEXT 'TST9  '
 * ---
 * User pressed forward space from middle
 * of paragraph.
-       BL   @TSTINT
-       BL   @TST10
+       DATA TST10
+       TEXT 'TST10 '
 * User pressed forward space from end
 * of paragraph.
-       BL   @TSTINT
-       BL   @TST11
+       DATA TST11
+       TEXT 'TST11 '
 * User pressed forward space and a 
 * letter, but letter is not initially
 * processed.
-       BL   @TSTINT
-       BL   @TST15
+       DATA TST15
+       TEXT 'TST15 '
 * ---
 * User presses enter from paragraph start
-       BL   @TSTINT
-       BL   @TST12
+       DATA TST12
+       TEXT 'TST12 '
 * User presses enter from paragraph middle
-       BL   @TSTINT
-       BL   @TST13
+       DATA TST13
+       TEXT 'TST13 '
 * User presses enter from paragraph end
-       BL   @TSTINT
-       BL   @TST14
+       DATA TST14
+       TEXT 'TST14 '
 * User presses enter and one letter, but
 * letter is not initially processed.
-       BL   @TSTINT
-       BL   @TST16
+       DATA TST16
+       TEXT 'TST16 '
 * User presses enter and nothing else.
 * Enter-Pressed status bit should be set.
-       BL   @TSTINT
-       BL   @TST17
+       DATA TST17
+       TEXT 'TST17 '
 * ---
 * User splits two paragraphs that are
 * before the first margin entry.
-       BL   @TSTINT
-       BL   @TST20
+       DATA TST20
+       TEXT 'TST20 '
 * User splits two paragraphs that are
 * between margin entries.
-       BL   @TSTINT
-       BL   @TST21
+       DATA TST21
+       TEXT 'TST21 '
 * User splits two paragraphs that are
 * after all margin entries.
-       BL   @TSTINT
-       BL   @TST22
+       DATA TST22
+       TEXT 'TST22 '
 * User merges two paragraphs.
 * No margin list entries are deleted.
-       BL   @TSTINT
-       BL   @TST23
+       DATA TST23
+       TEXT 'TST23 '
 * User merges two paragraphs.
 * Delete an extra margin list entry.
-       BL   @TSTINT
-       BL   @TST24
-* Write notification on screen.
-       BL   @WREND
-       BLWP @CLOSEF
-JMP    LIMI 2
-       LIMI 0
-       JMP  JMP
-
-* Write notification
-WRTST  LI   R0,STARTM
-       LI   R1,ENDM-STARTM
-       BLWP @PRINTL
-       RT
- 
-* Finished testing
-WREND  LI   R0,ENDM
-       LI   R1,4
-       BLWP @PRINTL
-       RT
-
-STARTM TEXT 'Testing'
-ENDM   TEXT 'Done'
-ENDME  EVEN
+       DATA TST24
+       TEXT 'TST24 '
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK2.TESTRESULT.TXT'
+RSLTFE
+       EVEN
 
 ****************************************
 *
@@ -316,6 +301,8 @@ PARLEN TEXT 'PARLEN'
 * became
 * "With a long HIStory, Wuhan"
 TST1   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -327,13 +314,14 @@ TST1   MOV  R11,R12
        LI   R1,KEYL1E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
 * Get address of paragraph now
        MOV  @LINLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
+* Assert
 * Test paragraph contents
        AI   R1,4
        LI   R2,EXP1A+4
@@ -352,8 +340,6 @@ TST1   MOV  R11,R12
        LI   R1,7+12
        LI   R2,LCRPAX
        BL   @COMPVL
-*
-       BL   @PSUCCS
 *
        B    *R12
 
@@ -387,6 +373,8 @@ EXP1B
 * User inserted some text.
 * Outputs STSTYP set, STSENT reset.
 TST2   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -446,7 +434,7 @@ TST2B  CZC  @STSARW,R5
        BLWP @PRINTL
        B    *R12
 *
-TST2C  BL   @PSUCCS
+TST2C
 *
        B    *R12
 
@@ -485,6 +473,8 @@ EXP2B
 * an arrow key. The arrow key is not
 * immediately processed.
 TST3   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -523,8 +513,6 @@ TST3   MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 
@@ -555,6 +543,8 @@ EXP3B
 * User inserted some text.
 * The key stream will wrap around.
 TST4   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -593,8 +583,6 @@ TST4   MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 
@@ -623,6 +611,8 @@ EXP4B
 * User inserted some text at the end of
 * the paragraph.
 TST5   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,5
 * Set position values
@@ -661,8 +651,6 @@ TST5A  LI   R0,2
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 
@@ -691,6 +679,9 @@ EXP5B
 * User added text at the end of
 * the paragraph in overwrite mode.
 TST6   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
+*
        SETO @INSTMD
 * Set test number.
        LI   R3,6
@@ -703,6 +694,8 @@ TST6   MOV  R11,R12
 * doesn't recognize. Output should not
 * be affected.
 TST7   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,7
 * Set position values
@@ -740,8 +733,6 @@ TST7   MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 * input from the keyboard.
@@ -752,6 +743,8 @@ KEYL7E
 * -------
 * Delete a character mid paragraph
 TST18  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,18
 * Set position values
@@ -799,8 +792,6 @@ TST18  MOV  R11,R12
        LI   R2,PARLEN
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 * input from the keyboard.
@@ -830,6 +821,8 @@ EXP18A
 * Delete a carriage return.
 * Merge two paragraphs.
 TST19  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,19
 * Set position values
@@ -885,7 +878,7 @@ TST19  MOV  R11,R12
        LI   R1,TST19N-TST19M
        BLWP @PRINTL
 *
-TST19A BL   @PSUCCS
+TST19A
 *
        B    *R12
 
@@ -908,6 +901,8 @@ TST19N EVEN
 * User pressed the backspace from middle
 * of paragraph.
 TST8   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,8
 * Set position values
@@ -954,7 +949,7 @@ TST8   MOV  R11,R12
        LI   R1,TST8ME-TST8M
        BLWP @PRINTL
 *
-TST8A  BL   @PSUCCS
+TST8A
 *
        B    *R12
 
@@ -969,6 +964,8 @@ TST8ME EVEN
 * User pressed the backspace from the
 * beginning of the paragraph.
 TST9   MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,9
 * Set position values
@@ -1007,8 +1004,6 @@ TST9   MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 * Test 10
@@ -1017,6 +1012,8 @@ TST9   MOV  R11,R12
 * another line in the middle of the
 * paragraph.
 TST10  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,10
 * Set position values
@@ -1063,7 +1060,7 @@ TST10  MOV  R11,R12
        LI   R1,TST8ME-TST8M
        BLWP @PRINTL
 *
-TST9A  BL   @PSUCCS
+TST9A
 *
        B    *R12
 
@@ -1077,6 +1074,8 @@ KEY10E
 * User pressed the forward space onto
 * another paragraph.
 TST11  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,11
 * Set position values
@@ -1115,8 +1114,6 @@ TST11  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
        
 * Test 15
@@ -1125,6 +1122,8 @@ TST11  MOV  R11,R12
 * a letter, but we leave the INPUT
 * routine before processing the letter.
 TST15  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,15
 * Set position values
@@ -1163,8 +1162,6 @@ TST15  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 * Pretend that "_" means there was no
@@ -1178,6 +1175,8 @@ KEY15E
 * User presses enter from the beginning
 * of a paragraph.
 TST12  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,12
 * Set position values
@@ -1225,8 +1224,6 @@ TST12  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 
@@ -1254,6 +1251,8 @@ ERR12O
 * User presses enter from the middle
 * of a paragraph.
 TST13  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set position values
        CLR  @INSTMD
        LI   R0,2
@@ -1304,8 +1303,6 @@ TST13  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 EXP13A TEXT 'With a history, Wuhan is one of the most '
@@ -1331,6 +1328,8 @@ EXP13D
 * User presses enter from the end
 * of a paragraph.
 TST14  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,14
 * Set position values
@@ -1377,8 +1376,6 @@ TST14  MOV  R11,R12
        LI   R2,LCRPAX
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 ERR14  MOV  R1,R0
@@ -1401,6 +1398,8 @@ ERR14O
 * User presses enter and one letter, but
 * letter is not initially processed.
 TST16  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,16
 * Set position values
@@ -1455,8 +1454,6 @@ TST16  MOV  R11,R12
        LI   R2,LKEYRD
        BL   @COMPVL
 *
-       BL   @PSUCCS
-*
        B    *R12
 
 ERR16  MOV  R1,R0
@@ -1485,6 +1482,8 @@ KEY16E
 * User presses enter and nothing else.
 * Enter-Pressed status bit should be set.
 TST17  MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
 * Set test number.
        LI   R3,17
 * Set position values
@@ -1517,7 +1516,7 @@ TST17A COC  @STSENT,R2
        BLWP @PRINTL
        B    *R12
 *
-TST17B BL   @PSUCCS
+TST17B
 *
        B    *R12
 
@@ -1527,7 +1526,292 @@ TST17O TEXT 'Enter-Pressed bit should have been set.'
 TST17P EVEN
 
 
-****************************************
+*
+* Effects of carriage return on margins
+*
+TST20
+* Test 20
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
+* Set test number.
+       LI   R3,20
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN20D
+TXT20A MOV  *R1+,*R0+
+       CI   R1,MGN20D+20
+       JL   TXT20A
+* Copy test keypresses to stream
+       LI   R0,KEYENT
+       LI   R1,KEYENU
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+*
+       LI   R0,MGN20N+20
+       MOV  @MGNLST,R1
+       LI   R2,MGN20N
+       LI   R3,20
+       BL   @STRCMP
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN20D DATA 2,3
+       DATA 3,>1112,>1314,>1516
+       DATA 5,>2122,>2324,>2526
+MGN20N DATA 2,3
+       DATA 4,>1112,>1314,>1516
+       DATA 6,>2122,>2324,>2526
+
+TST21
+* Test 21
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is between
+* entries in the margin list, and
+* also has its own entry.
+       MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN21D
+TXT21A MOV  *R1+,*R0+
+       CI   R1,5*8+4+MGN21D
+       JL   TXT21A
+* Copy test keypresses to stream
+       LI   R0,KEYENT
+       LI   R1,KEYENU
+       CLR  R2
+       BL   @CPYKEY
+* Run routine
+       BLWP @INPUT
+*
+       LI   R0,5*8+4+MGN21N
+       MOV  @MGNLST,R1
+       LI   R2,MGN21N
+       LI   R3,5*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,21
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN21D DATA 5,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+       DATA 2,>3132,>3334,>3536
+       DATA 3,>4142,>4344,>4546
+       DATA 4,>5152,>5354,>5556
+MGN21N DATA 5,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+       DATA 2,>3132,>3334,>3536
+       DATA 4,>4142,>4344,>4546
+       DATA 5,>5152,>5354,>5556
+
+TST22
+* Test 22
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph follows all
+* entries in the margin list.
+       MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,149
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN22D
+TXT22A MOV  *R1+,*R0+
+       CI   R1,2*8+4+MGN22D
+       JL   TXT22A
+* Copy test keypresses to stream
+       LI   R0,KEYENT
+       LI   R1,KEYENU
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BLWP @INPUT
+* Assert
+       LI   R0,2*8+4+MGN22N
+       MOV  @MGNLST,R1
+       LI   R2,MGN22N
+       LI   R3,2*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,22
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN22D DATA 2,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+MGN22N DATA 2,3
+       DATA 0,>1112,>1314,>1516
+       DATA 1,>2122,>2324,>2526
+
+TST23
+* Test 23
+* -------
+* User presses delete to merge two
+* paragraphs. Later paragraph has no
+* margin entry
+       MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,1
+       MOV  R0,@PARINX
+       LI   R0,9
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN23D
+TXT23A MOV  *R1+,*R0+
+       CI   R1,3*8+4+MGN23D
+       JL   TXT23A
+* Copy test keypresses to stream
+       LI   R0,KYDEL
+       LI   R1,KYDELE
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BLWP @INPUT
+* Assert
+       LI   R0,3*8+4+MGN23N
+       MOV  @MGNLST,R1
+       LI   R2,MGN23N
+       LI   R3,3*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,23
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN23D DATA 3,3
+       DATA 0,>1112,>1314,>1516
+       DATA 2,>2122,>2324,>2526
+       DATA 4,>3122,>3334,>3536
+MGN23N DATA 3,3
+       DATA 0,>1112,>1314,>1516
+       DATA 2,>2122,>2324,>2526
+       DATA 3,>3122,>3334,>3536
+
+TST24
+* Test 24
+* -------
+* User presses delete to merge two
+* paragraphs. Later paragraph has a
+* margin entry, that must be deleted
+       MOV  R11,R12
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,1
+       MOV  R0,@PARINX
+       LI   R0,9
+       MOV  R0,@CHRPAX
+* Set up margin list.
+* There are 2 entries following old
+* paragraph.
+       MOV  @MGNLST,R0
+       BLWP @ARYADD
+       BLWP @ARYADD
+       BLWP @ARYADD
+       MOV  R0,@MGNLST
+       LI   R1,MGN24D
+TXT24A MOV  *R1+,*R0+
+       CI   R1,3*8+4+MGN24D
+       JL   TXT24A
+* Copy test keypresses to stream
+       LI   R0,KYDEL
+       LI   R1,KYDELE
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BLWP @INPUT
+* Assert
+       LI   R0,2*8+4+MGN24N
+       MOV  @MGNLST,R1
+       LI   R2,MGN24N
+       LI   R3,2*8+4
+       BL   @STRCMP
+* Set test number.
+       LI   R3,24
+*
+       B    *R12
+
+* I know there are not 5 paragraphs in
+* the document. Go with it.
+MGN24D DATA 3,3
+       DATA 1,>1112,>1314,>1516
+       DATA 2,>2122,>2324,>2526
+       DATA 3,>3122,>3334,>3536
+MGN24N DATA 2,3
+       DATA 1,>1112,>1314,>1516
+       DATA 2,>3122,>3334,>3536
+
+***Depricated Test Framework*******************************
 
 * Copy test keypresses to the key stream
 * R0 = Address of first test key
@@ -1630,302 +1914,6 @@ STRMS  TEXT 'Test .... failed. '
        TEXT 'Strings do not match at index '
 STRMS2 TEXT '....'
 STRMS1 EVEN
-
-PSUCCS MOV  R3,R0
-       LI   R1,PSCCSM+5
-       BLWP @MAKETX
-       LI   R0,PSCCSM
-       LI   R1,PSCCSE-PSCCSM
-       BLWP @PRINTL
-       RT
-PSCCSM TEXT 'Test .... succeeded.'
-       EVEN
-PSCCSE
-
-*
-* Effects of carriage return on margins
-*
-TST20
-* Test 20
-* -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
-       MOV  R11,R12
-* Set test number.
-       LI   R3,20
-* Set position values
-       CLR  @INSTMD
-       LI   R0,2
-       MOV  R0,@PARINX
-       LI   R0,149
-       MOV  R0,@CHRPAX
-* Set up margin list.
-* There are 2 entries following old
-* paragraph.
-       MOV  @MGNLST,R0
-       BLWP @ARYADD
-       BLWP @ARYADD
-       MOV  R0,@MGNLST
-       LI   R1,MGN20D
-TXT20A MOV  *R1+,*R0+
-       CI   R1,MGN20D+20
-       JL   TXT20A
-* Copy test keypresses to stream
-       LI   R0,KEYENT
-       LI   R1,KEYENU
-       CLR  R2
-       BL   @CPYKEY
-* Run routine
-       BLWP @INPUT
-*
-       LI   R0,MGN20N+20
-       MOV  @MGNLST,R1
-       LI   R2,MGN20N
-       LI   R3,20
-       BL   @STRCMP
-*
-       BL   @PSUCCS
-*
-       B    *R12
-
-* I know there are not 5 paragraphs in
-* the document. Go with it.
-MGN20D DATA 2,3
-       DATA 3,>1112,>1314,>1516
-       DATA 5,>2122,>2324,>2526
-MGN20N DATA 2,3
-       DATA 4,>1112,>1314,>1516
-       DATA 6,>2122,>2324,>2526
-
-TST21
-* Test 21
-* -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is between
-* entries in the margin list, and
-* also has its own entry.
-       MOV  R11,R12
-* Set position values
-       CLR  @INSTMD
-       LI   R0,2
-       MOV  R0,@PARINX
-       LI   R0,149
-       MOV  R0,@CHRPAX
-* Set up margin list.
-* There are 2 entries following old
-* paragraph.
-       MOV  @MGNLST,R0
-       BLWP @ARYADD
-       BLWP @ARYADD
-       BLWP @ARYADD
-       BLWP @ARYADD
-       BLWP @ARYADD
-       MOV  R0,@MGNLST
-       LI   R1,MGN21D
-TXT21A MOV  *R1+,*R0+
-       CI   R1,5*8+4+MGN21D
-       JL   TXT21A
-* Copy test keypresses to stream
-       LI   R0,KEYENT
-       LI   R1,KEYENU
-       CLR  R2
-       BL   @CPYKEY
-* Run routine
-       BLWP @INPUT
-*
-       LI   R0,5*8+4+MGN21N
-       MOV  @MGNLST,R1
-       LI   R2,MGN21N
-       LI   R3,5*8+4
-       BL   @STRCMP
-* Set test number.
-       LI   R3,21
-*
-       BL   @PSUCCS
-*
-       B    *R12
-
-* I know there are not 5 paragraphs in
-* the document. Go with it.
-MGN21D DATA 5,3
-       DATA 0,>1112,>1314,>1516
-       DATA 1,>2122,>2324,>2526
-       DATA 2,>3132,>3334,>3536
-       DATA 3,>4142,>4344,>4546
-       DATA 4,>5152,>5354,>5556
-MGN21N DATA 5,3
-       DATA 0,>1112,>1314,>1516
-       DATA 1,>2122,>2324,>2526
-       DATA 2,>3132,>3334,>3536
-       DATA 4,>4142,>4344,>4546
-       DATA 5,>5152,>5354,>5556
-
-TST22
-* Test 22
-* -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph follows all
-* entries in the margin list.
-       MOV  R11,R12
-* Set position values
-       CLR  @INSTMD
-       LI   R0,2
-       MOV  R0,@PARINX
-       LI   R0,149
-       MOV  R0,@CHRPAX
-* Set up margin list.
-* There are 2 entries following old
-* paragraph.
-       MOV  @MGNLST,R0
-       BLWP @ARYADD
-       BLWP @ARYADD
-       MOV  R0,@MGNLST
-       LI   R1,MGN22D
-TXT22A MOV  *R1+,*R0+
-       CI   R1,2*8+4+MGN22D
-       JL   TXT22A
-* Copy test keypresses to stream
-       LI   R0,KEYENT
-       LI   R1,KEYENU
-       CLR  R2
-       BL   @CPYKEY
-* Act
-       BLWP @INPUT
-* Assert
-       LI   R0,2*8+4+MGN22N
-       MOV  @MGNLST,R1
-       LI   R2,MGN22N
-       LI   R3,2*8+4
-       BL   @STRCMP
-* Set test number.
-       LI   R3,22
-*
-       BL   @PSUCCS
-*
-       B    *R12
-
-* I know there are not 5 paragraphs in
-* the document. Go with it.
-MGN22D DATA 2,3
-       DATA 0,>1112,>1314,>1516
-       DATA 1,>2122,>2324,>2526
-MGN22N DATA 2,3
-       DATA 0,>1112,>1314,>1516
-       DATA 1,>2122,>2324,>2526
-
-TST23
-* Test 23
-* -------
-* User presses delete to merge two
-* paragraphs. Later paragraph has no
-* margin entry
-       MOV  R11,R12
-* Set position values
-       CLR  @INSTMD
-       LI   R0,1
-       MOV  R0,@PARINX
-       LI   R0,9
-       MOV  R0,@CHRPAX
-* Set up margin list.
-* There are 2 entries following old
-* paragraph.
-       MOV  @MGNLST,R0
-       BLWP @ARYADD
-       BLWP @ARYADD
-       MOV  R0,@MGNLST
-       LI   R1,MGN23D
-TXT23A MOV  *R1+,*R0+
-       CI   R1,3*8+4+MGN23D
-       JL   TXT23A
-* Copy test keypresses to stream
-       LI   R0,KYDEL
-       LI   R1,KYDELE
-       CLR  R2
-       BL   @CPYKEY
-* Act
-       BLWP @INPUT
-* Assert
-       LI   R0,3*8+4+MGN23N
-       MOV  @MGNLST,R1
-       LI   R2,MGN23N
-       LI   R3,3*8+4
-       BL   @STRCMP
-* Set test number.
-       LI   R3,23
-*
-       BL   @PSUCCS
-*
-       B    *R12
-
-* I know there are not 5 paragraphs in
-* the document. Go with it.
-MGN23D DATA 3,3
-       DATA 0,>1112,>1314,>1516
-       DATA 2,>2122,>2324,>2526
-       DATA 4,>3122,>3334,>3536
-MGN23N DATA 3,3
-       DATA 0,>1112,>1314,>1516
-       DATA 2,>2122,>2324,>2526
-       DATA 3,>3122,>3334,>3536
-
-TST24
-* Test 24
-* -------
-* User presses delete to merge two
-* paragraphs. Later paragraph has a
-* margin entry, that must be deleted
-       MOV  R11,R12
-* Set position values
-       CLR  @INSTMD
-       LI   R0,1
-       MOV  R0,@PARINX
-       LI   R0,9
-       MOV  R0,@CHRPAX
-* Set up margin list.
-* There are 2 entries following old
-* paragraph.
-       MOV  @MGNLST,R0
-       BLWP @ARYADD
-       BLWP @ARYADD
-       BLWP @ARYADD
-       MOV  R0,@MGNLST
-       LI   R1,MGN24D
-TXT24A MOV  *R1+,*R0+
-       CI   R1,3*8+4+MGN24D
-       JL   TXT24A
-* Copy test keypresses to stream
-       LI   R0,KYDEL
-       LI   R1,KYDELE
-       CLR  R2
-       BL   @CPYKEY
-* Act
-       BLWP @INPUT
-* Assert
-       LI   R0,2*8+4+MGN24N
-       MOV  @MGNLST,R1
-       LI   R2,MGN24N
-       LI   R3,2*8+4
-       BL   @STRCMP
-* Set test number.
-       LI   R3,24
-*
-       BL   @PSUCCS
-*
-       B    *R12
-
-* I know there are not 5 paragraphs in
-* the document. Go with it.
-MGN24D DATA 3,3
-       DATA 1,>1112,>1314,>1516
-       DATA 2,>2122,>2324,>2526
-       DATA 3,>3122,>3334,>3536
-MGN24N DATA 2,3
-       DATA 1,>1112,>1314,>1516
-       DATA 2,>3122,>3334,>3536
 
 ******* MOCKS **************
 MNUHK
