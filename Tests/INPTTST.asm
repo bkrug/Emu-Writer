@@ -175,22 +175,22 @@ TSTINT
        BLWP @ARYALC
        MOV  R0,@LINLST
 *
-       LI   R10,INTADR
+       LI   R6,INTADR
 * Copy a paragraph into buffer
 TSTIN1
-       MOV  *R10+,R0
+       MOV  *R6+,R0
        MOV  R0,R2
        BLWP @BUFALC
        MOV  R0,R1
-       MOV  *R10+,R0
+       MOV  *R6+,R0
        BLWP @BUFCPY
        MOV  R1,R4
 * and a wrap list
-       MOV  *R10+,R0
+       MOV  *R6+,R0
        MOV  R0,R2
        BLWP @BUFALC
        MOV  R0,R1
-       MOV  *R10+,R0
+       MOV  *R6+,R0
        BLWP @BUFCPY
        MOV  R1,R5
 * Put the paragraph into the
@@ -204,7 +204,7 @@ TSTIN1
        INCT R4
        MOV  R5,*R4
 * Loop
-       CI   R10,INTADE
+       CI   R6,INTADE
        JL   TSTIN1
        RT
 
@@ -300,7 +300,8 @@ PARLEN TEXT 'PARLEN'
 * "With a history, Wuhan"
 * became
 * "With a long HIStory, Wuhan"
-TST1   MOV  R11,R12
+TST1   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -343,7 +344,9 @@ TST1   MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
+
 
 
 * input from the keyboard.
@@ -374,7 +377,8 @@ EXP1B
 * ------
 * User inserted some text.
 * Outputs STSTYP set, STSENT reset.
-TST2   MOV  R11,R12
+TST2   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -436,7 +440,8 @@ TST2   MOV  R11,R12
        LI   R3,TST2OE-TST2O
        BLWP @AZC
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 TST2M  TEXT 'Text-Typed bit should have been set.'
 TST2ME
@@ -472,7 +477,8 @@ EXP2B
 * User inserted some text and pressed
 * an arrow key. The arrow key is not
 * immediately processed.
-TST3   MOV  R11,R12
+TST3   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -516,7 +522,8 @@ TST3   MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 KEYL3  TEXT ' :) '
        BYTE FWDKEY,FWDKEY
@@ -544,7 +551,8 @@ EXP3B
 * ------
 * User inserted some text.
 * The key stream will wrap around.
-TST4   MOV  R11,R12
+TST4   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -588,7 +596,8 @@ TST4   MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 
 * input from the keyboard.
@@ -615,7 +624,8 @@ EXP4B
 * ------
 * User inserted some text at the end of
 * the paragraph.
-TST5   MOV  R11,R12
+TST5   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -657,7 +667,8 @@ TST5A  LI   R0,2
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 
 * input from the keyboard.
@@ -684,7 +695,8 @@ EXP5B
 * ------
 * User added text at the end of
 * the paragraph in overwrite mode.
-TST6   MOV  R11,R12
+TST6   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 *
@@ -697,7 +709,8 @@ TST6   MOV  R11,R12
 * Insert a character that the system
 * doesn't recognize. Output should not
 * be affected.
-TST7   MOV  R11,R12
+TST7   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -738,7 +751,8 @@ TST7   MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * input from the keyboard.
 KEYL7  BYTE >F0
@@ -747,7 +761,8 @@ KEYL7E
 * Test 18
 * -------
 * Delete a character mid paragraph
-TST18  MOV  R11,R12
+TST18  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -800,7 +815,8 @@ TST18  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * input from the keyboard.
 * Delete key.
@@ -828,7 +844,8 @@ EXP18A
 * -------
 * Delete a carriage return.
 * Merge two paragraphs.
-TST19  MOV  R11,R12
+TST19  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -888,7 +905,8 @@ TST19  MOV  R11,R12
        LI   R3,TST19N-TST19M
        BLWP @AOC
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * input from the keyboard.
 * Delete key.
@@ -908,7 +926,8 @@ TST19N EVEN
 * ------
 * User pressed the backspace from middle
 * of paragraph.
-TST8   MOV  R11,R12
+TST8   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -958,7 +977,8 @@ TST8   MOV  R11,R12
        LI   R3,TST8ME-TST8M
        BLWP @AOC
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * input from the keyboard.
 KEYL8  BYTE BCKKEY
@@ -970,7 +990,8 @@ TST8ME EVEN
 * ------
 * User pressed the backspace from the
 * beginning of the paragraph.
-TST9   MOV  R11,R12
+TST9   DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1012,14 +1033,16 @@ TST9   MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * Test 10
 * -------
 * User pressed the forward space onto
 * another line in the middle of the
 * paragraph.
-TST10  MOV  R11,R12
+TST10  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1069,7 +1092,8 @@ TST10  MOV  R11,R12
        LI   R3,TST8ME-TST8M
        BLWP @AOC
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * Pretend that "_" means there was no
 * input from the keyboard.
@@ -1080,7 +1104,8 @@ KEY10E
 * -------
 * User pressed the forward space onto
 * another paragraph.
-TST11  MOV  R11,R12
+TST11  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1122,14 +1147,16 @@ TST11  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
        
 * Test 15
 * -------
 * User pressed the forward space and
 * a letter, but we leave the INPUT
 * routine before processing the letter.
-TST15  MOV  R11,R12
+TST15  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1171,7 +1198,8 @@ TST15  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * Pretend that "_" means there was no
 * input from the keyboard.
@@ -1183,7 +1211,8 @@ KEY15E
 * -------
 * User presses enter from the beginning
 * of a paragraph.
-TST12  MOV  R11,R12
+TST12  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1234,7 +1263,8 @@ TST12  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 
 * input from the keyboard.
@@ -1249,7 +1279,8 @@ ERR12  MOV  R1,R0
        LI   R1,ERR12O-ERR12M
        BLWP @PRINTL
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 ERR12M TEXT 'Test 000C failed. '
        TEXT 'The old paragraph is not empty: '
 ERR12N TEXT '....'
@@ -1260,7 +1291,8 @@ ERR12O
 * -------
 * User presses enter from the middle
 * of a paragraph.
-TST13  MOV  R11,R12
+TST13  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1312,7 +1344,8 @@ TST13  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 EXP13A TEXT 'With a history, Wuhan is one of the most '
        TEXT 'ancient and civilized '
@@ -1336,7 +1369,8 @@ EXP13D
 * -------
 * User presses enter from the end
 * of a paragraph.
-TST14  MOV  R11,R12
+TST14  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1389,7 +1423,8 @@ TST14  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 ERR14M TEXT 'The old paragraph is not empty: '
 ERR14O
@@ -1399,7 +1434,8 @@ ERR14O
 * -------
 * User presses enter and one letter, but
 * letter is not initially processed.
-TST16  MOV  R11,R12
+TST16  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1460,7 +1496,8 @@ TST16  MOV  R11,R12
        LI   R3,6
        BLWP @AEQ
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 ERR16M TEXT 'The old paragraph is not empty: '
 ERR16O
@@ -1476,7 +1513,8 @@ KEY16E
 * -------
 * User presses enter and nothing else.
 * Enter-Pressed status bit should be set.
-TST17  MOV  R11,R12
+TST17  DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1508,7 +1546,8 @@ TST17  MOV  R11,R12
        LI   R3,TST17P-TST17O
        BLWP @AOC
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 TST17M TEXT 'Text-Typed bit should not have been set.'
 TST17N
@@ -1526,7 +1565,8 @@ TST20
 * paragraph.
 * The original paragraph is earlier
 * than any entry in the margin list.
-       MOV  R11,R12
+       DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1560,7 +1600,8 @@ TXT20A MOV  *R1+,*R0+
        LI   R3,20
        BL   @STRCMP
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * I know there are not 5 paragraphs in
 * the document. Go with it.
@@ -1579,7 +1620,8 @@ TST21
 * The original paragraph is between
 * entries in the margin list, and
 * also has its own entry.
-       MOV  R11,R12
+       DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1616,7 +1658,8 @@ TXT21A MOV  *R1+,*R0+
        LI   R3,5*8+4
        BL   @STRCMP
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * I know there are not 5 paragraphs in
 * the document. Go with it.
@@ -1640,7 +1683,8 @@ TST22
 * paragraph.
 * The original paragraph follows all
 * entries in the margin list.
-       MOV  R11,R12
+       DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1674,7 +1718,8 @@ TXT22A MOV  *R1+,*R0+
        LI   R3,2*8+4
        BL   @STRCMP
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * I know there are not 5 paragraphs in
 * the document. Go with it.
@@ -1691,7 +1736,8 @@ TST23
 * User presses delete to merge two
 * paragraphs. Later paragraph has no
 * margin entry
-       MOV  R11,R12
+       DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1725,7 +1771,8 @@ TXT23A MOV  *R1+,*R0+
        LI   R3,3*8+4
        BL   @STRCMP
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * I know there are not 5 paragraphs in
 * the document. Go with it.
@@ -1744,7 +1791,8 @@ TST24
 * User presses delete to merge two
 * paragraphs. Later paragraph has a
 * margin entry, that must be deleted
-       MOV  R11,R12
+       DECT R10
+       MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
 * Set position values
@@ -1779,7 +1827,8 @@ TXT24A MOV  *R1+,*R0+
        LI   R3,2*8+4
        BL   @STRCMP
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 
 * I know there are not 5 paragraphs in
 * the document. Go with it.
@@ -1847,7 +1896,8 @@ STRERR S    R4,R2
        LI   R1,STRMS1-STRMS
        BLWP @PRINTL
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 STRMS  TEXT 'Test .... failed. '
        TEXT 'Strings do not match at index '
 STRMS2 TEXT '....'
