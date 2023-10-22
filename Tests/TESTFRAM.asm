@@ -34,9 +34,11 @@ WORKSP BSS  >20
 * Workspace used by each individual test
 TSTWS  BSS  >20
 * Stack used by the Test Framework
-STACK  BSS  >80
+       BSS  >80
+STACK
 * Stack potentially used by the tests
-TSTSCK BSS  >80
+       BSS  >80
+TSTSCK
 
 * Number of tests to run
 TSTCNT DATA 0
@@ -124,18 +126,22 @@ MAKEP  LI   R10,STACK
        MOV  @2(R13),R1
        BL   @MAKEHX
        RTWP
-MAKEHX MOV  R11,*R10+
+*
+MAKEHX DECT R10
+       MOV  R11,*R10
+*
        BL   @MAKEP1
        SWPB R0
        BL   @MAKEP1
        SWPB R0
 * return
-       DECT R10
-       MOV  *R10,R11
+       MOV  *R10+,R11
        RT
  
-MAKEP1 MOV  R11,*R10+
-       MOV  R4,*R10+
+MAKEP1 DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R4,*R10
 * High Nibble
        MOVB R0,R4
        SRL  R4,4
@@ -150,10 +156,8 @@ MAKEP1 MOV  R11,*R10+
        MOVB R4,*R1
        INC  R1
 * Return
-       DECT R10
-       MOV  *R10,R4
-       DECT R10
-       MOV  *R10,R11
+       MOV  *R10+,R4
+       MOV  *R10+,R11
        RT
 * Convert Byte to ASCII code
 CONVB  CI   R4,>0A00
@@ -182,7 +186,8 @@ PRINTP LI   R10,STACK
        BL   @SCRLP
        RTWP
 
-SCRLPT MOV  R11,*R10+
+SCRLPT DECT R10
+       MOV  R11,*R10
 * If text length > 23*32, limit it.
        CI   R1,23*32
        JLE  SCROL0
@@ -190,15 +195,19 @@ SCRLPT MOV  R11,*R10+
 *
 SCROL0 BL   @WRITEF
        BL   @SCRLP
-       DECT R10
-       MOV  *R10,R11
+       MOV  *R10+,R11
        RT
        
-SCRLP  MOV  R11,*R10+
-       MOV  R8,*R10+
-       MOV  R9,*R10+
-       MOV  R2,*R10+
-       MOV  R3,*R10+
+SCRLP  DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R8,*R10
+       DECT R10
+       MOV  R9,*R10
+       DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R3,*R10
  
        MOV  R0,R8
        MOV  R1,R9
@@ -238,16 +247,11 @@ SCROL1 SLA  R0,5
        MOV  R8,R0
        MOV  R9,R1
 * return
-SCRLRT DECT R10
-       MOV  *R10,R3
-       DECT R10
-       MOV  *R10,R2
-       DECT R10
-       MOV  *R10,R9
-       DECT R10
-       MOV  *R10,R8
-       DECT R10
-       MOV  *R10,R11
+SCRLRT MOV  *R10+,R3
+       MOV  *R10+,R2
+       MOV  *R10+,R9
+       MOV  *R10+,R8
+       MOV  *R10+,R11
        RT
  
 * Open file
@@ -299,11 +303,16 @@ OPENF
 WRTMSG TEXT 'Writing stuff to disk.'
 WRTM0  EVEN
 WRITEF
-       MOV  R0,*R10+
-       MOV  R1,*R10+
-       MOV  R2,*R10+
-       MOV  R6,*R10+
-       MOV  R11,*R10+
+       DECT R10
+       MOV  R0,*R10
+       DECT R10
+       MOV  R1,*R10
+       DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R6,*R10
+       DECT R10
+       MOV  R11,*R10
 * Write line to VDP RAM
        MOV  R1,R2
        MOV  R0,R1
@@ -327,16 +336,11 @@ WRITEF
 *
        BL   @ERRORF
  
-       DECT R10
-       MOV  *R10,R11
-       DECT R10
-       MOV  *R10,R6
-       DECT R10
-       MOV  *R10,R2
-       DECT R10
-       MOV  *R10,R1
-       DECT R10
-       MOV  *R10,R0
+       MOV  *R10+,R11
+       MOV  *R10+,R6
+       MOV  *R10+,R2
+       MOV  *R10+,R1
+       MOV  *R10+,R0
        RT
  
 * Close file
@@ -363,9 +367,12 @@ ERR0
 ZEROCR BYTE '0'
        EVEN
 ERRORF
-       MOV  R0,*R10+
-       MOV  R1,*R10+
-       MOV  R11,*R10+
+       DECT R10
+       MOV  R0,*R10
+       DECT R10
+       MOV  R1,*R10
+       DECT R10
+       MOV  R11,*R10
        MOV  R0,R0
        JNE  ERR2
        LI   R0,ERRGEN
@@ -391,12 +398,9 @@ ERR1   LI   R0,ERRMSG
        BL   @SCRLP
 * Return
 ERRRT
-       DECT R10
-       MOV  *R10,R11
-       DECT R10
-       MOV  *R10,R1
-       DECT R10
-       MOV  *R10,R0
+       MOV  *R10+,R11
+       MOV  *R10+,R1
+       MOV  *R10+,R0
        RT
 
 ********************************

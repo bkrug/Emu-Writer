@@ -43,6 +43,8 @@
 *  bit 14 is set -> enter was pressed
 *  bit 15 is set -> something was typed
 INPUT  DATA INPTWS,INPUT+4
+* Let R10 = stack pointer
+       MOV  @20(R13),R10
 * Reset Document-Status bits
        SZC  @STSTYP,*R13
        SZC  @STSENT,*R13
