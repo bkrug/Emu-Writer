@@ -1143,8 +1143,9 @@ TST15  MOV  R11,R12
        LI   R1,KEY15E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1158,15 +1159,17 @@ TST15  MOV  R11,R12
 * Test position values.
 * CHRPAX should have increasd,
 * but only due to arrow key.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,168
+       LI   R0,168
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
@@ -1194,8 +1197,9 @@ TST12  MOV  R11,R12
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get address of old paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1218,15 +1222,17 @@ TST12  MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,3
+       LI   R0,3
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,0
+       LI   R0,0
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
@@ -1268,8 +1274,9 @@ TST13  MOV  R11,R12
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get address of earlier paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1293,15 +1300,17 @@ TST13  MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,3
+       LI   R0,3
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,0
+       LI   R0,0
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
