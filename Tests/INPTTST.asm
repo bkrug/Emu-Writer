@@ -1350,16 +1350,20 @@ TST14  MOV  R11,R12
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get address of new paragraph
        MOV  @LINLST,R0
        LI   R1,3
        BLWP @ARYADR
        MOV  *R1,R1
 * Paragraph should be empty
+       CLR  R0
        MOV  *R1,R1
-       JNE  ERR14
+       LI   R2,ERR14M
+       LI   R3,ERR14O-ERR14M       
+       BLWP @AEQ
 * Get address of old paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1373,30 +1377,21 @@ TST14  MOV  R11,R12
        BL   @STRCMP
 * Test position values.
 * CHRPAX should point to paragraph start.
-       MOV  @PARINX,R0
-       LI   R1,3
+       LI   R0,3
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,0
+       LI   R0,0
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
-ERR14  MOV  R1,R0
-       LI   R1,ERR14N
-       BLWP @MAKETX
-*
-       LI   R0,ERR14M
-       LI   R1,ERR14O-ERR14M
-       BLWP @PRINTL
-*
-       B    *R12
-ERR14M TEXT 'Test 000E failed. '
-       TEXT 'The old paragraph is not empty: '
-ERR14N TEXT '....'
+ERR14M TEXT 'The old paragraph is not empty: '
 ERR14O
        EVEN
        
@@ -1426,8 +1421,11 @@ TST16  MOV  R11,R12
        BLWP @ARYADR
        MOV  *R1,R1
 * Paragraph should be empty
+       CLR  R0
        MOV  *R1,R1
-       JNE  ERR16
+       LI   R2,ERR16M
+       LI   R3,ERR16O-ERR16M
+       BLWP @AEQ
 * Get address of old paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1441,38 +1439,30 @@ TST16  MOV  R11,R12
        BL   @STRCMP
 * Test position values.
 * CHRPAX point to paragraph start.
-       MOV  @PARINX,R0
-       LI   R1,3
+       LI   R0,3
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,0
+       LI   R0,0
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 * The Enter key was at the beginning of
 * the keystream. Keystream position
 * should have advanced one.
-       MOV  @KEYRD,R0
-       LI   R1,KEYSTR
-       INC  R1
+       LI   R0,KEYSTR
+       INC  R0
+       MOV  @KEYRD,R1
        LI   R2,LKEYRD
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
-ERR16  MOV  R1,R0
-       LI   R1,ERR16N
-       BLWP @MAKETX
-*
-       LI   R0,ERR16M
-       LI   R1,ERR16O-ERR16M
-       BLWP @PRINTL
-*
-       B    *R12       
-ERR16M TEXT 'Test 0010 failed. '
-       TEXT 'The old paragraph is not empty: '
-ERR16N TEXT '....'
+ERR16M TEXT 'The old paragraph is not empty: '
 ERR16O
 
 * input from the keyboard.
