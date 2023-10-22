@@ -388,10 +388,11 @@ TST2   MOV  R11,R12
        LI   R1,KEYL2E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
 * Store document status
        MOV  R0,R5
+* Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -405,38 +406,35 @@ TST2   MOV  R11,R12
        BL   @STRCMP
 * Test position values.
 * CHRPAX should have increasd.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,108
+       LI   R0,108
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 * Check document status bits in R5
-       COC  @STSTYP,R5
-       JEQ  TST2A
-       LI   R0,TST2M
-       LI   R1,TST2ME-TST2M
-       BLWP @PRINTL
-       B    *R12
+       MOV  @STSTYP,R0
+       MOV  R5,R1
+       LI   R2,TST2M
+       LI   R3,TST2ME-TST2M
+       BLWP @AOC
 *
-TST2A  CZC  @STSENT,R5
-       JEQ  TST2B
-       LI   R0,TST2N
-       LI   R1,TST2NE-TST2N
-       BLWP @PRINTL
-       B    *R12
+       MOV  @STSENT,R0
+       MOV  R5,R1
+       LI   R2,TST2N
+       LI   R3,TST2NE-TST2N
+       BLWP @AZC
 *
-TST2B  CZC  @STSARW,R5
-       JEQ  TST2C
-       LI   R0,TST2O
-       LI   R1,TST2OE-TST2O
-       BLWP @PRINTL
-       B    *R12
-*
-TST2C
+       MOV  @STSARW,R0
+       MOV  R5,R1
+       LI   R2,TST2O
+       LI   R3,TST2OE-TST2O
+       BLWP @AZC
 *
        B    *R12
 
@@ -488,8 +486,9 @@ TST3   MOV  R11,R12
        LI   R1,KEYL3E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -505,18 +504,19 @@ TST3   MOV  R11,R12
 * CHRPAX should have increasd, but
 * only due to text inserts.
 * Forward keys should be ignored.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,104
+       LI   R0,104
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
-
 
 KEYL3  TEXT ' :) '
        BYTE FWDKEY,FWDKEY
@@ -559,8 +559,9 @@ TST4   MOV  R11,R12
        LI   R1,KEYL4E
        LI   R2,12
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -575,15 +576,17 @@ TST4   MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,121
+       LI   R0,121
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
