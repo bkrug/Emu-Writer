@@ -842,8 +842,9 @@ TST19  MOV  R11,R12
        LI   R1,KYL19E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Save document status
        MOV  R0,R5
 * Get updated address of paragraph
@@ -858,33 +859,34 @@ TST19  MOV  R11,R12
        BL   @STRCMP
 * Test position values.
 * CHRPAX should be unchanged.
-       MOV  @PARINX,R0
-       LI   R1,0
+       LI   R0,0
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,7
+       LI   R0,7
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 * Paragraph should be longer
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,0
        BLWP @ARYADR
-       MOV  *R1,R0
-       MOV  *R0,R0
-       MOV  @EXP19,R1
+       MOV  *R1,R1
+       MOV  *R1,R1
+       MOV  @EXP19,R0
        LI   R2,PARLEN
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       COC  @STSDCR,R5
-       JEQ  TST19A
-       LI   R0,TST19M
-       LI   R1,TST19N-TST19M
-       BLWP @PRINTL
-*
-TST19A
+       MOV  @STSDCR,R0
+       MOV  R5,R1
+       LI   R2,TST19M
+       LI   R3,TST19N-TST19M
+       BLWP @AOC
 *
        B    *R12
 
@@ -920,8 +922,9 @@ TST8   MOV  R11,R12
        LI   R1,KEYL8E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Save document status
        MOV  R0,R5
 * Get updated address of paragraph
@@ -937,23 +940,23 @@ TST8   MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,128
+       LI   R0,128
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       COC  @STSARW,R5
-       JEQ  TST8A
-       LI   R0,TST8M
-       LI   R1,TST8ME-TST8M
-       BLWP @PRINTL
-*
-TST8A
+       MOV  @STSARW,R0
+       MOV  R5,R1
+       LI   R2,TST8M
+       LI   R3,TST8ME-TST8M
+       BLWP @AOC
 *
        B    *R12
 
@@ -981,8 +984,9 @@ TST9   MOV  R11,R12
        LI   R1,KEYL8E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -996,15 +1000,17 @@ TST9   MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,1
+       LI   R0,1
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,9
+       LI   R0,9
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
 
@@ -1027,8 +1033,9 @@ TST10  MOV  R11,R12
        LI   R1,KEY10E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Save document status
        MOV  R0,R5
 * Get updated address of paragraph
@@ -1044,23 +1051,23 @@ TST10  MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,2
+       LI   R0,2
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,168
+       LI   R0,168
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       COC  @STSARW,R5
-       JEQ  TST9A
-       LI   R0,TST8M
-       LI   R1,TST8ME-TST8M
-       BLWP @PRINTL
-*
-TST9A
+       MOV  @STSARW,R0
+       MOV  R5,R1
+       LI   R2,TST8M
+       LI   R3,TST8ME-TST8M
+       BLWP @AOC
 *
        B    *R12
 
@@ -1087,8 +1094,9 @@ TST11  MOV  R11,R12
        LI   R1,KEY10E
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1102,15 +1110,17 @@ TST11  MOV  R11,R12
 * Test position values.
 * CHRPAX should have
 * increasd.
-       MOV  @PARINX,R0
-       LI   R1,3
+       LI   R0,3
+       MOV  @PARINX,R1
        LI   R2,LPRINX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
-       MOV  @CHRPAX,R0
-       LI   R1,0
+       LI   R0,0
+       MOV  @CHRPAX,R1
        LI   R2,LCRPAX
-       BL   @COMPVL
+       LI   R3,6
+       BLWP @AEQ
 *
        B    *R12
        
