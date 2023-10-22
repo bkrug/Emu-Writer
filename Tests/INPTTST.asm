@@ -1490,26 +1490,23 @@ TST17  MOV  R11,R12
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
+* Assert
 * Store document status in R2
-       MOV  R0,R2
+       MOV  R0,R5
 * Check document status bits in R2
-       CZC  @STSTYP,R2
-       JEQ  TST17A
-       LI   R0,TST17M
-       LI   R1,TST17N-TST17M
-       BLWP @PRINTL
-       B    *R12
+       MOV  @STSTYP,R0
+       MOV  R5,R1
+       LI   R2,TST17M
+       LI   R3,TST17N-TST17M
+       BLWP @AZC
 *
-TST17A COC  @STSENT,R2
-       JEQ  TST17B
-       LI   R0,TST17O
-       LI   R1,TST17P-TST17O
-       BLWP @PRINTL
-       B    *R12
-*
-TST17B
+       MOV  @STSENT,R0
+       MOV  R2,R1
+       LI   R2,TST17O
+       LI   R3,TST17P-TST17O
+       BLWP @AOC
 *
        B    *R12
 
@@ -1554,9 +1551,9 @@ TXT20A MOV  *R1+,*R0+
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
-*
+* Assert
        LI   R0,MGN20N+20
        MOV  @MGNLST,R1
        LI   R2,MGN20N
@@ -1610,9 +1607,9 @@ TXT21A MOV  *R1+,*R0+
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
-* Run routine
+* Act
        BLWP @INPUT
-*
+* Assert
        LI   R0,5*8+4+MGN21N
        MOV  @MGNLST,R1
        LI   R2,MGN21N
@@ -1794,7 +1791,7 @@ MGN24N DATA 2,3
        DATA 1,>1112,>1314,>1516
        DATA 2,>3122,>3334,>3536
 
-***Depricated Test Framework*******************************
+*** Test Utils *******************************
 
 * Copy test keypresses to the key stream
 * R0 = Address of first test key
@@ -1817,48 +1814,6 @@ CPY1   C    R0,R1
 CPYRT
        MOV  R2,@KEYWRT
        RT
-
-
-* Compare contents of R0 and R1.
-* Report if they don't match.
-*
-* R0 - Actual value
-* R1 - Expected value
-* R2 - Address of six byte string
-*      containing variable name
-* R3 - test number
-COMPVL
-       C    R0,R1
-       JEQ  COMPRT
-*
-       LI   R1,COMPM2+13
-       BLWP @MAKETX
-*
-       MOV  R3,R0
-       LI   R1,COMPMS+5
-       BLWP @MAKETX
-*
-       LI   R1,COMPM1+9
-       MOVB *R2+,*R1+
-       MOVB *R2+,*R1+
-       MOVB *R2+,*R1+
-       MOVB *R2+,*R1+
-       MOVB *R2+,*R1+
-       MOVB *R2+,*R1+
-*
-       LI   R0,COMPMS
-       LI   R1,COMPM3-COMPMS
-       BLWP @PRINTL
-*
-       B    *R12
-*
-COMPRT RT
-*
-COMPMS TEXT 'Test .... failed. '
-COMPM1 TEXT 'Value in ...... is wrong. '
-COMPM2 TEXT 'Actual value .....'
-COMPM3 EVEN
-
 
 *
 * Check that the strings match.
