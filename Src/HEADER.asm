@@ -5,7 +5,7 @@
        REF  STSWIN,STSDSH,ERRMEM
        REF  PGWDTH
        REF  GETMGN                From UTIL.asm
-       REF  PARINX                From VAR.asm
+       REF  PARINX,DOCSTS         From VAR.asm
 
        COPY 'EQUKEY.asm'
        COPY 'CPUADR.asm'
@@ -16,9 +16,10 @@ ADJHDR
        JEQ  WRTHDR
 *
        LI   R2,TEXT1
-       COC  @STSWIN,R0
+       MOV  @DOCSTS,R13
+       COC  @STSWIN,R13
        JEQ  WRTHDR
-       COC  @STSDSH,R0
+       COC  @STSDSH,R13
        JEQ  WRTHDR
        RT
 *

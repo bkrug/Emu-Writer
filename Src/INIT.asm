@@ -5,6 +5,7 @@
        REF  KEYDVC
        REF  KEYSTR,KEYWRT,KEYRD
        REF  MAINWS
+       REF  DOCSTS
        REF  MEMBEG
        REF  POSUPD
        REF  VDPTXT,VDPSPC
@@ -100,7 +101,8 @@ INTSCN DECT R10
 * Set position steps
        BLWP @POSUPD
 * Draw cursor and return to caller
-       SOC  @STSTYP,R0
+       LI   R13,DOCSTS
+       SOC  @STSTYP,*R13
        BL   @DRWCR2
 
 *

@@ -17,6 +17,7 @@
        REF  ARYADR
        REF  BUFALC,BUFINT,BUFCPY
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD       
+       REF  DOCSTS
 
 * variables just for INPUT
        REF  PARINX,CHRPAX
@@ -316,7 +317,7 @@ TST1   DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -392,10 +393,12 @@ TST2   DECT R10
        LI   R1,KEYL2E
        CLR  R2
        BL   @CPYKEY
+*
+       CLR  @DOCSTS
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Store document status
-       MOV  R0,R5
+       MOV  @DOCSTS,R5
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -493,7 +496,7 @@ TST3   DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -568,7 +571,7 @@ TST4   DECT R10
        LI   R2,12
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -640,7 +643,7 @@ TST5A  LI   R0,2
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -725,7 +728,7 @@ TST7   DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -777,7 +780,7 @@ TST18  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Run routine
-       BLWP @INPUT
+       BL   @INPUT
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -859,11 +862,13 @@ TST19  DECT R10
        LI   R1,KYL19E
        CLR  R2
        BL   @CPYKEY
+*
+       CLR  @DOCSTS
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Save document status
-       MOV  R0,R5
+       MOV  @DOCSTS,R5
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,0
@@ -941,11 +946,13 @@ TST8   DECT R10
        LI   R1,KEYL8E
        CLR  R2
        BL   @CPYKEY
+*
+       CLR  @DOCSTS
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Save document status
-       MOV  R0,R5
+       MOV  @DOCSTS,R5
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1006,7 +1013,7 @@ TST9   DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -1056,11 +1063,13 @@ TST10  DECT R10
        LI   R1,KEY10E
        CLR  R2
        BL   @CPYKEY
+*
+       CLR  @DOCSTS
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Save document status
-       MOV  R0,R5
+       MOV  @DOCSTS,R5
 * Get updated address of paragraph
        MOV  @LINLST,R0
        LI   R1,2
@@ -1120,7 +1129,7 @@ TST11  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -1171,7 +1180,7 @@ TST15  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get updated address of paragraph
        MOV  @LINLST,R0
@@ -1227,7 +1236,7 @@ TST12  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get address of old paragraph
        MOV  @LINLST,R0
@@ -1307,7 +1316,7 @@ TST13  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get address of earlier paragraph
        MOV  @LINLST,R0
@@ -1385,7 +1394,7 @@ TST14  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Get address of new paragraph
        MOV  @LINLST,R0
@@ -1450,7 +1459,7 @@ TST16  DECT R10
        CLR  R2
        BL   @CPYKEY
 * Run routine
-       BLWP @INPUT
+       BL   @INPUT
 * Get address of new paragraph
        MOV  @LINLST,R0
        LI   R1,3
@@ -1528,11 +1537,13 @@ TST17  DECT R10
        LI   R1,KEYENU
        CLR  R2
        BL   @CPYKEY
+*
+       CLR  @DOCSTS
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
 * Store document status in R2
-       MOV  R0,R5
+       MOV  @DOCSTS,R5
 * Check document status bits in R2
        MOV  @STSTYP,R0
        MOV  R5,R1
@@ -1541,7 +1552,7 @@ TST17  DECT R10
        BLWP @AZC
 *
        MOV  @STSENT,R0
-       MOV  R2,R1
+       MOV  R5,R1
        LI   R2,TST17O
        LI   R3,TST17P-TST17O
        BLWP @AOC
@@ -1592,7 +1603,7 @@ TXT20A MOV  *R1+,*R0+
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
        LI   R0,MGN20N+20
        MOV  @MGNLST,R1
@@ -1650,7 +1661,7 @@ TXT21A MOV  *R1+,*R0+
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
        LI   R0,5*8+4+MGN21N
        MOV  @MGNLST,R1
@@ -1710,7 +1721,7 @@ TXT22A MOV  *R1+,*R0+
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
        LI   R0,2*8+4+MGN22N
        MOV  @MGNLST,R1
@@ -1763,7 +1774,7 @@ TXT23A MOV  *R1+,*R0+
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
        LI   R0,3*8+4+MGN23N
        MOV  @MGNLST,R1
@@ -1819,7 +1830,7 @@ TXT24A MOV  *R1+,*R0+
        CLR  R2
        BL   @CPYKEY
 * Act
-       BLWP @INPUT
+       BL   @INPUT
 * Assert
        LI   R0,2*8+4+MGN24N
        MOV  @MGNLST,R1

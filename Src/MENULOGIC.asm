@@ -2,6 +2,7 @@
 *
        REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "
+       REF  DOCSTS                        "
        REF  INCKRD                        From INPUT.asm
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPRAD                 From VDP.asm
@@ -44,7 +45,8 @@ MNUINT
        MOV  R0,@CURMNU
 * We are still BLWP'd into the INPUT method.
 * So return to the document loop now.
-       RTWP
+       MOV  *R10+,R11
+       RT                  *RTWP
 
 *
 * Display the current menu
@@ -56,13 +58,13 @@ ENTMNU
        DECT R10
        MOV  R0,*R10
        DECT R10
-       MOV  R0,@CUROLD
+       MOV  @CUROLD,*R10
        DECT R10
-       MOV  R0,@CURMOD
+       MOV  @CURMOD,*R10
        DECT R10
-       MOV  R0,@CURRPL
+       MOV  @CURRPL,*R10
        DECT R10
-       MOV  R0,@CURSCN
+       MOV  @CURSCN,*R10
 *
        CLR  @CURMOD
 MNULP
@@ -79,6 +81,8 @@ MNULP
        MOV  @CURMNU,R0
        JNE  MNULP
 * Set document status as if window has moved
+       LI   R13,DOCSTS
+       SOC  @STSWIN,*R13
 *
        MOV  *R10+,@CURSCN
        MOV  *R10+,@CURRPL
@@ -86,7 +90,6 @@ MNULP
        MOV  *R10+,@CUROLD
 * Redraw the entire screen
        MOV  *R10+,R0
-       SOC  @STSWIN,R0
 *
        MOV  *R10+,R11
        RT

@@ -11,7 +11,8 @@
 *
 * Move the cursor up by one line
 *
-UPUPSP MOV  R11,R12
+UPUPSP DECT R10
+       MOV  R11,*R10
 *
        MOV  @LININX,R0
        JEQ  UPSP1
@@ -38,7 +39,8 @@ UPSP2  JMP  ADJCHR
 *
 * Move the cursor down by one line
 *
-DOWNSP MOV  R11,R12
+DOWNSP DECT R10
+       MOV  R11,*R10
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
@@ -120,7 +122,8 @@ ADJC5
 * Edit document status
        SOC  @STSARW,*R13
 *
-ARRWRT B    *R12
+ARRWRT MOV  *R10+,R11
+       RT
        
 *
 * Get paragraph address and wrap list

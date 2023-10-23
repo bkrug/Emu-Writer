@@ -6,13 +6,13 @@
        REF  BUFSRK
        REF  VDPADR,VDPWRT
        REF  WINMOD,WINOFF
+       REF  DOCSTS
 
 * Key stroke routines in another file
        REF  UPUPSP,DOWNSP
        REF  MNUINT,PRINT
 
 * variables just for INPUT
-       REF  INPTWS
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD
@@ -42,9 +42,11 @@
 *  bit 0-13 unchanged
 *  bit 14 is set -> enter was pressed
 *  bit 15 is set -> something was typed
-INPUT  DATA INPTWS,INPUT+4
-* Let R10 = stack pointer
-       MOV  @20(R13),R10
+INPUT
+       DECT R10
+       MOV  R11,*R10
+* Let R13 = address of doc status
+       LI   R13,DOCSTS
 * Reset Document-Status bits
        SZC  @STSTYP,*R13
        SZC  @STSENT,*R13
@@ -98,7 +100,8 @@ INPTDN BL   @INCKRD
 INPTBG C    @KEYRD,@KEYWRT
        JNE  INPUT1
 * No, there are not.
-INPTRT RTWP
+INPTRT MOV  *R10+,R11
+       RT                  *RTWP
 
        COPY 'EQUKEY.asm'
 
@@ -207,7 +210,8 @@ FWRDRT SOC  @STSARW,*R13
 *
 * Enter key pressed
 *
-ISENTR
+ISENTR DECT R10
+       MOV  R11,*R10
 *
        INC  @PARINX
 * Break a paragraph in two.
@@ -278,15 +282,17 @@ ENTR3  CLR  @CHRPAX
 * We processed a key, so move KEYRD
 * to the next position before leaving
 * the INPUT routine.
-       BL   @INCKRD
-       RTWP
+*       BL   @INCKRD
+       MOV  *R10+,R11
+       RT                  *really bad RTWP
 
 * Somehow let the user know that there
 * is no remaining buffer space.
 * Do not reprocess the key that cause the overflow.
 RTERR  MOV  @KEYRD,@KEYWRT
        SOC  @ERRMEM,*R13
-       RTWP
+       MOV  *R10+,R11
+       RT                  *RTWP
 
 *
 * Delete key was pressed.
@@ -416,7 +422,8 @@ ADDTXT
 * input modes, leave the INPUT routine.
 ADDT1  C    @INPTMD,@INPTXT
        JEQ  ADDT2
-       RTWP
+       MOV  *R10+,R11
+       RT                  *RTWP
 * Set document status bit
 ADDT2  SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's

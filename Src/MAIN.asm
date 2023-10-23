@@ -12,6 +12,7 @@
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP,STSENT,STSWIN,STSARW
+       REF  DOCSTS
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CHRCUR,CURMOD
        REF  CURMNU
@@ -29,27 +30,30 @@ BEGIN  B    @INIT
 *
 MAIN
 * Clear the document status register
-* TODO:
-* Create address labeled DOCSTS
-* Here add code "CLR @DOCSTS" and "MOV @DOCSTS,R0"
-* BLWP functions can continue to use *R13 referencing R10
-* BL functions can use "LI R13,DOCSTS" and continue to use *R13
        CLR  R0
+       MOV  R0,@DOCSTS
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
        JEQ  MAIN1
        BL   @ENTMNU
 MAIN1
 * Process user input
-       BLWP @INPUT
+       BL   @INPUT
 * Wrap current or previous paragraphs if needed
        BL   @MYWRAP
 * Update cursor and window positions
+       MOV  @DOCSTS,R0
        BLWP @POSUPD
+       MOV  R0,@DOCSTS
 * Redisplay the screen
        LIMI 0
        BL   @ADJHDR
+*
+       MOV  @DOCSTS,R0
        BLWP @DISP
+       MOV  R0,@DOCSTS
+*
+       MOV  @DOCSTS,R0
        BL   @DRWCUR
        LIMI 2
 *
@@ -135,8 +139,9 @@ INTRPT
 *
 MYWRAP
 * Let R1 & R2 = copies of document status
-       MOV  R0,R1
-	MOV  R0,R2
+* Wrap algorithm expects document status in R1 instead of R0
+       MOV  @DOCSTS,R1
+	MOV  @DOCSTS,R2
 * If user pressed enter,
 * wrap the previous paragraph.
        COC  @STSENT,R2
@@ -144,6 +149,7 @@ MYWRAP
        MOV  @PARINX,R0
        DEC  R0
        BLWP @WRAP
+       MOV  R1,@DOCSTS
 * If the user pressed enter or typed something,
 * wrap the current paragraph.
 WRAP1  COC  @STSENT,R2
@@ -152,6 +158,7 @@ WRAP1  COC  @STSENT,R2
        JNE  WRAP3
 WRAP2  MOV  @PARINX,R0
        BLWP @WRAP
+       MOV  R1,@DOCSTS
        MOV  R1,R0
 *
 WRAP3  RT
@@ -159,6 +166,8 @@ WRAP3  RT
 *
 * Draw the cursor on screen
 *
+* Input:
+*  R0 = Document status
 DRWCUR DECT R10
        MOV  R11,*R10
 *
