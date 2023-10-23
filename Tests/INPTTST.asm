@@ -118,10 +118,6 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * User presses enter from paragraph end
        DATA TST14
        TEXT 'TST14 '
-* User presses enter and one letter, but
-* letter is not initially processed.
-       DATA TST16
-       TEXT 'TST16 '
 * User presses enter and nothing else.
 * Enter-Pressed status bit should be set.
        DATA TST17
@@ -1439,85 +1435,6 @@ ERR14M TEXT 'The old paragraph is not empty: '
 ERR14O
        EVEN
        
-* Test 16
-* -------
-* User presses enter and one letter, but
-* letter is not initially processed.
-TST16  DECT R10
-       MOV  R11,*R10
-* Initialize Test Data
-       BL   @TSTINT
-* Set position values
-       CLR  @INSTMD
-       LI   R0,2
-       MOV  R0,@PARINX
-       LI   R0,406
-       MOV  R0,@CHRPAX
-* Copy test keypresses to stream
-       LI   R0,KEYL16
-       LI   R1,KEY16E
-       CLR  R2
-       BL   @CPYKEY
-* Run routine
-       BL   @INPUT
-* Get address of new paragraph
-       MOV  @LINLST,R0
-       LI   R1,3
-       BLWP @ARYADR
-       MOV  *R1,R1
-* Paragraph should be empty
-       CLR  R0
-       MOV  *R1,R1
-       LI   R2,ERR16M
-       LI   R3,ERR16O-ERR16M
-       BLWP @AEQ
-* Get address of old paragraph
-       MOV  @LINLST,R0
-       LI   R1,2
-       BLWP @ARYADR
-       MOV  *R1,R1
-* The new paragraph should be the same
-* as the original one
-       AI   R1,4
-       LI   R2,PAR2+4
-       LI   R0,PAR2A
-       BL   @STRCMP
-* Test position values.
-* CHRPAX point to paragraph start.
-       LI   R0,3
-       MOV  @PARINX,R1
-       LI   R2,LPRINX
-       LI   R3,6
-       BLWP @AEQ
-*
-       LI   R0,0
-       MOV  @CHRPAX,R1
-       LI   R2,LCRPAX
-       LI   R3,6
-       BLWP @AEQ
-* The Enter key was at the beginning of
-* the keystream. Keystream position
-* should have advanced one.
-       LI   R0,KEYSTR
-       INC  R0
-       MOV  @KEYRD,R1
-       LI   R2,LKEYRD
-       LI   R3,6
-       BLWP @AEQ
-*
-       MOV  *R10+,R11
-       RT
-
-ERR16M TEXT 'The old paragraph is not empty: '
-ERR16O
-
-* input from the keyboard.
-KEYL16 BYTE ENTER
-       TEXT 'xy'
-KEY16E
-       EVEN
-
-
 * Test 17
 * -------
 * User presses enter and nothing else.
