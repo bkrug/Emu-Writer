@@ -227,7 +227,7 @@ ISENTR DECT R10
 * Allocate space for wraplist
        LI   R0,1
        BLWP @ARYALC
-       JEQ  RTERR
+       JEQ  TERR1
 * Save address
        MOV  R0,R3
 * Calculate length of new paragraph.
@@ -235,14 +235,14 @@ ISENTR DECT R10
        MOV  *R1,R1
        MOV  *R1,R4
        S    @CHRPAX,R4
-* Change length of old paragraph.
-       MOV  @CHRPAX,*R1
 * Allocate space for new paragraph
        MOV  R4,R0
        C    *R0+,*R0+
        BLWP @BUFALC
-       JEQ  RTERR
+       JEQ  TERR2
        MOV  R0,R5
+* Change length of old paragraph.
+       MOV  @CHRPAX,*R1
 * Put paragraph in list
        MOV  R0,*R2
 * Set new paragraph length and wrap
@@ -280,6 +280,22 @@ ENTR3  CLR  @CHRPAX
 *
        MOV  *R10+,R11
        RT
+
+*
+* An out-of-memory error occurred pressing enter
+*
+* Deallocate the wrap list that was allocated
+TERR2  MOV  R3,R0
+       BLWP @BUFREE
+* Remove the paragraph list entry that
+* was just created, but cannot be used.
+TERR1  MOV  @LINLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYDEL
+* Decrement the PARINX to its previous value.
+       DEC  @PARINX
+*
+       JMP  RTERR
 
 * Somehow let the user know that there
 * is no remaining buffer space.
