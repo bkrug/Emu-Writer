@@ -122,8 +122,12 @@ WRAPDN
 * Input:
 *    R1 - byte to convert
 *    R2 - Address of 3-char string
+* Changed:
+*    R3,R4,R5
 *
 TEN    DATA 10
+ZERO   TEXT '0'
+       EVEN
 BYTSTR
 * Let R5 = address of char (starting from end)
        MOV  R2,R5
@@ -146,6 +150,34 @@ BS1    DIV  @TEN,R3
 * Check if we should loop
        C    R5,R2
        JHE  BS1
-       RT
+*
+* Trim leading zeros
+* Let R5 = left-most char
+* Let R4 = right-most char
+       MOV  R2,R5
+       MOV  R2,R4
+       INCT R4
+* Let R5 = left-most non-zero
+BS2    CB   *R5,@ZERO
+       JNE  BS3
+       INC  R5
+       C    R5,R4
+       JL   BS2
+* Is left-most non-zero also left-most char?
+BS3    C    R5,R2
+       JEQ  BS6
+* No, Copy characters left from R5
+* Let R3 = left-most char
+       MOV  R2,R3
+BS4    MOVB *R5+,*R3+
+       C    R5,R4
+       JLE  BS4
+* Fill remaining spaces with nulls
+BS5    SB   *R3,*R3
+       INC  R3
+       C    R3,R4
+       JLE  BS5
+*
+BS6    RT
 
        END
