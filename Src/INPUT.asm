@@ -6,7 +6,7 @@
        REF  BUFSRK
        REF  VDPADR,VDPWRT
        REF  WINMOD,WINOFF
-       REF  DOCSTS
+       REF  DOCSTS,FASTRT
 
 * Key stroke routines in another file
        REF  UPUPSP,DOWNSP
@@ -45,6 +45,7 @@
 INPUT
        DECT R10
        MOV  R11,*R10
+       MOV  R10,@FASTRT
 * Let R13 = address of doc status
        LI   R13,DOCSTS
 * Reset Document-Status bits
@@ -219,7 +220,6 @@ ISENTR DECT R10
        MOV  @LINLST,R0
        MOV  @PARINX,R1
        BLWP @ARYINS
-       CI   R0,>FFFF
        JEQ  RTERR
 * Save addresses
        MOV  R0,@LINLST
@@ -227,7 +227,6 @@ ISENTR DECT R10
 * Allocate space for wraplist
        LI   R0,1
        BLWP @ARYALC
-       CI   R0,>FFFF
        JEQ  RTERR
 * Save address
        MOV  R0,R3
@@ -242,7 +241,6 @@ ISENTR DECT R10
        MOV  R4,R0
        C    *R0+,*R0+
        BLWP @BUFALC
-       CI   R0,>FFFF
        JEQ  RTERR
        MOV  R0,R5
 * Put paragraph in list
@@ -281,13 +279,14 @@ ENTR3  CLR  @CHRPAX
        SOC  @STSENT,*R13
 *
        MOV  *R10+,R11
-       RT                  *really bad RTWP
+       RT
 
 * Somehow let the user know that there
 * is no remaining buffer space.
 * Do not reprocess the key that cause the overflow.
 RTERR  MOV  @KEYRD,@KEYWRT
        SOC  @ERRMEM,*R13
+       MOV  @FASTRT,R10
        MOV  *R10+,R11
        RT                  *RTWP
 
@@ -353,7 +352,6 @@ DELC2  MOV  @LINLST,R9
 * Grow memory block for first paragraph
        MOV  R3,R0
        BLWP @BUFGRW
-       CI   R0,>FFFF
        JEQ  RTERR
 * Let R3 = (possibly new) address of first paragraph
        MOV  R0,R3
@@ -461,7 +459,6 @@ INSERT MOV  R1,R6
        MOV  *R0,R1
        AI   R1,5
        BLWP @BUFGRW
-       CI   R0,>FFFF
        JNE  INS1
        B    @RTERR
 INS1   MOV  R0,*R6

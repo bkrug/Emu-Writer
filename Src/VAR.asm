@@ -15,6 +15,7 @@
        DEF  STACK
 *
        DEF  VARBEG,VAREND
+       DEF  FASTRT
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
 * Arrays
@@ -91,6 +92,11 @@ PGWDTH BSS  1
 BUFADR BSS  >2
 * holds first address after the buffer
 BUFEND BSS  >2
+
+* If something happens equivalent to throwing an exception,
+* at the point that is like a catch-block,
+* restore the Stack Pointer to this value.
+FASTRT BSS  >2
 
 * MAIN.TXT
 DOCSTS BSS  2

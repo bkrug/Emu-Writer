@@ -84,7 +84,14 @@ EMU-WRITER -- You didn't think you needed it, but now you know for sure.
 
 ### TODO
 
+* Write the following tests for a user pressing enter
+  * The system does not have enough memory to accept a new entry in LINLST. Assert that the LINLST and the original paragraph are unchanged.
+  * The system has added a new LINLST entry, but there is not enough space to create a new wrap list. Assert that the LINLST is returned to its original state and the paragraph is unchchaged.
+  * The system has added a new LINLST entry, allocated space for a new wrap list, but there is not space to allocate the paragraph contents. Assert that the LINLST is returned to its original state and the paragraph is unchanged. Deallocate the space for the wrap list, but that will be hard to assert.
+* Write a test for merging two paragraphs together through the delete key.
+  * The system does not have enough space to merge two paragraphs together. Assert that the original paragrphs and the LINLST, are left unchanged.
+* Write a test for inserting text in a paragraph.
+  * The system does not have enough memory to grow the paragraph. Assert that it is left unchanged.
 * Validate Page width, page height, and indent.
-* Make INPUT use main workspace isntead of its own.
 * In screen header, display a character to indicate vertical or windowed mode.
 * Consider adding a defrag operation that runs every 64/60s seconds.
