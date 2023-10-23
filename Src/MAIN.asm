@@ -150,6 +150,7 @@ MYWRAP
        DEC  R0
        BLWP @WRAP
        MOV  R1,@DOCSTS
+	MOV  R1,R2
 * If the user pressed enter or typed something,
 * wrap the current paragraph.
 WRAP1  COC  @STSENT,R2

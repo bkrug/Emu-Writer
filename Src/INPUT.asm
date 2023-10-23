@@ -279,10 +279,7 @@ ENTR3  CLR  @CHRPAX
        BL   @UPDMGN
 * Set document-status bit
        SOC  @STSENT,*R13
-* We processed a key, so move KEYRD
-* to the next position before leaving
-* the INPUT routine.
-*       BL   @INCKRD
+*
        MOV  *R10+,R11
        RT                  *really bad RTWP
 
