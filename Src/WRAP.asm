@@ -10,7 +10,7 @@
        REF  ERRMEM,STSPAR
 * Variables
        REF  LNWDT1,LNWDTH,WINMOD
-       REF  PGWDTH
+       REF  PGWDTH,DOCSTS
 
 * This data is a work around for the "first DATA word is 0 bug"
        DATA >1234
@@ -175,7 +175,7 @@ BRK6
        MOV  *R3,R7
 	C    *R7,*R2
 	JEQ  WRP6
-	SOC  @STSPAR,@2(13)
+	SOC  @STSPAR,@DOCSTS
 * Deallocate old wrap list.
 WRP6   MOV  *R3,R0
        BLWP @BUFREE
@@ -183,7 +183,7 @@ WRP6   MOV  *R3,R0
        MOV  R2,*R3
        RTWP
 
-WRPERR SOC  @ERRMEM,@2(13)
+WRPERR SOC  @ERRMEM,@DOCSTS
        RTWP
 
        END

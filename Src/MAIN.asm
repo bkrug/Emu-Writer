@@ -138,9 +138,7 @@ INTRPT
 * Wrap paragraphs if needed
 *
 MYWRAP
-* Let R1 & R2 = copies of document status
-* Wrap algorithm expects document status in R1 instead of R0
-       MOV  @DOCSTS,R1
+* Let R2 = copy of document status
 	MOV  @DOCSTS,R2
 * If user pressed enter,
 * wrap the previous paragraph.
@@ -149,8 +147,8 @@ MYWRAP
        MOV  @PARINX,R0
        DEC  R0
        BLWP @WRAP
-       MOV  R1,@DOCSTS
-	MOV  R1,R2
+*
+	MOV  @DOCSTS,R2
 * If the user pressed enter or typed something,
 * wrap the current paragraph.
 WRAP1  COC  @STSENT,R2
@@ -159,8 +157,6 @@ WRAP1  COC  @STSENT,R2
        JNE  WRAP3
 WRAP2  MOV  @PARINX,R0
        BLWP @WRAP
-       MOV  R1,@DOCSTS
-       MOV  R1,R0
 *
 WRAP3  RT
 

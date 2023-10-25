@@ -2,7 +2,7 @@
        REF  ABLCK,AOC,AZC,AEQ,ANEQ
 *
        REF  WRAP,LINLST,FMTLST,MGNLST
-       REF  WINMOD
+       REF  WINMOD,DOCSTS
        REF  BUFINT,BUFALC,BUFCPY
        REF  STSPAR,ERRMEM
 
@@ -94,6 +94,7 @@ WRP1
        MOV  R0,@FMTLST
        LI   R0,MRGN1
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -102,15 +103,15 @@ WRP1
        BLWP @WRAP
 * Assert
 *  No error should be detected
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports linecount is
 * unchanged
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AZC
@@ -179,6 +180,7 @@ WRP2
        MOV  R0,@FMTLST
        LI   R0,MRGN2
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -186,15 +188,15 @@ WRP2
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -260,6 +262,7 @@ WRP3
        MOV  R0,@FMTLST
        LI   R0,MRGN3
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -268,15 +271,15 @@ WRP3
        BLWP @WRAP
 * Assert
 *  No error should be detected
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports linecount is
 * unchanged
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AZC
@@ -342,6 +345,7 @@ WRP4
        MOV  R0,@FMTLST
        LI   R0,MRGN4
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -349,15 +353,15 @@ WRP4
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -426,6 +430,7 @@ WRP5
        MOV  R0,@FMTLST
        LI   R0,MRGN5
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -433,15 +438,15 @@ WRP5
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -511,6 +516,7 @@ WRP7
        MOV  R0,@FMTLST
        LI   R0,MRGN7
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -518,15 +524,15 @@ WRP7
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -610,6 +616,7 @@ WRP8
        MOV  R0,@FMTLST
        LI   R0,MRGN8
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -617,15 +624,15 @@ WRP8
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -698,6 +705,7 @@ WRP9
        MOV  R0,@FMTLST
        LI   R0,MRGN9
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -705,15 +713,15 @@ WRP9
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -796,6 +804,7 @@ WRP10
        MOV  R0,@FMTLST
        LI   R0,MRGN10
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -803,15 +812,15 @@ WRP10
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -904,6 +913,7 @@ WRP11
        MOV  R0,@FMTLST
        LI   R0,MRGN11
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -911,15 +921,15 @@ WRP11
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -1009,6 +1019,7 @@ WRP12
        MOV  R0,@FMTLST
        LI   R0,MRGN12
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn off vertical mode
        CLR  @WINMOD
 * Act
@@ -1016,15 +1027,15 @@ WRP12
        LI   R1,0
        BLWP @WRAP
 * Assert
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports line count
 * changed
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
        BLWP @AOC
@@ -1100,6 +1111,7 @@ WRP13
        MOV  R0,@FMTLST
        LI   R0,MRGN13
        MOV  R0,@MGNLST
+       CLR  @DOCSTS
 * Turn on vertical mode
        SETO @WINMOD
 * Act
@@ -1108,15 +1120,15 @@ WRP13
        BLWP @WRAP
 * Assert
 *  No error should be detected
-* R1 contains document status
        MOV  @ERRMEM,R0
+       MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
 *       BLWP @AZC
 * Document status reports linecount is
 * unchanged
-* R1 contains document status
        MOV  @STSPAR,R0
+       MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
 *       BLWP @AZC

@@ -76,7 +76,9 @@ INPUT2 BL   *R3
 * Increment the key read position
 INPUT3 BL   @INCKRD
        JMP  INPUT1
-* No, there are not.
+* There are either no more keys to process,
+* or the input mode changed.
+* Return to caller.
 INPTRT MOV  *R10+,R11
        RT                  *RTWP
 
