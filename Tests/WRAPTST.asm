@@ -98,7 +98,6 @@ WRP1
        CLR  @WINMOD
 * Act
        LI   R0,0
-       LI   R1,0
        BLWP @WRAP
 * Assert
 *  No error should be detected
@@ -183,7 +182,6 @@ WRP2
        CLR  @WINMOD
 * Act
        LI   R0,1
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -264,7 +262,6 @@ WRP3
        CLR  @WINMOD
 * Act
        LI   R0,2
-       LI   R1,0
        BLWP @WRAP
 * Assert
 *  No error should be detected
@@ -346,7 +343,6 @@ WRP4
        CLR  @WINMOD
 * Act
        LI   R0,3
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -430,7 +426,6 @@ WRP5
        CLR  @WINMOD
 * Act
        LI   R0,4
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -515,7 +510,6 @@ WRP7
        CLR  @WINMOD
 * Act
        LI   R0,6
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -614,7 +608,6 @@ WRP8
        CLR  @WINMOD
 * Act
        LI   R0,7
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -702,7 +695,6 @@ WRP9
        CLR  @WINMOD
 * Act
        LI   R0,8
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -800,7 +792,6 @@ WRP10
        CLR  @WINMOD
 * Act
        LI   R0,9
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -908,7 +899,6 @@ WRP11
        CLR  @WINMOD
 * Act
        LI   R0,10
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -1013,7 +1003,6 @@ WRP12
        CLR  @WINMOD
 * Act
        LI   R0,2
-       LI   R1,0
        BLWP @WRAP
 * Assert
        MOV  @ERRMEM,R0
@@ -1104,7 +1093,6 @@ WRP13
        SETO @WINMOD
 * Act
        LI   R0,0
-       LI   R1,0
        BLWP @WRAP
 * Assert
 *  No error should be detected
