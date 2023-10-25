@@ -1114,12 +1114,12 @@ WRP13
        LI   R3,MNERRE-MNERR
        BLWP @AZC
 * Document status reports linecount is
-* unchanged
+* changed
        MOV  @STSPAR,R0
        MOV  @DOCSTS,R1
        LI   R2,MPARC
        LI   R3,MPARCE-MPARC
-*       BLWP @AZC
+       BLWP @AOC
 * Wrap list should match expected
        LI   R0,WRPE13
        MOV  @PAR13A+2,R1

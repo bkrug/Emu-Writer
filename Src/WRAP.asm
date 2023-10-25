@@ -22,9 +22,8 @@
 *
 * Input:
 * R0 - Line index. Wrap from here.
-* R1 - Document Staus
 * Output:
-* R1 - Document Status
+* DOCSTS
 *
 WRAP   DATA WRAPWS,WRAP+4
 *=======================================
