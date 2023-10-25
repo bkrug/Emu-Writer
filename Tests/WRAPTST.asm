@@ -1112,7 +1112,7 @@ WRP13
        MOV  @DOCSTS,R1
        LI   R2,MNERR
        LI   R3,MNERRE-MNERR
-*       BLWP @AZC
+       BLWP @AZC
 * Document status reports linecount is
 * unchanged
        MOV  @STSPAR,R0
