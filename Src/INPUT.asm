@@ -31,8 +31,8 @@
        REF  CURMNU
        REF  WRAPDC                       From UTIL.asm
 
-* This data is a work around for the "first DATA word is 0 if REFed bug"
-       DATA >1234
+       COPY 'EQUKEY.asm'
+
 *
 * Process the new keystrokes
 *
@@ -54,57 +54,29 @@ INPUT
        SZC  @STSARW,*R13
 * Reset the input mode to unspecified
        CLR  @INPTMD
-       JMP  INPTBG
-*
-INPUT1 MOV  @KEYRD,R4
-* Handle visible character key strokes
-       CB   *R4,@CHRMIN
-       JL   KEYBRC
-       CB   *R4,@CHRMAX
-       JH   KEYBRC
-       B    @ADDTXT
-* Branch to non-typing routine specified
-* by key code in R4
-* Let R0 = Address of element within ROUTKY
-* that corresponds to the pressed key
-KEYBRC LI   R0,ROUTKY
-       MOV  R0,R2
-KYBRC2 CB   *R4,*R0+
-       JEQ  KYBRC3
-       CI   R0,ROUTKE
-       JL   KYBRC2
-       JMP  KYBRC4
-KYBRC3 DEC  R0
-       S    R2,R0
-* Let R1 = address of routine specified in ROUTKY element
-       LI   R1,ROUTIN
-       SLA  R0,1
-       A    R0,R1
-       MOV  *R1,R1
-* Let R3 = acceptable input mode
-       LI   R3,EXPMOD
-       A    R0,R3
-* Set Input mode if currently unset
-       C    @INPTMD,@INPTNN
-       JNE  KYBRC5
-       MOV  *R3,@INPTMD
-* If the next key involves switching to a
-* different input mode, leave the routine
-KYBRC5 C    *R3,@INPTMD
-       JNE  INPTRT
-* Branch to routine associated with key
-       BL   *R1
-KYBRC4
-* Increment the key read position
-INPTDN BL   @INCKRD
 * Are there more keystrokes to process?
-INPTBG C    @KEYRD,@KEYWRT
-       JNE  INPUT1
+INPUT1 C    @KEYRD,@KEYWRT
+       JEQ  INPTRT
+* Yes, let R4 = KEYRD
+       MOV  @KEYRD,R4
+* Is the detected key a visible character?
+       CB   *R4,@CHRMIN
+       JL   INPUT2
+       CB   *R4,@CHRMAX
+       JH   INPUT2
+* Yes, handle visible character key strokes
+       BL   @ADDTXT
+       JEQ  INPTRT
+       JMP  INPUT3
+* No, handle a command key
+INPUT2 BL   @KEYBRC
+       JEQ  INPTRT
+* Increment the key read position
+INPUT3 BL   @INCKRD
+       JMP  INPUT1
 * No, there are not.
 INPTRT MOV  *R10+,R11
        RT                  *RTWP
-
-       COPY 'EQUKEY.asm'
 
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,CLRKEY
@@ -146,7 +118,9 @@ UPDBUF MOV  R0,@KEYRD
 
 * Specify address of cursor character
 * pattern.
-INSSWP
+INSSWP DECT R10
+       MOV  R11,*R10
+*
        LI   R0,>7F*8+>801
        BL   @VDPADR
 * Toggle insert/overwrite mode.
@@ -159,7 +133,9 @@ INSSWP
 INSSW1 LI   R0,CURINS
 INSSW2 LI   R1,7
        BL   @VDPWRT
-       JMP  INPTDN
+*
+       MOV  *R10+,R11
+       RT
 
 *
 * Backspace by one position
@@ -427,17 +403,23 @@ DELCRT B    *R12
 
 * User typed some text.
 * Put it in the buffer.
-ADDTXT
+*
+* Output:
+*   EQ status bit = if true, leave INPUT routine
+ADDTXT DECT R10
+       MOV  R11,*R10
 * Set input mode if currently unset
        C    @INPTMD,@INPTNN
        JNE  ADDT1
        MOV  @INPTXT,@INPTMD
-* If processing this key involves switching
-* input modes, leave the INPUT routine.
+* Does processing this key involve
+* switching input modes.
 ADDT1  C    @INPTMD,@INPTXT
        JEQ  ADDT2
+* Tell the caller to leave the INPUT routine.
        MOV  *R10+,R11
-       RT                  *RTWP
+       S    R0,R0
+       RT
 * Set document status bit
 ADDT2  SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's
@@ -502,7 +484,58 @@ RPLTXT
 * Increase character index.
        INC  @CHRPAX
 *
-       B    @INPTDN
+       MOV  *R10+,R11
+       RT
+
+*
+* Branch to non-typing routine specified
+* by key code in R4
+*
+* Output:
+*   EQ status bit = if true, leave INPUT routine
+KEYBRC DECT R10
+       MOV  R11,*R10
+* Let R0 = Address of element within ROUTKY
+* that corresponds to the pressed key
+       LI   R0,ROUTKY
+       MOV  R0,R2
+KYBRC2 CB   *R4,*R0+
+       JEQ  KYBRC3
+       CI   R0,ROUTKE
+       JL   KYBRC2
+       JMP  KYBRC6
+KYBRC3 DEC  R0
+       S    R2,R0
+* Let R1 = address of routine specified in ROUTKY element
+       LI   R1,ROUTIN
+       SLA  R0,1
+       A    R0,R1
+       MOV  *R1,R1
+* Let R3 = acceptable input mode
+       LI   R3,EXPMOD
+       A    R0,R3
+* Set Input mode if currently unset
+       C    @INPTMD,@INPTNN
+       JNE  KYBRC5
+       MOV  *R3,@INPTMD
+KYBRC5
+* If the next key involves switching to a
+* different input mode, leave the routine
+       C    *R3,@INPTMD
+       JNE  KYEXIT
+* Branch to routine associated with key
+       BL   *R1
+* Jump here when the caller is allowed to 
+* continue with the next key.
+* This sets the EQ status bit to false.
+KYBRC6 MOV  *R10+,R11
+       RT
+* Jump here when the caller should leave
+* the input routine.
+* This sets the EQ status bit to true.
+KYEXIT MOV  *R10+,R11
+       SB   R0,R0
+       RT
 
 *
 * Backspace Delete
