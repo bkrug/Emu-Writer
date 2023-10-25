@@ -77,9 +77,8 @@ FAKEAD DATA >FFFE
 *
 WRP1
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -123,7 +122,7 @@ WRP1
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 
@@ -163,9 +162,8 @@ MRGN1  DATA 1,3
 *
 WRP2
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -208,7 +206,7 @@ WRP2
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 * Paragraph List
@@ -245,9 +243,8 @@ MRGN2  DATA 1,3
 *
 WRP3
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -291,7 +288,7 @@ WRP3
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL3  DATA 4,1
@@ -328,9 +325,8 @@ MRGN3  DATA 1,3
 * 10 CPI
 WRP4
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -373,7 +369,7 @@ WRP4
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL4  DATA 6,1
@@ -413,9 +409,8 @@ MRGN4  DATA 2,3
 *
 WRP5
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -458,7 +453,7 @@ WRP5
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL5  DATA 8,1
@@ -499,9 +494,8 @@ MRGN5  DATA 2,3
 *
 WRP7
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -544,7 +538,7 @@ WRP7
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL7  DATA 8,1
@@ -599,9 +593,8 @@ MRGN7  DATA 3,3
 *
 WRP8
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -644,7 +637,7 @@ WRP8
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL8  DATA 8,1
@@ -688,9 +681,8 @@ MRGN8  DATA 3,3
 *
 WRP9
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -733,7 +725,7 @@ WRP9
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL9  DATA 11,1
@@ -787,9 +779,8 @@ MRGN9  DATA 4,3
 *
 WRP10
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -832,7 +823,7 @@ WRP10
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL10 DATA 11,1
@@ -896,9 +887,8 @@ MRGN10 DATA 4,3
 *
 WRP11
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -941,7 +931,7 @@ WRP11
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL11 DATA 11,1
@@ -1002,9 +992,8 @@ MRGN11 DATA 4,3
 *
 WRP12
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -1047,7 +1036,7 @@ WRP12
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 PARL12 DATA 4,1
@@ -1094,9 +1083,8 @@ MRGN12 DATA 1,3
 *
 WRP13
 * Arrange
-       LI   R12,STACK
-       DECT R12
-       MOV  R11,*R12
+       DECT R10
+       MOV  R11,*R10
 * The wrap list must go in the block
 * of memory allocated to the chunck
 * manager because it may be deallocated.
@@ -1140,7 +1128,7 @@ WRP13
        LI   R4,MWRPE-MWRP
        BLWP @ABLCK
 *
-       MOV  *R12+,R11
+       MOV  *R10+,R11
        RT
 
 
@@ -1213,6 +1201,4 @@ CPYWRP
 
 SPACE  BSS  >400
 SPCEND
-STACKS BSS  >10
-STACK
        END
