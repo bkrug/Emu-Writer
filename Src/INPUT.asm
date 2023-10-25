@@ -59,17 +59,19 @@ INPUT1 C    @KEYRD,@KEYWRT
        JEQ  INPTRT
 * Yes, let R4 = KEYRD
        MOV  @KEYRD,R4
+* Let R3 = address of either the typing routine (ADDTXT)
+* or the control-key routine (KEYBRC)
+       LI   R3,KEYBRC
 * Is the detected key a visible character?
        CB   *R4,@CHRMIN
        JL   INPUT2
        CB   *R4,@CHRMAX
        JH   INPUT2
 * Yes, handle visible character key strokes
-       BL   @ADDTXT
-       JEQ  INPTRT
-       JMP  INPUT3
-* No, handle a command key
-INPUT2 BL   @KEYBRC
+       LI   R3,ADDTXT
+* Call either the typing routine (ADDTXT)
+* or the control-key routine (KEYBRC)
+INPUT2 BL   *R3
        JEQ  INPTRT
 * Increment the key read position
 INPUT3 BL   @INCKRD
