@@ -38,15 +38,10 @@ MTITLE EQU  10
 * Initialize home menu
 *
 MNUINT
-* Skip the most recently read key
-       BL   @INCKRD
 * Select Home menu as start menu
        LI   R0,MNUHOM
        MOV  R0,@CURMNU
-* We are still BLWP'd into the INPUT method.
-* So return to the document loop now.
-       MOV  *R10+,R11
-       RT                  *RTWP
+       RT
 
 *
 * Display the current menu
