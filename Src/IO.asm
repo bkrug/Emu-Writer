@@ -608,7 +608,7 @@ PRTMG  DECT R10
 PRTMG1 SRL  R0,8
        MOV  R0,R1
        JMP  PRTMG3
-PRTMG2 LI   R1,DFLTLF
+PRTMG2 LI   R1,DFLTMG
 PRTMG3
 * Increase record length by size of left margin
 * Truncate the record length if it is greater than 254

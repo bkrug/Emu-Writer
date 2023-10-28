@@ -68,7 +68,7 @@ EDTMGN
        SLA  R4,8
        SLA  R5,8
        MOVB R4,@LEFT(R6)
-       MOVB R5,@PWIDTH(R6)
+       MOVB R5,@RIGHT(R6)
 *
 * Read user input for indent
 *

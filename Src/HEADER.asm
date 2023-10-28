@@ -50,7 +50,7 @@ WRTHDR
 * If R0 = 0, then use defaults.
        MOV  R0,R0
        JNE  CONMGN
-       LI   R0,DFLTMG-2
+       LI   R0,ORGMGN-2
 * Let R0 = address of indent
 CONMGN AI   R0,3
 * Convert Indent to ASCII
@@ -105,7 +105,7 @@ DRWNUM DECT R10
 TEN    DATA 10
 * Default Margin entry
 * Empty Byte, Indent, Left Margin, Right Margin, Top Margin, Bottom Margin
-DFLTMG DATA >0000,>0A0A,>0A0A
+ORGMGN DATA >0000,>0A0A,>0A0A
 TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
        BYTE 0
 TEXT2  TEXT 'LM:   RM:   IN:'

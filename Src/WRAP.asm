@@ -61,7 +61,7 @@ MGN2   AI   R8,INDENT
 MGN2B  CLR  R0
        MOVB @PGWDTH,R1
        SRL  R1,8
-       AI   R1,-2*DFLTLF
+       AI   R1,-2*DFLTMG
 MGN2C
 * Are we in windowed mode?
        MOV  @WINMOD,R3

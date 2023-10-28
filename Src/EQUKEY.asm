@@ -30,7 +30,7 @@ NOFLDS EQU  0
 
 DFLTHT EQU  66        Default Page Height
 DFLTPG EQU  80        Default Page Width
-DFLTLF EQU  10        Default Left Margin
+DFLTMG EQU  10        Default Left Margin
 SCRNWD EQU  40
 
 *
@@ -44,7 +44,7 @@ MAXIDT EQU  20        Max indent in vertical mode
 * Indexes in margin entry
 INDENT EQU  3
 LEFT   EQU  4
-PWIDTH EQU  5         Paragraph width
+RIGHT  EQU  5
 
 *
 * Locations in FLDVAL for different margin fields
