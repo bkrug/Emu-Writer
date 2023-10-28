@@ -23,51 +23,46 @@ EDTMGN
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-       SLA  R1,8
-       MOVB R1,R15
+       MOV  R1,R15
 * Let R14 = Page Height
        LI   R0,FLDVAL
        AI   R0,FPHGHT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-       SLA  R1,8
        MOV  R1,R14
 *
-* Allocate enough space for a temporary MGNLST element
+* Allocate six bytes to store parsed
+* indent, left, and right margin
+* as 16-bit values.
 *
 * Let R6 = address of allocated space
        CLR  R6
-       LI   R0,MGNLNG
+       LI   R0,6
        BLWP @BUFALC
        JEQ  EMERR
        MOV  R0,R6
-* Set Paragraph Index
-       MOV  @PARINX,*R6
-* left margin
-       LI   R0,FLDVAL
-       AI   R0,FLEFT
-       BL   @PRSINT
-       MOV  R0,R0
-       JNE  EM10
-       SLA  R1,8
-       MOVB R1,@LEFT(R6)
-* right margin
-       LI   R0,FLDVAL
-       AI   R0,FRIGHT
-       BL   @PRSINT
-       MOV  R0,R0
-       JNE  EM10
-       SLA  R1,8
-       MOVB R1,@RIGHT(R6)
 * indent
        LI   R0,FLDVAL
        AI   R0,FINDNT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-       SLA  R1,8
-       MOVB R1,@INDENT(R6)
+       MOV  R1,*R6
+* left margin
+       LI   R0,FLDVAL
+       AI   R0,FLEFT
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
+       MOV  R1,@2(R6)
+* right margin
+       LI   R0,FLDVAL
+       AI   R0,FRIGHT
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EM10
+       MOV  R1,@4(R6)
 *
 * Validate margin sizes
 *
@@ -165,8 +160,8 @@ PTERR1 SETO R0
        RT
 *
 TEN    DATA 10
-MINSIZ BYTE 10
-MAXSIZ BYTE 254
+MINSIZ DATA 10
+MAXSIZ DATA 254
 ZERO   TEXT '0'
 NINE   TEXT '9'
 PGBIG  TEXT 'Maximum page sizes are 254'
@@ -185,34 +180,34 @@ REQERR TEXT 'All fields are required'
 * Validate the margins and page sizes
 *
 * Input
-*   R6: Address of temporary margin list
-*   R14 (left byte): New Page Height
-*   R15 (left byte): New Page Width
+*   R6: Address of parsed margin values
+*   R14: New Page Height
+*   R15: New Page Width
 *
 VALIDT
 * Validate Page Sizes
        LI   R1,PGSML
-       CB   R14,@MINSIZ
+       C    R14,@MINSIZ
        JL   VLDERR
-       CB   R15,@MINSIZ
+       C    R15,@MINSIZ
        JL   VLDERR
 *
        LI   R1,PGBIG
-       CB   R14,@MAXSIZ
+       C    R14,@MAXSIZ
        JH   VLDERR
-       CB   R15,@MAXSIZ
+       C    R15,@MAXSIZ
        JH   VLDERR
 * Let R1 = ABS(indent)
-       MOVB @INDENT(R6),R1
+       MOV  *R6,R1
        ABS  R1
 * Let R0 = paragraph width
-       MOVB 15,R0
-       SB   @LEFT(R6),R0
-       SB   @RIGHT(R6),R0
-       SB   R1,R0
+       MOV  15,R0
+       S    @2(R6),R0
+       S    @4(R6),R0
+       S    R1,R0
 * Is resulting paragraph width large enough?
        LI   R1,MGNERR
-       CB   R0,@MINSIZ
+       C    R0,@MINSIZ
        JLT  VLDERR
 * Reset EQU status bit to indicate no error
        LI   R2,-1
@@ -256,14 +251,17 @@ EM2    MOV  @MGNLST,R0
        MOV  R0,@MGNLST
        MOV  R1,R3
 EM9
+* Set Paragraph Index
+       MOV  @PARINX,*R3
 * Copy margin data to actual MGNLST
-       MOV  R6,R0
-       MOV  R3,R1
-       LI   R2,MGNLNG
-       BLWP @BUFCPY
+       MOVB @1(R6),@INDENT(R3)
+       MOVB @3(R6),@LEFT(R3)
+       MOVB @5(R6),@RIGHT(R3)
 * Record Page Width
+       SLA  R15,8
        MOVB R15,@PGWDTH
 * Record Page Height
+       SLA  R14,8
        MOVB R14,@PGHGHT
 * No error       
        RT
