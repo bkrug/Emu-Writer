@@ -61,12 +61,6 @@ EDTMGN
        MOV  R0,R0
        JNE  EM10
        MOV  R1,R5
-* Let R5 = paragraph width
-       MOVB @PGWDTH,R0
-       SRL  R0,8
-       NEG  R5
-       A    R0,R5
-       S    R4,R5
 * Validate margin sizes
        BL   @MGNSIZ
        JEQ  EM10
@@ -223,11 +217,17 @@ REQERR TEXT 'All fields are required'
 * Validate that the combined left/right margin size is okay
 *
 * Input
-*   R5: paragraph width
+*   R4: left margin
+*   R5: right margin
 *
 MGNSIZ
+* Let R0 = paragraph width
+       MOVB @PGWDTH,R0
+       SRL  R0,8
+       S    R5,R0
+       S    R4,R0       
 * Is combined left/right margin small enough?
-       CI   R5,9
+       CI   R0,9
        JGT  MGNRT
 * No, set error message
        SETO R0

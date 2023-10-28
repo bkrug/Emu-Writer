@@ -58,17 +58,12 @@ CONMGN AI   R0,3
        MOVB *R0+,R2
        BL   @DRWNUM
 * Convert Left Margin to ASCII
-* Let R4 = copy of left margin
        LI   R3,SCRNWD+3
        MOVB *R0+,R2
-       MOVB R2,R4
        BL   @DRWNUM
-* Let R2 = page width - paragraph width - left margin
-       MOVB @PGWDTH,R2
-       SB   *R0+,R2
-       SB   R4,R2
 * Convert Right Margin to ASCII
        LI   R3,SCRNWD+9
+       MOVB *R0+,R2
        BL   @DRWNUM
 *
        MOV  *R10+,R0
@@ -108,8 +103,9 @@ DRWNUM DECT R10
        RT
 
 TEN    DATA 10
-* Empty Byte, Default Indent, Left Margin, Paragraph Width, Top Margin, Document Height
-DFLTMG DATA >0000,>0A3C,>0A36
+* Default Margin entry
+* Empty Byte, Indent, Left Margin, Right Margin, Top Margin, Bottom Margin
+DFLTMG DATA >0000,>0A0A,>0A0A
 TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
        BYTE 0
 TEXT2  TEXT 'LM:   RM:   IN:'

@@ -459,9 +459,7 @@ POPMG  DECT R10
        AI   R2,FLEFT
        BL   @BYTSTR
 * Right Margin
-       MOVB @PGWDTH,R1
-       SB   @LEFT(R6),R1
-       SB   @PWIDTH(R6),R1
+       MOVB @PWIDTH(R6),R1
        LI   R2,FLDVAL
        AI   R2,FRIGHT
        BL   @BYTSTR
