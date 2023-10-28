@@ -22,14 +22,14 @@ EDTMGN
        LI   R0,FLDVAL
        BL   @PRSINT
        MOV  R0,R0
-       JNE  EM10
+       JNE  EXIT
        MOV  R1,R15
 * Let R14 = Page Height
        LI   R0,FLDVAL
        AI   R0,FPHGHT
        BL   @PRSINT
        MOV  R0,R0
-       JNE  EM10
+       JNE  EXIT
        MOV  R1,R14
 *
 * Allocate six bytes to store parsed
@@ -47,27 +47,27 @@ EDTMGN
        AI   R0,FINDNT
        BL   @PRSINT
        MOV  R0,R0
-       JNE  EM10
+       JNE  EXIT
        MOV  R1,*R6
 * left margin
        LI   R0,FLDVAL
        AI   R0,FLEFT
        BL   @PRSINT
        MOV  R0,R0
-       JNE  EM10
+       JNE  EXIT
        MOV  R1,@2(R6)
 * right margin
        LI   R0,FLDVAL
        AI   R0,FRIGHT
        BL   @PRSINT
        MOV  R0,R0
-       JNE  EM10
+       JNE  EXIT
        MOV  R1,@4(R6)
 *
 * Validate margin sizes
 *
        BL   @VALIDT
-       JEQ  EM10
+       JEQ  EXIT
 *
 * Record Validated data
 *
@@ -81,7 +81,7 @@ EDTMGN
 * No Error
        CLR  R0
 * Leave routine regardless of if an error occurred or not.
-EM10   DECT R10
+EXIT   DECT R10
        MOV  R0,*R10
 * Deallocate temp workspace
        MOV  R6,R0
@@ -234,23 +234,23 @@ RECVLD
        C    *R3+,*R3+
        MOV  *R4,R4
 * Do we need to insert element at end of list?
-       JEQ  EM2
+       JEQ  RV2
 * Find first MGNLST element for matching or later paragraph
-EM1    C    *R3,@PARINX
-       JH   EM2
-       JEQ  EM9
+RV1    C    *R3,@PARINX
+       JH   RV2
+       JEQ  RV3
        AI   R3,8
        INC  R2
        C    R2,R4
-       JL   EM1
+       JL   RV1
 * We need to insert a new element
-EM2    MOV  @MGNLST,R0
+RV2    MOV  @MGNLST,R0
        MOV  R2,R1
        BLWP @ARYINS
        JEQ  MEMERR
        MOV  R0,@MGNLST
        MOV  R1,R3
-EM9
+RV3
 * Set Paragraph Index
        MOV  @PARINX,*R3
 * Copy margin data to actual MGNLST
