@@ -84,7 +84,12 @@ EMU-WRITER -- You didn't think you needed it, but now you know.
 
 ### TODO
 
-* Validate Page width, page height, and indent.
+* Add two tests for calculating WINPAR and WINLIN.
+  * Margin change is visible on screen for the current paragraph.
+  * Margin change is visible on screen for an earlier paragraph.
+* Add two display tests
+  * Margin change is visible on screen for the current paragraph.
+  * Margin change is visible on screen for an earlier paragraph.
 * In screen header, display a character to indicate vertical or windowed mode.
 * Fix bug in "New" and "Quit" menu. Pressing enter without "Y" or "N" causes strange text in screen header.
 * Consider adding a defrag operation that runs every 64/60s seconds.

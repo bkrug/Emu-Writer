@@ -51,7 +51,7 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Display paragraph with horizontal offset smaller than indent.
        DATA DSP16
        TEXT 'DSP16 '
-* One-line  paragraph with horizontal offset smaller than indent.
+* One-line paragraph with horizontal offset smaller than indent.
        DATA DSP17
        TEXT 'DSP17 '
 TSTEND

@@ -117,6 +117,7 @@ UPW2   C    @WINOFF,R0
 UPW3   RT
 
 *
+* Update WINPAR and WINLIN.
 * Scroll the window up or down based on
 * cursor paragraph and line
 *
