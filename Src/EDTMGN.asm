@@ -71,7 +71,7 @@ EDTMGN
 *
 * Validate margin sizes
 *
-       BL   @MGNSIZ
+       BL   @VALIDT
        JEQ  EM10
 *
 * Record Validated data
@@ -165,8 +165,14 @@ PTERR1 SETO R0
        RT
 *
 TEN    DATA 10
+MINSIZ BYTE 10
+MAXSIZ BYTE 254
 ZERO   TEXT '0'
 NINE   TEXT '9'
+PGBIG  TEXT 'Maximum page sizes are 254'
+       BYTE 0
+PGSML  TEXT 'Minimum page sizes are 10'
+       BYTE 0
 MGNERR TEXT 'Some of margins & indents too large'
        BYTE 0
 NUMERR TEXT 'Margins and Page Sizes must be numbers'
@@ -176,13 +182,26 @@ REQERR TEXT 'All fields are required'
        EVEN
 
 *
-* Validate that the combined left/right margin size is okay
+* Validate the margins and page sizes
 *
 * Input
 *   R6: Address of temporary margin list
+*   R14 (left byte): New Page Height
 *   R15 (left byte): New Page Width
 *
-MGNSIZ
+VALIDT
+* Validate Page Sizes
+       LI   R1,PGSML
+       CB   R14,@MINSIZ
+       JL   VLDERR
+       CB   R15,@MINSIZ
+       JL   VLDERR
+*
+       LI   R1,PGBIG
+       CB   R14,@MAXSIZ
+       JH   VLDERR
+       CB   R15,@MAXSIZ
+       JH   VLDERR
 * Let R1 = ABS(indent)
        MOVB @INDENT(R6),R1
        ABS  R1
@@ -191,18 +210,17 @@ MGNSIZ
        SB   @LEFT(R6),R0
        SB   @RIGHT(R6),R0
        SB   R1,R0
-       SRL  R0,8
-* Is combined left/right margin small enough?
-       CI   R0,9
-       JGT  MGNRT
-* No, set error message
-       SETO R0
+* Is resulting paragraph width large enough?
        LI   R1,MGNERR
+       CB   R0,@MINSIZ
+       JLT  VLDERR
+* Reset EQU status bit to indicate no error
+       LI   R2,-1
+       RT
+* No, set error message
+VLDERR  SETO R0
 * Set EQU status bit to indicate error
        S    R2,R2
-       RT
-* Reset EQU status bit to indicate no error
-MGNRT  LI   R2,-1
        RT
 
 *
@@ -234,7 +252,7 @@ EM1    C    *R3,@PARINX
 EM2    MOV  @MGNLST,R0
        MOV  R2,R1
        BLWP @ARYINS
-       JEQ  VLDERR
+       JEQ  MEMERR
        MOV  R0,@MGNLST
        MOV  R1,R3
 EM9
@@ -250,7 +268,7 @@ EM9
 * No error       
        RT
 * Memeory Error
-VLDERR S    R0,R0
+MEMERR S    R0,R0
        RT
 
 *
