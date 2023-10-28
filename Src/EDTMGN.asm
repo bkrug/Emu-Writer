@@ -167,9 +167,9 @@ PTERR1 SETO R0
 TEN    DATA 10
 ZERO   TEXT '0'
 NINE   TEXT '9'
-MGNERR TEXT 'Page width minus margins must be > 10'
+MGNERR TEXT 'Some of margins & indents too large'
        BYTE 0
-NUMERR TEXT 'Margins must be numbers'
+NUMERR TEXT 'Margins and Page Sizes must be numbers'
        BYTE 0
 REQERR TEXT 'All fields are required'
        BYTE 0
@@ -180,12 +180,18 @@ REQERR TEXT 'All fields are required'
 *
 * Input
 *   R6: Address of temporary margin list
+*   R15 (left byte): New Page Width
 *
 MGNSIZ
+* Let R1 = ABS(indent)
+       MOVB @INDENT(R6),R1
+       ABS  R1
 * Let R0 = paragraph width
-       MOVB @PGWDTH,R0
+       MOVB 15,R0
        SB   @LEFT(R6),R0
        SB   @RIGHT(R6),R0
+       SB   R1,R0
+       SRL  R0,8
 * Is combined left/right margin small enough?
        CI   R0,9
        JGT  MGNRT
