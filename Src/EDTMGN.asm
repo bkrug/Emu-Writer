@@ -34,7 +34,7 @@ EDTMGN
        SLA  R1,8
        MOV  R1,R14
 *
-* Allocate enough space for a MGNLST element
+* Allocate enough space for a temporary MGNLST element
 *
 * Let R6 = address of allocated space
        CLR  R6
@@ -44,45 +44,38 @@ EDTMGN
        MOV  R0,R6
 * Set Paragraph Index
        MOV  @PARINX,*R6
-*
-* Read user input for left/right margin
-*
-* Let R4 = left margin
+* left margin
        LI   R0,FLDVAL
        AI   R0,FLEFT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-       MOV  R1,R4
-* Let R5 = right margin
+       SLA  R1,8
+       MOVB R1,@LEFT(R6)
+* right margin
        LI   R0,FLDVAL
        AI   R0,FRIGHT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-       MOV  R1,R5
-* Validate margin sizes
-       BL   @MGNSIZ
-       JEQ  EM10
-* Set left margin and paragraph width in MGNLST element
-       SLA  R4,8
-       SLA  R5,8
-       MOVB R4,@LEFT(R6)
-       MOVB R5,@RIGHT(R6)
-*
-* Read user input for indent
-*
-* Let R4 = indent
+       SLA  R1,8
+       MOVB R1,@RIGHT(R6)
+* indent
        LI   R0,FLDVAL
        AI   R0,FINDNT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
-       MOV  R1,R4
-* Set indent in MGNLST entry
-       SLA  R4,8
-       MOVB R4,@INDENT(R6)
+       SLA  R1,8
+       MOVB R1,@INDENT(R6)
+*
+* Validate margin sizes
+*
+       BL   @MGNSIZ
+       JEQ  EM10
+*
 * Record Validated data
+*
        BL   @RECVLD
        JEQ  EMERR
 * Search any duplicate entries and delete them.
@@ -186,15 +179,13 @@ REQERR TEXT 'All fields are required'
 * Validate that the combined left/right margin size is okay
 *
 * Input
-*   R4: left margin
-*   R5: right margin
+*   R6: Address of temporary margin list
 *
 MGNSIZ
 * Let R0 = paragraph width
        MOVB @PGWDTH,R0
-       SRL  R0,8
-       S    R5,R0
-       S    R4,R0       
+       SB   @LEFT(R6),R0
+       SB   @RIGHT(R6),R0
 * Is combined left/right margin small enough?
        CI   R0,9
        JGT  MGNRT
