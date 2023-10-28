@@ -18,21 +18,21 @@ MGNSRT
 EDTMGN
        DECT R10
        MOV  R11,*R10
-* Record Page Width
+* Let R15 = Page Width
        LI   R0,FLDVAL
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
        SLA  R1,8
-       MOVB R1,@PGWDTH
-* Record Page Height
+       MOVB R1,R15
+* Let R14 = Page Height
        LI   R0,FLDVAL
        AI   R0,FPHGHT
        BL   @PRSINT
        MOV  R0,R0
        JNE  EM10
        SLA  R1,8
-       MOVB R1,@PGHGHT
+       MOV  R1,R14
 *
 * Allocate enough space for a MGNLST element
 *
@@ -82,40 +82,9 @@ EDTMGN
 * Set indent in MGNLST entry
        SLA  R4,8
        MOVB R4,@INDENT(R6)
-*
-* Create or Edit Margin List entry
-*
-* Let R2 = index of MGNLST element
-* Let R3 = address of MGNLST element
-* Let R4 = element count
-       CLR  R2
-       MOV  @MGNLST,R4
-       MOV  R4,R3
-       C    *R3+,*R3+
-       MOV  *R4,R4
-* Do we need to insert element at end of list?
-       JEQ  EM2
-* Find first MGNLST element for matching or later paragraph
-EM1    C    *R3,@PARINX
-       JH   EM2
-       JEQ  EM9
-       AI   R3,8
-       INC  R2
-       C    R2,R4
-       JL   EM1
-* We need to insert a new element
-EM2    MOV  @MGNLST,R0
-       MOV  R2,R1
-       BLWP @ARYINS
+* Record Validated data
+       BL   @RECVLD
        JEQ  EMERR
-       MOV  R0,@MGNLST
-       MOV  R1,R3
-EM9
-* Copy margin data to actual MGNLST
-       MOV  R6,R0
-       MOV  R3,R1
-       LI   R2,MGNLNG
-       BLWP @BUFCPY
 * Search any duplicate entries and delete them.
        BL   @DELDUP
 * Re-wrap, this and lower paragraphs
@@ -237,6 +206,54 @@ MGNSIZ
        RT
 * Reset EQU status bit to indicate no error
 MGNRT  LI   R2,-1
+       RT
+
+*
+* Record Validated Data
+*
+* Output:
+*   If Status EQ = true, indicates error
+RECVLD
+* Create or Edit Margin List entry
+* Let R2 = index of MGNLST element
+* Let R3 = address of MGNLST element
+* Let R4 = element count
+       CLR  R2
+       MOV  @MGNLST,R4
+       MOV  R4,R3
+       C    *R3+,*R3+
+       MOV  *R4,R4
+* Do we need to insert element at end of list?
+       JEQ  EM2
+* Find first MGNLST element for matching or later paragraph
+EM1    C    *R3,@PARINX
+       JH   EM2
+       JEQ  EM9
+       AI   R3,8
+       INC  R2
+       C    R2,R4
+       JL   EM1
+* We need to insert a new element
+EM2    MOV  @MGNLST,R0
+       MOV  R2,R1
+       BLWP @ARYINS
+       JEQ  VLDERR
+       MOV  R0,@MGNLST
+       MOV  R1,R3
+EM9
+* Copy margin data to actual MGNLST
+       MOV  R6,R0
+       MOV  R3,R1
+       LI   R2,MGNLNG
+       BLWP @BUFCPY
+* Record Page Width
+       MOVB R15,@PGWDTH
+* Record Page Height
+       MOVB R14,@PGHGHT
+* No error       
+       RT
+* Memeory Error
+VLDERR S    R0,R0
        RT
 
 *
