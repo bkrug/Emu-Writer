@@ -2,6 +2,7 @@
        REF  ABLCK,AOC,AZC,AEQ,ANEQ
 *
        REF  WRAP,LINLST,FMTLST,MGNLST
+       REF  PGWDTH
        REF  WINMOD,DOCSTS
        REF  BUFINT,BUFALC,BUFCPY
        REF  STSPAR,ERRMEM
@@ -87,6 +88,8 @@ WRP1
        LI   R4,PAR1A
        BL   @CPYWRP
 *
+       LI   R0,10*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL1
        MOV  R0,@LINLST
        LI   R0,FMT1
@@ -146,8 +149,8 @@ WRPE1E
 FMT1   DATA 0,3
 
 MRGN1  DATA 1,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
+* 20-char margins, 40-char paragraph width
+       DATA 0,>0000,>1414,>0000
 
 *
 * The entire paragraph will be
@@ -171,6 +174,8 @@ WRP2
        LI   R4,PAR2A
        BL   @CPYWRP
 *
+       LI   R0,10*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL2
        MOV  R0,@LINLST
        LI   R0,FMT2
@@ -227,8 +232,8 @@ WRPE2E
 FMT2   DATA 0,3
 
 MRGN2  DATA 1,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
+* 20-char margins, 40-char paragraph width
+       DATA 0,>0000,>1414,>0000
 	   
 *
 * The entire paragraph will be
@@ -251,6 +256,8 @@ WRP3
        LI   R4,PAR3A
        BL   @CPYWRP
 *
+       LI   R0,10*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL3
        MOV  R0,@LINLST
        LI   R0,FMT3
@@ -308,8 +315,8 @@ WRPE3E
 FMT3   DATA 0,3
 
 MRGN3  DATA 1,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
+* 20-char left margins, 40-char paragraph width
+       DATA 0,>0000,>1414,>0000
 
 *
 * The entire paragraph will be
@@ -332,6 +339,8 @@ WRP4
        LI   R4,PAR4A
        BL   @CPYWRP
 *
+       LI   R0,10*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL4
        MOV  R0,@LINLST
        LI   R0,FMT4
@@ -388,15 +397,13 @@ WRPL4  DATA 4,1,29,29+36,29+36+36,29+36+36+35
 WRPE4  DATA 3,1,39,39+30,39+30+41
 WRPE4E
 
-FMT4   DATA 1,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
+FMT4   DATA 0,3
 
 MRGN4  DATA 2,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
-* 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
+* 20-char left margins, 40-char paragraph width
+       DATA 0,>0000,>1414,>0000
+* 10-char left margins, 60-char paragraph width
+       DATA 4,>0000,>0A0A,>0000
 
 *
 * Assume a page width of eight inches
@@ -415,6 +422,8 @@ WRP5
        LI   R4,PAR5A
        BL   @CPYWRP
 *
+       LI   R0,12*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL5
        MOV  R0,@LINLST
        LI   R0,FMT5
@@ -473,14 +482,12 @@ WRPE5  DATA 2,1,36,36+47
 WRPE5E
 
 FMT5   DATA 1,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
 
 MRGN5  DATA 2,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
-* 24-char left margin, 48-char paragraph width
-       DATA 4,>0000,>1830,>0000
+* 12-char margins, 72-char paragraph width
+       DATA 0,>0000,>0C0C,>0000
+* 24-char margins, 48-char paragraph width
+       DATA 4,>0000,>1818,>0000
 
 *
 * Assume a page width of eight inches
@@ -499,6 +506,8 @@ WRP7
        LI   R4,PAR7A
        BL   @CPYWRP
 *
+       LI   R0,40*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL7
        MOV  R0,@LINLST
        LI   R0,FMT7
@@ -565,20 +574,15 @@ WRPE7  DATA 6,1
        DATA 19+20+19+17+17+18
 WRPE7E
 
-FMT7   DATA 2,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
-* 5-Cpi in middle of second line of 
-* paragraph
-       DATA 5,64,0,24
+FMT7   DATA 0,3
 
 MRGN7  DATA 3,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
-* 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
-* 10-char left margin, 20-char paragraph width
-       DATA 6,>0000,>0A14,>0000
+* 5-char margins, 30-char paragraph width
+       DATA 0,>0000,>0505,>0000
+* 12-char margins, 16-char paragraph width
+       DATA 4,>0000,>0C0C,>0000
+* 10-char margins, 20-char paragraph width
+       DATA 6,>0000,>0A0A,>0000
 
 *
 * Assume a page width of eight inches
@@ -597,6 +601,8 @@ WRP8
        LI   R4,PAR8A
        BL   @CPYWRP
 *
+       LI   R0,12*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL8
        MOV  R0,@LINLST
        LI   R0,FMT8
@@ -652,20 +658,13 @@ WRPL8  DATA 1,1,40
 WRPE8  DATA 0,1
 WRPE8E
 
-FMT8   DATA 3,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
-* 5-Cpi in middle of second line of 
-* paragraph
-       DATA 5,64,0,24
-* 12-Cpi at paragraph start
-       DATA 7,0,0,10
+FMT8   DATA 0,3
 
 MRGN8  DATA 3,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
-* 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
+* 18-char margins, 60-char paragraph width
+       DATA 0,>0000,>1212,>0000
+* 12-char margins, 72-char paragraph width
+       DATA 4,>0000,>0C0C,>0000
 
 *
 * Assume a page width of eight inches
@@ -684,6 +683,8 @@ WRP9
        LI   R4,PAR9A
        BL   @CPYWRP
 *
+       LI   R0,12*8*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL9
        MOV  R0,@LINLST
        LI   R0,FMT9
@@ -744,24 +745,16 @@ WRPL9  DATA 2,1,74,98
 WRPE9  DATA 1,1,73
 WRPE9E
 
-FMT9   DATA 3,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
-* 5-Cpi in middle of second line of 
-* paragraph
-       DATA 5,64,0,24
-* 12-Cpi at paragraph start
-       DATA 7,0,0,10
+FMT9   DATA 0,3
 
 MRGN9  DATA 4,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
+* 20-char left margin, 56-char paragraph width
+       DATA 0,>0000,>1414,>0000
 * 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
-* 10-char left margin, 20-char paragraph width, 5-char indent
-       DATA 9,>0005,>0A14,>0000
-* 2.5-inch margins,
-* 0.5-inch hanging indent
+       DATA 4,>0000,>0C0C,>0000
+* 10-char margins, 76-char paragraph width, 5-char indent
+       DATA 9,>0005,>0A0A,>0000
+* 30-char margins, 6-char hanging indent
        DATA 10,>00FA,>1E1E,>0000
 
 *
@@ -781,6 +774,8 @@ WRP10
        LI   R4,PAR10A
        BL   @CPYWRP
 *
+       LI   R0,8*12*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL10
        MOV  R0,@LINLST
        LI   R0,FMT10
@@ -852,22 +847,14 @@ WRPE10 DATA 6,1
        DATA 35+38+49+45+48+49
 WRE10E
 
-FMT10  DATA 3,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
-* 5-Cpi in middle of second line of 
-* paragraph
-       DATA 5,64,0,24
-* 12-Cpi at paragraph start
-       DATA 7,0,0,10
+FMT10  DATA 0,3
 
 MRGN10 DATA 4,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
-* 24-char left margin, 48-char paragraph width, 12-char indent
-       DATA 4,>000C,>1830,>0000
-* 2.5-inch margins,
-* 0.5-inch hanging indent
+* 20-char margins, 56-char paragraph width
+       DATA 0,>0000,>1414,>0000
+* 24-char margins, 48-char paragraph width, 12-char indent
+       DATA 4,>000C,>1818,>0000
+* 30-char margins, 6-char hanging indent
        DATA 10,>00FA,>1E1E,>0000
 
 *
@@ -888,6 +875,8 @@ WRP11
        LI   R4,PAR11A
        BL   @CPYWRP
 *
+       LI   R0,8*12*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL11
        MOV  R0,@LINLST
        LI   R0,FMT11
@@ -955,24 +944,17 @@ WRPE11 DATA 8,1
        DATA 147,171,202,231
 WRE11E
 
-FMT11  DATA 3,3
-* 12-Cpi at paragraph start
-       DATA 4,0,0,10
-* 5-Cpi in middle of second line of 
-* paragraph
-       DATA 5,64,0,24
-* 12-Cpi at paragraph start
-       DATA 7,0,0,10
+FMT11  DATA 0,3
 
 MRGN11 DATA 4,3
-* 20-char left margin, 40-char paragraph width
-       DATA 0,>0000,>1428,>0000
-* 12-char left margin, 72-char paragraph width
-       DATA 4,>0000,>0C48,>0000
-* 10-char left margin, 20-char paragraph width, 5-char indent
-       DATA 9,>0005,>0A14,>0000
-* 30-char left margin, 36-char paragraph width, 6-char hanging indent
-       DATA 10,>00FA,>1E24,>0000
+* 20-char margins, 56-char paragraph width
+       DATA 0,>0000,>1414,>0000
+* 12-char margins, 72-char paragraph width
+       DATA 4,>0000,>0C0C,>0000
+* 10-char margins, 76-char paragraph width, 5-char indent
+       DATA 9,>0005,>0A0A,>0000
+* 30-char margins, 36-char paragraph width, 6-char hanging indent
+       DATA 10,>00FA,>1E1E,>0000
 
 *
 * Assume a page width of eight inches
@@ -992,6 +974,8 @@ WRP12
        LI   R4,PAR12A
        BL   @CPYWRP
 *
+       LI   R0,8*10*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL12
        MOV  R0,@LINLST
        LI   R0,FMT12
@@ -1058,8 +1042,8 @@ WRE12E
 FMT12  DATA 0,3
 
 MRGN12 DATA 1,3
-* 10-char left margin, 60-char paragraph width
-       DATA 0,>0000,>1428,>0000
+* 20-char margins, 60-char paragraph width
+       DATA 0,>0000,>1414,>0000
 
 *
 * Wrap the paragraph in vertical mode.
@@ -1082,6 +1066,8 @@ WRP13
        LI   R4,PAR13A
        BL   @CPYWRP
 *
+       LI   R0,8*10*>100
+       MOVB R0,@PGWDTH
        LI   R0,PARL13
        MOV  R0,@LINLST
        LI   R0,FMT13
@@ -1154,8 +1140,8 @@ WRE13E
 FMT13  DATA 0,3
 
 MRGN13 DATA 1,3
-* 10-char left margin, 50-char paragraph width
-       DATA 0,>0000,>0A3C,>0000
+* 10-char & 20-char margins, 50-char paragraph width
+       DATA 0,>0000,>0A14,>0000
 
 ********
 

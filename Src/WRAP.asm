@@ -48,19 +48,20 @@ MGN1   AI   R8,-MGNLNG
        JH   MGN1
 * We found current margin entry
 * Let R0 = indent
-* Let R1 = paragraph width
-MGN2   INCT R8
-       MOV  *R8+,R0
-       SLA  R0,8
+MGN2   AI   R8,INDENT
+       MOVB *R8+,R0
        SRA  R0,8
-       MOV  *R8,R1
-       SB   R1,R1
+* Let R1 = paragraph width
+       MOVB @PGWDTH,R1
+       SB   *R8+,R1
+       SB   *R8+,R1
+       SRL  R1,8
        JMP  MGN2C
 * Set default paragraph width and indents
 MGN2B  CLR  R0
        MOVB @PGWDTH,R1
        SRL  R1,8
-       AI   R1,2*-10
+       AI   R1,-2*DFLTLF
 MGN2C
 * Are we in windowed mode?
        MOV  @WINMOD,R3
