@@ -80,12 +80,13 @@ EMU-WRITER -- Be a little late to the party.
 
 EMU-WRITER -- WYSIWhaaaaaat?
 
-EMU-WRITER -- You didn't think you needed it, but now you know for sure.
+EMU-WRITER -- You didn't think you needed it, but now you know.
 
 ### TODO
 
 * Validate Page width, page height, and indent.
 * In screen header, display a character to indicate vertical or windowed mode.
+* Fix bug in "New" and "Quit" menu. Pressing enter without "Y" or "N" causes strange text in screen header.
 * Consider adding a defrag operation that runs every 64/60s seconds.
 
 ### Manual test cases
