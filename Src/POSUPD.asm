@@ -144,32 +144,63 @@ CHKDWN
 * If the cursor were at the bottom of
 * the screen, what paragraph and line
 * would be at the top of the screen?
-* Place the answer in R0 and R1.
-       MOV  @PARINX,R0
-       MOV  @LININX,R1
-       LI   R2,21
-       BLWP @LOOKUP
-* If that moves us past document start,
-* set hypothetical paragraph to 0.
-       CI   R0,-1
-       JNE  CHKD1
-       CLR  R0
-CHKD1
-* If that hypothetical paragraph and
-* line is later in the document than
-* the current Window-paragraph and
-* Window-line, then scroll down.
-       C    @WINPAR,R0
-       JL   UPWDWN
-       JH   UPWRT
-       C    @WINLIN,R1
-       JHE  UPWRT
-* Scroll down.
-UPWDWN MOV  R0,@WINPAR
-       MOV  R1,@WINLIN
+*
+* Let R2 = paragraph index
+* Let R3 = line index
+       MOV  @PARINX,R2
+       MOV  @LININX,R3
+* Let R4 = number of lines to look upwards
+       LI   R4,TXTHGT-1
+CD1
+* Is number of remaining lines moving backwards
+* smaller than remaining lines in this paragraph?
+       C    R4,R3
+       JLE  CD2
+* No, look upwards by at least one paragraph.
+* Decrease R4 by this paragraph's line count.
+       S    R3,R4
+       DEC  R4
+* Point to earlier paragraph
+       DEC  R2
+       JLT  CD3
+* Let R1 = address in LINLST
+       MOV  @LINLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R1 = address of paragraph
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       INCT R1
+       MOV  *R1,R1
+* Let R3 = index of last line in paragraph
+       MOV  *R1,R3
+* Try next paragraph
+       JMP  CD1
+* Earliest acceptable line is in this paragraph
+CD2    S    R4,R3
+       JMP  CD4
+* Earliest acceptable line is the beginning of the document
+CD3    CLR  R2
+       CLR  R3
+CD4
+* R2 now contains earliest acceptable paragraph
+* R3 now contains earliest acceptable paragraph-line.
+*
+* Is screen pointing to a later paragrah than R2?
+       C    @WINPAR,R2
+       JH   CD6
+* No, is screen pointing to an earlier paragrah than R2?
+       JL   CD5
+* No, is screen pointing to an earlier line than R3
+       C    @WINLIN,R3
+       JHE  CD6
+* WINPAR and WINLIN are pointing to a paragraph that is too early.
+CD5    MOV  R2,@WINPAR
+       MOV  R3,@WINLIN
+* Redraw whole screen
        SOC  @STSWIN,*R13
 *
-UPWRT  RT
+CD6    RT
 
 *
 * Update cursor's position on screen

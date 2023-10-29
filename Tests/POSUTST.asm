@@ -1,6 +1,6 @@
        DEF  TSTLST,RSLTFL
 * Mock of code from LOOK.TXT
-       DEF  LOOKUP,LNDIFF
+       DEF  LNDIFF
 * Assert Routine
        REF  AEQ,AZC,AOC
 * Update visual position indicators
@@ -161,35 +161,38 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA WUP5
        TEXT 'WUP5  '
 * ---
-* When cursor-21 lines points to a 
-* paragraph later than screen,
-* scroll down.
+* Top of screen displays paragraph 2, line 0
+* The cursor is on the bottom row of the screen.
+* The cursor is on the first line of a paragraph.
+* Expect: The screen should not scroll down.
        DATA WDWN1
        TEXT 'WDWN1 '
-* When cursor-21 lines points to a 
-* paragraph earlier than screen,
-* don't scroll down.
+* Top of screen displays paragraph 1, line 0
+* The cursor is on the bottom row of the screen.
+* The cursor is in the middle line of a paragraph.
+* Expect: The screen should not scroll down.
        DATA WDWN2
        TEXT 'WDWN2 '
-* When cursor-21 lines points to a 
-* the same paragraph and a later line
-* than the screen, scroll down.
+* Top of screen displays paragraph 1, line 0
+* The cursor is on the bottom row of the screen.
+* The cursor is in the last line of a paragraph.
+* Expect: The screen should not scroll down.
        DATA WDWN3
        TEXT 'WDWN3 '
-* When cursor-21 lines points to a 
-* the same paragraph and a earlier line
-* than the screen, don't scroll down.
+* Top of screen displays paragraph 2, line 0
+* The cursor is below screen.
+* The cursor is on the first line of a paragraph.
+* Expect: The screen should scroll down.
        DATA WDWN4
        TEXT 'WDWN4 '
-* When cursor-21 lines points to a 
-* the same paragraph and same line
-* as the screen, don't scroll down.
+* Top of screen displays paragraph 2, line 0
+* The cursor is in a paragraph below the screen.
+* The cursor is in a middle line of a paragraph.
+* Expect: The screen should scroll down
+*         but within the same paragraph.
        DATA WDWN5
        TEXT 'WDWN5 '
-* When cursor-21 lines points to before
-* the document start, don't scroll up.
-       DATA WDWN6
-       TEXT 'WDWN6 '
+* ---
 * Calculate cursor's screen position
        DATA CUR1
        TEXT 'CUR1  '
@@ -1468,64 +1471,223 @@ UP1W3  DATA 5,1
        DATA 70+68+72+69
        DATA 70+68+72+69+66
 
-* Mock of LOOKUP
-MCKPAR DATA 0
-MCKLIN DATA 0
-LOOKWS BSS  >20
-LOOKUP DATA LOOKWS,LOOKUP+4
-* If current test did not specify
-* mock values, then just use currently
-* defined WINPAR and WINLIN, so that
-* no scroll down occurs.
-       MOV  @WINPAR,*R13
-       MOV  @WINLIN,@2(13)
-       MOV  @MCKPAR,@MCKPAR
-       JEQ  LOOKRT
-* Assert that the caller is looking
-* backwards by one screen.
-       LI   R0,21
-       MOV  @4(R13),R1
-       LI   R2,LOOKM
-       LI   R3,LOOKME-LOOKM
-       BLWP @AEQ
-* Pass mock return values
-       MOV  @MCKPAR,*R13
-       MOV  @MCKLIN,@2(13)
-* Reset mock values
-* Next test may not wish to mock this.
-       CLR  @MCKPAR
-       CLR  @MCKLIN
-LOOKRT RTWP
 *
-LOOKM  TEXT 'The caller should try to look '
-       TEXT 'back by 21 lines'
-LOOKME EVEN
+* Scroll down test DATA
+*
+* One line paragraph
+PARD1  DATA 0
+       DATA WRP1
+       TEXT '.'
+WRP1   DATA 0,1
+* Five line paragraph
+PARD5  DATA 0
+       DATA WRP5
+       TEXT '.'
+WRP5   DATA 4,1
+       DATA 60,120,180,240
+* Eight line paragraph
+PARD8  DATA 0
+       DATA WRP8
+       TEXT '.'
+WRP8   DATA 7,1
+       DATA 60,120,180,240,300
+       DATA 360,420
+
+BADP   TEXT 'Windows paragraph index is wrong.'
+BADPE
+BADL   TEXT 'Windows line index is wrong.'
+BADLE
 
 *
-* When cursor-21 lines points to a 
-* paragraph later than screen,
-* scroll down.
+* Top of screen displays paragraph 2, line 0
+* The cursor is on the bottom row of the screen.
+* The cursor is on the first line of a paragraph.
+* Expect: The screen should not scroll down.
 *
-WDWN1  
+*Line List
+LIND1  DATA (LIND1E-LIND1-4)/2,1
+       DATA PARD5
+       DATA PARD8
+       DATA PARD5         * This is the first paragraph on screen
+       DATA PARD8
+       DATA PARD8       
+       DATA PARD5         * Cursor is in line 0
+       DATA PARD8
+       DATA PARD5
+LIND1E
+WDWN1 
 * Arrange
-       LI   R0,UP1L
+       LI   R0,LIND1
        MOV  R0,@LINLST
-       LI   R0,3
-       MOV  R0,@PARINX
-       LI   R0,0
-       MOV  R0,@CHRPAX
-* Pretend that this paragraph and line
-* are 21 lines before the cursor
        LI   R0,2
-       MOV  R0,@MCKPAR
+       MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@MCKLIN
-* Pretend that this is the first line
-* and paragraph on screen.
+       MOV  R0,@WINLIN       
+       LI   R0,5
+       MOV  R0,@PARINX
+       LI   R0,17
+       MOV  R0,@CHRPAX
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
+       LI   R0,2
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       RT
+
+*
+* Top of screen displays paragraph 1, line 0
+* The cursor is on the bottom row of the screen.
+* The cursor is in the middle row of a paragraph.
+* Expect: The screen should not scroll down.
+*
+*Line List
+LIND2  DATA (LIND2E-LIND2-4)/2,1
+       DATA PARD5
+       DATA PARD5         * This is the first paragraph on screen
+       DATA PARD1
+       DATA PARD8
+       DATA PARD5
+       DATA PARD8         * Cursor is in line 2
+       DATA PARD8
+       DATA PARD5
+LIND2E
+WDWN2 
+* Arrange
+       LI   R0,LIND2
+       MOV  R0,@LINLST
        LI   R0,1
        MOV  R0,@WINPAR
-       LI   R0,2
+       LI   R0,0
        MOV  R0,@WINLIN       
+       LI   R0,5
+       MOV  R0,@PARINX
+       LI   R0,60*2+17
+       MOV  R0,@CHRPAX
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
+       LI   R0,1
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       RT
+
+* Top of screen displays paragraph 1, line 0
+* The cursor is on the bottom row of the screen.
+* The cursor is in the last line of a paragraph.
+* Expect: The screen should not scroll down.
+LIND3  DATA (LIND3E-LIND3-4)/2,1
+       DATA PARD1
+       DATA PARD8         * This is the first paragraph on screen
+       DATA PARD5
+       DATA PARD1
+       DATA PARD8         * Cursor is in line 7
+       DATA PARD8
+       DATA PARD5
+LIND3E
+WDWN3 
+* Arrange
+       LI   R0,LIND3
+       MOV  R0,@LINLST
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN       
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,60*7+17
+       MOV  R0,@CHRPAX
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window didn't move
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
+       LI   R0,1
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       RT
+
+*
+* Top of screen displays paragraph 2, line 0
+* The cursor is in a paragraph below the screen.
+* The cursor is on the first line of a paragraph.
+* Expect: The screen should scroll down
+*         and to a new paragraph.
+*
+*Line List
+LIND4  DATA (LIND4E-LIND4-4)/2,1
+       DATA PARD5
+       DATA PARD8
+       DATA PARD5         * This is the first paragraph on screen
+       DATA PARD8
+       DATA PARD5
+       DATA PARD1
+       DATA PARD8
+       DATA PARD5         * Cursor is in line 0
+       DATA PARD8
+       DATA PARD5
+LIND4E
+WDWN4 
+* Arrange
+       LI   R0,LIND4
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN       
+       LI   R0,7
+       MOV  R0,@PARINX
+       LI   R0,17
+       MOV  R0,@CHRPAX
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -1537,94 +1699,51 @@ WDWN1
        LI   R3,MWINNE-MWINN
        BLWP @AOC
 *
-       LI   R0,2
+       LI   R0,3
        MOV  @WINPAR,R1
-       LI   R2,WUPM1
-       LI   R3,WUPM1E-WUPM1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
        BLWP @AEQ
 *
-       LI   R0,0
+       LI   R0,1
        MOV  @WINLIN,R1
-       LI   R2,WUPM2
-       LI   R3,WUPM2E-WUPM2
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
        BLWP @AEQ
+*
        RT
 
 *
-* When cursor-21 lines points to a 
-* paragraph earlier than screen,
-* don't scroll down.
+* Top of screen displays paragraph 2, line 0
+* The cursor is in a paragraph below the screen.
+* The cursor is in a middle line of a paragraph.
+* Expect: The screen should scroll down
+*         but within the same paragraph.
 *
-WDWN2
+*Line List
+LIND5  DATA (LIND5E-LIND5-4)/2,1
+       DATA PARD5
+       DATA PARD8         * This is the first paragraph on screen
+       DATA PARD8
+       DATA PARD5
+       DATA PARD1
+       DATA PARD1
+       DATA PARD5         * Cursor is in line 2
+       DATA PARD8
+       DATA PARD5
+LIND5E
+WDWN5 
 * Arrange
-       LI   R0,UP1L
+       LI   R0,LIND5
        MOV  R0,@LINLST
-       LI   R0,3
-       MOV  R0,@PARINX
-       LI   R0,0
-       MOV  R0,@CHRPAX
-* Pretend that this paragraph and line
-* are 21 lines before the cursor
        LI   R0,1
-       MOV  R0,@MCKPAR
-       LI   R0,2
-       MOV  R0,@MCKLIN
-* Pretend that this is the first line
-* and paragraph on screen.
-       LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,0
        MOV  R0,@WINLIN       
-* Act
-       CLR  R0
-       BLWP @POSUPD
-* Assert
-* Document status reports window
-* didn't move
-       MOV  R0,R1
-       MOV  @STSWIN,R0
-       LI   R2,MWINM
-       LI   R3,MWINME-MWINM
-       BLWP @AZC
-*
-       LI   R0,2
-       MOV  @WINPAR,R1
-       LI   R2,WUPM1
-       LI   R3,WUPM1E-WUPM1
-       BLWP @AEQ
-*
-       LI   R0,0
-       MOV  @WINLIN,R1
-       LI   R2,WUPM2
-       LI   R3,WUPM2E-WUPM2
-       BLWP @AEQ
-       RT
-
-*
-* When cursor-21 lines points to a 
-* the same paragraph and a later line
-* than the screen, scroll down.
-*
-WDWN3
-* Arrange
-       LI   R0,UP1L
-       MOV  R0,@LINLST
-       LI   R0,3
+       LI   R0,6
        MOV  R0,@PARINX
-       LI   R0,0
+       LI   R0,2*60+17
        MOV  R0,@CHRPAX
-* Pretend that this paragraph and line
-* are 21 lines before the cursor
-       LI   R0,1
-       MOV  R0,@MCKPAR
-       LI   R0,3
-       MOV  R0,@MCKLIN
-* Pretend that this is the first line
-* and paragraph on screen.
-       LI   R0,1
-       MOV  R0,@WINPAR
-       LI   R0,1
-       MOV  R0,@WINLIN       
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -1638,163 +1757,21 @@ WDWN3
 *
        LI   R0,1
        MOV  @WINPAR,R1
-       LI   R2,WUPM1
-       LI   R3,WUPM1E-WUPM1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
        BLWP @AEQ
 *
-       LI   R0,3
+       LI   R0,4
        MOV  @WINLIN,R1
-       LI   R2,WUPM2
-       LI   R3,WUPM2E-WUPM2
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
        BLWP @AEQ
+*
        RT
 
 *
-* When cursor-21 lines points to a 
-* the same paragraph and a earlier line
-* than the screen, don't scroll down.
+* Cursor On Screen Test Data
 *
-WDWN4
-* Arrange
-       LI   R0,UP1L
-       MOV  R0,@LINLST
-       LI   R0,3
-       MOV  R0,@PARINX
-       LI   R0,0
-       MOV  R0,@CHRPAX
-* Pretend that this paragraph and line
-* are 21 lines before the cursor
-       LI   R0,0
-       MOV  R0,@MCKPAR
-       LI   R0,2
-       MOV  R0,@MCKLIN
-* Pretend that this is the first line
-* and paragraph on screen.
-       LI   R0,0
-       MOV  R0,@WINPAR
-       LI   R0,3
-       MOV  R0,@WINLIN       
-* Act
-       CLR  R0
-       BLWP @POSUPD
-* Assert
-* Document status reports window
-* didn't move
-       MOV  R0,R1
-       MOV  @STSWIN,R0
-       LI   R2,MWINM
-       LI   R3,MWINME-MWINM
-       BLWP @AZC
-*
-       LI   R0,0
-       MOV  @WINPAR,R1
-       LI   R2,WUPM1
-       LI   R3,WUPM1E-WUPM1
-       BLWP @AEQ
-*
-       LI   R0,3
-       MOV  @WINLIN,R1
-       LI   R2,WUPM2
-       LI   R3,WUPM2E-WUPM2
-       BLWP @AEQ
-       RT
-
-*
-* When cursor-21 lines points to a 
-* the same paragraph and same line
-* as the screen, don't scroll down.
-*
-WDWN5
-* Arrange
-       LI   R0,UP1L
-       MOV  R0,@LINLST
-       LI   R0,3
-       MOV  R0,@PARINX
-       LI   R0,0
-       MOV  R0,@CHRPAX
-* Pretend that this paragraph and line
-* are 21 lines before the cursor
-       LI   R0,1
-       MOV  R0,@MCKPAR
-       LI   R0,4
-       MOV  R0,@MCKLIN
-* Pretend that this is the first line
-* and paragraph on screen.
-       LI   R0,1
-       MOV  R0,@WINPAR
-       LI   R0,4
-       MOV  R0,@WINLIN       
-* Act
-       CLR  R0
-       BLWP @POSUPD
-* Assert
-* Document status reports window
-* didn't move
-       MOV  R0,R1
-       MOV  @STSWIN,R0
-       LI   R2,MWINM
-       LI   R3,MWINME-MWINM
-       BLWP @AZC
-*
-       LI   R0,1
-       MOV  @WINPAR,R1
-       LI   R2,WUPM1
-       LI   R3,WUPM1E-WUPM1
-       BLWP @AEQ
-*
-       LI   R0,4
-       MOV  @WINLIN,R1
-       LI   R2,WUPM2
-       LI   R3,WUPM2E-WUPM2
-       BLWP @AEQ
-       RT
-	   
-* When cursor-21 lines points to before
-* the document start, don't scroll up.
-WDWN6
-* Arrange
-       LI   R0,UP1L
-       MOV  R0,@LINLST
-       LI   R0,3
-       MOV  R0,@PARINX
-       LI   R0,3
-       MOV  R0,@CHRPAX
-* Pretend that this paragraph and line
-* are 21 lines before the cursor
-       LI   R0,-1
-       MOV  R0,@MCKPAR
-       LI   R0,0
-       MOV  R0,@MCKLIN
-* Pretend that this is the first line
-* and paragraph on screen.
-       LI   R0,0
-       MOV  R0,@WINPAR
-       LI   R0,0
-       MOV  R0,@WINLIN       
-* Act
-       CLR  R0
-       BLWP @POSUPD
-* Assert
-* Document status reports window
-* didn't move
-       MOV  R0,R1
-       MOV  @STSWIN,R0
-       LI   R2,MWINM
-       LI   R3,MWINME-MWINM
-       BLWP @AZC
-*
-       LI   R0,0
-       MOV  @WINPAR,R1
-       LI   R2,WUPM1
-       LI   R3,WUPM1E-WUPM1
-       BLWP @AEQ
-*
-       LI   R0,0
-       MOV  @WINLIN,R1
-       LI   R2,WUPM2
-       LI   R3,WUPM2E-WUPM2
-       BLWP @AEQ
-       RT
 
 *Line List
 CUR1L  DATA 4,1
@@ -1848,6 +1825,7 @@ WCURME EVEN
 
 * Mock of LNDIFF
 MCKCNT DATA 0
+LOOKWS BSS  >20
 LNDIFF DATA LOOKWS,LNDIFF+4
 * If current test did not specify
 * mock values, then return 0.

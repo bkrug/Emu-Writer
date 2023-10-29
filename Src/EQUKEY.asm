@@ -31,7 +31,8 @@ NOFLDS EQU  0
 DFLTHT EQU  66        Default Page Height
 DFLTPG EQU  80        Default Page Width
 DFLTMG EQU  10        Default Left Margin
-SCRNWD EQU  40
+SCRNWD EQU  40        Width of screen in characters
+TXTHGT EQU  22        Height of portion of screen, not including header
 
 *
 * Array lengths
