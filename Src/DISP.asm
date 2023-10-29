@@ -136,6 +136,7 @@ SP2    MOV  @WINPAR,R9
 *
 * Let R12 = starting screen row
 *
+* TODO: Stop duplicating the UPCURS routine
 SCRNRW DECT R10
        MOV  R11,*R10
 * If cursor's paragraph is at top of
