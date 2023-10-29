@@ -11,7 +11,7 @@
        REF  INPUT
 
 * from VAR.asm
-       REF  LINLST,FMTLST,MGNLST
+       REF  PARLST,FMTLST,MGNLST
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
@@ -170,7 +170,7 @@ TSTINT
        MOV  R0,@MGNLST
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
 *
        LI   R6,INTADR
 * Copy a paragraph into buffer
@@ -192,9 +192,9 @@ TSTIN1
        MOV  R1,R5
 * Put the paragraph into the
 * paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        BLWP @ARYADD
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        MOV  R4,*R1
 * Put the wrap list in the paragraph
 * header
@@ -316,7 +316,7 @@ TST1   DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -397,7 +397,7 @@ TST2   DECT R10
        MOV  @DOCSTS,R5
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -495,7 +495,7 @@ TST3   DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -570,7 +570,7 @@ TST4   DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -642,7 +642,7 @@ TST5A  LI   R0,2
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -727,7 +727,7 @@ TST7   DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -778,7 +778,7 @@ TST18  DECT R10
 * Run routine
        BL   @INPUT
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -801,8 +801,8 @@ TST18  DECT R10
        LI   R3,6
        BLWP @AEQ
 * Let R1 = address of element in
-* LINLST containing paragraph address.
-       MOV  @LINLST,R0
+* PARLST containing paragraph address.
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
 * Let R1 = length of paragraph
@@ -866,7 +866,7 @@ TST19  DECT R10
 * Save document status
        MOV  @DOCSTS,R5
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,0
        BLWP @ARYADR
        MOV  *R1,R1
@@ -890,7 +890,7 @@ TST19  DECT R10
        BLWP @AEQ
 * Paragraph should be longer
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,0
        BLWP @ARYADR
        MOV  *R1,R1
@@ -950,7 +950,7 @@ TST8   DECT R10
 * Save document status
        MOV  @DOCSTS,R5
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1012,7 +1012,7 @@ TST9   DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1067,7 +1067,7 @@ TST10  DECT R10
 * Save document status
        MOV  @DOCSTS,R5
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1128,7 +1128,7 @@ TST11  DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1179,7 +1179,7 @@ TST15  DECT R10
        BL   @INPUT
 * Assert
 * Get updated address of paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1235,7 +1235,7 @@ TST12  DECT R10
        BL   @INPUT
 * Assert
 * Get address of old paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1243,7 +1243,7 @@ TST12  DECT R10
        MOV  *R1,R1
        JNE  ERR12
 * Get address of new paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,3
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1315,7 +1315,7 @@ TST13  DECT R10
        BL   @INPUT
 * Assert
 * Get address of earlier paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1325,7 +1325,7 @@ TST13  DECT R10
        LI   R0,EXP13B
        BL   @STRCMP
 * Get address of later paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,3
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1393,7 +1393,7 @@ TST14  DECT R10
        BL   @INPUT
 * Assert
 * Get address of new paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,3
        BLWP @ARYADR
        MOV  *R1,R1
@@ -1404,7 +1404,7 @@ TST14  DECT R10
        LI   R3,ERR14O-ERR14M       
        BLWP @AEQ
 * Get address of old paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        LI   R1,2
        BLWP @ARYADR
        MOV  *R1,R1

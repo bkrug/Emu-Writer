@@ -5,7 +5,7 @@
        DEF  WRAPDC,WRAPDW
        DEF  BYTSTR
 *
-       REF  MGNLST,LINLST      From VAR.asm
+       REF  MGNLST,PARLST      From VAR.asm
        REF  WINMOD
        REF  ARYADR             From ARRAY
        REF  WRAP               From WRAP.asm
@@ -105,7 +105,7 @@ GI2
 *   R0 = starting paragraph
 *
 WRAPDC CLR  R0
-WRAPDW MOV  @LINLST,R2
+WRAPDW MOV  @PARLST,R2
 WRAPLP C    R0,*R2
        JHE  WRAPDN
        CLR  R1

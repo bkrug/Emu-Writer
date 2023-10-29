@@ -1,6 +1,6 @@
        DEF  WRAP
 *
-       REF  LINLST,FMTLST,MGNLST
+       REF  PARLST,FMTLST,MGNLST
        REF  BUFREE
        REF  ARYALC,ARYADD,ARYADR
 * Workspace
@@ -101,7 +101,7 @@ MGN5   MOV  R1,@LNWDT1
        MOV  R0,R2
 * Let R3 = address of paragraph text
 * Let R4 = address after paragraph text
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  *R13,R1
        BLWP @ARYADR
        MOV  R1,R3

@@ -1,7 +1,7 @@
        DEF  EDTMGN
        DEF  MGNSRT,MGNEND
 *
-       REF  PARINX,MGNLST,LINLST          From VAR.asm
+       REF  PARINX,MGNLST,PARLST          From VAR.asm
        REF  FLDVAL,PGWDTH,PGHGHT          "
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY

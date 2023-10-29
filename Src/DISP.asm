@@ -11,7 +11,7 @@
        REF  GETIDT
 *
        REF  DISPWS
-       REF  LINLST,FMTLST,MGNLST
+       REF  PARLST,FMTLST,MGNLST
        REF  PARINX
        REF  WINOFF,WINPAR,WINLIN,WINMOD
        REF  STSTYP,STSENT,STSDCR
@@ -194,7 +194,7 @@ VDPSTR DECT R10
 * Output:
 * R3 - paragraph address
 PARADR SLA  R3,1
-       A    @LINLST,R3
+       A    @PARLST,R3
        C    *R3+,*R3+
        MOV  *R3,R3
        RT
@@ -435,7 +435,7 @@ NXTYES
 *
 NXT1
 * Don't read past document-end
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        C    R9,*R0
        JL   NXTYES
 * Clear remaining screen

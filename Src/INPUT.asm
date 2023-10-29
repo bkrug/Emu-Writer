@@ -1,6 +1,6 @@
        DEF  INPUT,INCKRD
 *
-       REF  LINLST,FMTLST,MGNLST
+       REF  PARLST,FMTLST,MGNLST
        REF  ARYALC,ARYINS,ARYDEL,ARYADR
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  BUFSRK
@@ -154,7 +154,7 @@ BACKS1 DEC  @PARINX
 * Find the length of the paragraph and
 * use that as the new character-within-
 * paragraph-index.
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
        MOV  *R1,R1
@@ -172,7 +172,7 @@ BACKRT SOC  @STSARW,*R13
 *
 FWRDSP INC  @CHRPAX
 * See if we moved beyong paragraph end.
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
        MOV  *R1,R1
@@ -200,12 +200,12 @@ ISENTR DECT R10
        INC  @PARINX
 * Break a paragraph in two.
 * Create space in paragraph list.
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYINS
        JEQ  RTERR
 * Save addresses
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        MOV  R1,R2
 * Allocate space for wraplist
        LI   R0,1
@@ -245,7 +245,7 @@ ENTR3  CLR  @CHRPAX
 * Shrink the previous paragraph.
 * Let R0 = address of paragraph.
 * Let R1 = required space.
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        DEC  R1
        BLWP @ARYADR
@@ -272,7 +272,7 @@ TERR2  MOV  R3,R0
        BLWP @BUFREE
 * Remove the paragraph list entry that
 * was just created, but cannot be used.
-TERR1  MOV  @LINLST,R0
+TERR1  MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYDEL
 * Decrement the PARINX to its previous value.
@@ -297,7 +297,7 @@ DELCHR MOV  R11,R12
        SOC  @STSTYP,*R13
 *
 * Let R1 = Address in Paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
 * Let R3 = address of paragraph
@@ -331,7 +331,7 @@ DELC1  MOVB *R5+,*R4+
        B    *R12
 * If this is the end of document,
 * delete nothing.
-DELC2  MOV  @LINLST,R9
+DELC2  MOV  @PARLST,R9
        MOV  @PARINX,R5
        INC  R5
        C    R5,*R9
@@ -371,12 +371,12 @@ DELC2  MOV  @LINLST,R9
        MOV  R4,R0
        BLWP @BUFREE
 * Put merged paragraph in paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
        MOV  R3,*R1
 * Remove one element from paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        INC  R1
        BLWP @ARYDEL
@@ -428,7 +428,7 @@ ADDT1  C    @INPTMD,@INPTXT
 ADDT2  SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's
 * entry in the paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
 * Is mode insert or overwrite?

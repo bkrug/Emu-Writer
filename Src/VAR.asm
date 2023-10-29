@@ -19,7 +19,7 @@
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
 * Arrays
-       DEF  LINLST,FMTLST,MGNLST
+       DEF  PARLST,FMTLST,MGNLST
        DEF  PGHGHT,PGWDTH
 * MAIN.TXT
        DEF  DOCSTS
@@ -75,9 +75,9 @@ STACK  EQU  >83C0
 
        TEXT 'VARIABLE'
 VARBEG
-* Address of line list
-LINLST BSS  2
-* Address of format line list
+* Address of paragraph list
+PARLST BSS  2
+* Address of format list
 FMTLST BSS  2
 * Address of margin list
 MGNLST BSS  2

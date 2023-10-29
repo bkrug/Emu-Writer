@@ -1,6 +1,6 @@
        DEF  TSTLST,RSLTFL
 *
-       REF  LINLST,MGNLST
+       REF  PARLST,MGNLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
        REF  STSARW
        REF  WINMOD
@@ -164,7 +164,7 @@ TYPME  EVEN
 UP1    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+40
@@ -202,7 +202,7 @@ UP1    MOV  R11,@FRAMRT
 UP2    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+25
@@ -240,7 +240,7 @@ UP2    MOV  R11,@FRAMRT
 UP3    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+3
@@ -278,7 +278,7 @@ UP3    MOV  R11,@FRAMRT
 UP4    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,15
@@ -315,7 +315,7 @@ UP4    MOV  R11,@FRAMRT
 UP5    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,5
@@ -352,7 +352,7 @@ UP5    MOV  R11,@FRAMRT
 UP6    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@PARINX
        LI   R0,8
@@ -389,7 +389,7 @@ UP6    MOV  R11,@FRAMRT
 UP7    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+48+51
@@ -426,7 +426,7 @@ UP7    MOV  R11,@FRAMRT
 UP8    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
 * index 56 on 5th line.
@@ -464,7 +464,7 @@ UP8    MOV  R11,@FRAMRT
 UP9    MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,40
@@ -502,7 +502,7 @@ UP9    MOV  R11,@FRAMRT
 UP10   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,0
        MOV  R0,@PARINX
        LI   R0,15
@@ -538,7 +538,7 @@ UP10   MOV  R11,@FRAMRT
 UP11   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+40
@@ -573,7 +573,7 @@ UP11   MOV  R11,@FRAMRT
 UP12   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+25
@@ -611,7 +611,7 @@ UP12   MOV  R11,@FRAMRT
 UP13   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+2
@@ -649,7 +649,7 @@ UP13   MOV  R11,@FRAMRT
 UP14   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+40
@@ -691,7 +691,7 @@ UP14   MOV  R11,@FRAMRT
 UP15   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,0
        MOV  R0,@PARINX
 * 1st line has 56 characters without indent,
@@ -734,7 +734,7 @@ UP15   MOV  R11,@FRAMRT
 UP16   MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+25
@@ -770,7 +770,7 @@ UP16   MOV  R11,@FRAMRT
 DOWN1  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+40
@@ -805,7 +805,7 @@ DOWN1  MOV  R11,@FRAMRT
 DOWN2  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61
@@ -840,7 +840,7 @@ DOWN2  MOV  R11,@FRAMRT
 DOWN3  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+24
@@ -877,7 +877,7 @@ DOWN3  MOV  R11,@FRAMRT
 DOWN4  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+53
@@ -914,7 +914,7 @@ DOWN4  MOV  R11,@FRAMRT
 DOWN5  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+57
@@ -950,7 +950,7 @@ DOWN5  MOV  R11,@FRAMRT
 DOWN6  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,57+58+15
@@ -986,7 +986,7 @@ DOWN6  MOV  R11,@FRAMRT
 DOWN7  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,61+40

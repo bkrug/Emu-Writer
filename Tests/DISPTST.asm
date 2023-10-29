@@ -4,7 +4,7 @@
 *
        REF  ABLCK,AOC,AZC
        REF  AEQ,ANEQ,AL
-       REF  DISP,LINLST,FMTLST,MGNLST
+       REF  DISP,PARLST,FMTLST,MGNLST
        REF  PARINX
        REF  WINOFF,WINPAR,WINLIN,WINMOD
        REF  STSTYP,STSENT,STSDCR
@@ -78,7 +78,7 @@ DSP1
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,0
@@ -214,7 +214,7 @@ DSP2
 * the paragraph PAR1E and that 
 * paragraph is at the top of scren.
        LI   R0,PARL2
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,0
@@ -351,7 +351,7 @@ DSP3
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL3
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,0
@@ -487,7 +487,7 @@ DSP4
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL4
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,0
@@ -598,7 +598,7 @@ DSP5
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL5
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,0
@@ -711,7 +711,7 @@ DSP6
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL6
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,0
@@ -839,7 +839,7 @@ DSP7
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL7
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,20
@@ -975,7 +975,7 @@ DSP8
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL8
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,40
@@ -1087,7 +1087,7 @@ DSP9
 * the paragraph PAR1E and that 
 * paragraph is in the screen middle.
        LI   R0,PARL9
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,0
@@ -1236,7 +1236,7 @@ DSP10
 * Imply that the cursor is currently in
 * the paragraph PARF.
        LI   R0,PARL10
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,5
        MOV  R0,@PARINX
        LI   R0,0

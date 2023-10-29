@@ -7,7 +7,7 @@
        REF  INTDOC,INTPAR
        REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
        REF  VDPSPC,VDPINV
-       REF  LINLST,MGNLST                         From VAR.asm
+       REF  PARLST,MGNLST                         From VAR.asm
        REF  FLDVAL,WINMOD                         "
        REF  VER2                                  "
        REF  PGHGHT,PGWDTH                         "
@@ -123,10 +123,10 @@ SAVE   DECT R10
        MOV  R1,R3
        BL   @VDPWRT
 * Let R2 = remaining paragraphs
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        MOV  *R0,R2
 * Let R1 = address of paragraph entry in the paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        CLR  R1
        BLWP @ARYADR
 * Let R4 = address within paragraph
@@ -284,7 +284,7 @@ LOAD3  MOVB @VDPRD,R0
 * Let R4 = number of record bytes remaining to read (from this record)
        LI   R4,FIXSAV-HDREND+FLEHDR
 * Let R3 = address of first element in paragraph list
-       MOV  @LINLST,R3
+       MOV  @PARLST,R3
        C    *R3+,*R3+
 * Read one byte from record
 LOADBY
@@ -469,7 +469,7 @@ PRINT0
        CLR  R2
 * Let R1 = address of paragraph's
 * entry in the paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
 PRINT1 MOV  R2,R1
        BLWP @ARYADR
 * Let R4 = address of paragraph
@@ -548,7 +548,7 @@ PRINT3
 PRINT4
 * Last paragraph of document?
        INC  R2
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        C    R2,*R0
        JL   PRINT1
 * Yes, close file

@@ -6,7 +6,7 @@
 * Document Status
        REF  STSWIN
 * Vars
-       REF  LINLST,MGNLST
+       REF  PARLST,MGNLST
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
        REF  WINOFF,WINPAR,WINLIN
@@ -255,7 +255,7 @@ MGN32  DATA 1,3
 POS1
 * Arrange
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,53
@@ -285,7 +285,7 @@ POS1
 *
 POS2
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,0
@@ -316,7 +316,7 @@ POS2
 *
 POS3
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,45+41+45+46+33-1
@@ -346,7 +346,7 @@ POS3
 *
 POS4
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,45+41+45+46
@@ -376,7 +376,7 @@ POS4
 *
 POS5
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,45+41+45-1
@@ -403,7 +403,7 @@ POS1MS TEXT 'Incorrect index of line within paragraph.'
 POS1ME EVEN
 POS1NS TEXT 'Incorrect index of character within line.'
 POS1NE EVEN
-*Line List
+*paragraph list
 POS1L  DATA 4,1
        DATA FAKEAD
        DATA FAKEAD
@@ -438,7 +438,7 @@ POS1WB DATA 2,1
 *
 POS6
        LI   R0,POS6L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,0
        MOV  R0,@PARINX
        LI   R0,90
@@ -462,7 +462,7 @@ POS6
        BLWP @AEQ
        RT
 
-*Line List
+*paragraph list
 POS6L  DATA 3,1
        DATA POS6P
        DATA FAKEAD
@@ -490,7 +490,7 @@ POS6W  DATA 4,1
 *
 POS7
        LI   R0,POS7L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,55
@@ -514,7 +514,7 @@ POS7
        BLWP @AEQ
        RT
 
-*Line List
+*paragraph list
 POS7L  DATA 3,1
        DATA FAKEAD
        DATA FAKEAD
@@ -542,7 +542,7 @@ POS7W  DATA 4,1
 *
 POS8
        LI   R0,POS8L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,0
        MOV  R0,@PARINX
        LI   R0,45+41+17
@@ -566,7 +566,7 @@ POS8
        BLWP @AEQ
        RT
 
-*Line List
+*paragraph list
 POS8L  DATA 1,1
        DATA POS8P
 POS8LE
@@ -591,7 +591,7 @@ POS8W  DATA 4,1
 *
 POS9
        LI   R0,POS9L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,6
@@ -614,7 +614,7 @@ POS9
        BLWP @AEQ
        RT
        
-*Line List
+*paragraph list
 POS9L  DATA 6,1
        DATA FAKEAD
        DATA FAKEAD
@@ -636,7 +636,7 @@ POS9W  DATA 0,1
 *
 POSA
        LI   R0,POSAL
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,0
@@ -659,7 +659,7 @@ POSA
        BLWP @AEQ
        RT
        
-*Line List
+*paragraph list
 POSAL  DATA 6,1
        DATA FAKEAD
        DATA FAKEAD
@@ -682,7 +682,7 @@ POSAW  DATA 0,1
 *
 POSB
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,2
@@ -712,7 +712,7 @@ POSB
 *
 POSC
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,38
@@ -749,7 +749,7 @@ POSC
 *
 POSD
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,45+41+45+46
@@ -779,7 +779,7 @@ POSD
 *
 POSE
        LI   R0,POS1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,2
@@ -810,7 +810,7 @@ POSE
 HOF1
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,112
@@ -843,7 +843,7 @@ HOF1
 HOF2
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,112
@@ -875,7 +875,7 @@ HOF2
 HOF3
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,112
@@ -907,7 +907,7 @@ HOF3
 HOF4
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,127
@@ -940,7 +940,7 @@ HOF4
 HOF5
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,127
@@ -973,7 +973,7 @@ HOF5
 HOF6
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,127
@@ -1005,7 +1005,7 @@ HOF6
 HOF7
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,166
@@ -1037,7 +1037,7 @@ HOF7
 HOF8
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,166
@@ -1069,7 +1069,7 @@ HOF8
 HOF9
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,166
@@ -1102,7 +1102,7 @@ HOF9
 HOF10
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,166
@@ -1135,7 +1135,7 @@ HOF10
 HOF11
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,159
@@ -1168,7 +1168,7 @@ HOF11
 HOF12
 * Arrange
        LI   R0,HOF1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
        LI   R0,120
@@ -1205,7 +1205,7 @@ MWINME
 MWINN  TEXT 'Window should have moved.'
 MWINNE EVEN
 
-*Line List
+*paragraph list
 HOF1L  DATA 4,1
        DATA FAKEAD
        DATA FAKEAD
@@ -1233,7 +1233,7 @@ HOF1W  DATA 1,1
 WUP1
 * Arrange
        LI   R0,UP1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
 * Line 3
@@ -1276,7 +1276,7 @@ WUP1
 WUP2
 * Arrange
        LI   R0,UP1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@PARINX
 * Line 3
@@ -1321,7 +1321,7 @@ WUP2
 WUP3
 * Arrange
        LI   R0,UP1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@PARINX
 * Line Index 5
@@ -1365,7 +1365,7 @@ WUP3
 WUP4
 * Arrange
        LI   R0,UP1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@PARINX
 * Line Index 5
@@ -1410,7 +1410,7 @@ WUP4
 WUP5
 * Arrange
        LI   R0,UP1L
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@PARINX
 * Line Index 5
@@ -1453,7 +1453,7 @@ WUPM1E
 WUPM2  TEXT 'Window Paragraph-Line index '
        TEXT 'was not updated correctly.'
 WUPM2E
-*Line List
+*paragraph list
 UP1L   DATA 4,1
        DATA UP1P0
        DATA UP1P1
@@ -1544,7 +1544,7 @@ BADLE
 * The cursor is on the first line of a paragraph.
 * Expect: The screen should not scroll down.
 *
-*Line List
+*paragraph list
 LIND1  DATA (LIND1E-LIND1-4)/2,1
        DATA PARD5
        DATA PARD8
@@ -1558,7 +1558,7 @@ LIND1E
 WDWN1 
 * Arrange
        LI   R0,LIND1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,0
@@ -1598,7 +1598,7 @@ WDWN1
 * The cursor is in the middle row of a paragraph.
 * Expect: The screen should not scroll down.
 *
-*Line List
+*paragraph list
 LIND2  DATA (LIND2E-LIND2-4)/2,1
        DATA PARD5
        DATA PARD5         * This is the first paragraph on screen
@@ -1612,7 +1612,7 @@ LIND2E
 WDWN2 
 * Arrange
        LI   R0,LIND2
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
@@ -1662,7 +1662,7 @@ LIND3E
 WDWN3 
 * Arrange
        LI   R0,LIND3
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
@@ -1703,7 +1703,7 @@ WDWN3
 * Expect: The screen should scroll down
 *         and to a new paragraph.
 *
-*Line List
+*paragraph list
 LIND4  DATA (LIND4E-LIND4-4)/2,1
        DATA PARD5
        DATA PARD8
@@ -1719,7 +1719,7 @@ LIND4E
 WDWN4 
 * Arrange
        LI   R0,LIND4
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,0
@@ -1760,7 +1760,7 @@ WDWN4
 * Expect: The screen should scroll down
 *         but within the same paragraph.
 *
-*Line List
+*paragraph list
 LIND5  DATA (LIND5E-LIND5-4)/2,1
        DATA PARD5
        DATA PARD8         * This is the first paragraph on screen
@@ -1775,7 +1775,7 @@ LIND5E
 WDWN5 
 * Arrange
        LI   R0,LIND5
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
@@ -1815,7 +1815,7 @@ WDWN5
 * The cursor is fewer than 21 rows from document start.
 * Expect: The screen should not scroll down.
 *
-*Line List
+*paragraph list
 LIND6  DATA (LIND6E-LIND6-4)/2,1
        DATA PARD1
        DATA PARD1
@@ -1828,7 +1828,7 @@ LIND6E
 WDWN6 
 * Arrange
        LI   R0,LIND6
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,2
@@ -1868,7 +1868,7 @@ WDWN6
 * Expect: The screen should scroll down
 *         but within the same paragraph.
 *
-*Line List
+*paragraph list
 LIND7  DATA (LIND7E-LIND7-4)/2,1
        DATA PARD5
        DATA PARD26        * This is the first paragraph on screen
@@ -1879,7 +1879,7 @@ LIND7E
 WDWN7 
 * Arrange
        LI   R0,LIND7
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,1
@@ -1965,7 +1965,7 @@ WCURME EVEN
 * there is no window offset,
 * and the cursor is in a different paragraph further down screen.
 *
-* Line List
+* paragraph list
 LINC1  DATA (LINC1E-LINC1-4)/2,1
        DATA PARC5
        DATA PARC9     * First paragraph on screen
@@ -1979,7 +1979,7 @@ LINC1E
 CUR1
 * Arrange
        LI   R0,LINC1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
@@ -2021,7 +2021,7 @@ CUR1
 * there is no window offset,
 * and the cursor is in a different paragraph further down screen.
 *
-* Line List
+* paragraph list
 LINC2  DATA (LINC2E-LINC2-4)/2,1
        DATA PARC5
        DATA PARC9     * Line 5 of this paragraph is at top of the screen
@@ -2035,7 +2035,7 @@ LINC2E
 CUR2
 * Arrange
        LI   R0,LINC2
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,5
@@ -2077,7 +2077,7 @@ CUR2
 * there is a window offset of 20,
 * and the cursor is in a different paragraph further down screen.
 *
-* Line List
+* paragraph list
 LINC3  DATA (LINC3E-LINC3-4)/2,1
        DATA PARC5
        DATA PARC1L
@@ -2093,7 +2093,7 @@ LINC3E
 CUR3
 * Arrange
        LI   R0,LINC3
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@WINPAR
        LI   R0,2
@@ -2134,7 +2134,7 @@ CUR3
 * when the cursor is in the first paragraph visible on screen,
 * there is no window offset.
 *
-* Line List
+* paragraph list
 LINC4  DATA (LINC4E-LINC4-4)/2,1
        DATA PARC5
        DATA PARC1L
@@ -2150,7 +2150,7 @@ LINC4E
 CUR4
 * Arrange
        LI   R0,LINC4
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,3
        MOV  R0,@WINPAR
        LI   R0,1

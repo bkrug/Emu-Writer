@@ -1,6 +1,6 @@
        DEF  UPUPSP,DOWNSP
 *
-       REF  LINLST                               From VAR.asm
+       REF  PARLST                               From VAR.asm
        REF  PARINX,CHRPAX,LININX,CHRLIX          "
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
@@ -51,7 +51,7 @@ DOWNSP DECT R10
        INC  @LININX
        JMP  DWNSP2
 * Don't move past end of document
-DWNSP1 MOV  @LINLST,R0
+DWNSP1 MOV  @PARLST,R0
        MOV  *R0,R0
        DEC  R0
        C    @PARINX,R0
@@ -138,7 +138,7 @@ PARADR
 * Set R3
        MOV  @PARINX,R3
        SLA  R3,1
-       A    @LINLST,R3
+       A    @PARLST,R3
        C    *R3+,*R3+
        MOV  *R3,R3
 * Set R4

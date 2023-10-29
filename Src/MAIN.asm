@@ -8,7 +8,7 @@
        REF  PARINX,CHRPAX
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
-       REF  LINLST,MGNLST,FMTLST
+       REF  PARLST,MGNLST,FMTLST
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP,STSENT,STSWIN,STSARW
@@ -65,7 +65,7 @@ MAIN1
 * Output:
 *  R0 - zero - to imply no error
 *  R2 - changed
-*  R1 - Address in LINLST
+*  R1 - Address in PARLST
 *  R4 - Address of paragraph
 INTDOC
 * Set default page size
@@ -88,7 +88,7 @@ INTDOC
        MOV  R0,@MGNLST
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
 * Set cursor position to document start
        CLR  @PARINX
        CLR  @CHRPAX
@@ -108,9 +108,9 @@ INTPAR LI   R0,PAREND-PAR
        MOV  R0,@2(R4)
 * Put the paragraph into the
 * paragraph list
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        BLWP @ARYADD
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        MOV  R4,*R1
 *
        CLR  R0

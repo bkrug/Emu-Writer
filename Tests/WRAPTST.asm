@@ -1,7 +1,7 @@
        DEF  TSTLST,RSLTFL
        REF  ABLCK,AOC,AZC,AEQ,ANEQ
 *
-       REF  WRAP,LINLST,FMTLST,MGNLST
+       REF  WRAP,PARLST,FMTLST,MGNLST
        REF  PGWDTH
        REF  WINMOD,DOCSTS
        REF  BUFINT,BUFALC,BUFCPY
@@ -91,7 +91,7 @@ WRP1
        LI   R0,10*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL1
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT1
        MOV  R0,@FMTLST
        LI   R0,MRGN1
@@ -177,7 +177,7 @@ WRP2
        LI   R0,10*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL2
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT2
        MOV  R0,@FMTLST
        LI   R0,MRGN2
@@ -259,7 +259,7 @@ WRP3
        LI   R0,10*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL3
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT3
        MOV  R0,@FMTLST
        LI   R0,MRGN3
@@ -342,7 +342,7 @@ WRP4
        LI   R0,10*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL4
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT4
        MOV  R0,@FMTLST
        LI   R0,MRGN4
@@ -425,7 +425,7 @@ WRP5
        LI   R0,12*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL5
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT5
        MOV  R0,@FMTLST
        LI   R0,MRGN5
@@ -509,7 +509,7 @@ WRP7
        LI   R0,40*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL7
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT7
        MOV  R0,@FMTLST
        LI   R0,MRGN7
@@ -604,7 +604,7 @@ WRP8
        LI   R0,12*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL8
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT8
        MOV  R0,@FMTLST
        LI   R0,MRGN8
@@ -686,7 +686,7 @@ WRP9
        LI   R0,12*8*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL9
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT9
        MOV  R0,@FMTLST
        LI   R0,MRGN9
@@ -777,7 +777,7 @@ WRP10
        LI   R0,8*12*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL10
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT10
        MOV  R0,@FMTLST
        LI   R0,MRGN10
@@ -878,7 +878,7 @@ WRP11
        LI   R0,8*12*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL11
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT11
        MOV  R0,@FMTLST
        LI   R0,MRGN11
@@ -977,7 +977,7 @@ WRP12
        LI   R0,8*10*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL12
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT12
        MOV  R0,@FMTLST
        LI   R0,MRGN12
@@ -1069,7 +1069,7 @@ WRP13
        LI   R0,8*10*>100
        MOVB R0,@PGWDTH
        LI   R0,PARL13
-       MOV  R0,@LINLST
+       MOV  R0,@PARLST
        LI   R0,FMT13
        MOV  R0,@FMTLST
        LI   R0,MRGN13

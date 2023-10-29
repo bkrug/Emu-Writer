@@ -7,7 +7,7 @@
        REF  GETIDT                     From UTIL.asm
        REF  ARYADR                     From ARRAY.asm
 *
-       REF  LINLST,MGNLST
+       REF  PARLST,MGNLST
        REF  FORTY
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
@@ -43,7 +43,7 @@ UPINDX
        DECT R10
        MOV  R11,*R10
 * Let R1 = address of current paragraph
-       MOV  @LINLST,R0
+       MOV  @PARLST,R0
        C    *R0+,*R0+
        MOV  @PARINX,R1
        SLA  R1,1
@@ -161,8 +161,8 @@ CD1
 * Point to earlier paragraph
        DEC  R2
        JLT  CD3
-* Let R1 = address in LINLST
-       MOV  @LINLST,R0
+* Let R1 = address in PARLST
+       MOV  @PARLST,R0
        MOV  R2,R1
        BLWP @ARYADR
 * Let R1 = address of paragraph
@@ -212,8 +212,8 @@ UPCURS
 * Is R2 pointing to the cursor paragraph yet?
 UC1    C    R2,@PARINX
        JEQ  UC2
-* Let R1 = address in LINLST
-       MOV  @LINLST,R0
+* Let R1 = address in PARLST
+       MOV  @PARLST,R0
        MOV  R2,R1
        BLWP @ARYADR
 * Let R1 = address of paragraph
