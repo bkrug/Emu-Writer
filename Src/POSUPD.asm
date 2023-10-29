@@ -210,8 +210,11 @@ UPCURS
 * Let R4 = counted lines
        CLR  R4
        S    @WINLIN,R4
+* Is R2 pointing to the cursor paragraph yet?
+UC1    C    R2,@PARINX
+       JEQ  UC2
 * Let R1 = address in LINLST
-UC1    MOV  @LINLST,R0
+       MOV  @LINLST,R0
        MOV  R2,R1
        BLWP @ARYADR
 * Let R1 = address of paragraph
@@ -223,10 +226,9 @@ UC1    MOV  @LINLST,R0
        INC  R4
 * Loop to next paragraph
        INC  R2
-       C    R2,@PARINX
-       JL   UC1
+       JMP  UC1
 * Add current line of paragraph to R4
-       A    @LININX,R4
+UC2    A    @LININX,R4
 * Increase R4 to account for screen
 * header rows
        AI   R4,HDRHGT

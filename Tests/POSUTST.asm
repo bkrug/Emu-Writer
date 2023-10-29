@@ -221,6 +221,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * and the cursor is in a different paragraph further down screen.
        DATA CUR3
        TEXT 'CUR3  '
+* Calculate cursor position,
+* when the cursor is in the first paragraph visible on screen,
+* there is no window offset.
+       DATA CUR4
+       TEXT 'CUR4  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -2117,6 +2122,63 @@ CUR3
 * Cursor should be in row 14, column 29 of text area
 * add two more rows for the screen header
        LI   R0,(HDRHGT*40)+(14*40)+49-20
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
+*
+* Calculate cursor position,
+* when the cursor is in the first paragraph visible on screen,
+* there is no window offset.
+*
+* Line List
+LINC4  DATA (LINC4E-LINC4-4)/2,1
+       DATA PARC5
+       DATA PARC1L
+       DATA PARC9
+       DATA PARC9     * screen starts with line 1
+*                     * cursor is on line 7, column 25
+       DATA PARC1S
+       DATA PARC3
+       DATA PARC1L
+       DATA PARC9
+LINC4E
+*
+CUR4
+* Arrange
+       LI   R0,LINC4
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@WINPAR
+       LI   R0,1
+       MOV  R0,@WINLIN       
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,55+49+60+59+53+51+58+(25)
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,25
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+* Cursor should be in row 17, column 5 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(6*40)+25
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM

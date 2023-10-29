@@ -48,6 +48,7 @@ TSTADR DATA 0
 * Run all tests
 * ----------------------
 RUNT   LWPI WORKSP
+       LIMI 0
        LI   R10,STACK
 * Open test result file
        BL   @OPENF
