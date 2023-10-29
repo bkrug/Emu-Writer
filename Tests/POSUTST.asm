@@ -198,6 +198,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Expect: The screen should not scroll down.
        DATA WDWN6
        TEXT 'WDWN6 '
+* Top of screen displays paragraph 1, line 1
+* The cursor is in the same paragraph, but below-screen.
+* Expect: The screen should scroll down
+*         but within the same paragraph.
+       DATA WDWN7
+       TEXT 'WDWN7 '
 * ---
 * Calculate cursor's screen position
        DATA CUR1
@@ -1498,6 +1504,16 @@ PARD8  DATA 0
 WRP8   DATA 7,1
        DATA 60,120,180,240,300
        DATA 360,420
+* Twenty-six line paragraph
+PARD26 DATA 0
+       DATA WRP26
+       TEXT '.'
+WRP26  DATA 25,1
+       DATA 60,120,180,240,300
+       DATA 360,420,480,540,600
+       DATA 660,720,780,840,900
+       DATA 960,1020,1080,1140,1200
+       DATA 1260,1320,1380,1440,1500
 
 BADP   TEXT 'Windows paragraph index is wrong.'
 BADPE
@@ -1516,7 +1532,7 @@ LIND1  DATA (LIND1E-LIND1-4)/2,1
        DATA PARD8
        DATA PARD5         * This is the first paragraph on screen
        DATA PARD8
-       DATA PARD8       
+       DATA PARD8
        DATA PARD5         * Cursor is in line 0
        DATA PARD8
        DATA PARD5
@@ -1821,6 +1837,57 @@ WDWN6
        BLWP @AEQ
 *
        LI   R0,2
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       RT
+
+*
+* Top of screen displays paragraph 1, line 1
+* The cursor is in the same paragraph, but below-screen.
+* Expect: The screen should scroll down
+*         but within the same paragraph.
+*
+*Line List
+LIND7  DATA (LIND7E-LIND7-4)/2,1
+       DATA PARD5
+       DATA PARD26        * This is the first paragraph on screen
+*                         * Cursor is in line 24
+       DATA PARD8
+       DATA PARD5
+LIND7E
+WDWN7 
+* Arrange
+       LI   R0,LIND7
+       MOV  R0,@LINLST
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,1
+       MOV  R0,@WINLIN       
+       LI   R0,1
+       MOV  R0,@PARINX
+       LI   R0,24*60+17
+       MOV  R0,@CHRPAX
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
+       LI   R0,1
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,3
        MOV  @WINLIN,R1
        LI   R2,BADL
        LI   R3,BADLE-BADL
