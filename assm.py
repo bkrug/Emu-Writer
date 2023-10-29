@@ -61,10 +61,7 @@ link_test_files("DISPARUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "WRAP", "ACT", "UTIL", "VAR", "CONST" ]
 link_test_files("INPTRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "LOOKTST", "LOOK", "VAR", "CONST" ]
-link_test_files("LOOKRUN.obj", False, temp_files)
-
-temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "LOOK", "UTIL", "WRAP", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "WRAP", "VAR", "CONST" ]
 link_test_files("POSRUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "VAR", "CONST" ]
@@ -84,7 +81,6 @@ temp_files = [
     "DISP",
     "KEY",
     "VDP",
-    "LOOK",
     "ACT",
     "DSRLNK",
     "MENULOGIC",

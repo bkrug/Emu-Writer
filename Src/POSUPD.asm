@@ -168,8 +168,7 @@ CD1
 * Let R1 = address of paragraph
        MOV  *R1,R1
 * Let R1 = address of wrap list
-       INCT R1
-       MOV  *R1,R1
+       MOV  @2(R1),R1
 * Let R3 = index of last line in paragraph
        MOV  *R1,R3
 * Try next paragraph

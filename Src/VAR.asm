@@ -8,7 +8,7 @@
 *
 * Register Workspaces
        DEF  STRWS
-       DEF  LOOKWS,ARRYWS
+       DEF  ARRYWS
        DEF  WRAPWS
        DEF  POSUWS,DISPWS
        DEF  MAINWS
@@ -58,7 +58,6 @@
 *
        TEXT 'WORKSPCE'
 MAINWS EQU  >8300
-LOOKWS EQU  >8320
 ARRYWS EQU  >8320
 STRWS  EQU  >8330
 WRAPWS BSS  >20
