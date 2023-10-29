@@ -185,13 +185,19 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Expect: The screen should scroll down.
        DATA WDWN4
        TEXT 'WDWN4 '
-* Top of screen displays paragraph 2, line 0
+* Top of screen displays paragraph 1, line 0
 * The cursor is in a paragraph below the screen.
 * The cursor is in a middle line of a paragraph.
 * Expect: The screen should scroll down
 *         but within the same paragraph.
        DATA WDWN5
        TEXT 'WDWN5 '
+* Top of screen displays paragraph 2, line 2
+* The cursor is in the middle of screen.
+* The cursor is fewer than 21 rows from document start.
+* Expect: The screen should not scroll down.
+       DATA WDWN6
+       TEXT 'WDWN6 '
 * ---
 * Calculate cursor's screen position
        DATA CUR1
@@ -1714,7 +1720,7 @@ WDWN4
        RT
 
 *
-* Top of screen displays paragraph 2, line 0
+* Top of screen displays paragraph 1, line 0
 * The cursor is in a paragraph below the screen.
 * The cursor is in a middle line of a paragraph.
 * Expect: The screen should scroll down
@@ -1762,6 +1768,59 @@ WDWN5
        BLWP @AEQ
 *
        LI   R0,4
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       RT
+
+*
+* Top of screen displays paragraph 2, line 2
+* The cursor is in the middle of screen.
+* The cursor is fewer than 21 rows from document start.
+* Expect: The screen should not scroll down.
+*
+*Line List
+LIND6  DATA (LIND6E-LIND6-4)/2,1
+       DATA PARD1
+       DATA PARD1
+       DATA PARD5         * This is the first paragraph on screen
+       DATA PARD1
+       DATA PARD8         * Cursor is in line 1
+       DATA PARD1
+       DATA PARD5
+LIND6E
+WDWN6 
+* Arrange
+       LI   R0,LIND6
+       MOV  R0,@LINLST
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN       
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,1*60+17
+       MOV  R0,@CHRPAX
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINM
+       LI   R3,MWINME-MWINM
+       BLWP @AZC
+*
+       LI   R0,2
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,2
        MOV  @WINLIN,R1
        LI   R2,BADL
        LI   R3,BADLE-BADL
