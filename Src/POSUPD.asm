@@ -2,14 +2,12 @@
 *
        REF  POSUWS
 *
-       REF  LOOKUP,LNDIFF
-*
        REF  STSWIN
 *
        REF  GETIDT                     From UTIL.asm
+       REF  ARYADR                     From ARRAY.asm
 *
        REF  LINLST,MGNLST
-       REF  ARYADR
        REF  FORTY
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
@@ -207,23 +205,39 @@ CD6    RT
 *
 UPCURS 
 * Find number of paragraph-lines 
-* between cursor's line
-       MOV  @WINPAR,R0
-       MOV  @WINLIN,R1
-       MOV  @PARINX,R2
-       MOV  @LININX,R3
-       BLWP @LNDIFF
-* Increase R0 to account for screen
+* between cursor's line and screen's top line
+       MOV  @WINPAR,R2
+* Let R4 = counted lines
+       CLR  R4
+       S    @WINLIN,R4
+* Let R1 = address in LINLST
+UC1    MOV  @LINLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R1 = address of paragraph
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       MOV  @2(R1),R1
+* Increase R4 by number of lines in paragraph
+       A    *R1,R4
+       INC  R4
+* Loop to next paragraph
+       INC  R2
+       C    R2,@PARINX
+       JL   UC1
+* Add current line of paragraph to R4
+       A    @LININX,R4
+* Increase R4 to account for screen
 * header rows
-       INCT R0
-* Let R1 = number of screen positions
-* in lines
-	MPY  @FORTY,R0
+       AI   R4,HDRHGT
+* Let R5 = screen position based on lines in R4
+       LI   R0,SCRNWD
+	MPY  R0,R4
 * Add screen positions for current line
-       A    @CHRLIX,R1
-       S    @WINOFF,R1
+       A    @CHRLIX,R5
+       S    @WINOFF,R5
 * Save result
-       MOV  R1,@CURSCN
+       MOV  R5,@CURSCN
 *
        RT
 

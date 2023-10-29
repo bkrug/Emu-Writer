@@ -1,6 +1,4 @@
        DEF  TSTLST,RSLTFL
-* Mock of code from LOOK.TXT
-       DEF  LNDIFF
 * Assert Routine
        REF  AEQ,AZC,AOC
 * Update visual position indicators
@@ -205,9 +203,24 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA WDWN7
        TEXT 'WDWN7 '
 * ---
-* Calculate cursor's screen position
+* Calculate cursor position,
+* when the first line on screen is the first line of a paragraph,
+* there is no window offset,
+* and the cursor is in a different paragraph further down screen.
        DATA CUR1
        TEXT 'CUR1  '
+* Calculate cursor position,
+* when the first line on screen is in the middle of a paragraph,
+* there is no window offset,
+* and the cursor is in a different paragraph further down screen.
+       DATA CUR2
+       TEXT 'CUR2  '
+* Calculate cursor position,
+* when the first line on screen is in the middle of a paragraph,
+* there is a window offset of 20,
+* and the cursor is in a different paragraph further down screen.
+       DATA CUR3
+       TEXT 'CUR3  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1899,110 +1912,211 @@ WDWN7
 * Cursor On Screen Test Data
 *
 
-*Line List
-CUR1L  DATA 4,1
-       DATA CUR1P0
-       DATA CUR1P1
-       DATA CUR1P2
-       DATA CUR1P3
-       DATA FAKEAD
-       DATA FAKEAD
-CUR1LE
-*paragraphs
-CUR1P0 DATA 68+71+9
-       DATA CUR1W0
-       TEXT 'In the beg...end.'
+*
+* Paragraphs
+*
+* One line short paragraph
+PARC1S DATA 23
+       DATA WRPC1S
+       TEXT '.'
        EVEN
-CUR1P1 DATA 70+66+69+72+67+71+24
-       DATA CUR1W1
-       TEXT 'In the beg...end.'
+WRPC1S DATA 0,1
+* One line long paragraph
+PARC1L DATA 58
+       DATA WRPC1L
+       TEXT '.'
        EVEN
-CUR1P2 DATA 69+71+65+42
-       DATA CUR1W2
-       TEXT 'In the beg...end.'
+WRPC1L DATA 0,1
+* Three line paragraph
+PARC3  DATA 48+57+32
+       DATA WRPC3
+       TEXT '.'
        EVEN
-CUR1P3 DATA 70+68+72+69+66+4
-       DATA CUR1W3
-       TEXT 'In the beg...end.'
+WRPC3  DATA 2,1
+       DATA 48,48+57
+* Five line paragraph
+PARC5  DATA 48+57+54+60+51
+       DATA WRPC5
+       TEXT '.'
        EVEN
-*A wrap list
-CUR1W0 DATA 2,1
-       DATA 68
-       DATA 68+71
-CUR1W1 DATA 6,1
-       DATA 70
-       DATA 70+66
-       DATA 70+66+69
-       DATA 70+66+69+72
-       DATA 70+66+69+72+67
-       DATA 70+66+69+72+67+71
-CUR1W2 DATA 3,1
-       DATA 69
-       DATA 69+71
-       DATA 69+71+65
-CUR1W3 DATA 5,1
-       DATA 70
-       DATA 70+68
-       DATA 70+68+72
-       DATA 70+68+72+69
-       DATA 70+68+72+69+66
+WRPC5  DATA 4,1
+       DATA 48,48+57,48+57+54,48+57+54+60
+* Nine line paragraph
+PARC9  DATA 55+49+60+59+53+51+58+56+41
+       DATA WRPC9
+       TEXT '.'
+       EVEN
+WRPC9  DATA 8,1
+       DATA 55,55+49,55+49+60,55+49+60+59
+       DATA 55+49+60+59+53,55+49+60+59+53+51,55+49+60+59+53+51+58
+       DATA 55+49+60+59+53+51+58+56
+*
 WCURM  TEXT 'Cursors position on screen is wrong.'
 WCURME EVEN
 
-* Mock of LNDIFF
-MCKCNT DATA 0
-LOOKWS BSS  >20
-LNDIFF DATA LOOKWS,LNDIFF+4
-* If current test did not specify
-* mock values, then return 0.
-       CLR  *R13
-       MOV  @MCKCNT,@MCKCNT
-       JEQ  DIFFRT
-* Pass mock return values
-       MOV  @MCKCNT,*R13
-* Reset mock values
-* Next test may not wish to mock this.
-       CLR  @MCKCNT
-DIFFRT RTWP
-
-* Calculate cursor's screen position
+*
+* Calculate cursor position,
+* when the first line on screen is the first line of a paragraph,
+* there is no window offset,
+* and the cursor is in a different paragraph further down screen.
+*
+* Line List
+LINC1  DATA (LINC1E-LINC1-4)/2,1
+       DATA PARC5
+       DATA PARC9     * First paragraph on screen
+       DATA PARC1S
+       DATA PARC3
+       DATA PARC1L
+       DATA PARC5     * Cursor is in line 3, column 5
+       DATA PARC9
+LINC1E
+*
 CUR1
 * Arrange
-       LI   R0,UP1L
+       LI   R0,LINC1
        MOV  R0,@LINLST
-       LI   R0,3
-       MOV  R0,@PARINX
-       LI   R0,70+68+47
-       MOV  R0,@CHRPAX
-	   LI   R0,20
-	   MOV  R0,@WINOFF
-* The screen starts on the third line
-* of the first paragraph.
-       LI   R0,0
+       LI   R0,1
        MOV  R0,@WINPAR
-       LI   R0,2
+       LI   R0,0
        MOV  R0,@WINLIN       
-* There should be 14 lines between
-* Para 0 Line 2 & Para 3 Line 2
-       LI   R0,14
-	   MOV  R0,@MCKCNT
+       LI   R0,5
+       MOV  R0,@PARINX
+       LI   R0,48+57+54+(5)
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
 * Act
        CLR  R0
        BLWP @POSUPD
 * Assert
-       LI   R0,47
-	   MOV  @CHRLIX,R1
-       LI   R2,WCURM
-       LI   R3,7
+       LI   R0,5
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
        BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+* Cursor should be in row 17, column 5 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(17*40)+5
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
+*
+* Calculate cursor position,
+* when the first line on screen is in the middle of a paragraph,
+* there is no window offset,
+* and the cursor is in a different paragraph further down screen.
+*
+* Line List
+LINC2  DATA (LINC2E-LINC2-4)/2,1
+       DATA PARC5
+       DATA PARC9     * Line 5 of this paragraph is at top of the screen
+       DATA PARC1S
+       DATA PARC3
+       DATA PARC1L
+       DATA PARC5     * Cursor is in line 3, column 12
+       DATA PARC9
+LINC2E
+*
+CUR2
+* Arrange
+       LI   R0,LINC2
+       MOV  R0,@LINLST
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,5
+       MOV  R0,@WINLIN       
+       LI   R0,5
+       MOV  R0,@PARINX
+       LI   R0,48+57+54+(12)
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,12
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+* Cursor should be in row 12, column 12 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(12*40)+12
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
+*
+* Calculate cursor position,
+* when the first line on screen is in the middle of a paragraph,
+* there is a window offset of 20,
+* and the cursor is in a different paragraph further down screen.
+*
+* Line List
+LINC3  DATA (LINC3E-LINC3-4)/2,1
+       DATA PARC5
+       DATA PARC1L
+       DATA PARC1S
+       DATA PARC5     * Line 2 of this paragraph is at top of the screen
+       DATA PARC1S
+       DATA PARC3
+       DATA PARC9     * Cursor is in line 7, column 49
+       DATA PARC5
+       DATA PARC9
+LINC3E
+*
+CUR3
+* Arrange
+       LI   R0,LINC3
+       MOV  R0,@LINLST
+       LI   R0,3
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN       
+       LI   R0,6
+       MOV  R0,@PARINX
+       LI   R0,55+49+60+59+53+51+58+(49)
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,49
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+*
        LI   R0,20
-	   MOV  @WINOFF,R1
-       LI   R2,WCURM
-       LI   R3,14
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
        BLWP @AEQ
-* Cursor should be at 15th row of text,
-* 17th row on screen, 27th column
-       LI   R0,16*40+27
+* Cursor should be in row 14, column 29 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(14*40)+49-20
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
