@@ -1,4 +1,4 @@
-       DEF  POSUPD
+       DEF  POSUPD,GETROW
 *
        REF  POSUWS
 *
@@ -202,7 +202,40 @@ CD6    RT
 *
 * Update cursor's position on screen
 *
-UPCURS 
+UPCURS DECT R10
+       MOV  R11,*R10
+* Let R4 = screen row that paragraph starts on
+       MOV  @PARINX,R0
+       BL   @GETROW
+       MOV  R0,R4
+* Let R4 = screen row that the cursor sits on
+       A    @LININX,R4
+* Let R5 = screen position based on lines in R4
+       LI   R0,SCRNWD
+	MPY  R0,R4
+* Add screen positions for current line
+       A    @CHRLIX,R5
+       S    @WINOFF,R5
+* Save result
+       MOV  R5,@CURSCN
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Calculate the screen row that a given
+* paragraph should start on.
+*
+* Input:
+*   R0: requested paragraph
+* Output:
+*   R0: screen row
+* (Note that the output can be a negative number
+* if the paragraph's first line is above the screen)
+*
+GETROW
+* Let R3 = requested paragraph
+       MOV  R0,R3
 * Find number of paragraph-lines 
 * between cursor's line and screen's top line
        MOV  @WINPAR,R2
@@ -210,8 +243,8 @@ UPCURS
        CLR  R4
        S    @WINLIN,R4
 * Is R2 pointing to the cursor paragraph yet?
-UC1    C    R2,@PARINX
-       JEQ  UC2
+GR1    C    R2,R3
+       JEQ  GR2
 * Let R1 = address in PARLST
        MOV  @PARLST,R0
        MOV  R2,R1
@@ -225,21 +258,14 @@ UC1    C    R2,@PARINX
        INC  R4
 * Loop to next paragraph
        INC  R2
-       JMP  UC1
-* Add current line of paragraph to R4
-UC2    A    @LININX,R4
+       JMP  GR1
+*
+GR2
 * Increase R4 to account for screen
 * header rows
        AI   R4,HDRHGT
-* Let R5 = screen position based on lines in R4
-       LI   R0,SCRNWD
-	MPY  R0,R4
-* Add screen positions for current line
-       A    @CHRLIX,R5
-       S    @WINOFF,R5
-* Save result
-       MOV  R5,@CURSCN
 *
+       MOV  R4,R0
        RT
 
        END

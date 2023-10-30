@@ -52,10 +52,10 @@ print("Linking Unit Test Runners")
 temp_files = [ "TESTFRAM", "ACTTST", "ACT", "UTIL", "WRAP", "VAR", "CONST" ]
 link_test_files("ACTRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "DISPTST", "DISP", "UTIL", "WRAP", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "DISPTST", "DISP", "UTIL", "WRAP", "POSUPD", "VAR", "CONST" ]
 link_test_files("DISPRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "UTIL", "WRAP", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "UTIL", "WRAP", "POSUPD", "VAR", "CONST" ]
 link_test_files("DISPARUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "WRAP", "ACT", "UTIL", "VAR", "CONST" ]

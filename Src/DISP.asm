@@ -9,6 +9,8 @@
        REF  VDPADR,VDPWRT,VDPSPC
 * From UTIL
        REF  GETIDT
+* From POSUPD
+       REF  GETROW
 *
        REF  DISPWS
        REF  PARLST,FMTLST,MGNLST
@@ -28,10 +30,17 @@ DISP   DATA DISPWS,DISP+4
 *
        BL   @NOTHIN
 * Let R9 = starting paragraph index
-* Let R12 = starting screen row
-* Set initial VDP address
        BL   @STRPAR
-       BL   @SCRNRW
+* Let R12 = starting screen row
+       LI   R12,HDRHGT
+       C    R9,@WINPAR
+       JEQ  DISP0
+*
+       MOV  R9,R0
+       BL   @GETROW
+       MOV  R0,R12
+DISP0
+* Set initial VDP address
        BL   @VDPSTR
        
 *
@@ -131,43 +140,6 @@ SP1    RT
 * Set starting position based on window
 * position.
 SP2    MOV  @WINPAR,R9
-       RT
-
-*
-* Let R12 = starting screen row
-*
-* TODO: Stop duplicating the UPCURS routine
-SCRNRW DECT R10
-       MOV  R11,*R10
-* If cursor's paragraph is at top of
-* screen, then only skip screen header.
-       CLR  R12
-       C    @WINPAR,R9
-       JEQ  SROW2
-*
-       MOV  @WINPAR,R1
-* Let R12 total screen rows to skip
-       MOV  @WINLIN,R12
-       NEG  R12
-* Let R3 = paragraph address
-SROW1  MOV  R1,R3
-       BL   @PARADR
-* Let R3 = wrap list address
-       INCT R3
-       MOV  *R3,R3
-* Add paragraph length to row count
-       A    *R3,R12
-       INC  R12
-* Keep going until we reach the
-* cursor's paragraph
-       INC  R1
-       C    R1,R9
-       JL   SROW1
-* Skip two rows that are reserved for
-* document information.
-SROW2  INCT R12
-*
-       MOV  *R10+,R11
        RT
        
 *
