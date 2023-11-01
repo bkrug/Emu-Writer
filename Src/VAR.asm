@@ -41,7 +41,7 @@
        DEF  INSTMD,INPTMD
 * POSUPD.TXT
        DEF  LININX,CHRLIX
-       DEF  WINOFF,WINPAR,WINLIN
+       DEF  WINOFF,WINPAR,WINLIN,WINMGN
        DEF  CURSCN
 * KEY.TXT
        DEF  TIMER,PREVKY,KEYBUF
@@ -150,6 +150,9 @@ WINOFF BSS  2
 WINPAR BSS  2
 * First line of paragraph on screen
 WINLIN BSS  2
+* If WINMGN = -1 and top screen paragraph has margin entry, display it.
+* If WINMGN = 0, do not display margin entry for top paragraph.
+WINMGN BSS  2
 * Position of flashing cursor on screen
 CURSCN BSS  2
 

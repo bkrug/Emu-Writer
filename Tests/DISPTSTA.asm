@@ -6,10 +6,12 @@
        REF  AEQ,ANEQ,AL
        REF  DISP,PARLST,FMTLST,MGNLST
        REF  PARINX
-       REF  WINOFF,WINPAR,WINLIN,WINMOD
+       REF  WINOFF,WINPAR,WINLIN,WINMGN,WINMOD
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN
        REF  ERRMEM
+
+INV    EQU  >80
 
 *
 * Simulated screen
@@ -31,6 +33,12 @@ MGN5   DATA 1,3
 *
 MGN32  DATA 1,3
        DATA 0,>0020,>0A0A,>0A0A
+*
+* A Margin list with entries for two paragraphs
+*
+MGNTWO DATA 2,3
+       DATA 5,>0006,>0C0C,>0000
+       DATA 7,>0010,>0A0A,>0000
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Window moved.
@@ -54,6 +62,13 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * One-line paragraph with horizontal offset smaller than indent.
        DATA DSP17
        TEXT 'DSP17 '
+* The 1st and 3rd paragraphs on the
+* screen both have margin entries.
+* Both margin entries are visible on
+* screen, but we only need to redraw
+* the 3rd one.
+       DATA DSP18
+       TEXT 'DSP18 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1065,6 +1080,145 @@ SCRN17 TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
+       TEXT '                                        '
+
+*
+* The 1st and 3rd paragraphs on the
+* screen both have margin entries.
+* Both margin entries are visible on
+* screen, but we only need to redraw
+* the 3rd one.
+*
+DSP18
+* Arrange
+       DECT R10
+       MOV  R11,*R10
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently on
+* the 3rd visible paragraph and window
+* is on the 2nd paragraph in document.
+       LI   R0,PARL18
+       MOV  R0,@PARLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       CLR  @WINMOD
+       SETO @WINMGN
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+* Imply that the window has moved.
+       CLR  R0
+       SOC  @STSTYP,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN18
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+PARL18 DATA 6,1
+       DATA PAR18C
+       DATA PAR18D
+       DATA PAR18E
+       DATA PAR18F
+       DATA PAR18G
+       DATA PAR18H
+
+PAR18C DATA -1
+       DATA WRP18C
+       TEXT '...'
+       EVEN
+WRP18C DATA 5,1,-1,-1,-1,-1,-1
+PAR18D DATA -1
+       DATA WRP18D
+       TEXT '...'
+       EVEN
+WRP18D DATA 5,1,-1,-1,-1,-1,-1
+PAR18E DATA 468
+       DATA WRP18E
+       TEXT '...'
+       EVEN
+WRP18E DATA 8,1
+       DATA 62
+       DATA 62+58
+       DATA 62+58+55
+       DATA 62+58+55+53
+       DATA 62+58+55+53+54
+       DATA 62+58+55+53+54+59
+       DATA 62+58+55+53+54+59+55
+       DATA 62+58+55+53+54+59+55+59       
+PAR18F DATA 316
+       DATA WRP18F
+       TEXT '...'
+       EVEN
+WRP18F DATA 5,1
+       DATA 57
+       DATA 57+61
+       DATA 57+61+60
+       DATA 57+61+60+59
+       DATA 57+61+60+59+58
+PAR18G DATA 279
+       DATA WRP18G
+       TEXT 'In 1916, he moved to the United States and '
+       TEXT 'established a '
+       TEXT 'UNIA branch in New York City"s Harlem '
+       TEXT 'district. Emphasising '
+       TEXT 'unity between Africans and the African '
+       TEXT 'diaspora, he '
+       TEXT 'campaigned for an end to European colonial '
+       TEXT 'rule across '
+       TEXT 'Africa and the political unification of '
+       TEXT 'the continent.'
+WRP18G DATA 4,1
+       DATA 57
+       DATA 57+60
+       DATA 57+60+52
+       DATA 57+60+52+55
+PAR18H DATA 274
+       DATA WRP18H
+       TEXT '...'
+WRP18H DATA 4,1
+       DATA 53
+       DATA 53+59
+       DATA 53+59+59
+       DATA 53+59+59+59
+
+SCRN18 TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       TEXT '                                        '
+       BYTE 'M'+INV,'G'+INV,'N'+INV
+       TEXT '                                     '
+       TEXT 'In 1916, he moved to the United States a'
+       TEXT 'UNIA branch in New York City"s Harlem di'
+       TEXT 'unity between Africans and the African d'
+       TEXT 'campaigned for an end to European coloni'
+       TEXT 'Africa and the political unification of '
        TEXT '                                        '
 
 ********
