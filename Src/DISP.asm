@@ -6,11 +6,11 @@
 *
        DEF  DISP
 * Methods for writing to VDP
-       REF  VDPADR,VDPWRT,VDPSPC
+       REF  VDPADR,VDPWRT,VDPINV,VDPSPC
 * From UTIL
        REF  GETIDT
 * From POSUPD
-       REF  GETROW
+       REF  GETROW,MGNADR
 *
        REF  DISPWS
        REF  PARLST,FMTLST,MGNLST
@@ -34,12 +34,12 @@ DISP   DATA DISPWS,DISP+4
 * Let R12 = starting screen row
        LI   R12,HDRHGT
        C    R9,@WINPAR
-       JEQ  DISP0
+       JEQ  DISP1
 *
        MOV  R9,R0
        BL   @GETROW
        MOV  R0,R12
-DISP0
+DISP1
 * Set initial VDP address
        BL   @VDPSTR
        
@@ -50,10 +50,27 @@ DISP0
 * Let R2 = starting paragraph-line
        CLR  R2
        C    @WINPAR,R9
-       JNE  DISP1
+       JNE  DISP2
        MOV  @WINLIN,R2
-* Let R3 = address of starting paragraph
-DISP1  MOV  R9,R3
+DISP2
+* Is there a margin list entry?
+* Let R1 = address of margin entry
+       MOV  R9,R0
+       BL   @MGNADR
+       MOV  R1,R1
+       JEQ  DISP3
+* Yes, display it.
+       LI   R0,MGNDSP
+       BL   @VDPINV
+       LI   R1,SCRNWD-3
+       BL   @VDPSPC
+* Track screen-row
+       INC  R12
+       CI   R12,24
+       JHE  DISP5
+DISP3
+* Let R3 = address of paragraph
+       MOV  R9,R3
        BL   @PARADR
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph
@@ -69,7 +86,7 @@ DISP1  MOV  R9,R3
        S    R2,R6
        A    R2,R5
        A    R2,R5
-DISP2
+DISP4
 * Decrease remaining paragraph-lines
        DEC  R6       
 * Write a row of text
@@ -77,21 +94,21 @@ DISP2
 * Track screen-row
        INC  R12
        CI   R12,24
-       JHE  DISP3
+       JHE  DISP5
 * No longer on first paragraph-line
        INC  R2
 * Check if this is last paragraph-line
        MOV  R6,R6
-       JNE  DISP2
+       JNE  DISP4
 * Increment paragraph-index
        INC  R9
 * Set starting line of paragraph.
        CLR  R2
 * Continue with next paragraph?
        BL   @NXTPAR
-       JEQ  DISP1
+       JEQ  DISP2
 *
-DISP3  RTWP
+DISP5  RTWP
 
 ********* Sub-Routines *********
 
@@ -418,5 +435,9 @@ NXT1
        BL   @VDPSPC
 *
        JMP  NXTNO
+
+MGNDSP TEXT 'MGN'
+       BYTE 0
+       EVEN
 
        END

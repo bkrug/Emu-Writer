@@ -1,6 +1,6 @@
        DEF  TSTLST,RSLTFL
 * Mocked methods
-       DEF  VDPADR,VDPWRT,VDPSPC
+       DEF  VDPADR,VDPWRT,VDPINV,VDPSPC
 *
        REF  ABLCK,AOC,AZC
        REF  AEQ,ANEQ,AL
@@ -37,8 +37,8 @@ MGN32  DATA 1,3
 * A Margin list with entries for two paragraphs
 *
 MGNTWO DATA 2,3
-       DATA 5,>0006,>0C0C,>0000
-       DATA 7,>0010,>0A0A,>0000
+       DATA 2,>0000,>0C0C,>0000
+       DATA 4,>0000,>0A0A,>0000
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Window moved.
@@ -1195,7 +1195,9 @@ WRP18H DATA 4,1
        DATA 53+59+59
        DATA 53+59+59+59
 
+
 SCRN18 TEXT '                                        '
+       TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
        TEXT '                                        '
@@ -1219,7 +1221,6 @@ SCRN18 TEXT '                                        '
        TEXT 'unity between Africans and the African d'
        TEXT 'campaigned for an end to European coloni'
        TEXT 'Africa and the political unification of '
-       TEXT '                                        '
 
 ********
 
@@ -1302,6 +1303,32 @@ WDPWER LI   R0,SCRNED
 WDPWM  TEXT 'Routine attempted to write past '
        TEXT 'end of the screen.'
 WDPWME
+
+*
+* Write Inverted Text
+*
+* R0 = address of text to write
+VDPINV
+* Save R2 incase caller needs it later
+       MOV  R2,@SAVER2
+* Get fake VDP address
+       MOV  @VADR,R2
+*
+       MOVB *R0,R1
+       JEQ  WDPINE
+* Write to fake VDP RAM
+WDPIN1 CI   R2,SCRNED
+       JHE  WDPWER
+       MOVB *R0+,R1
+       AI   R1,>8000
+       MOVB R1,*R2+
+       MOVB *R0,R1
+       JNE  WDPIN1
+* Update next write position
+       MOV  R2,@VADR
+*
+WDPINE MOV  @SAVER2,R2
+       RT
 
 *
 * Write multiple spaces to VDP

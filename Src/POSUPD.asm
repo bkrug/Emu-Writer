@@ -1,17 +1,17 @@
-       DEF  POSUPD,GETROW
+       DEF  POSUPD,GETROW,MGNADR
 *
        REF  POSUWS
 *
        REF  STSWIN
 *
-       REF  GETIDT                     From UTIL.asm
+       REF  GETMGN,GETIDT              From UTIL.asm
        REF  ARYADR                     From ARRAY.asm
 *
        REF  PARLST,MGNLST
        REF  FORTY
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
-       REF  WINOFF,WINPAR,WINLIN
+       REF  WINOFF,WINPAR,WINLIN,WINMGN
        REF  CURSCN,WINMOD
 
        TEXT 'POSUPD' 
@@ -230,10 +230,13 @@ UPCURS DECT R10
 *   R0: requested paragraph
 * Output:
 *   R0: screen row
+*   R1: address of MGNLST entry
+*       0 = there is no MGNLST entry for this paragraph
 * (Note that the output can be a negative number
 * if the paragraph's first line is above the screen)
 *
-GETROW
+GETROW DECT R10
+       MOV  R11,*R10
 * Let R3 = requested paragraph
        MOV  R0,R3
 * Find number of paragraph-lines 
@@ -244,7 +247,7 @@ GETROW
        S    @WINLIN,R4
 * Is R2 pointing to the cursor paragraph yet?
 GR1    C    R2,R3
-       JEQ  GR2
+       JEQ  GR4
 * Let R1 = address in PARLST
        MOV  @PARLST,R0
        MOV  R2,R1
@@ -256,16 +259,70 @@ GR1    C    R2,R3
 * Increase R4 by number of lines in paragraph
        A    *R1,R4
        INC  R4
+* Does the current paragraph have a MGNLST entry?
+       MOV  R2,R0
+       BL   @MGNADR
+       MOV  R1,R1
+       JEQ  GR3
+* Yes, does R2 either contain an index
+* different from the first paragraph on
+* screen, or are we supposed to display
+* the Margin entry for the first visible
+* paragraph?
+       C    @WINPAR,R2
+       JNE  GR2
+       MOV  @WINMGN,R0
+       JEQ  GR3
+       MOV  @WINLIN,R0
+       JNE  GR3
+* We will display the Margin entry
+* for whatever paragraph is in R2.
+* So increment the screen row count.
+GR2    INC  R4
 * Loop to next paragraph
-       INC  R2
+GR3    INC  R2
        JMP  GR1
 *
-GR2
+GR4
 * Increase R4 to account for screen
 * header rows
        AI   R4,HDRHGT
-*
+* Let R1 = address of paragraph's margin entry
+       MOV  R3,R0
+       BL   @MGNADR
+* Let R0 = screen row
        MOV  R4,R0
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Get address of paragraph's
+* Margin entry
+*
+* Input:
+*   R0: paragraph index
+* Output:
+*   R1: address of margin entry, if any
+*
+MGNADR DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R0,*R10
+* Get MGNLST entry for this paragraph
+       BL   @GETMGN
+       MOV  R0,R1
+       JEQ  MA1
+* Is the entry pointing to an earlier paragraph?
+* top of stack contains original input for R0
+       C    *R1,*R10
+       JEQ  MA1
+* No, the entry is for a different paragraph.
+       CLR  R1
+*
+MA1
+       MOV  *R10+,R0
+       MOV  *R10+,R11
        RT
 
        END
