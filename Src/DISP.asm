@@ -15,7 +15,8 @@
        REF  DISPWS
        REF  PARLST,FMTLST,MGNLST
        REF  PARINX
-       REF  WINOFF,WINPAR,WINLIN,WINMOD
+       REF  WINOFF,WINPAR,WINLIN,WINMGN
+       REF  WINMOD
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN
        REF  ERRMEM
@@ -52,6 +53,13 @@ DISP1
        C    @WINPAR,R9
        JNE  DISP2
        MOV  @WINLIN,R2
+* Since we got here, we will re-display
+* the screen's top paragraph.
+* Should we display the margin entry?
+       JNE  DISP3
+       MOV  @WINMGN,R0
+       JEQ  DISP3
+* Yes, if one exists for this paragraph.
 DISP2
 * Is there a margin list entry?
 * Let R1 = address of margin entry

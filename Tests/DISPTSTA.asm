@@ -69,6 +69,20 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * the 3rd one.
        DATA DSP18
        TEXT 'DSP18 '
+* The 1st and 3rd paragraphs on the
+* screen both have margin entries.
+* The margin entry for the top paragraph
+* is not visible on screen.
+* We only need to redraw the 3rd one.
+       DATA DSP19
+       TEXT 'DSP19 '
+* The 1st and 3rd paragraphs on the
+* screen both have margin entries.
+* The top paragraph's top line
+* is not visible on screen.
+* We only need to redraw the 3rd one.
+       DATA DSP20
+       TEXT 'DSP20 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1109,13 +1123,13 @@ DSP18
        LI   R0,0
        MOV  R0,@WINLIN
        CLR  @WINMOD
-       SETO @WINMGN
+       SETO @WINMGN                      Display top paragraph's margin entry if we can also see line 0
        LI   R0,MGNTWO
        MOV  R0,@MGNLST
 * Act
 * Imply that the window has moved.
        CLR  R0
-       SOC  @STSTYP,R0
+       SOC  @STSWIN,R0
        BLWP @DISP
 * Assert
        LI   R0,SCRN18
@@ -1128,13 +1142,12 @@ DSP18
        MOV  *R10+,R11
        RT
 
-PARL18 DATA 6,1
+PARL18 DATA 5,1
        DATA PAR18C
        DATA PAR18D
        DATA PAR18E
        DATA PAR18F
        DATA PAR18G
-       DATA PAR18H
 
 PAR18C DATA -1
        DATA WRP18C
@@ -1148,7 +1161,23 @@ PAR18D DATA -1
 WRP18D DATA 5,1,-1,-1,-1,-1,-1
 PAR18E DATA 468
        DATA WRP18E
-       TEXT '...'
+       TEXT 'Marcus Mosiah Garvey Jr. ONH '
+       TEXT '(17 August 1887 to 10 June 1940) '
+       TEXT 'was a Jamaican political activist, '
+       TEXT 'publisher, journalist, '
+       TEXT 'entrepreneur, and orator. He was the '
+       TEXT 'founder and first '
+       TEXT 'President_General of the Universal '
+       TEXT 'Negro Improvement '
+       TEXT 'Association and African Communities '
+       TEXT 'League (UNIA_ACL, '
+       TEXT 'commonly known as UNIA), through which '
+       TEXT 'he declared himself '
+       TEXT 'Provisional President of Africa. '
+       TEXT 'Ideologically a black '
+       TEXT 'nationalist and Pan_Africanist, his '
+       TEXT 'ideas came to be known '
+       TEXT 'as Garveyism.'
        EVEN
 WRP18E DATA 8,1
        DATA 62
@@ -1161,7 +1190,17 @@ WRP18E DATA 8,1
        DATA 62+58+55+53+54+59+55+59       
 PAR18F DATA 316
        DATA WRP18F
-       TEXT '...'
+       TEXT 'Garvey was born to a moderately '
+       TEXT 'prosperous Afro-Jamaican '
+       TEXT 'family in Saint Ann"s Bay, Colony '
+       TEXT 'of Jamaica and apprenticed '
+       TEXT 'into the print trade as a teenager. '
+       TEXT 'Working in Kingston, he '
+       TEXT 'became involved in trade unionism '
+       TEXT 'before living briefly in '
+       TEXT 'Costa Rica, Panama, and England. '
+       TEXT 'Returning to Jamaica, he '
+       TEXT 'founded UNIA in 1914.'
        EVEN
 WRP18F DATA 5,1
        DATA 57
@@ -1186,34 +1225,26 @@ WRP18G DATA 4,1
        DATA 57+60
        DATA 57+60+52
        DATA 57+60+52+55
-PAR18H DATA 274
-       DATA WRP18H
-       TEXT '...'
-WRP18H DATA 4,1
-       DATA 53
-       DATA 53+59
-       DATA 53+59+59
-       DATA 53+59+59+59
-
 
 SCRN18 TEXT '                                        '
        TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
-       TEXT '                                        '
+       BYTE 'M'+INV,'G'+INV,'N'+INV
+       TEXT '                                     '
+       TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT 'Garvey was born to a moderately prospero'
+       TEXT 'family in Saint Ann"s Bay, Colony of Jam'
+       TEXT 'into the print trade as a teenager. Work'
+       TEXT 'became involved in trade unionism before'
+       TEXT 'Costa Rica, Panama, and England. Returni'
+       TEXT 'founded UNIA in 1914.                   '
        BYTE 'M'+INV,'G'+INV,'N'+INV
        TEXT '                                     '
        TEXT 'In 1916, he moved to the United States a'
@@ -1221,6 +1252,150 @@ SCRN18 TEXT '                                        '
        TEXT 'unity between Africans and the African d'
        TEXT 'campaigned for an end to European coloni'
        TEXT 'Africa and the political unification of '
+
+*
+* The 1st and 3rd paragraphs on the
+* screen both have margin entries.
+* The margin entry for the top paragraph
+* is not visible on screen.
+* We only need to redraw the 3rd one.
+*
+DSP19
+* Arrange
+       DECT R10
+       MOV  R11,*R10
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently on
+* the 3rd visible paragraph and window
+* is on the 2nd paragraph in document.
+       LI   R0,PARL18
+       MOV  R0,@PARLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       CLR  @WINMOD
+       CLR  @WINMGN                      * top paragraph's margin not visible
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+* Imply that the window has moved.
+       CLR  R0
+       SOC  @STSWIN,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN19
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+SCRN19 TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT 'Garvey was born to a moderately prospero'
+       TEXT 'family in Saint Ann"s Bay, Colony of Jam'
+       TEXT 'into the print trade as a teenager. Work'
+       TEXT 'became involved in trade unionism before'
+       TEXT 'Costa Rica, Panama, and England. Returni'
+       TEXT 'founded UNIA in 1914.                   '
+       BYTE 'M'+INV,'G'+INV,'N'+INV
+       TEXT '                                     '
+       TEXT 'In 1916, he moved to the United States a'
+       TEXT 'UNIA branch in New York City"s Harlem di'
+       TEXT 'unity between Africans and the African d'
+       TEXT 'campaigned for an end to European coloni'
+       TEXT 'Africa and the political unification of '
+       TEXT '                                        '
+
+*
+* The 1st and 3rd paragraphs on the
+* screen both have margin entries.
+* The top paragraph's top line
+* is not visible on screen.
+* We only need to redraw the 3rd one.
+*
+DSP20
+* Arrange
+       DECT R10
+       MOV  R11,*R10
+* Clear simulated VDP RAM
+       BL   @CLRVDP
+* Imply that the cursor is currently on
+* the 3rd visible paragraph and window
+* is on the 2nd paragraph in document.
+       LI   R0,PARL18
+       MOV  R0,@PARLST
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,2
+       MOV  R0,@WINPAR
+       LI   R0,1
+       MOV  R0,@WINLIN
+       CLR  @WINMOD
+       SETO @WINMGN                      Display top paragraph's margin entry if we can also see line 0
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+* Imply that the window has moved.
+       CLR  R0
+       SOC  @STSWIN,R0
+       BLWP @DISP
+* Assert
+       LI   R0,SCRN20
+       LI   R1,MKSCRN
+       LI   R2,24*40
+       LI   R3,MSCNW
+       LI   R4,MSCNWE-MSCNW
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+SCRN20 TEXT '                                        '
+       TEXT '                                        '
+       TEXT 'was a Jamaican political activist, publi'
+       TEXT 'entrepreneur, and orator. He was the fou'
+       TEXT 'President_General of the Universal Negro'
+       TEXT 'Association and African Communities Leag'
+       TEXT 'commonly known as UNIA), through which h'
+       TEXT 'Provisional President of Africa. Ideolog'
+       TEXT 'nationalist and Pan_Africanist, his idea'
+       TEXT 'as Garveyism.                           '
+       TEXT 'Garvey was born to a moderately prospero'
+       TEXT 'family in Saint Ann"s Bay, Colony of Jam'
+       TEXT 'into the print trade as a teenager. Work'
+       TEXT 'became involved in trade unionism before'
+       TEXT 'Costa Rica, Panama, and England. Returni'
+       TEXT 'founded UNIA in 1914.                   '
+       BYTE 'M'+INV,'G'+INV,'N'+INV
+       TEXT '                                     '
+       TEXT 'In 1916, he moved to the United States a'
+       TEXT 'UNIA branch in New York City"s Harlem di'
+       TEXT 'unity between Africans and the African d'
+       TEXT 'campaigned for an end to European coloni'
+       TEXT 'Africa and the political unification of '
+       TEXT '                                        '
+       TEXT '                                        '
 
 ********
 
