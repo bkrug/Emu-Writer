@@ -129,9 +129,14 @@ UPWTOP
        C    @WINLIN,@LININX
        JLE  CHKDWN
 * Cursor is earlier in the document
-* than the screen. Scroll the screen up.
+* than the screen.
+* Scroll the screen up.
+* Turn off display of top paragraph's
+* margin entry.
 UPWUP  MOV  @PARINX,@WINPAR
        MOV  @LININX,@WINLIN
+       CLR  @WINMGN
+*
        SOC  @STSWIN,*R13
        RT
 
