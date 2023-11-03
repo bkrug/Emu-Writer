@@ -9,7 +9,7 @@
        REF  PARLST,MGNLST
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
-       REF  WINOFF,WINPAR,WINLIN
+       REF  WINOFF,WINPAR,WINLIN,WINMGN
        REF  CURSCN,WINMOD
 
        COPY '../Src/EQUKEY.asm'
@@ -226,6 +226,18 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * there is no window offset.
        DATA CUR4
        TEXT 'CUR4  '
+* Calculate cursor position,
+* when two visible paragraphs have margin entries,
+* both margin entries are visible,
+* and the cursor is in the second of those two paragraphs.
+       DATA CUR5
+       TEXT 'CUR5  '
+* Calculate cursor position,
+* when two visible paragraphs have margin entries,
+* only the second margin entry is visible,
+* and the cursor is a paragraph later than either.
+       DATA CUR6
+       TEXT 'CUR6  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -247,6 +259,12 @@ MGN5   DATA 1,3
 *
 MGN32  DATA 1,3
        DATA 0,>0020,>0A0A,>0A0A
+*
+* Margin List with two entries
+*
+MGNTWO DATA 2,3
+       DATA 4,>0000,>0A0B,>0A0A
+       DATA 6,>0000,>0D0C,>0A0A
 
 *
 * Calculate LININX and CHRLIX
@@ -1983,13 +2001,16 @@ CUR1
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,5
        MOV  R0,@PARINX
        LI   R0,48+57+54+(5)
        MOV  R0,@CHRPAX
        LI   R0,0
        MOV  R0,@WINOFF
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -2039,13 +2060,16 @@ CUR2
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,5
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,5
        MOV  R0,@PARINX
        LI   R0,48+57+54+(12)
        MOV  R0,@CHRPAX
        LI   R0,0
        MOV  R0,@WINOFF
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -2098,12 +2122,15 @@ CUR3
        MOV  R0,@WINPAR
        LI   R0,2
        MOV  R0,@WINLIN       
+       CLR  @WINMGN
        LI   R0,6
        MOV  R0,@PARINX
        LI   R0,55+49+60+59+53+51+58+(49)
        MOV  R0,@CHRPAX
        LI   R0,0
        MOV  R0,@WINOFF
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -2154,13 +2181,16 @@ CUR4
        LI   R0,3
        MOV  R0,@WINPAR
        LI   R0,1
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,3
        MOV  R0,@PARINX
        LI   R0,55+49+60+59+53+51+58+(25)
        MOV  R0,@CHRPAX
        LI   R0,0
        MOV  R0,@WINOFF
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -2179,6 +2209,125 @@ CUR4
 * Cursor should be in row 17, column 5 of text area
 * add two more rows for the screen header
        LI   R0,(HDRHGT*40)+(6*40)+25
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
+*
+* Calculate cursor position,
+* when the cursor is in the first paragraph visible on screen,
+* there is no window offset.
+*
+* paragraph list
+LINC5  DATA (LINC5E-LINC5-4)/2,1
+       DATA PARC5
+       DATA PARC1L
+       DATA PARC9
+       DATA PARC1S
+       DATA PARC5       * Top visible paragraph
+       DATA PARC3
+       DATA PARC9       * Cursor paragraph
+       DATA PARC3
+LINC5E
+*
+CUR5
+* Arrange
+       LI   R0,LINC5
+       MOV  R0,@PARLST
+       LI   R0,4
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       SETO @WINMGN
+       LI   R0,6
+       MOV  R0,@PARINX
+       LI   R0,55+(25)
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,25
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+* Cursor should be in row 11, column 25 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(11*40)+25
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
+*
+* Calculate cursor position,
+* when two visible paragraphs have margin entries,
+* only the second margin entry is visible,
+* and the cursor is a paragraph later than either.
+*
+* paragraph list
+LINC6  DATA (LINC6E-LINC6-4)/2,1
+       DATA PARC5
+       DATA PARC1L
+       DATA PARC9
+       DATA PARC1S
+       DATA PARC5       * Top visible paragraph
+       DATA PARC3
+       DATA PARC9       * Has mgn entry
+       DATA PARC3       * Cursor paragraph
+LINC6E
+*
+CUR6
+* Arrange
+       LI   R0,LINC6
+       MOV  R0,@PARLST
+       LI   R0,4
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
+       LI   R0,7
+       MOV  R0,@PARINX
+       LI   R0,12
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,12
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+* Cursor should be in row 18, column 28 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(18*40)+12
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
