@@ -238,6 +238,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * and the cursor is a paragraph later than either.
        DATA CUR6
        TEXT 'CUR6  '
+* Calculate cursor position,
+* when top visible paragraph has a margin entry,
+* but margin entry is not visible,
+* and the cursor is in that same paragraph.
+       DATA CUR7
+       TEXT 'CUR7  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -2328,6 +2334,66 @@ CUR6
 * Cursor should be in row 18, column 28 of text area
 * add two more rows for the screen header
        LI   R0,(HDRHGT*40)+(18*40)+12
+       MOV  @CURSCN,R1
+       LI   R2,WCURM
+       LI   R3,WCURME-WCURM
+       BLWP @AEQ
+*
+       RT
+
+*
+* Calculate cursor position,
+* when top visible paragraph has a margin entry,
+* but margin entry is not visible,
+* and the cursor is in that same paragraph.
+*
+* paragraph list
+LINC7  DATA (LINC7E-LINC7-4)/2,1
+       DATA PARC5
+       DATA PARC1L
+       DATA PARC9
+       DATA PARC1S
+       DATA PARC5       * Top visible paragraph
+       DATA PARC3
+       DATA PARC9
+       DATA PARC3
+LINC7E
+*
+CUR7
+* Arrange
+       LI   R0,LINC7
+       MOV  R0,@PARLST
+       LI   R0,4
+       MOV  R0,@WINPAR
+       LI   R0,1
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,48+57+54+(14)
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,14
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,OFCNS
+       LI   R3,OFCNSE-OFCNS
+       BLWP @AEQ
+* Cursor should be in row 2, column 14 of text area
+* add two more rows for the screen header
+       LI   R0,(HDRHGT*40)+(2*40)+14
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM

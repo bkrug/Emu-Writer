@@ -208,11 +208,19 @@ UPCURS DECT R10
        MOV  @PARINX,R0
        BL   @GETROW
        MOV  R0,R4
-* If paragraph has a margin entry, add one line to R4
+* Does paragraph have a margin entry?
        MOV  R1,R1
-       JEQ  UPCR1
-       INC  R4
-UPCR1
+       JEQ  UPCR2
+* Yes, is it visible?
+       C    @WINPAR,@PARINX
+       JNE  UPCR1
+       MOV  @WINMGN,R0
+       JEQ  UPCR2
+* Yes, this is either not the top paragraph
+* or the top pararaph's margin entry is visible.
+* Add one line to R4.
+UPCR1  INC  R4
+UPCR2
 * Let R4 = screen row that the cursor sits on
        A    @LININX,R4
 * Let R5 = screen position based on lines in R4
