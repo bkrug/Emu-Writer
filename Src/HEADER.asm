@@ -111,8 +111,8 @@ DRWNUM DECT R10
        CLR  R1
        DIV  @TEN,R1
 * Convert each digit to the ASCII for an inverted digit
-       AI   R1,'0'+>80
-       AI   R2,'0'+>80
+       AI   R1,'0'+INV
+       AI   R2,'0'+INV
 * shift numbers to high byte, and send to screen
        LI   R0,TWODIG
        SLA  R1,8
