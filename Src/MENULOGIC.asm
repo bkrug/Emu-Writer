@@ -674,10 +674,10 @@ LOADCH
        LI   R1,VDPRD
        LI   R2,LOADED
        LI   R3,>800
-GOCCH2
+LCH2
        MOVB *R1,*R2+
        DEC  R3
-       JNE  GOCCH2
+       JNE  LCH2
 *
        MOV  *R10+,R3
        MOV  *R10+,R2
