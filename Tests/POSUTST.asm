@@ -202,6 +202,25 @@ TSTLST DATA TSTEND-TSTLST-2/8
 *         but within the same paragraph.
        DATA WDWN7
        TEXT 'WDWN7 '
+* The cursor is low enough, that the window
+* must scroll down.
+* The top paragraph will have a margin entry
+* and the user will be able to see it.
+       DATA WDWN8
+       TEXT 'WDWN8 '
+* The cursor is low enough, that the window
+* must scroll down.
+* The top paragraph will have a margin entry
+* and the user will be able to see the
+* paragraph's top line, but not the margin entry.
+       DATA WDWN9
+       TEXT 'WDWN9 '
+* The cursor is low enough, that the window
+* must scroll down.
+* The top paragraph will have a margin entry
+* but top visible line of the paragaph is line 1.
+       DATA WDWN10
+       TEXT 'WDWN10'
 * ---
 * Calculate cursor position,
 * when the first line on screen is the first line of a paragraph,
@@ -1561,6 +1580,9 @@ BADP   TEXT 'Windows paragraph index is wrong.'
 BADPE
 BADL   TEXT 'Windows line index is wrong.'
 BADLE
+BADM   TEXT 'The value for displaying margin '
+       TEXT 'entry is wrong.'
+BADME
 
 *
 * Top of screen displays paragraph 2, line 0
@@ -1586,7 +1608,8 @@ WDWN1
        LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,5
        MOV  R0,@PARINX
        LI   R0,17
@@ -1640,7 +1663,8 @@ WDWN2
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,5
        MOV  R0,@PARINX
        LI   R0,60*2+17
@@ -1690,7 +1714,8 @@ WDWN3
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,60*7+17
@@ -1747,7 +1772,8 @@ WDWN4
        LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,7
        MOV  R0,@PARINX
        LI   R0,17
@@ -1803,7 +1829,8 @@ WDWN5
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,0
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,6
        MOV  R0,@PARINX
        LI   R0,2*60+17
@@ -1856,7 +1883,8 @@ WDWN6
        LI   R0,2
        MOV  R0,@WINPAR
        LI   R0,2
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,4
        MOV  R0,@PARINX
        LI   R0,1*60+17
@@ -1907,7 +1935,8 @@ WDWN7
        LI   R0,1
        MOV  R0,@WINPAR
        LI   R0,1
-       MOV  R0,@WINLIN       
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
        LI   R0,1
        MOV  R0,@PARINX
        LI   R0,24*60+17
@@ -1930,6 +1959,190 @@ WDWN7
        BLWP @AEQ
 *
        LI   R0,3
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       RT
+
+*
+* The cursor is low enough, that the window
+* must scroll down.
+* The top paragraph will have a margin entry
+* and the user will be able to see it.
+*
+LIND8  DATA (LIND8E-LIND8-4)/2,1
+       DATA PARD5          * Initial screen position
+       DATA PARD8
+       DATA PARD5
+       DATA PARD1
+       DATA PARD5          * Final screen position
+       DATA PARD5
+       DATA PARD8
+       DATA PARD5          * Cursor on line 1
+       DATA PARD5
+LIND8E
+WDWN8 
+* Arrange
+       LI   R0,LIND8
+       MOV  R0,@PARLST
+       LI   R0,0
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
+       LI   R0,7
+       MOV  R0,@PARINX
+       LI   R0,60+32
+       MOV  R0,@CHRPAX
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
+       LI   R0,4
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       SETO R0
+       MOV  @WINMGN,R1
+       LI   R2,BADM
+       LI   R3,BADME-BADM
+       BLWP @AEQ
+*
+       RT
+
+*
+* The cursor is low enough, that the window
+* must scroll down.
+* The top paragraph will have a margin entry
+* and the user will be able to see the
+* paragraph's top line, but not the margin entry.
+*
+LIND9  DATA (LIND9E-LIND9-4)/2,1
+       DATA PARD5          * Initial screen position
+       DATA PARD8
+       DATA PARD5
+       DATA PARD1
+       DATA PARD5          * Final screen position
+       DATA PARD5
+       DATA PARD8
+       DATA PARD5          * Cursor on line 2
+       DATA PARD5
+LIND9E
+WDWN9
+* Arrange
+       LI   R0,LIND9
+       MOV  R0,@PARLST
+       LI   R0,0
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       SETO @WINMGN
+       LI   R0,7
+       MOV  R0,@PARINX
+       LI   R0,120+32
+       MOV  R0,@CHRPAX
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
+       LI   R0,4
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,BADL
+       LI   R3,BADLE-BADL
+       BLWP @AEQ
+*
+       CLR  R0
+       MOV  @WINMGN,R1
+       LI   R2,BADM
+       LI   R3,BADME-BADM
+       BLWP @AEQ
+*
+       RT
+
+*
+* The cursor is low enough, that the window
+* must scroll down.
+* The top paragraph will have a margin entry
+* but top visible line of the paragaph is line 1.
+*
+LIND10 DATA (LIN10E-LIND10-4)/2,1
+       DATA PARD5          * Initial screen position
+       DATA PARD8
+       DATA PARD5
+       DATA PARD1
+       DATA PARD5          * Final screen position
+       DATA PARD5
+       DATA PARD8
+       DATA PARD5          * Cursor on line 3
+       DATA PARD5
+LIN10E
+WDWN10
+* Arrange
+       LI   R0,LIND10
+       MOV  R0,@PARLST
+       LI   R0,0
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       CLR  @WINMGN
+       LI   R0,7
+       MOV  R0,@PARINX
+       LI   R0,180+32
+       MOV  R0,@CHRPAX
+       LI   R0,MGNTWO
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+* Document status reports window moved
+       MOV  R0,R1
+       MOV  @STSWIN,R0
+       LI   R2,MWINN
+       LI   R3,MWINNE-MWINN
+       BLWP @AOC
+*
+       LI   R0,4
+       MOV  @WINPAR,R1
+       LI   R2,BADP
+       LI   R3,BADPE-BADP
+       BLWP @AEQ
+*
+       LI   R0,1
        MOV  @WINLIN,R1
        LI   R2,BADL
        LI   R3,BADLE-BADL
@@ -2224,8 +2437,9 @@ CUR4
 
 *
 * Calculate cursor position,
-* when the cursor is in the first paragraph visible on screen,
-* there is no window offset.
+* when two visible paragraphs have margin entries,
+* both margin entries are visible,
+* and the cursor is in the second of those two paragraphs.
 *
 * paragraph list
 LINC5  DATA (LINC5E-LINC5-4)/2,1

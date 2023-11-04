@@ -119,7 +119,8 @@ UPW3   RT
 * Scroll the window up or down based on
 * cursor paragraph and line
 *
-UPWTOP
+UPWTOP DECT R10
+       MOV  R11,*R10
 * Check if cursor is earlier in the 
 * document than the first line on the
 * screen or not.
@@ -138,6 +139,8 @@ UPWUP  MOV  @PARINX,@WINPAR
        CLR  @WINMGN
 *
        SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
        RT
 
 * Check if the cursor is later in the
@@ -154,7 +157,17 @@ CHKDWN
        MOV  @LININX,R3
 * Let R4 = number of lines to look upwards
        LI   R4,TXTHGT-1
+* Let R5 = value of WINMGN if screen actually scrolls
+       CLR  R5
 CD1
+* Does the paragraph have a margin entry?
+       MOV  R2,R0
+       BL   @MGNADR
+       MOV  R1,R1
+       JEQ  CD1B
+* Yes, increase reported size of paragraph by one line
+       INC  R3
+CD1B
 * Is number of remaining lines moving backwards
 * smaller than remaining lines in this paragraph?
        C    R4,R3
@@ -180,6 +193,17 @@ CD1
        JMP  CD1
 * Earliest acceptable line is in this paragraph
 CD2    S    R4,R3
+* Is this a paragraph with a Margin Entry?       
+       MOV  R1,R1
+       JEQ  CD4
+* Yes, so R3 is one line too large.
+       DEC  R3
+       JGT  CD4
+       JEQ  CD4
+* Actually, R3 was fine,
+* but we need to display the margin entry. 
+       CLR  R3       
+       SETO R5
        JMP  CD4
 * Earliest acceptable line is the beginning of the document
 CD3    CLR  R2
@@ -199,10 +223,12 @@ CD4
 * WINPAR and WINLIN are pointing to a paragraph that is too early.
 CD5    MOV  R2,@WINPAR
        MOV  R3,@WINLIN
+       MOV  R5,@WINMGN
 * Redraw whole screen
        SOC  @STSWIN,*R13
 *
-CD6    RT
+CD6    MOV  *R10+,R11
+       RT
 
 *
 * Update cursor's position on screen
@@ -322,6 +348,7 @@ GR4
 *   R0: paragraph index
 * Output:
 *   R1: address of margin entry, if any
+*       holds 0, if the margin entry is not exact
 *
 MGNADR DECT R10
        MOV  R11,*R10
