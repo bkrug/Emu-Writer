@@ -756,6 +756,8 @@ FRSHST
 
 YES    TEXT 'Y'
 NO     TEXT 'N'
+MSGYN  TEXT 'Press only "Y" or "N"'
+       BYTE 0
        EVEN
 
 *
@@ -783,6 +785,7 @@ CHKNO  CB   @FLDVAL,@NO
        JEQ  MYBNN
 *
        SETO R0
+       LI   R1,MSGYN
        JMP  MYBNRT
 *
 MYBNY  BL   @INTDOC
