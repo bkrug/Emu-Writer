@@ -9,6 +9,7 @@
 
 *
        REF  INPUT
+       REF  INPTS,INPTE
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
@@ -27,6 +28,7 @@
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN,STSARW
 
+       COPY '../Src/CPUADR.asm'
 *
 INSKEY EQU  >04
 DELKEY EQU  >03
@@ -156,6 +158,17 @@ RSLTFE
 ****************************************
 
 TSTINT
+* In production, the code that we are testing
+* is initially loaded to address >E000,
+* copied to the VDP cache,
+* and then loaded to address LOADED when needed.
+* For the purposes of the tests, copy it straight
+* to address LOADED.
+       LI   R0,INPTS
+       LI   R1,LOADED
+       LI   R2,INPTE
+       S    R0,R2
+       BLWP @BUFCPY
 * Initialize buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE

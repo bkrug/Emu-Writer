@@ -36,7 +36,7 @@
        COPY 'EQUKEY.asm'
        COPY 'CPUADR.asm'
 
-       AORG >D000
+       AORG >F000
 INPTS
        XORG LOADED
 
