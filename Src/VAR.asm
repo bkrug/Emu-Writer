@@ -50,6 +50,8 @@
 * MENULOGIC.asm
        DEF  CURMNU
        DEF  FLDVAL,FLDVE
+* HEADER.asm
+       DEF  TWODIG
 * End of Program
        DEF  MEMBEG,MEMEND
 
@@ -185,6 +187,11 @@ KEYRD  BSS  2
 CURMNU BSS  2
 FLDVAL BSS  80
 FLDVE
+
+* HEADER.asm
+* Space for ASCII for two-digit number
+TWODIG BSS  2
+
 VAREND
        TEXT 'ENDOFPRG'
 

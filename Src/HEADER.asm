@@ -1,11 +1,12 @@
-       DEF  WRTHDR,ADJHDR
+       DEF  WRTHDR,ADJHDR,DRWMGN
 *
-       REF  VDPADR
-       REF  VDPINV,VDPSPI
+       REF  VDPADR,VDPWRT            From VDP.asm
+       REF  VDPINV,VDPSPI            "
        REF  STSWIN,STSDSH,ERRMEM
        REF  PGWDTH
-       REF  GETMGN                From UTIL.asm
-       REF  PARINX,DOCSTS         From VAR.asm
+       REF  GETMGN                   From UTIL.asm
+       REF  PARINX,DOCSTS            From VAR.asm
+       REF  TWODIG
 
        COPY 'EQUKEY.asm'
        COPY 'CPUADR.asm'
@@ -41,32 +42,57 @@ WRTHDR
 * Draw second line
        LI   R0,SCRNWD
        BL   @VDPADR
-*
-       LI   R0,TEXT2
-       BL   @VDPINV
-* Get address of margin data
+* Let R0 = Get address of margin data
        MOV  @PARINX,R0
        BL   @GETMGN
-* If R0 = 0, then use defaults.
-       MOV  R0,R0
-       JNE  CONMGN
-       LI   R0,ORGMGN-2
-* Let R0 = address of indent
-CONMGN AI   R0,3
-* Convert Indent to ASCII
-       LI   R3,SCRNWD+15
-       MOVB *R0+,R2
-       BL   @DRWNUM
-* Convert Left Margin to ASCII
-       LI   R3,SCRNWD+3
-       MOVB *R0+,R2
-       BL   @DRWNUM
-* Convert Right Margin to ASCII
-       LI   R3,SCRNWD+9
-       MOVB *R0+,R2
-       BL   @DRWNUM
+* Write margin data
+       BL   @DRWMGN
 *
        MOV  *R10+,R0
+       MOV  *R10+,R11
+       RT
+
+*
+* Draw Margin data
+*
+* Input:
+*   VDP write address must have alredy been set
+*   R0 - address of margin entry
+*        or zero, if we should display defaults
+*
+DRWMGN DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R2,*R10
+* Let R3 = address of indent
+* If R3 = 0, then use defaults.
+       MOV  R0,R3
+       JNE  CONMGN
+       LI   R3,ORGMGN-2
+CONMGN
+* Draw left margin label
+       LI   R0,TXTLM
+       BL   @VDPINV
+* Convert Left Margin to ASCII
+       MOVB @LEFT(R3),R2
+       BL   @DRWNUM
+* Draw right margin label
+       LI   R0,TXTRM
+       BL   @VDPINV
+* Convert Right Margin to ASCII
+       MOVB @RIGHT(R3),R2
+       BL   @DRWNUM
+* Draw indented label
+       LI   R0,TXTIN
+       BL   @VDPINV
+* Convert Indent to ASCII
+       MOVB @INDENT(R3),R2
+       BL   @DRWNUM
+* Draw one more inverted space
+       LI   R1,1
+       BL   @VDPSPI
+*
+       MOV  *R10+,R2
        MOV  *R10+,R11
        RT
 
@@ -75,28 +101,27 @@ CONMGN AI   R0,3
 *
 * Input:
 *   R2 (high byte) - number to draw
-*   R3 - address on screen
 *
 DRWNUM DECT R10
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
-*
+* Place tens digit in R1 and ones digit in R2
        SRL  R2,8
        CLR  R1
        DIV  @TEN,R1
-       AI   R1,'0'
-       AI   R2,'0'
-* Set screen address to Second Line, Fourth Column
-       MOV  R3,R0
-       BL   @VDPADR
-* Draw number as inverted char
-       AI   R1,>80
+* Convert each digit to the ASCII for an inverted digit
+       AI   R1,'0'+>80
+       AI   R2,'0'+>80
+* shift numbers to high byte, and send to screen
+       LI   R0,TWODIG
        SLA  R1,8
-       MOVB R1,@VDPWD
-       AI   R2,>80
+       MOVB R1,*R0+
        SLA  R2,8
-       MOVB R2,@VDPWD
+       MOVB R2,*R0+
+       DECT R0
+       LI   R1,2
+       BL   @VDPWRT
 *
        MOV  *R10+,R0
        MOV  *R10+,R11
@@ -108,7 +133,11 @@ TEN    DATA 10
 ORGMGN DATA >0000,>0A0A,>0A0A
 TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
        BYTE 0
-TEXT2  TEXT 'LM:   RM:   IN:'
+TXTLM  TEXT 'LM:'
+       BYTE 0
+TXTRM  TEXT ' RM:'
+       BYTE 0
+TXTIN  TEXT ' IN:'
        BYTE 0
 MEMFUL TEXT 'Memory Full'
        BYTE 0

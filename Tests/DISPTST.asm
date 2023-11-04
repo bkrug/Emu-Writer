@@ -1,6 +1,7 @@
        DEF  TSTLST,RSLTFL
 * Mocked methods
-       DEF  VDPADR,VDPWRT,VDPSPC
+       DEF  VDPADR,VDPWRT,VDPINV
+       DEF  VDPSPC,VDPSPI
 *
        REF  ABLCK,AOC,AZC
        REF  AEQ,ANEQ,AL
@@ -1488,6 +1489,12 @@ WDPWM  TEXT 'Routine attempted to write past '
 WDPWME
 
 *
+* Write Inverted Text
+*
+* R0 = address of text to write
+VDPINV RT
+
+*
 * Write multiple spaces to VDP
 *
 * Input:
@@ -1501,6 +1508,7 @@ VDPSPC
        MOV  R2,@SAVER2
 *
        LI   R0,>2000
+VDPSP0
 * Get fake VDP address
        MOV  @VADR,R2
 *
@@ -1517,5 +1525,22 @@ VDPS1  CI   R2,SCRNED
 *
 VDPSED MOV  @SAVER2,R2
        RT
+
+*
+* Write multiple inverted spaces to VDP
+*
+* Input:
+* R1 - Number of bytes
+* Output:
+* R0 - >2000
+* R1 - 0
+* R2
+VDPSPI
+* Save R2 incase caller needs it later
+       MOV  R2,@SAVER2
+* Let R0 (high byte) = ASCII for inverted space
+       LI   R0,>A000
+*
+       JMP  VDPSP0
 
        END

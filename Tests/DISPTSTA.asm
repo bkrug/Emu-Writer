@@ -1,6 +1,7 @@
        DEF  TSTLST,RSLTFL
 * Mocked methods
-       DEF  VDPADR,VDPWRT,VDPINV,VDPSPC
+       DEF  VDPADR,VDPWRT,VDPINV
+       DEF  VDPSPC,VDPSPI
 *
        REF  ABLCK,AOC,AZC
        REF  AEQ,ANEQ,AL
@@ -37,8 +38,8 @@ MGN32  DATA 1,3
 * A Margin list with entries for two paragraphs
 *
 MGNTWO DATA 2,3
-       DATA 2,>0000,>0C0C,>0000
-       DATA 4,>0000,>0A0A,>0000
+       DATA 2,>0000,>0C0D,>0000
+       DATA 4,>0000,>0A0B,>0000
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Window moved.
@@ -1225,11 +1226,12 @@ WRP18G DATA 4,1
        DATA 57+60
        DATA 57+60+52
        DATA 57+60+52+55
-
 SCRN18 TEXT '                                        '
        TEXT '                                        '
-       BYTE 'M'+INV,'G'+INV,'N'+INV
-       TEXT '                                     '
+       BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'2'+INV,' '+INV
+       BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'3'+INV,' '+INV
+       BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
+       TEXT '                      '
        TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
        TEXT 'was a Jamaican political activist, publi'
        TEXT 'entrepreneur, and orator. He was the fou'
@@ -1245,8 +1247,10 @@ SCRN18 TEXT '                                        '
        TEXT 'became involved in trade unionism before'
        TEXT 'Costa Rica, Panama, and England. Returni'
        TEXT 'founded UNIA in 1914.                   '
-       BYTE 'M'+INV,'G'+INV,'N'+INV
-       TEXT '                                     '
+       BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'0'+INV,' '+INV
+       BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'1'+INV,' '+INV
+       BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
+       TEXT '                      '
        TEXT 'In 1916, he moved to the United States a'
        TEXT 'UNIA branch in New York City"s Harlem di'
        TEXT 'unity between Africans and the African d'
@@ -1316,8 +1320,10 @@ SCRN19 TEXT '                                        '
        TEXT 'became involved in trade unionism before'
        TEXT 'Costa Rica, Panama, and England. Returni'
        TEXT 'founded UNIA in 1914.                   '
-       BYTE 'M'+INV,'G'+INV,'N'+INV
-       TEXT '                                     '
+       BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'0'+INV,' '+INV
+       BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'1'+INV,' '+INV
+       BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
+       TEXT '                      '
        TEXT 'In 1916, he moved to the United States a'
        TEXT 'UNIA branch in New York City"s Harlem di'
        TEXT 'unity between Africans and the African d'
@@ -1387,8 +1393,10 @@ SCRN20 TEXT '                                        '
        TEXT 'became involved in trade unionism before'
        TEXT 'Costa Rica, Panama, and England. Returni'
        TEXT 'founded UNIA in 1914.                   '
-       BYTE 'M'+INV,'G'+INV,'N'+INV
-       TEXT '                                     '
+       BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'0'+INV,' '+INV
+       BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'1'+INV,' '+INV
+       BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
+       TEXT '                      '
        TEXT 'In 1916, he moved to the United States a'
        TEXT 'UNIA branch in New York City"s Harlem di'
        TEXT 'unity between Africans and the African d'
@@ -1519,6 +1527,7 @@ VDPSPC
        MOV  R2,@SAVER2
 *
        LI   R0,>2000
+VDPSP0
 * Get fake VDP address
        MOV  @VADR,R2
 *
@@ -1535,5 +1544,22 @@ VDPS1  CI   R2,SCRNED
 *
 VDPSED MOV  @SAVER2,R2
        RT
+
+*
+* Write multiple inverted spaces to VDP
+*
+* Input:
+* R1 - Number of bytes
+* Output:
+* R0 - >2000
+* R1 - 0
+* R2
+VDPSPI
+* Save R2 incase caller needs it later
+       MOV  R2,@SAVER2
+* Let R0 (high byte) = ASCII for inverted space
+       LI   R0,>A000
+*
+       JMP  VDPSP0
 
        END

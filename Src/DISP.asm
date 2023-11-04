@@ -11,6 +11,8 @@
        REF  GETIDT
 * From POSUPD
        REF  GETROW,MGNADR
+* From HEADER
+       REF  DRWMGN
 *
        REF  DISPWS
        REF  PARLST,FMTLST,MGNLST
@@ -68,9 +70,9 @@ DISP2
        MOV  R1,R1
        JEQ  DISP3
 * Yes, display it.
-       LI   R0,MGNDSP
-       BL   @VDPINV
-       LI   R1,SCRNWD-3
+       MOV  R1,R0
+       BL   @DRWMGN
+       LI   R1,SCRNWD-18
        BL   @VDPSPC
 * Track screen-row
        INC  R12
@@ -443,9 +445,5 @@ NXT1
        BL   @VDPSPC
 *
        JMP  NXTNO
-
-MGNDSP TEXT 'MGN'
-       BYTE 0
-       EVEN
 
        END
