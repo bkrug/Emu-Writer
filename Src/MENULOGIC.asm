@@ -8,7 +8,7 @@
        REF  VDPADR,VDPRAD                 From VDP.asm
        REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   "
        REF  VDPREA,VDPWRT                 "
-       REF  CCHMHM,CCHFSV                 From CACHETBL.asm
+       REF  CCHMHM,CCHFSV,CCHIPT          From CACHETBL.asm
        REF  STSWIN,STSTYP,STSARW
        REF  DRWCUR
        REF  CUROLD,CURRPL,CURMOD
@@ -78,12 +78,16 @@ MNULP
 * Set document status as if window has moved
        LI   R13,DOCSTS
        SOC  @STSWIN,*R13
+* Load INPUT from Cache
+       LI   R0,CCHIPT
+       MOV  *R0,R0
+       BL   @LOADCH
 *
        MOV  *R10+,@CURSCN
        MOV  *R10+,@CURRPL
        MOV  *R10+,@CURMOD
        MOV  *R10+,@CUROLD
-* Redraw the entire screen
+*
        MOV  *R10+,R0
 *
        MOV  *R10+,R11

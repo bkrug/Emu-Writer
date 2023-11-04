@@ -15,11 +15,12 @@
        REF  CURMNU,STACK
        REF  MNUTTL
        REF  WRTHDR
-       REF  IOSTRT,IOEND
-       REF  FRSHST,FRSHED
+       REF  IOSTRT,IOEND                    * From IO.asm
+       REF  FRSHST,FRSHED                   "
        REF  MGNSRT,MGNEND
        REF  MNUSTR,MNUEND
        REF  FRMSRT,FRMEND
+       REF  INPTS,INPTE                     * From INPUT.asm
        REF  CACHES,CCHMHM
 *
 
@@ -175,6 +176,7 @@ STOR3  MOVB *R1+,*R2
 TOCACH DATA IOSTRT,IOEND
        DATA FRSHST,FRSHED
        DATA MGNSRT,MGNEND
+       DATA INPTS,INPTE
        DATA MNUSTR,MNUEND
 TOCEND
 

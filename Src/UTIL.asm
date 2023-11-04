@@ -1,15 +1,29 @@
 *
 * Misc. Utils
 *
+       DEF  INCKRD
        DEF  GETMGN,GETIDT
        DEF  BYTSTR
 *
-       REF  MGNLST,PARLST      From VAR.asm
+       REF  MGNLST,PARLST                 From VAR.asm
+       REF  KEYSTR,KEYEND,KEYRD           "    
        REF  WINMOD
-       REF  ARYADR             From ARRAY
-       REF  WRAP               From WRAP.asm
+       REF  ARYADR                        From ARRAY
+       REF  WRAP                          From WRAP.asm
 
        COPY 'EQUKEY.asm'
+
+*
+* Move position in key stream forwards
+* by one address.
+*
+INCKRD MOV  @KEYRD,R0
+       INC  R0
+       CI   R0,KEYEND
+       JL   UPDBUF
+       LI   R0,KEYSTR
+UPDBUF MOV  R0,@KEYRD
+       RT
 
 *
 * Get address of margin data for a paragraph

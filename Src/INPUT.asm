@@ -1,4 +1,5 @@
-       DEF  INPUT,INCKRD
+       DEF  INPUT
+       DEF  INPTS,INPTE
 *
        REF  PARLST,FMTLST,MGNLST
        REF  ARYALC,ARYINS,ARYDEL,ARYADR
@@ -15,7 +16,7 @@
 * variables just for INPUT
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
-       REF  KEYSTR,KEYEND,KEYWRT,KEYRD
+       REF  KEYWRT,KEYRD
 
 * constants
        REF  BLKUSE
@@ -27,11 +28,17 @@
        REF  CURINS,CUROVR
 
 *
-       REF  WRAP,MNUHK
+       REF  MNUHK
        REF  CURMNU
-       REF  WRAPDC                       From UTIL.asm
+       REF  INCKRD                       From UTIL.asm
+       REF  WRAP,WRAPDC                  From WRAP.asm
 
        COPY 'EQUKEY.asm'
+       COPY 'CPUADR.asm'
+
+       AORG >D000
+INPTS
+       XORG LOADED
 
 *
 * Process the new keystrokes
@@ -109,16 +116,6 @@ INPTMV DATA 2
 * Menu input mode
 MODMNU EQU  3
 *INPTMN DATA 3
-
-* Move position in key stream forwards
-* by one address.
-INCKRD MOV  @KEYRD,R0
-       INC  R0
-       CI   R0,KEYEND
-       JL   UPDBUF
-       LI   R0,KEYSTR
-UPDBUF MOV  R0,@KEYRD
-       RT
 
 * Specify address of cursor character
 * pattern.
@@ -611,4 +608,5 @@ UM2    C    R0,R1
        JMP  UM2
 MGNRT  RT
 
+INPTE  AORG
        END
