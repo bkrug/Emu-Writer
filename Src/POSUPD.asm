@@ -212,14 +212,23 @@ CD4
 * R2 now contains earliest acceptable paragraph
 * R3 now contains earliest acceptable paragraph-line.
 *
-* Is screen pointing to a later paragrah than R2?
+* Is screen pointing to an earlier paragrah than R2?
        C    @WINPAR,R2
-       JH   CD6
-* No, is screen pointing to an earlier paragrah than R2?
        JL   CD5
-* No, is screen pointing to an earlier line than R3
+* No, is screen pointing to a later paragrah than R2?
+       JH   CD6
+* No, is screen pointing to an earlier line than R3?
        C    @WINLIN,R3
-       JHE  CD6
+       JL   CD5
+* No, is screen pointing to a later lien than R3?
+       JH   CD6
+* No, is screen pointing to the start of a paragraph?
+       MOV  @WINLIN,R0
+       JNE  CD6
+* Yes, is the Margin Entry Display flag set, when it needs to be unset?
+       C    @WINMGN,R5
+       JGT  CD6
+       JEQ  CD6
 * WINPAR and WINLIN are pointing to a paragraph that is too early.
 CD5    MOV  R2,@WINPAR
        MOV  R3,@WINLIN
