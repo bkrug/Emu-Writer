@@ -164,21 +164,21 @@ CD1
        MOV  R2,R0
        BL   @MGNADR
        MOV  R1,R1
-       JEQ  CD1B
+       JEQ  CD2
 * Yes, increase reported size of paragraph by one line
        INC  R3
-CD1B
+CD2
 * Is number of remaining lines moving backwards
 * smaller than remaining lines in this paragraph?
        C    R4,R3
-       JLE  CD2
+       JLE  CD3
 * No, look upwards by at least one paragraph.
 * Decrease R4 by this paragraph's line count.
        S    R3,R4
        DEC  R4
 * Point to earlier paragraph
        DEC  R2
-       JLT  CD3
+       JLT  CD4
 * Let R1 = address in PARLST
        MOV  @PARLST,R0
        MOV  R2,R1
@@ -192,51 +192,52 @@ CD1B
 * Try next paragraph
        JMP  CD1
 * Earliest acceptable line is in this paragraph
-CD2    S    R4,R3
+CD3    S    R4,R3
 * Is this a paragraph with a Margin Entry?       
        MOV  R1,R1
-       JEQ  CD4
+       JEQ  CD5
 * Yes, so R3 is one line too large.
        DEC  R3
-       JGT  CD4
-       JEQ  CD4
+       JGT  CD5
+       JEQ  CD5
 * Actually, R3 was fine,
 * but we need to display the margin entry. 
        CLR  R3       
        SETO R5
-       JMP  CD4
+       JMP  CD5
 * Earliest acceptable line is the beginning of the document
-CD3    CLR  R2
+CD4    CLR  R2
        CLR  R3
-CD4
+CD5
 * R2 now contains earliest acceptable paragraph
 * R3 now contains earliest acceptable paragraph-line.
 *
 * Is screen pointing to an earlier paragrah than R2?
        C    @WINPAR,R2
-       JL   CD5
+       JL   GODOWN
 * No, is screen pointing to a later paragrah than R2?
-       JH   CD6
+       JH   SKIP
 * No, is screen pointing to an earlier line than R3?
        C    @WINLIN,R3
-       JL   CD5
+       JL   GODOWN
 * No, is screen pointing to a later lien than R3?
-       JH   CD6
+       JH   SKIP
 * No, is screen pointing to the start of a paragraph?
        MOV  @WINLIN,R0
-       JNE  CD6
+       JNE  SKIP
 * Yes, is the Margin Entry Display flag set, when it needs to be unset?
        C    @WINMGN,R5
-       JGT  CD6
-       JEQ  CD6
+       JGT  SKIP
+       JEQ  SKIP
 * WINPAR and WINLIN are pointing to a paragraph that is too early.
-CD5    MOV  R2,@WINPAR
+GODOWN MOV  R2,@WINPAR
        MOV  R3,@WINLIN
        MOV  R5,@WINMGN
 * Redraw whole screen
        SOC  @STSWIN,*R13
-*
-CD6    MOV  *R10+,R11
+* If program jumped to this point,
+* then it decided to skip updating the screen position.
+SKIP   MOV  *R10+,R11
        RT
 
 *
