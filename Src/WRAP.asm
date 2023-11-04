@@ -1,4 +1,5 @@
        DEF  WRAP
+       DEF  WRAPDC,WRAPDW
 *
        REF  PARLST,FMTLST,MGNLST
        REF  BUFREE
@@ -185,5 +186,25 @@ WRP6   MOV  *R3,R0
 
 WRPERR SOC  @ERRMEM,@DOCSTS
        RTWP
+
+*
+* WRAPDC = Wrap all paragraphs in document
+* No Input
+*
+* WRAPDW = Wrap all paragraphs down from given paragraph
+* Input
+*   R0 = starting paragraph
+*
+WRAPDC CLR  R0
+WRAPDW MOV  @PARLST,R2
+WRAPLP C    R0,*R2
+       JHE  WRAPDN
+       CLR  R1
+       BLWP @WRAP
+       JEQ  WRAPDN             * If memory error occurs, stop wrapping
+       INC  R0
+       JMP  WRAPLP
+WRAPDN
+       RT
 
        END

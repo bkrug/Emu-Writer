@@ -2,7 +2,6 @@
 * Misc. Utils
 *
        DEF  GETMGN,GETIDT
-       DEF  WRAPDC,WRAPDW
        DEF  BYTSTR
 *
        REF  MGNLST,PARLST      From VAR.asm
@@ -94,26 +93,6 @@ GI2
        MOV  *R10+,R2
        MOV  *R10+,R1
        MOV  *R10+,R11
-       RT
-
-*
-* WRAPDC = Wrap all paragraphs in document
-* No Input
-*
-* WRAPDW = Wrap all paragraphs down from given paragraph
-* Input
-*   R0 = starting paragraph
-*
-WRAPDC CLR  R0
-WRAPDW MOV  @PARLST,R2
-WRAPLP C    R0,*R2
-       JHE  WRAPDN
-       CLR  R1
-       BLWP @WRAP
-       JEQ  WRAPDN             * If memory error occurs, stop wrapping
-       INC  R0
-       JMP  WRAPLP
-WRAPDN
        RT
 
 *
