@@ -378,7 +378,9 @@ TXTMG  DATA TXTMG1
        TEXT 'Page Height (lines)'
        BYTE 0
        BYTE 0
-       TEXT 'APPLIES FROM CURRENT PARAGRAPH ONWARDS:'
+       TEXT 'APPLIES FROM CURRENT PARAGRAPH TO NEXT'
+       BYTE 0
+       TEXT 'CHANGE OF MARGINS:'
        BYTE 0
        TEXT 'Left Margin'
        BYTE 0
@@ -407,13 +409,13 @@ FLDMG  DATA FLDMG1
        DATA 120+24          * Field position on screen
        DATA 3               * Length of field
 * Left Margin
-       DATA 240+13          * Field position on screen
-       DATA 3               * Length of field
-* Right Margin
        DATA 280+13          * Field position on screen
        DATA 3               * Length of field
-* Indent
+* Right Margin
        DATA 320+13          * Field position on screen
+       DATA 3               * Length of field
+* Indent
+       DATA 360+13          * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
 
