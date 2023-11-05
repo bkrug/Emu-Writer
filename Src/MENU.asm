@@ -444,9 +444,9 @@ MGNDFT TEXT '10'
        TEXT '0'
        BYTE 0,0
        TEXT '6'
-       BYTE 0
+       BYTE 0,0
        TEXT '6'
-       BYTE 0
+       BYTE 0,0
 MGNEND EVEN
 
 POPMG  DECT R10

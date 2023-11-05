@@ -32,13 +32,13 @@ EDTMGN
        JNE  EXIT
        MOV  R1,R14
 *
-* Allocate six bytes to store parsed
-* indent, left, and right margin
-* as 16-bit values.
+* Allocate ten bytes to store parsed
+* indent, left, right, top, and bottom
+* margin as 16-bit values.
 *
 * Let R6 = address of allocated space
        CLR  R6
-       LI   R0,6
+       LI   R0,10
        BLWP @BUFALC
        JEQ  EMERR
        MOV  R0,R6
@@ -63,6 +63,20 @@ EDTMGN
        MOV  R0,R0
        JNE  EXIT
        MOV  R1,@4(R6)
+* top margin
+       LI   R0,FLDVAL
+       AI   R0,FTOP
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EXIT
+       MOV  R1,@6(R6)
+* bottom margin
+       LI   R0,FLDVAL
+       AI   R0,FBOT
+       BL   @PRSINT
+       MOV  R0,R0
+       JNE  EXIT
+       MOV  R1,@8(R6)
 *
 * Validate margin sizes
 *
@@ -257,6 +271,8 @@ RV3
        MOVB @1(R6),@INDENT(R3)
        MOVB @3(R6),@LEFT(R3)
        MOVB @5(R6),@RIGHT(R3)
+       MOVB @7(R6),@TOP(R3)
+       MOVB @9(R6),@BOTTOM(R3)
 * Record Page Width
        SLA  R15,8
        MOVB R15,@PGWDTH
@@ -279,15 +295,22 @@ DELDUP
        MOV  *R0,R2
        DECT R2
        JLT  DUP3
-* Compare left margin and paragraph width
-* for each element
+* Let R1 = address of a margin entry
 DUP1   MOV  R2,R1
        BLWP @ARYADR
-       CB   @INDENT(R1),@MGNLNG+INDENT(R1)
+* Let R3 = a location within the margin entry
+* Let R4 = address of next element
+       MOV  R1,R3
+       AI   R3,INDENT
+       MOV  R1,R4
+       AI   R4,MGNLNG
+* Compare margins and indents for each
+* element
+DUPCMP CB   @MGNLNG(R3),*R3+
        JNE  DUP2
-       C    @LEFT(R1),@MGNLNG+LEFT(R1)
-       JNE  DUP2
-* Delete duplicate
+       C    R3,R4
+       JL   DUPCMP
+* Duplicate found, delete it.
        MOV  R2,R1
        INC  R1
        BLWP @ARYDEL
