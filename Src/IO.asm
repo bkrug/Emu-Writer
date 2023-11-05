@@ -415,8 +415,8 @@ REDMGN DECT R10
        SWPB R5
 * Let R3 = number of bytes to read for margins
        MOV  R5,R3
-       SLA  R3,3
-       AI   R3,4
+       SLA  R3,MGNPWR
+       CB   *R3+,*R3+
 * Reserve space in buffer
        MOV  R3,R0
        BLWP @BUFALC
@@ -465,7 +465,7 @@ PRINT0
        LI   R0,PAB
        BL   @VDPADR
        MOVB @WRITE,@VDPWD
-* Let R2 = current paragraph
+* Let R2 = index of current paragraph
        CLR  R2
 * Let R1 = address of paragraph's
 * entry in the paragraph list
@@ -482,40 +482,8 @@ PRINT1 MOV  R2,R1
        AI   R6,4
        CLR  R7
 PRINT2
-* Let R8 = length of line
-       MOV  *R5,*R5
-       JNE  LENP1
-* Set Length for paragraph with one line
-       MOV  *R4,R8
-       JMP  PRINT3
-*
-LENP1  MOV  R7,R7
-       JNE  LENP2
-* Set length for first line in paragraph
-       MOV  @4(R5),R8
-       JMP  PRINT3
-*
-LENP2  C    R7,*R5
-       JHE  LENP3
-* Set length for middle lines in paragraph
-       MOV  R5,R0
-       MOV  R7,R1
-       BLWP @ARYADR
-*
-       CLR  R8
-       S    @-2(R1),R8
-       A    *R1,R8
-       JMP  PRINT3
-* Set length for last line in paragraph
-LENP3  MOV  R5,R0
-       MOV  R7,R1
-       DEC  R1
-       BLWP @ARYADR
-*
-       CLR  R8
-       S    *R1,R8
-       A    *R4,R8
-PRINT3
+* Let R8 = line length
+       BL   @LLEN
 * Write left white-space to VDP RAM
        BL   @PRTMG
 * Write record (following left margin) to VDP RAM
@@ -580,6 +548,53 @@ PRINT5
 PRTERR BL   @DSPERR
        MOV  R0,R3
        JMP  PRTRT
+
+*
+* Get line length
+*
+* Input:
+*   R4, R5, R7
+* Output:
+*   R8
+*
+LLEN
+* Is the wrap list empty, and thus is this
+* a one line paragraph?
+       MOV  *R5,*R5
+       JNE  LLEN1
+* Yes, set line length to match paragraph
+* length
+       MOV  *R4,R8
+       RT
+*
+LLEN1  MOV  R7,R7
+       JNE  LLEN2
+* Set length for first line in paragraph
+       MOV  @4(R5),R8
+       RT
+*
+LLEN2  C    R7,*R5
+       JHE  LLEN3
+* Set length for middle lines in paragraph
+       MOV  R5,R0
+       MOV  R7,R1
+       BLWP @ARYADR
+*
+       CLR  R8
+       S    @-2(R1),R8
+       A    *R1,R8
+       RT
+* Set length for last line in paragraph
+LLEN3  MOV  R5,R0
+       MOV  R7,R1
+       DEC  R1
+       BLWP @ARYADR
+*
+       CLR  R8
+       S    *R1,R8
+       A    *R4,R8
+*
+       RT
 
 *
 * Write enough spaces to the buffer
