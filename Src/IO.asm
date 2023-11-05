@@ -562,13 +562,16 @@ PRTERR BL   @DSPERR
        JMP  PRTRT
 
 *
-* If we are between pages, several empty
-* lines for the top/bottom margin.
+* If we are between pages, print several
+* empty lines for the top/bottom margin.
 * Let PGELIN = number of printable lines
 * in a page.
 *
 * Input:
 *   R2 = paragraph index
+*   R5 = address of wrap list
+*   R6 = address within paragraph
+*   R7 = line in paragraph (0-based)
 *
 PRTEMP DECT R10
        MOV  R11,*R10
@@ -576,9 +579,33 @@ PRTEMP DECT R10
        MOV  R3,*R10
        DECT R10
        MOV  R4,*R10
+* Let R4 (high byte) = number of empty lines to print
+       CLR  R4
 * Is this the end of the page?
        MOV  @PGELIN,R0
+       JEQ  TBMGN
+* No, is there exactly one line left on page?
+       CI   R0,1
        JNE  PERT
+* Yes, are there either exactly two lines 
+* left in this paragrah, or is this the 
+* beginning of a multi-line paragraph?
+       MOV  *R5,R0
+       INC  R0
+       S    R7,R0
+       CI   R0,2
+       JEQ  WIDOW
+*
+       MOV  R7,R7
+       JNE  PERT
+       MOV  *R5,R0
+       JEQ  PERT
+* Yes, we're going to print the margins early to avoid
+* an orphan or widow. Print an extra margin line, too.
+WIDOW  AI   R4,1*>100
+* Go through process to print empty margin lines.
+* R4 (high byte) should currently contain either 0 or 1.
+TBMGN
 * Yes, let R3 = address of margin entry
        MOV  R2,R0
        BL   @GETMGN
@@ -588,13 +615,12 @@ PRTEMP DECT R10
 * Use defaults.
        LI   R3,DMGENT-TOP
 PE1
-* Let R4 = size of top margin
-       MOVB @TOP(R3),R4
+* Add size of current page's top margin to R4
+       AB   @TOP(R3),R4
 * Is this the beginning of the document?
        MOV  R2,R2
        JEQ  PE2
-* No, let R4 = size of this page's top margin
-* AND previous page's bottom margin
+* No, Add size of previous page's bottom margin to R4
        AB   @PREVBM,R4
 * Store this page's bottom margin size
 * for use the next time we print margins.
