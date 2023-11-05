@@ -49,6 +49,8 @@ MAXIDT EQU  20        Max indent in vertical mode
 INDENT EQU  3
 LEFT   EQU  4
 RIGHT  EQU  5
+TOP    EQU  6
+BOTTOM EQU  7
 
 *
 * Locations in FLDVAL for different margin fields
@@ -56,3 +58,5 @@ FPHGHT EQU 3
 FLEFT  EQU 6
 FRIGHT EQU 9
 FINDNT EQU 12
+FTOP   EQU 15
+FBOT   EQU 18

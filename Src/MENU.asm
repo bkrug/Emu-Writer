@@ -388,6 +388,18 @@ TXTMG  DATA TXTMG1
        BYTE 0
        TEXT 'Indent'
        BYTE 0
+       BYTE 0                                            * Someday we'll but an option for FIRST LINE vs HANGING here.
+       BYTE 0
+       TEXT 'APPLIES ON THE NEXT PAGE, OR IF THIS IS'
+       BYTE 0
+       TEXT 'THE TOP PARAGRAPH ON A PAGE, APPLIES TO'
+       BYTE 0
+       TEXT 'THE CURRENT PAGE:'
+       BYTE 0
+       TEXT 'Top Margin'
+       BYTE 0
+       TEXT 'Bottom Margin'
+       BYTE 0
 TXTMG1 EVEN
 
 KEYMG  DATA KEYMG1
@@ -403,19 +415,25 @@ KEYMG1
 
 FLDMG  DATA FLDMG1
 * Page Width (characters)
-       DATA 80+24           * Field position on screen
+       DATA 2*40+24          * Field position on screen
        DATA 3               * Length of field
 * Page Height (lines)
-       DATA 120+24          * Field position on screen
+       DATA 3*40+24         * Field position on screen
        DATA 3               * Length of field
 * Left Margin
-       DATA 280+13          * Field position on screen
+       DATA 7*40+13         * Field position on screen
        DATA 3               * Length of field
 * Right Margin
-       DATA 320+13          * Field position on screen
+       DATA 8*40+13         * Field position on screen
        DATA 3               * Length of field
 * Indent
-       DATA 360+13          * Field position on screen
+       DATA 9*40+13         * Field position on screen
+       DATA 3               * Length of field
+* Top Margin
+       DATA 15*40+14        * Field position on screen
+       DATA 3               * Length of field
+* Bottom Margin
+       DATA 16*40+14        * Field position on screen
        DATA 3               * Length of field
 FLDMG1 EVEN
 
@@ -425,7 +443,11 @@ MGNDFT TEXT '10'
        BYTE 0
        TEXT '0'
        BYTE 0,0
-MGNEND
+       TEXT '6'
+       BYTE 0
+       TEXT '6'
+       BYTE 0
+MGNEND EVEN
 
 POPMG  DECT R10
        MOV  R2,*R10
@@ -470,6 +492,17 @@ POPMG  DECT R10
        LI   R2,FLDVAL
        AI   R2,FINDNT
        BL   @BYTSTR
+* Top Margin
+       MOVB @TOP(R6),R1
+       LI   R2,FLDVAL
+       AI   R2,FTOP
+       BL   @BYTSTR
+* Bottom Margin
+       MOVB @BOTTOM(R6),R1
+       LI   R2,FLDVAL
+       AI   R2,FBOT
+       BL   @BYTSTR
+*
        JMP  POPMGR
 * Populate with defaults
 POPMGD LI   R0,MGNDFT
