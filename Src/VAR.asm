@@ -21,11 +21,11 @@
 * Arrays
        DEF  PARLST,FMTLST,MGNLST
        DEF  PGHGHT,PGWDTH
-* MAIN.TXT
+* MAIN.asm
        DEF  DOCSTS
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
-* IO.TXT
-       DEF  VER2,PGELIN
+* IO.asm
+       DEF  VER2,PREVBM,PGELIN
 * DSRLNK.asm
        DEF  A2032                  cru base for dsr
        DEF  A2034                  dsr address   "
@@ -34,16 +34,16 @@
        DEF  A203A                  counts        "
        DEF  A208C                  dsr name buffer
        DEF  DSRLWS
-* WRAP.TXT
+* WRAP.asm
        DEF  LNWDT1,LNWDTH,WINMOD
-* INPUT.TXT
+* INPUT.asm
        DEF  PARINX,CHRPAX
        DEF  INSTMD,INPTMD
-* POSUPD.TXT
+* POSUPD.asm
        DEF  LININX,CHRLIX
        DEF  WINOFF,WINPAR,WINLIN,WINMGN
        DEF  CURSCN
-* KEY.TXT
+* KEY.asm
        DEF  TIMER,PREVKY,KEYBUF
        DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
        DEF  SCANRT
@@ -99,15 +99,16 @@ BUFEND BSS  >2
 * restore the Stack Pointer to this value.
 FASTRT BSS  >2
 
-* MAIN.TXT
+* MAIN.asm
 DOCSTS BSS  2
 CURTIM BSS  2
 CUROLD BSS  2
 CURMOD BSS  2
 CURRPL BSS  1
 
-* IO.TXT
+* IO.asm
 VER2   BSS  1
+PREVBM BSS  1
        EVEN
 PGELIN BSS  2                  Remaining page lines
 
@@ -120,7 +121,7 @@ A203A  BSS  2                  counts        "
 A208C  BSS  14                 dsr name buffer - needs to be direclty in front of DSRLNK's workspace
 DSRLWS BSS  >20
 
-* WRAP.TXT
+* WRAP.asm
 * Width of first paragraph line
 * If there is no indent it will match
 * LNWDTH.
@@ -131,7 +132,7 @@ LNWDTH BSS  2
 * Otherwise, use vertical mode
 WINMOD BSS  2
 
-* INPUT.TXT
+* INPUT.asm
 * Current Paragraph Index
 PARINX BSS  2
 * Character Index in Paragraph
@@ -142,7 +143,7 @@ INSTMD BSS  2
 * 1 = text, 2 = movement
 INPTMD BSS  2
 
-* POSUPDT.TXT
+* POSUPDT.asm
 * Line Index in Paragraph
 LININX BSS  2
 * Character Index in line
@@ -159,7 +160,7 @@ WINMGN BSS  2
 * Position of flashing cursor on screen
 CURSCN BSS  2
 
-* KEY.TXT
+* KEY.asm
 * Time remaining before character repeat
 TIMER  BSS  2
 * Scan return address

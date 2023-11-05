@@ -9,7 +9,7 @@
        REF  VDPSPC,VDPINV                         "
        REF  PARLST,MGNLST                         From VAR.asm
        REF  FLDVAL,WINMOD                         "
-       REF  VER2,PGELIN                           "
+       REF  VER2,PGELIN,PREVBM                    "
        REF  PGHGHT,PGWDTH                         "
        REF  CURMNU                                "
        REF  ARYADR,BUFGRW,BUFALC                  From ARRAY.asm
@@ -593,10 +593,14 @@ PE1
 * Is this the beginning of the document?
        MOV  R2,R2
        JEQ  PE2
-* No, let R4 = size of top AND bottom margin
-       AB   @BOTTOM(R3),R4
+* No, let R4 = size of this page's top margin
+* AND previous page's bottom margin
+       AB   @PREVBM,R4
+* Store this page's bottom margin size
+* for use the next time we print margins.
+PE2    MOVB @BOTTOM(R3),@PREVBM
 * Let R4 = number of empty lines to print
-PE2    SRL  R4,8
+       SRL  R4,8
        JEQ  PERT
 * In PAB, specify record length of zero.
        LI   R0,PAB+5
@@ -616,7 +620,6 @@ PE3    MOV  @LNGADR,@PNTR
        SB   @TOP(R3),R0
        SB   @BOTTOM(R3),R0
        SRL  R0,8
-       LI   R0,54
        MOV  R0,@PGELIN
 *
 * Return, without reporting error.
