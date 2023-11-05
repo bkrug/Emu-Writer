@@ -453,10 +453,10 @@ PRINT  DECT R10
 * If not already in Window Mode, wrap all paragraphs
        DECT R10
        MOV  @WINMOD,*R10
-       JEQ  PRINT0
+       JEQ  PRINT1
        CLR  @WINMOD
        BL   @WRAPDC
-PRINT0
+PRINT1
 * Open File
        LI   R2,PDATA
        BL   @OPENFL
@@ -470,7 +470,7 @@ PRINT0
 * Let R1 = address of paragraph's
 * entry in the paragraph list
        MOV  @PARLST,R0
-PRINT1 MOV  R2,R1
+PRINT2 MOV  R2,R1
        BLWP @ARYADR
 * Let R4 = address of paragraph
 * Let R5 = address of wrap list
@@ -481,7 +481,7 @@ PRINT1 MOV  R2,R1
        MOV  R4,R6
        AI   R6,4
        CLR  R7
-PRINT2
+PRINT3
 * Let R8 = line length
        BL   @LLEN
 * Write left white-space to VDP RAM
@@ -512,13 +512,13 @@ PRINT2
        A    *R1,R6
 * Loop to write next line
        INC  R7
-       JMP  PRINT2
+       JMP  PRINT3
 PRINT4
 * Last paragraph of document?
        INC  R2
        MOV  @PARLST,R0
        C    R2,*R0
-       JL   PRINT1
+       JL   PRINT2
 * Yes, close file
        BL   @CLOSFL
        JEQ  PRTERR

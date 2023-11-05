@@ -1,3 +1,12 @@
+* Like VAR.asm, the data in this file
+* can change and must never be part of
+* a cartridge ROM.
+* (That being said if we ever move the
+* word processor to a cartridge, we'll
+* probably skip from VDP caching to 
+* cartridge banking.)
+*
+
        DEF  CACHES
        DEF  CCHPRT,CCHLOD,CCHSAV
        DEF  CCHNEW,CCHQIT
