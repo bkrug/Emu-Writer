@@ -88,6 +88,18 @@ CONMGN
 * Convert Indent to ASCII
        MOVB @INDENT(R3),R2
        BL   @DRWNUM
+* Draw top margin label
+       LI   R0,TXTTM
+       BL   @VDPINV
+* Convert Top Margin to ASCII
+       MOVB @TOP(R3),R2
+       BL   @DRWNUM
+* Draw bottom margin label
+       LI   R0,TXTBM
+       BL   @VDPINV
+* Convert Bottom Margin to ASCII
+       MOVB @BOTTOM(R3),R2
+       BL   @DRWNUM
 * Draw one more inverted space
        LI   R1,1
        BL   @VDPSPI
@@ -130,7 +142,7 @@ DRWNUM DECT R10
 TEN    DATA 10
 * Default Margin entry
 * Empty Byte, Indent, Left Margin, Right Margin, Top Margin, Bottom Margin
-ORGMGN DATA >0000,>0A0A,>0A0A
+ORGMGN DATA >0000,>0A0A,>0606
 TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
        BYTE 0
 TXTLM  TEXT 'LM:'
@@ -138,6 +150,10 @@ TXTLM  TEXT 'LM:'
 TXTRM  TEXT ' RM:'
        BYTE 0
 TXTIN  TEXT ' IN:'
+       BYTE 0
+TXTTM  TEXT ' TM:'
+       BYTE 0
+TXTBM  TEXT ' BM:'
        BYTE 0
 MEMFUL TEXT 'Memory Full'
        BYTE 0

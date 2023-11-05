@@ -72,7 +72,7 @@ DISP2
 * Yes, display it.
        MOV  R1,R0
        BL   @DRWMGN
-       LI   R1,SCRNWD-18
+       LI   R1,SCRNWD-30
        BL   @VDPSPC
 * Track screen-row
        INC  R12

@@ -38,8 +38,8 @@ MGN32  DATA 1,3
 * A Margin list with entries for two paragraphs
 *
 MGNTWO DATA 2,3
-       DATA 2,>0000,>0C0D,>0000
-       DATA 4,>0000,>0A0B,>0000
+       DATA 2,>0000,>0C0D,>0808
+       DATA 4,>0000,>0A0B,>0606
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Window moved.
@@ -1231,7 +1231,9 @@ SCRN18 TEXT '                                        '
        BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'2'+INV,' '+INV
        BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'3'+INV,' '+INV
        BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
-       TEXT '                      '
+       BYTE 'T'+INV,'M'+INV,':'+INV,'0'+INV,'8'+INV,' '+INV
+       BYTE 'B'+INV,'M'+INV,':'+INV,'0'+INV,'8'+INV,' '+INV
+       TEXT '          '
        TEXT 'Marcus Mosiah Garvey Jr. ONH (17 August '
        TEXT 'was a Jamaican political activist, publi'
        TEXT 'entrepreneur, and orator. He was the fou'
@@ -1250,7 +1252,9 @@ SCRN18 TEXT '                                        '
        BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'0'+INV,' '+INV
        BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'1'+INV,' '+INV
        BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
-       TEXT '                      '
+       BYTE 'T'+INV,'M'+INV,':'+INV,'0'+INV,'6'+INV,' '+INV
+       BYTE 'B'+INV,'M'+INV,':'+INV,'0'+INV,'6'+INV,' '+INV
+       TEXT '          '
        TEXT 'In 1916, he moved to the United States a'
        TEXT 'UNIA branch in New York City"s Harlem di'
        TEXT 'unity between Africans and the African d'
@@ -1323,7 +1327,9 @@ SCRN19 TEXT '                                        '
        BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'0'+INV,' '+INV
        BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'1'+INV,' '+INV
        BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
-       TEXT '                      '
+       BYTE 'T'+INV,'M'+INV,':'+INV,'0'+INV,'6'+INV,' '+INV
+       BYTE 'B'+INV,'M'+INV,':'+INV,'0'+INV,'6'+INV,' '+INV
+       TEXT '          '
        TEXT 'In 1916, he moved to the United States a'
        TEXT 'UNIA branch in New York City"s Harlem di'
        TEXT 'unity between Africans and the African d'
@@ -1396,7 +1402,9 @@ SCRN20 TEXT '                                        '
        BYTE 'L'+INV,'M'+INV,':'+INV,'1'+INV,'0'+INV,' '+INV
        BYTE 'R'+INV,'M'+INV,':'+INV,'1'+INV,'1'+INV,' '+INV
        BYTE 'I'+INV,'N'+INV,':'+INV,'0'+INV,'0'+INV,' '+INV
-       TEXT '                      '
+       BYTE 'T'+INV,'M'+INV,':'+INV,'0'+INV,'6'+INV,' '+INV
+       BYTE 'B'+INV,'M'+INV,':'+INV,'0'+INV,'6'+INV,' '+INV
+       TEXT '          '
        TEXT 'In 1916, he moved to the United States a'
        TEXT 'UNIA branch in New York City"s Harlem di'
        TEXT 'unity between Africans and the African d'
