@@ -3,18 +3,18 @@
        DEF  SAVE,LOAD,PRINT,MYBNEW
        DEF  MYBQIT
 *
-       REF  DSRLCL
-       REF  INTDOC,INTPAR
-       REF  VDPADR,VDPRAD,VDPWRT,VDPSTR
-       REF  VDPSPC,VDPINV
+       REF  DSRLCL                                From DSRLNK.asm
+       REF  INTDOC,INTPAR                         From MAIN.asm
+       REF  VDPADR,VDPRAD,VDPWRT,VDPSTR           From VDP.asm
+       REF  VDPSPC,VDPINV                         "
        REF  PARLST,MGNLST                         From VAR.asm
        REF  FLDVAL,WINMOD                         "
-       REF  VER2                                  "
+       REF  VER2,PGELIN                           "
        REF  PGHGHT,PGWDTH                         "
+       REF  CURMNU                                "
        REF  ARYADR,BUFGRW,BUFALC                  From ARRAY.asm
-       REF  WRAP,INTDOC
-       REF  WRAPDC,GETMGN                         From UTIL.asm
-       REF  CURMNU
+       REF  WRAP,WRAPDC                           From WRAP.asm
+       REF  GETMGN                                From UTIL.asm
 
 *
        COPY 'CPUADR.asm'
@@ -465,6 +465,9 @@ PRINT1
        LI   R0,PAB
        BL   @VDPADR
        MOVB @WRITE,@VDPWD
+* Set the number of remaining lines on
+* current page.
+       CLR  @PGELIN
 * Let R2 = index of current paragraph
        CLR  R2
 * Let R1 = address of paragraph's
@@ -482,6 +485,12 @@ PRINT2 MOV  R2,R1
        AI   R6,4
        CLR  R7
 PRINT3
+* If we are between pages, print top/bottom
+* margins.
+* Let PGELIN = number of printable lines
+* in a page.
+       BL   @PRTEMP
+       JEQ  PRTERR       
 * Let R8 = line length
        BL   @LLEN
 * Write left white-space to VDP RAM
@@ -500,6 +509,8 @@ PRINT3
        BLWP @DSRLCL
        DATA 8
        JEQ  PRTERR
+* Decrease PGELIN as we are closer to page end.
+       DEC  @PGELIN
 * End of paragraph?
        C    R7,*R5
        JHE  PRINT4
@@ -510,8 +521,9 @@ PRINT3
        MOV  R4,R6
        AI   R6,4
        A    *R1,R6
-* Loop to write next line
+* Increase R7 to next line.
        INC  R7
+* Loop to write next line
        JMP  PRINT3
 PRINT4
 * Last paragraph of document?
@@ -548,6 +560,79 @@ PRINT5
 PRTERR BL   @DSPERR
        MOV  R0,R3
        JMP  PRTRT
+
+*
+* If we are between pages, several empty
+* lines for the top/bottom margin.
+* Let PGELIN = number of printable lines
+* in a page.
+*
+* Input:
+*   R2 = paragraph index
+*
+PRTEMP DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R3,*R10
+       DECT R10
+       MOV  R4,*R10
+* Is this the end of the page?
+       MOV  @PGELIN,R0
+       JNE  PERT
+* Yes, let R3 = address of margin entry
+       MOV  R2,R0
+       BL   @GETMGN
+       MOV  R0,R3
+       JNE  PE1
+* There is no margin entry for this paragraph.
+* Use defaults.
+       LI   R3,DMGENT-TOP
+PE1
+* Let R4 = size of top margin
+       MOVB @TOP(R3),R4
+* Is this the beginning of the document?
+       MOV  R2,R2
+       JEQ  PE2
+* No, let R4 = size of top AND bottom margin
+       AB   @BOTTOM(R3),R4
+* Let R4 = number of empty lines to print
+PE2    SRL  R4,8
+       JEQ  PERT
+* In PAB, specify record length of zero.
+       LI   R0,PAB+5
+       BL   @VDPADR
+       LI   R0,1
+       MOVB R0,@VDPWD
+* Write same number of records specified by R4
+PE3    MOV  @LNGADR,@PNTR
+       BLWP @DSRLCL
+       DATA 8
+       JEQ  PEERR
+*
+       DEC  R4
+       JNE  PE3
+* Let @PGELIN = number of printable lines on a page
+       MOVB @PGHGHT,R0
+       SB   @TOP(R3),R0
+       SB   @BOTTOM(R3),R0
+       SRL  R0,8
+       LI   R0,54
+       MOV  R0,@PGELIN
+*
+* Return, without reporting error.
+PERT   MOV  *R10+,R4
+       MOV  *R10+,R3
+       MOV  *R10+,R11
+       RT
+*
+* Return, reporting error through EQ bit.
+PEERR  MOV  *R10+,R4
+       MOV  *R10+,R3
+       MOV  *R10+,R11
+       S    R0,R0
+       RT
+*
+DMGENT DATA >0606
 
 *
 * Get line length

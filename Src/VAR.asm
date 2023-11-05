@@ -25,7 +25,7 @@
        DEF  DOCSTS
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
 * IO.TXT
-       DEF  VER2
+       DEF  VER2,PGELIN
 * DSRLNK.asm
        DEF  A2032                  cru base for dsr
        DEF  A2034                  dsr address   "
@@ -109,6 +109,7 @@ CURRPL BSS  1
 * IO.TXT
 VER2   BSS  1
        EVEN
+PGELIN BSS  2                  Remaining page lines
 
 * DSRLNK.asm
 A2032  BSS  2                  cru base for dsr
