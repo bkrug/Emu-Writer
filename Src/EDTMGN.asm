@@ -184,6 +184,8 @@ PGSML  TEXT 'Minimum page sizes are 10'
        BYTE 0
 MGNERR TEXT 'Some of margins & indents too large'
        BYTE 0
+TBMERR TEXT 'Page height minus margins must be > 10'
+       BYTE 0
 NUMERR TEXT 'Margins and Page Sizes must be numbers'
        BYTE 0
 REQERR TEXT 'All fields are required'
@@ -223,11 +225,19 @@ VALIDT
        LI   R1,MGNERR
        C    R0,@MINSIZ
        JLT  VLDERR
+* Let R0 = pritable lines per page
+       MOV  R14,R0
+       S    @6(R6),R0
+       S    @8(R6),R0
+* Is resulting printable height high enough?
+       LI   R1,TBMERR
+       C    R0,@MINSIZ
+       JLT  VLDERR
 * Reset EQU status bit to indicate no error
        LI   R2,-1
        RT
 * No, set error message
-VLDERR  SETO R0
+VLDERR SETO R0
 * Set EQU status bit to indicate error
        S    R2,R2
        RT
