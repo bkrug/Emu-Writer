@@ -30,11 +30,12 @@ UPDBUF MOV  R0,@KEYRD
 *
 * Input:
 *   R0 - index of paragraph
-* Changed: R1
 * Output:
 *   R0 - address of margin data
 *
 GETMGN DECT R10
+       MOV  R1,*R10
+       DECT R10
        MOV  R2,*R10
        DECT R10
        MOV  R3,*R10
@@ -60,6 +61,7 @@ GMNONE CLR  R0
 *
 GMRT   MOV  *R10+,R3
        MOV  *R10+,R2
+       MOV  *R10+,R1
        RT
 
 *
@@ -78,32 +80,39 @@ GETIDT DECT R10
        MOV  R1,*R10
        DECT R10
        MOV  R2,*R10
-* Let R2 = desired paragrah
-* Let R0 = indent of zero
-       MOV  R0,R2
-       CLR  R0
-* Is this the first line of a paragraph?
-       MOV  R1,R1
-       JNE  GI2
-* Yes, is this paragraph indented?
-       MOV  R2,R0
+* Does this paragraph have a margin?
        BL   @GETMGN
-       MOV  R0,R1
-       JEQ  GI2
+       MOV  R0,R2
+       JEQ  GOTIDT
 * Yes, let R0 = indent from MGNLST entry.
-       MOVB @INDENT(R1),R0
-       SRL  R0,8
+       MOVB @INDENT(R2),R0
+       SRA  R0,8
+       JEQ  GOTIDT
+* Is the indent positive, and is this
+* the first line of the paragraph?
+       JLT  GI0
+       MOV  R1,R1
+       JEQ  GI1
+* No, treat indent as zero.
+CLRIDT CLR  R0       
+       JMP  GOTIDT
+* No, the indent is negative. Is this
+* a later line?
+GI0    MOV  R1,R1
+       JEQ  CLRIDT
+* Yes, find absolute value of indent
+       ABS  R0
 * Is this vertical mode?
-       MOV  @WINMOD,@WINMOD
-       JEQ  GI2
+GI1    MOV  @WINMOD,@WINMOD
+       JEQ  GOTIDT
 * Yes, is indent greater than the max
 * for vertical mode?
        CI   R0,MAXIDT
-       JLE  GI2
+       JLE  GOTIDT
 * Yes, decrease indent.
        LI   R0,MAXIDT
 * R0 now contains the correct indent
-GI2
+GOTIDT
        MOV  *R10+,R2
        MOV  *R10+,R1
        MOV  *R10+,R11
