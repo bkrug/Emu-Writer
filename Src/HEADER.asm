@@ -7,6 +7,7 @@
        REF  GETMGN                   From UTIL.asm
        REF  PARINX,DOCSTS            From VAR.asm
        REF  TWODIG
+       REF  WINMOD
 
        COPY 'EQUKEY.asm'
        COPY 'CPUADR.asm'
@@ -29,10 +30,10 @@ WRTHDR
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
-* Clear header
+* Clear first line of header
        CLR  R0
        BL   @VDPADR
-       LI   R1,2*SCRNWD
+       LI   R1,SCRNWD
        BL   @VDPSPI
 * Draw first line
        CLR  R0
@@ -47,6 +48,18 @@ WRTHDR
        BL   @GETMGN
 * Write margin data
        BL   @DRWMGN
+* Draw 8 inverted spaces
+       LI   R1,8
+       BL   @VDPSPI
+* Draw char for either vertical or windowed mode
+       LI   R1,VRTCHR*>100
+       MOV  @WINMOD,R0
+       JNE  DRWMOD
+       LI   R1,WINCHR*>100
+DRWMOD MOVB R1,@VDPWD
+* Draw 1 inverted space
+       LI   R1,>A000
+       MOVB R1,@VDPWD
 *
        MOV  *R10+,R0
        MOV  *R10+,R11
