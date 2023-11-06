@@ -1,3 +1,4 @@
+* Key codes
 TABKEY EQU  >01
 DELKEY EQU  >03
 INSKEY EQU  >04
@@ -9,12 +10,14 @@ UPPKEY EQU  >0B
 ENTER  EQU  >0D
 ESCKEY EQU  >0F
 SPCBAR EQU  >20
-INV    EQU  >80
 CTRLY  EQU  >99
 FCTN0  EQU  >BC
 
+VRTCHR EQU  >01
+WINCHR EQU  >02
 LF     EQU  >0A
 CR     EQU  >0D
+INV    EQU  >80
 
 * If key pressed, go to menu
 NXTMNU EQU  0

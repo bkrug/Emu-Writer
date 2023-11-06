@@ -35,13 +35,13 @@ INIT
        LWPI MAINWS
        LI   R10,STACK
 *
+       BL   @VDPTXT
+       BL   @INTSCN
        BL   @STORCH
        BL   @INVCHR
        BL   @INTMEM
        BL   @INTDOC
        BL   @INTKEY
-       BL   @VDPTXT
-       BL   @INTSCN
        BL   @WRTHDR
        BL   @FRMFLD
 * Set default values
@@ -92,7 +92,7 @@ INTSCN DECT R10
        LI   R1,24*40
        BL   @VDPSPC
 * Define cursor pattern
-       LI   R0,>7F*8+>801
+       LI   R0,>7F*8+1+PATTBL
        BL   @VDPADR
        LI   R0,CURINS
        LI   R1,7
@@ -107,7 +107,7 @@ INTSCN DECT R10
        BL   @DRWCR2
 
 *
-* Invert Character
+* Invert Characters
 *
 INVCHR
        DECT R10
@@ -199,7 +199,19 @@ FRM1   MOVB R0,*R1
        LI   R0,>5500
        MOVB R0,*R1
 *
+* Define char 1 and 2 as vertical and 
+* windowed mode symbols.
+       LI   R0,CHRPAT
+       LI   R2,PATEND-CHRPAT
+PATLP  MOVB *R0+,*R1
+       DEC  R2
+       JNE  PATLP
+*
        MOV  *R10+,R11
        RT
+*
+CHRPAT DATA >0010,>1010,>107C,>3810
+       DATA >6058,>4444,>4444,>340C
+PATEND
 
        END
