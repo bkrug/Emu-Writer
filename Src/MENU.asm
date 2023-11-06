@@ -498,6 +498,14 @@ POPMG  DECT R10
        LI   R2,FLDVAL
        AI   R2,FINDNT
        BL   @BYTSTR
+* First line / Hanging
+       LI   R3,'H'*>100
+       MOVB @INDENT(R6),R1
+       JLT  POPHNG
+       LI   R3,'F'*>100
+POPHNG LI   R2,FLDVAL
+       AI   R2,FHANG
+       MOVB R3,*R2
 * Top Margin
        MOVB @TOP(R6),R1
        LI   R2,FLDVAL
