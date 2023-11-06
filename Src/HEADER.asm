@@ -100,6 +100,7 @@ CONMGN
        BL   @VDPINV
 * Convert Indent to ASCII
        MOVB @INDENT(R3),R2
+       ABS  R2
        BL   @DRWNUM
 * Draw top margin label
        LI   R0,TXTTM
