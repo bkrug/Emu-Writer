@@ -388,7 +388,8 @@ TXTMG  DATA TXTMG1
        BYTE 0
        TEXT 'Indent'
        BYTE 0
-       BYTE 0                                            * Someday we'll but an option for FIRST LINE vs HANGING here.
+       TEXT 'First line or Hanging? (F/H)'
+       BYTE 0
        BYTE 0
        TEXT 'APPLIES ON THE NEXT PAGE, OR IF THIS IS'
        BYTE 0
@@ -429,6 +430,9 @@ FLDMG  DATA FLDMG1
 * Indent
        DATA 9*40+13         * Field position on screen
        DATA 3               * Length of field
+* First Line / Hanging
+       DATA 10*40+29        * Field position on screen
+       DATA 1               * Length of field
 * Top Margin
        DATA 15*40+14        * Field position on screen
        DATA 3               * Length of field
@@ -443,6 +447,7 @@ MGNDFT TEXT '10'
        BYTE 0
        TEXT '0'
        BYTE 0,0
+       TEXT 'F'
        TEXT '6'
        BYTE 0,0
        TEXT '6'
@@ -489,6 +494,7 @@ POPMG  DECT R10
        BL   @BYTSTR
 * Indent
        MOVB @INDENT(R6),R1
+       ABS  R1
        LI   R2,FLDVAL
        AI   R2,FINDNT
        BL   @BYTSTR

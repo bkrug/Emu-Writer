@@ -205,8 +205,13 @@ PARADR SLA  R3,1
 * Write one line of text onto screen.
 *
 * Input:
-* R2,R3,R4,R5,R6
-* R9 = current paragraph index
+*   R2 = index of line within paragraph
+*   R3 = address of paragraph text
+*   R4 = length of paragraph
+*   R5 = address two bytes prior to
+*          wrap list's first element
+*   R6 = paragraph line count
+*   R9 = current paragraph index
 *
 WRTLIN DECT R10
        MOV  R11,*R10
@@ -229,8 +234,6 @@ WRTMG9
        BL   @GETALG
        BL   *R7
 * Let R8 = max columns we can fit on screen
-       MOV  R2,R2
-       JNE  WRTMX
        S    @WINOFF,R8
        JLT  WRTMX
        NEG  R8

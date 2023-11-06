@@ -178,6 +178,7 @@ MINSIZ DATA 10
 MAXSIZ DATA 254
 ZERO   TEXT '0'
 NINE   TEXT '9'
+LETERH TEXT 'H'
 PGBIG  TEXT 'Maximum page sizes are 254'
        BYTE 0
 PGSML  TEXT 'Minimum page sizes are 10'
@@ -275,6 +276,14 @@ RV2    MOV  @MGNLST,R0
        MOV  R0,@MGNLST
        MOV  R1,R3
 RV3
+* Is indent hanging?
+       LI   R0,FLDVAL
+       AI   R0,FHANG
+       CB   *R0,@LETERH
+       JNE  RV4
+* Yes, negate it.
+       NEG  *R6
+RV4
 * Set Paragraph Index
        MOV  @PARINX,*R3
 * Copy margin data to actual MGNLST
