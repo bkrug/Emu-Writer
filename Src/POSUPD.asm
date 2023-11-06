@@ -80,8 +80,7 @@ POS3
        MOV  R3,R1
        BL   @GETIDT
 * increase R4 by size of paragrah indent.
-POS4   A    R0,R4
-POS5
+       A    R0,R4
 *
        MOV  R3,@LININX
        MOV  R4,@CHRLIX

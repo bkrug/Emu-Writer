@@ -373,17 +373,31 @@ PFST1
 * Input: 
 *  R3 - paragraph text address
 *  R5 - wrap list element address
+*  R8 - left indent
 * Output:
 * R0, R1, R5
-PMIDLN MOV  *R5,R0
+PMIDLN DECT R10
+       MOV  R2,*R10
+* Let R2 = horizontal offset
+* either zero or (Window Offset - indent), whichever is greater
+       MOV  @WINOFF,R2
+       JEQ  PMID1
+       S    R8,R2
+       JGT  PMID1
+       CLR  R2
+PMID1
+*
+       MOV  *R5,R0
        A    R3,R0
-       A    @WINOFF,R0
+       A    R2,R0
 *
        CLR  R1
        S    *R5,R1
        INCT R5
        A    *R5,R1
-       S    @WINOFF,R1
+       S    R2,R1
+*
+       MOV  *R10+,R2
        RT
 
 *
@@ -397,15 +411,27 @@ PMIDLN MOV  *R5,R0
 *  R5 - wrap list element address
 * Output:
 * R0, R1, R5
-PLSTLN 
+PLSTLN DECT R10
+       MOV  R2,*R10
+* Let R2 = horizontal offset
+* either zero or (Window Offset - indent), whichever is greater
+       MOV  @WINOFF,R2
+       JEQ  PLST1
+       S    R8,R2
+       JGT  PLST1
+       CLR  R2
+PLST1
+*
        MOV  *R5,R0
        A    R3,R0
-       A    @WINOFF,R0
+       A    R2,R0
 * Let R1 be the length of last line 
 * minus window offset
        MOV  R4,R1
        S    *R5,R1
-       S    @WINOFF,R1
+       S    R2,R1
+*
+       MOV  *R10+,R2
        RT
 
 *
