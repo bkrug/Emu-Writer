@@ -179,15 +179,18 @@ MAXSIZ DATA 254
 ZERO   TEXT '0'
 NINE   TEXT '9'
 LETERH TEXT 'H'
+LETERF TEXT 'F'
 PGBIG  TEXT 'Maximum page sizes are 254'
        BYTE 0
 PGSML  TEXT 'Minimum page sizes are 10'
        BYTE 0
-MGNERR TEXT 'Some of margins & indents too large'
+MGNERR TEXT 'Sum of margins & indent too large'
        BYTE 0
 TBMERR TEXT 'Page height minus margins must be > 10'
        BYTE 0
 NUMERR TEXT 'Margins and Page Sizes must be numbers'
+       BYTE 0
+HNGERR TEXT 'Enter "F" or "H" for type of indent'
        BYTE 0
 REQERR TEXT 'All fields are required'
        BYTE 0
@@ -234,6 +237,19 @@ VALIDT
        LI   R1,TBMERR
        C    R0,@MINSIZ
        JLT  VLDERR
+* Is indent type populated?
+       LI   R1,REQERR
+       LI   R0,FLDVAL
+       AI   R0,FHANG
+       MOVB *R0,*R0
+       JEQ  VLDERR
+* Is indent type "F" or "H"?
+       LI   R1,HNGERR
+       CB   *R0,@LETERF
+       JEQ  HNGVLD
+       CB   *R0,@LETERH
+       JNE  VLDERR
+HNGVLD
 * Reset EQU status bit to indicate no error
        LI   R2,-1
        RT
