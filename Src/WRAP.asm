@@ -34,10 +34,11 @@ WRAP   DATA WRAPWS,WRAP+4
 * Figure out available line width based
 * on left and right margins
 *
+* Let R8 = address of margin entry for this paragraph
        MOV  *R13,R0
        BL   @GETMGN
        MOV  R0,R8
-* We found current margin entry
+       JEQ  MGN2B
 * Let R0 = indent
        AI   R8,INDENT
        MOVB *R8+,R0
