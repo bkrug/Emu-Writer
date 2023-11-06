@@ -1,6 +1,9 @@
        DEF  WRAP
        DEF  WRAPDC,WRAPDW
 *
+* Variables
+       REF  LNWDT1,LNWDTH,WINMOD
+       REF  PGWDTH,DOCSTS
        REF  PARLST,FMTLST,MGNLST
        REF  BUFREE
        REF  ARYALC,ARYADD,ARYADR
@@ -9,9 +12,8 @@
 * Constants
        REF  SPACE,DASH
        REF  ERRMEM,STSPAR
-* Variables
-       REF  LNWDT1,LNWDTH,WINMOD
-       REF  PGWDTH,DOCSTS
+* From UTIL.asm
+       REF  GETMGN
 
 * This data is a work around for the "first DATA word is 0 bug"
        DATA >1234
@@ -32,24 +34,12 @@ WRAP   DATA WRAPWS,WRAP+4
 * Figure out available line width based
 * on left and right margins
 *
-*
-       MOV  @MGNLST,R9
-       MOV  *R9,R8
-       JEQ  MGN2B
-       SLA  R8,3
-       C    *R9+,*R9+
-       A    R9,R8
-* Move backwards through margin list
-* Find the entry for our target
-* paragraph, or the entry before it.
-MGN1   AI   R8,-MGNLNG
-       C    R8,R9
-       JL   MGN2B
-       C    *R8,*R13
-       JH   MGN1
+       MOV  *R13,R0
+       BL   @GETMGN
+       MOV  R0,R8
 * We found current margin entry
 * Let R0 = indent
-MGN2   AI   R8,INDENT
+       AI   R8,INDENT
        MOVB *R8+,R0
        SRA  R0,8
 * Let R1 = paragraph width
@@ -97,7 +87,6 @@ MGN5   MOV  R1,@LNWDT1
 * Let R2 = address of new wrap list
        LI   R0,1
        BLWP @ARYALC
-       CI   R0,>FFFF
        JEQ  WRPERR
        MOV  R0,R2
 * Let R3 = address of paragraph text
@@ -150,7 +139,6 @@ BRK4   INC  R6
 * Let R1 = address of new entry in wrap list
 BRK5   MOV  R2,R0
        BLWP @ARYADD
-       CI   R0,>FFFF
        JEQ  WRPERR
        MOV  R0,R2
 * Place index within paragraph in new entry

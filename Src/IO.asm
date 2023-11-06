@@ -416,7 +416,7 @@ REDMGN DECT R10
 * Let R3 = number of bytes to read for margins
        MOV  R5,R3
        SLA  R3,MGNPWR
-       CB   *R3+,*R3+
+       C    *R3+,*R3+
 * Reserve space in buffer
        MOV  R3,R0
        BLWP @BUFALC
@@ -425,9 +425,7 @@ REDMGN DECT R10
 * Let R3 = end of allocated space
        A    R0,R3
 * Save element count
-       MOVB R5,*R0+
-       SWPB R5
-       MOVB R5,*R0+
+       MOV  R5,*R0+
 * Read rest of margin data
        MOVB @VDPRD,*R0+
 LODM1  BL   @LODCHK

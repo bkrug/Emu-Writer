@@ -64,7 +64,7 @@ link_test_files("INPTRUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "VAR", "CONST" ]
 link_test_files("POSRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "UTIL", "VAR", "CONST" ]
 link_test_files("WRAPRUN.obj", True, temp_files)
 
 print("Linking Key Buffer Test Program")
