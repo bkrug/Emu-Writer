@@ -313,6 +313,10 @@ ALGLST
 * R0, R1
 PONELN DECT R10
        MOV  R2,*R10
+* TODO: This algorithm for setting R2
+* exists in all four algorithms.
+* Try not to repeat it anymore.
+*
 * Let R2 = horizontal offset
 * either zero or (Window Offset - indent), whichever is greater
        MOV  @WINOFF,R2

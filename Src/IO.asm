@@ -721,19 +721,24 @@ LLEN3  MOV  R5,R0
 *
 PRTMG  DECT R10
        MOV  R11,*R10
-* Let R0 = address of MGNLST entry
-* Let R1 = either left margin length
-*          or left margin + first line indent
+* Let R1 = address of MGNLST entry
        MOV  R2,R0
        BL   @GETMGN
        MOV  R0,R1
+* Let R1 = either left margin length
+*          or left margin + first line indent
        JEQ  PRTMG2
        MOVB @LEFT(R1),R0
+       MOVB @INDENT(R1),R1
+       SRL  R0,8
+       SRA  R1,8
        MOV  R7,R7
-       JNE  PRTMG1
-       AB   @INDENT(R1),R0
-PRTMG1 SRL  R0,8
-       MOV  R0,R1
+       JEQ  PRTMG0
+       NEG  R1
+PRTMG0 MOV  R1,R1
+       JLT  PRTMG1
+       A    R1,R0
+PRTMG1 MOV  R0,R1
        JMP  PRTMG3
 PRTMG2 LI   R1,DFLTMG
 PRTMG3
