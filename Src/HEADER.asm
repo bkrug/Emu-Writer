@@ -157,7 +157,7 @@ TEN    DATA 10
 * Default Margin entry
 * Empty Byte, Indent, Left Margin, Right Margin, Top Margin, Bottom Margin
 ORGMGN DATA >0000,>0A0A,>0606
-TEXT1  TEXT 'FCTN+9: Menu  CTRL+Y: Hot Keys'
+TEXT1  TEXT 'FCTN+9: Menu  FCTN+8: Hot Keys'
        BYTE 0
 TXTLM  TEXT 'LM:'
        BYTE 0

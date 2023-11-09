@@ -2,6 +2,7 @@
 TABKEY EQU  >01
 DELKEY EQU  >03
 INSKEY EQU  >04
+FCTN8  EQU  >06
 CLRKEY EQU  >07                 * TODO: Isn't this really the erase key?
 BCKKEY EQU  >08
 FWDKEY EQU  >09
@@ -11,6 +12,7 @@ ENTER  EQU  >0D
 ESCKEY EQU  >0F
 SPCBAR EQU  >20
 CTRLY  EQU  >99
+CTRL8  EQU  >9E
 FCTN0  EQU  >BC
 
 VRTCHR EQU  >01
