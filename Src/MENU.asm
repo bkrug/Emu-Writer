@@ -54,7 +54,7 @@ TXTTTL DATA TXTTT1
        BYTE 0
        BYTE 0
        BYTE 0
-       TEXT '           Released Month 202x'
+       TEXT '         Released November 2023'
        BYTE 0
        TEXT '    Press ENTER or SPACE to continue'
        BYTE 0
@@ -84,9 +84,18 @@ MNUHOM DATA TXTHM
 
 TXTHM  DATA TXTHM1
        BYTE 0
-       TEXT 'File'
+       TEXT 'Press any highlighted letter to navigate'
        BYTE 0
-       TEXT 'Margins'
+       TEXT 'to another menu.'
+       BYTE 0
+       BYTE 0
+       BYTE 'F'+INV
+       BYTE ')'+INV
+       TEXT 'ile'
+       BYTE 0
+       BYTE 'M'+INV
+       BYTE ')'+INV
+       TEXT 'argins'
        BYTE 0
 TXTHM1 EVEN
 
@@ -117,15 +126,25 @@ MNUFL  DATA TXTFL
 
 TXTFL  DATA TXTFL1
        BYTE 0
-       TEXT 'New'
+       BYTE 'N'+INV
+       BYTE ')'+INV
+       TEXT 'ew'
        BYTE 0
-       TEXT 'Save'
+       BYTE 'S'+INV
+       BYTE ')'+INV
+       TEXT 'ave'
        BYTE 0
-       TEXT 'Load'
+       BYTE 'L'+INV
+       BYTE ')'+INV
+       TEXT 'oad'
        BYTE 0
-       TEXT 'Print'
+       BYTE 'P'+INV
+       BYTE ')'+INV
+       TEXT 'rint'
        BYTE 0
-       TEXT 'Quit'
+       BYTE 'Q'+INV
+       BYTE ')'+INV
+       TEXT 'uit'
        BYTE 0
 TXTFL1 EVEN
 
@@ -268,6 +287,14 @@ FRMPRT DATA TXTPR           * String List
 TXTPR  DATA TXTPR1
        BYTE 0
        TEXT 'Printer Name'
+       BYTE 0
+       BYTE 0
+       BYTE 0
+       TEXT 'Do not append ".LF" or ".CR" to the end'
+       BYTE 0
+       TEXT 'of your printer name. EmuWriter does not'
+       BYTE 0
+       TEXT 'support either suffix.'
        BYTE 0
 TXTPR1 EVEN
 
