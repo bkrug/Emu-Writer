@@ -178,7 +178,7 @@ DOCDN
 * Let R4 = address in Margin Array
 SAVMGN MOV  @MGNLST,R4
        MOV  *R4,R2
-       SLA  R2,3
+       SLA  R2,MGNPWR
        C    *R2+,*R2+
        A    R4,R2
 * Save each byte from Margin list sequentially
@@ -413,25 +413,27 @@ REDMGN DECT R10
        BL   @LODCHK
        JEQ  MGNERR
        SWPB R5
-* Let R3 = number of bytes to read for margins
-       MOV  R5,R3
-       SLA  R3,MGNPWR
-       C    *R3+,*R3+
+* Let R7 = number of bytes to read for margins
+       MOV  R5,R7
+       SLA  R7,MGNPWR
+       C    *R7+,*R7+
 * Reserve space in buffer
-       MOV  R3,R0
+       MOV  R7,R0
        BLWP @BUFALC
        JEQ  MGNDN
        MOV  R0,@MGNLST
-* Let R3 = end of allocated space
-       A    R0,R3
+* Let R6 = location in Margin List
+* Let R7 = end of allocated space
+       MOV  R0,R6
+       A    R0,R7
 * Save element count
-       MOV  R5,*R0+
+       MOV  R5,*R6+
 * Read rest of margin data
-       MOVB @VDPRD,*R0+
+       MOVB @VDPRD,*R6+
 LODM1  BL   @LODCHK
        JEQ  MGNERR
-       MOVB @VDPRD,*R0+
-       C    R0,R3
+       MOVB @VDPRD,*R6+
+       C    R6,R7
        JL   LODM1
 *
 MGNDN  MOV  *R10+,R11
