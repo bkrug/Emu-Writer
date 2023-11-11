@@ -64,6 +64,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * by more than 20 chars in vertical mode.
        DATA UP16
        TEXT 'UP16  '
+* Move to previous paragraph with hanging indent.
+       DATA UP17
+       TEXT 'UP17  '
 * Move down within a paragraph.
        DATA DOWN1
        TEXT 'DOWN1 '
@@ -86,6 +89,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * STSARW should be set to true
        DATA DOWN7
        TEXT 'DOWN7 '
+* Move down from first line of hanging indent
+       DATA DOWN8
+       TEXT 'DOWN8 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -107,6 +113,11 @@ MGN5   DATA 1,3
 *
 MGN30  DATA 1,3
        DATA 0,>001E,>0A0A,>0A0A
+*
+* Margin List with hanging indent
+*
+MGNHNG DATA 1,3
+       DATA 0,>00F8,>0A0A,>0A0A
 
 **** Mock document ****
 
@@ -765,6 +776,45 @@ UP16   MOV  R11,@FRAMRT
        RT
 
 *
+* Move from one paragraph to previous
+* paragraph with hanging indent.
+* Indent will force cursor right to the
+* beginning of the line.
+*
+UP17   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,6
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,6
+       MOV  R0,@CHRLIX
+       LI   R0,MGNHNG
+       MOV  R0,@MGNLST
+* Act
+       BL   @UPUPSP
+* Assert
+       LI   R0,2
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+57+48+56
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
 * Move down within a paragraph.
 *
 DOWN1  MOV  R11,@FRAMRT
@@ -1013,6 +1063,44 @@ DOWN7  MOV  R11,@FRAMRT
        MOV  @FRAMRT,R11
        RT
 
-
+*
+* Move down from first line of a
+* paragraph with a hanging indent.
+* The cursor must move right so
+* that it does not land in indent
+* area.
+*
+DOWN8  DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,4
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,4
+       MOV  R0,@CHRLIX
+       LI   R0,MGNHNG
+       MOV  R0,@MGNLST
+* Act
+       BL   @DOWNSP
+* Assert
+       LI   R0,2
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
 
        END

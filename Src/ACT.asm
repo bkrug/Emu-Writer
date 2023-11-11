@@ -103,9 +103,11 @@ ADJC2
        BL   @GETIDT
 * Decrease R7 by the indent.
 ADJ3   S    R0,R7
-* Prevent CHRPAX from being negative
+* Prevent CHRPAX from falling to before
+* line break.
+       C    R7,R5
        JGT  ADJC4
-       CLR  R7
+       MOV  R5,R7
 ADJC4
 * If new line is too shorter than previous,
 * avoid wrapping around to the next line.
