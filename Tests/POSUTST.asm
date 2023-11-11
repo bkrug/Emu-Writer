@@ -63,20 +63,20 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA POSA
        TEXT 'POSA  '
 * Calculate LININX and CHRLIX when
-* cursor is on the first line of an
-* indented paragraph.
+* cursor is on the first line of a
+* first-line indented paragraph.
        DATA POSB
        TEXT 'POSB  '
 * Calculate LININX and CHRLIX when
-* cursor is on the first line of an
-* indented paragraph, and just past
-* the right edge of the screen.
+* cursor is on the first line of a
+* first-line indented paragraph, and
+* just past the right edge of the screen.
        DATA POSC
        TEXT 'POSC  '
 * Calculate LININX and CHRLIX
 * when cursor is at the beginning of a
-* line besides first line, in an
-* indented paragraph.
+* line besides first line, in a
+* first-line indented paragraph.
        DATA POSD
        TEXT 'POSD  '
 * Calculate LININX and CHRLIX when
@@ -85,6 +85,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * and an index is larger than 20.
        DATA POSE
        TEXT 'POSE  '
+* Calculate LININX and CHRLIX when
+* cursor is on the second line of a
+* hanging indented paragraph.
+       DATA POSF
+       TEXT 'POSF  '
 * When CHRLIX is 12 and horizontal
 * offset is 0, offset should not change.
        DATA HOF1
@@ -284,6 +289,11 @@ MGN5   DATA 1,3
 *
 MGN32  DATA 1,3
        DATA 0,>0020,>0A0A,>0A0A
+*
+* Margin List with hanging indent
+*
+MGNHNG DATA 1,3
+       DATA 0,>00FB,>0A0A,>0A0A
 *
 * Margin List with two entries
 *
@@ -719,9 +729,9 @@ POSAPE
 POSAW  DATA 0,1
 
 *
-* Calculate LININX and CHRLIX
-* when cursor is at the beginning of a
-* line.
+* Calculate LININX and CHRLIX when
+* cursor is on the first line of a
+* first-line indented paragraph.
 *
 POSB
        LI   R0,POS1L
@@ -847,6 +857,37 @@ POSE
        RT
 
 *
+* Calculate LININX and CHRLIX when
+* cursor is on the second line of a
+* hanging indented paragraph.
+*
+POSF
+       LI   R0,POS1L
+       MOV  R0,@PARLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,45+35                 * Place cursor on line 1 (second line).
+       MOV  R0,@CHRPAX               * Horizontal offset will be required
+*                                    * because the hanging indent is five.
+       LI   R0,MGNHNG
+       MOV  R0,@MGNLST
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,1
+       MOV  @LININX,R1
+       LI   R2,POS1MS
+       LI   R3,POS1ME-POS1MS
+       BLWP @AEQ
+       LI   R0,5+35
+       MOV  @CHRLIX,R1
+       LI   R2,POS1NS
+       LI   R3,POS1NE-POS1NS
+       BLWP @AEQ
+       RT
+
+*
 * When CHRLIX is 12 and horizontal
 * offset is 0, offset should not change.
 *
@@ -860,6 +901,8 @@ HOF1
        MOV  R0,@CHRPAX
        LI   R0,0
        MOV  R0,@WINOFF
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
@@ -1185,6 +1228,8 @@ HOF11
        MOV  R0,@CHRPAX
        LI   R0,20
        MOV  R0,@WINOFF
+       LI   R0,EMPLST
+       MOV  R0,@MGNLST
 * Act
        CLR  R0
        BLWP @POSUPD
