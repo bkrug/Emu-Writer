@@ -84,8 +84,6 @@ EMU-WRITER -- You didn't think you needed it, but now you know.
 
 ### TODO
 
-* In screen header, display a character to indicate vertical or windowed mode.
-* Change the HotKey key.
 * Consider adding a defrag operation that runs every 64/60s seconds.
 * When splitting a paragraph, the "new" paragraph should always be the smaller of the two. This makes memory management easier.
 
