@@ -112,6 +112,17 @@ for program_file in program_files:
         add_command_2 = add_command_1.format(disk_image = disk_image, program_file = program_file)
         os.system(add_command_2)
 
+# Add example documents to disk image
+text_files = ["HANSEL", "THREELANG"]
+for text_file in text_files:
+    remove_header1 = "xdm99.py -F Fiad/{text_file} -o TEMPFILE"
+    remove_header2 = remove_header1.format(text_file = text_file)
+    os.system(remove_header2)
+    add_doc_1 = "xdm99.py {disk_image} -a TEMPFILE -n {text_file} -f DIS/FIX64"
+    add_doc_2 = add_doc_1.format(disk_image = disk_image, text_file = text_file)
+    os.system(add_doc_2)
+    os.remove("TEMPFILE")
+
 # Add TIFILES header to all object files
 print("Adding TIFILES header")
 for file in glob.glob(WORK_FOLDER + "*.obj"):
