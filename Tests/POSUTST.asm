@@ -163,6 +163,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * don't scroll up.
        DATA WUP5
        TEXT 'WUP5  '
+* Presumably after switching to horizontal
+* mode, WINLIN is not a valid line
+* index. Assert that it is changed to
+* the maximum valid line.
+       DATA WUP6
+       TEXT 'WUP6  '
 * ---
 * Top of screen displays paragraph 2, line 0
 * The cursor is on the bottom row of the screen.
@@ -1535,6 +1541,44 @@ WUP5
        BLWP @AEQ
        RT
 
+*
+* Presumably after switching to horizontal
+* mode, WINLIN is not a valid line
+* index. Assert that it is changed to
+* the maximum valid line.
+*
+WUP6
+* Arrange
+       LI   R0,UP1L
+       MOV  R0,@PARLST
+       LI   R0,3
+       MOV  R0,@PARINX
+       LI   R0,70+68+72+69
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,7                      * This is not a valid line index
+*                                     * The max is 6 for this paragraph.
+       MOV  R0,@WINLIN
+* Act
+       CLR  R0
+       BLWP @POSUPD
+* Assert
+       LI   R0,1
+       MOV  @WINPAR,R1
+       LI   R2,WUPM1
+       LI   R3,WUPM1E-WUPM1
+       BLWP @AEQ
+*
+       LI   R0,6
+       MOV  @WINLIN,R1
+       LI   R2,WUPM2
+       LI   R3,WUPM2E-WUPM2
+       BLWP @AEQ
+       RT
+
 WUPM1  TEXT 'Window Paragraph Index was '
        TEXT 'updated correctly.'
 WUPM1E
@@ -1588,6 +1632,7 @@ UP1W3  DATA 5,1
        DATA 70+68+72
        DATA 70+68+72+69
        DATA 70+68+72+69+66
+
 
 *
 * Scroll down test DATA

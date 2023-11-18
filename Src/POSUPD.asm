@@ -130,10 +130,11 @@ UPWTOP DECT R10
        MOV  *R1,R1
 * Let R1 = index of last line in paragraph
        MOV  *R1,R1
-* Is WINLIN > R1?
+* Is WINLIN > max line index?
        C    @WINLIN,R1
        JLE  UT1
-* Yes, fix that
+* Yes, fix that.
+* Sometimes this happens after switching to horizontal mode.
        MOV  R1,@WINLIN
 UT1
 * Check if cursor is earlier in the 
