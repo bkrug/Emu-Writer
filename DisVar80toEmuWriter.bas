@@ -17,10 +17,10 @@
 260 OPEN #2:DEST$,DISPLAY ,FIXED 64,OUTPUT
 270 OUTPUTLINE$=DOCHEADER$
 280 LINPUT #1:INPUTLINE$
-290 IF LEN(OUTPUTLINE$)=0 THEN 340
-300 LASTCHR$=SEG$(OUTPUTLINE$,LEN(OUTPUTLINE$),1)
-310 REM ** Add a space between lines **
-320 REM ** Except at the beginning of a paragraph **
+290 REM ** Add a space between lines **
+300 REM ** Except at the beginning of a paragraph **
+310 IF LEN(OUTPUTLINE$)=0 THEN 340
+320 LASTCHR$=SEG$(OUTPUTLINE$,LEN(OUTPUTLINE$),1)
 330 IF LASTCHR$=CHR$(13)OR LASTCHR$=" " THEN 360
 340 OUTPUTLINE$=OUTPUTLINE$&" "
 350 REM ** Copy all visible characters to the output **
