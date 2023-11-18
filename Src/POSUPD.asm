@@ -120,6 +120,22 @@ UPW3   RT
 *
 UPWTOP DECT R10
        MOV  R11,*R10
+* Let R1 = address of paragraph at top of screen
+       MOV  @PARLST,R0
+       MOV  @WINPAR,R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       INCT R1
+       MOV  *R1,R1
+* Let R1 = index of last line in paragraph
+       MOV  *R1,R1
+* Is WINLIN > R1?
+       C    @WINLIN,R1
+       JLE  UT1
+* Yes, fix that
+       MOV  R1,@WINLIN
+UT1
 * Check if cursor is earlier in the 
 * document than the first line on the
 * screen or not.
