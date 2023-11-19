@@ -84,8 +84,9 @@ EMU-WRITER -- You didn't think you needed it, but now you know.
 
 ### TODO
 
-* Consider adding a defrag operation that runs every 64/60s seconds.
+* When creating the disk image, write-protect the program files.
 * When splitting a paragraph, the "new" paragraph should always be the smaller of the two. This makes memory management easier.
+* Consider adding a defrag operation that runs every 64/60s seconds.
 
 ### Manual test cases
 

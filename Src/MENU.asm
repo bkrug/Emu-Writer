@@ -41,16 +41,16 @@ TXTTTL DATA TXTTT1
        BYTE 0
        BYTE 0
        BYTE 0
-       TEXT '             ============='
+       TEXT '              ============='
        BYTE 0
-       TEXT '               EmuWriter'
+       TEXT '                EmuWriter'
        BYTE 0
-       TEXT '                  v0.2'
+       TEXT '                 v0.2.1'
        BYTE 0
-       TEXT '             ============='
+       TEXT '              ============='
        BYTE 0
        BYTE 0
-       TEXT '    "Be a little late to the party"'
+       TEXT '     "Be a little late to the party"'
        BYTE 0
        BYTE 0
        BYTE 0

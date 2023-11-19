@@ -103,7 +103,7 @@ for file in glob.glob(WORK_FOLDER + "*.obj.temp"):
 
 # Create disk image
 print("Creating disk image")
-disk_image = 'EmuWriter.dsk'
+disk_image = 'EmuWriter.v0.2.1.dsk'
 os.system("xdm99.py -X sssd " + disk_image)
 program_files = glob.glob(WORK_FOLDER + "EMUWRITE*")
 for program_file in program_files:
@@ -112,7 +112,7 @@ for program_file in program_files:
         add_command_2 = add_command_1.format(disk_image = disk_image, program_file = program_file)
         os.system(add_command_2)
 
-# Add example documents to disk image
+# Add example documents to disk imageE
 text_files = ["HANSEL", "THREELANG"]
 for text_file in text_files:
     remove_header1 = "xdm99.py -F Fiad/{text_file} -o TEMPFILE"
