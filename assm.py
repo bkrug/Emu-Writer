@@ -103,7 +103,7 @@ for file in glob.glob(WORK_FOLDER + "*.obj.temp"):
 
 # Create disk image
 print("Creating disk image")
-disk_image = 'EmuWriter.v0.2.1.dsk'
+disk_image = 'EmuWriter.v0.3.dsk'
 os.system("xdm99.py -X sssd " + disk_image)
 program_files = glob.glob(WORK_FOLDER + "EMUWRITE*")
 for program_file in program_files:
