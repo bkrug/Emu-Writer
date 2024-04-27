@@ -94,3 +94,4 @@ EMU-WRITER -- You didn't think you needed it, but now you know.
   * When the system cannot let you split paragraphs using the enter key, the document should not change.
   * When the system cannot let you merge paragraphs using the delete key, the document should not change.
   * When the system cannot let you insert new characters in an existing paragrahp, the document should stop changing.
+* Load the file "BIG" press enter many times from the end of the document. Do you start to get graphical issues?
