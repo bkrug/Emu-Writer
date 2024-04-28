@@ -31,17 +31,17 @@ WRTHDR
        DECT R10
        MOV  R0,*R10
 * Clear first line of header
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
        LI   R1,SCRNWD
        BL   @VDPSPI
 * Draw first line
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
        MOV  R2,R0
        BL   @VDPINV
 * Draw second line
-       LI   R0,SCRNWD
+       LI   R0,SCRTBL+SCRNWD
        BL   @VDPADR
 * Let R0 = Get address of margin data
        MOV  @PARINX,R0
