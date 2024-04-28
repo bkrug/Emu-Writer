@@ -25,6 +25,7 @@
        REF  FORTY
 
        COPY 'EQUKEY.asm'
+       COPY 'CPUADR.asm'
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4
@@ -180,6 +181,7 @@ VDPSTR DECT R10
        MOV  R12,R2
        MPY  @FORTY,R2
        MOV  R3,R0
+       AI   R0,SCRTBL
 * Set VDP write address
        BL   @VDPADR
 *
