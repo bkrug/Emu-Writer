@@ -92,6 +92,15 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move down from first line of hanging indent
        DATA DOWN8
        TEXT 'DOWN8 '
+* Scroll down. Cursor starts from the first line in some paragraph.
+* Scroll down. Cursor starts from the middle line in some paragraph.
+* Scroll down. Cursor starts from the last line in some paragraph.
+* Scroll down. Cursor will move down 22 lines within the same paragraph.
+* Scroll down, passing two paragraphs that have a margin list entry.
+* Scroll down. Top of the screen originally shows a margin entry.
+* Scroll down. Top of the screen originally shows the first line of a paragraph with a margin entry.
+* Scroll down. Top of the screen will ultimately show a margin entry.
+* Scroll down. Top of the screen will ultimately show the first line of a paragraph with a margin entry.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
