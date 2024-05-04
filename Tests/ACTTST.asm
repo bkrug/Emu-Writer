@@ -639,7 +639,7 @@ UP11   MOV  R11,@FRAMRT
        BL   @UPUPSP
 * Assert
        MOV  @STSARW,R0
-	   MOV  *R13,R1
+	MOV  *R13,R1
        LI   R2,TYPM
        LI   R3,TYPME-TYPM
        BLWP @AOC
@@ -1118,8 +1118,8 @@ DOWN7  MOV  R11,@FRAMRT
        MOV  R0,@CHRLIX
 * R0 of the caller's workspace is a
 * document status byte
-	   LI   R13,MOCKWS
-	   CLR  *R13
+	LI   R13,MOCKWS
+	CLR  *R13
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -1203,12 +1203,6 @@ PGD1   DECT R10
        MOV  @PARINX,R1
        LI   R2,PARM
        LI   R3,PARME-PARM
-       BLWP @AEQ
-*
-       LI   R0,2
-       MOV  @LININX,R1
-       LI   R2,CHRM
-       LI   R3,CHRME-CHRM
        BLWP @AEQ
 *
        LI   R0,55+54
