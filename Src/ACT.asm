@@ -1,4 +1,4 @@
-       DEF  UPUPSP,DOWNSP
+       DEF  UPUPSP,DOWNSP,PGDOWN
 *
        REF  PARLST                               From VAR.asm
        REF  PARINX,CHRPAX,LININX,CHRLIX          "
@@ -62,6 +62,15 @@ DWNSP1 MOV  @PARLST,R0
        SOC  @STSDSH,*R13
 * Recalculate R3 & R4
 DWNSP2 BL   @PARADR
+*
+       JMP  ADJCHR
+
+*
+* Move cursor and window-position
+* down by 22 lines.
+*
+PGDOWN DECT R10
+       MOV  R11,*R10
 *
        JMP  ADJCHR
 

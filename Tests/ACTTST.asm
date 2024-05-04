@@ -2,12 +2,13 @@
 *
        REF  PARLST,MGNLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
+       REF  WINPAR,WINLIN
        REF  STSARW
        REF  WINMOD
 * Assert methods
        REF  AEQ,AOC
 * Tested methods
-       REF  UPUPSP,DOWNSP
+       REF  UPUPSP,DOWNSP,PGDOWN
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Move from 3rd to 2nd line
@@ -93,6 +94,8 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA DOWN8
        TEXT 'DOWN8 '
 * Scroll down. Cursor starts from the first line in some paragraph.
+       DATA PGD1
+       TEXT 'PGD1  '
 * Scroll down. Cursor starts from the middle line in some paragraph.
 * Scroll down. Cursor starts from the last line in some paragraph.
 * Scroll down. Cursor will move down 22 lines within the same paragraph.
@@ -101,6 +104,8 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll down. Top of the screen originally shows the first line of a paragraph with a margin entry.
 * Scroll down. Top of the screen will ultimately show a margin entry.
 * Scroll down. Top of the screen will ultimately show the first line of a paragraph with a margin entry.
+* Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
+* Scroll down. Top of the screen runs into the end of the document.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -127,11 +132,18 @@ MGN30  DATA 1,3
 *
 MGNHNG DATA 1,3
        DATA 0,>00F8,>0A0A,>0A0A
+*
+* Margin List with 2 entries
+*
+MGN3ET DATA 2,3
+       DATA 2,>0005,>0A0A,>0A0A
+       DATA 5,>001E,>0A0A,>0A0A
 
 **** Mock document ****
 
-DOC1   DATA 4,1
+DOC1   DATA 8,1
        DATA PAR1A,PAR1B,PAR1C,PAR1D
+       DATA PAR1E,PAR1F,PAR1G,PAR1H
 PAR1A  DATA 56+60+59+25
        DATA WRP1A
        TEXT 'Beg..End'
@@ -157,6 +169,24 @@ PAR1D  DATA 57+58+40
 WRP1D  DATA 2,1
        DATA 57
        DATA 57+58
+PAR1E  DATA 55+54+56+55+54+56+55+54+56+3
+       DATA WRP1E
+       TEXT 'Beg..End'
+WRP1E  DATA 9,1
+PAR1F  DATA 55+54+56+55+54+56+55+54+3
+       DATA WRP1E
+       TEXT 'Beg..End'
+WRP1F  DATA 8,1
+PAR1G  DATA 55+54+56+55+54+56+55+54+56+55+3
+       DATA WRP1E
+       TEXT 'Beg..End'
+WRP1G  DATA 11,1
+PAR1H  DATA 57+58+40
+       DATA WRP1H
+       TEXT 'Beg..End'
+WRP1H  DATA 2,1
+       DATA 57
+       DATA 57+58
 
 * Mock return workspace address
 MOCKWS DATA 0
@@ -173,7 +203,12 @@ CHRLM  TEXT 'Character index within '
        TEXT 'is wrong.'
 CHRLME
 TYPM   TEXT 'STSARW should be set.'
-TYPME  EVEN
+TYPME
+WINM   TEXT 'Window paragraph is wrong.'
+WINME
+WINLM  TEXT 'Window paragraph-line is wrong.'
+WINLME
+       EVEN
 
 *
 * Move from third to second line in the
@@ -1010,7 +1045,7 @@ DOWN6  MOV  R11,@FRAMRT
 * Arrange
        LI   R0,DOC1
        MOV  R0,@PARLST
-       LI   R0,3
+       LI   R0,7
        MOV  R0,@PARINX
        LI   R0,57+58+15
        MOV  R0,@CHRPAX
@@ -1023,7 +1058,7 @@ DOWN6  MOV  R11,@FRAMRT
 * Act
        BL   @DOWNSP
 * Assert
-       LI   R0,3
+       LI   R0,7
        MOV  @PARINX,R1
        LI   R2,PARM
        LI   R3,PARME-PARM
@@ -1107,6 +1142,58 @@ DOWN8  DECT R10
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor starts from the first line in some paragraph.
+*
+PGD1   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,1
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,4
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@LININX
+       LI   R0,0
+       MOV  R0,@CHRLIX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,6
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,2
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       LI   R0,14
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,1
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
        BLWP @AEQ
 *
        MOV  *R10+,R11
