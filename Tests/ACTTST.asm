@@ -1223,7 +1223,7 @@ PGD1   DECT R10
        LI   R3,WINME-WINM
        BLWP @AEQ
 *
-       LI   R0,55
+       LI   R0,1
        MOV  @WINLIN,R1
        LI   R2,WINLM
        LI   R3,WINLME-WINLM

@@ -5,7 +5,7 @@
        REF  WINPAR,WINLIN                        "
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
-       REF  GETIDT                               From UTIL.asm
+       REF  GETIDT,GETMGN                        From UTIL.asm
 
        COPY 'EQUKEY.asm'
 
@@ -182,18 +182,32 @@ PARADR
 * Output:
 *   R3 & R4
 SCRLD
+       DECT R10
+       MOV  R11,*R10
 * Let R5 = remaining lines
        LI   R5,TXTHGT
-* Let R6 = address within PARLST
-*          minus two bytes
+* Let R6 = address within PARLST minus two bytes
        MOV  R3,R6
        SLA  R6,1
+       INCT R6                * Skip 4 bytes for array header, but then subtract 2. We change R6 every time we loop through SDL1.
        A    @PARLST,R6
-       INCT R6                * Skip 4 bytes for array header, but then subtract 2.
+* Decrease R3 because we change it when we loop through SDL1.
+       DEC  R3
 * Let R6 = next entry in paragrah list
-SD1    INCT R6
+* Let R3 = index of next paragrah
+SDL1   INCT R6
+       INC  R3
+* Does paragrah have a margin entry?
+       MOV  R3,R0
+       BL   @GETMGN
+       MOV  R0,R0
+       JEQ  SDL2
+       C    *R0,R3
+       JNE  SDL2
+* Yes, account for it in R5
+       DEC  R5
 * Let R7 = address of wrap list
-       MOV  *R6,R7
+SDL2   MOV  *R6,R7
        INCT R7
        MOV  *R7,R7
 * Let R7 = number of lines in paragrah
@@ -202,7 +216,7 @@ SD1    INCT R6
 * Decrease remaining lines
        S    R7,R5
 * If R5 > 0, then loop
-       JGT  SD1
+       JGT  SDL1
 *
        JEQ  SD2
 * R5 < 0, so we subtracted too many lines
@@ -214,6 +228,7 @@ SD2    AI   R6,-4
        MOV  R6,R3
        MOV  R5,R4
 *
+       MOV  *R10+,R11
        RT
 
 
