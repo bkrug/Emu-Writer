@@ -72,24 +72,28 @@ DWNSP2 BL   @PARADR
 *
 PGDOWN DECT R10
        MOV  R11,*R10
-* Move cursor down by one screen
-       MOV  @PARINX,R3
-       MOV  @LININX,R4
-       BL   @SCRLD
-       MOV  R3,@PARINX
-       MOV  R4,@LININX
 * Move window down by one screen
        MOV  @WINPAR,R3
        MOV  @WINLIN,R4
        BL   @SCRLD
        MOV  R3,@WINPAR
        MOV  R4,@WINLIN
+* Move cursor down by one screen
+       MOV  @PARINX,R3
+       MOV  @LININX,R4
+       BL   @SCRLD
+       MOV  R3,@PARINX
+       MOV  R4,@LININX
+* Let R4 = address of wrap list
+       BL   @PARADR
 *
        JMP  ADJCHR
 
 *
 * Adjust CHRPAX and CHRLIX
 *
+* Input:
+*    R4 = address of wrap list
 ADJCHR
 * Let R5 = address of prev line break
 * Let R6 = address of next iine break
@@ -131,7 +135,7 @@ ADJ3   S    R0,R7
        JGT  ADJC4
        MOV  R5,R7
 ADJC4
-* If new line is too shorter than previous,
+* If new line is shorter than previous,
 * avoid wrapping around to the next line.
 * Just move to the end of the new line.
        C    R7,R6
