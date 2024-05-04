@@ -2,6 +2,7 @@
 *
        REF  PARLST                               From VAR.asm
        REF  PARINX,CHRPAX,LININX,CHRLIX          "
+       REF  WINPAR,WINLIN                        "
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
        REF  GETIDT                               From UTIL.asm
@@ -71,6 +72,18 @@ DWNSP2 BL   @PARADR
 *
 PGDOWN DECT R10
        MOV  R11,*R10
+* Move cursor down by one screen
+       MOV  @PARINX,R3
+       MOV  @LININX,R4
+       BL   @SCRLD
+       MOV  R3,@PARINX
+       MOV  R4,@LININX
+* Move window down by one screen
+       MOV  @WINPAR,R3
+       MOV  @WINLIN,R4
+       BL   @SCRLD
+       MOV  R3,@WINPAR
+       MOV  R4,@WINLIN
 *
        JMP  ADJCHR
 
@@ -158,5 +171,50 @@ PARADR
        MOV  *R4,R4
 *
        RT
+
+*
+* Given a paragraph and line index.
+* Get values one screen lower.
+*
+* Input:
+*   R3 - paragraph index
+*   R4 - line index
+* Output:
+*   R3 & R4
+SCRLD
+* Let R5 = remaining lines
+       LI   R5,TXTHGT
+* Let R6 = address within PARLST
+*          minus two bytes
+       MOV  R3,R6
+       SLA  R6,1
+       A    @PARLST,R6
+       INCT R6                * Skip 4 bytes for array header, but then subtract 2.
+* Let R6 = next entry in paragrah list
+SD1    INCT R6
+* Let R7 = address of wrap list
+       MOV  *R6,R7
+       INCT R7
+       MOV  *R7,R7
+* Let R7 = number of lines in paragrah
+       MOV  *R7,R7
+       INC  R7
+* Decrease remaining lines
+       S    R7,R5
+* If R5 > 0, then loop
+       JGT  SD1
+*
+       JEQ  SD2
+* R5 < 0, so we subtracted too many lines
+       A    R7,R5
+* Set new paragraph and line indexes
+SD2    AI   R6,-4
+       S    @PARLST,R6
+       SRL  R6,1
+       MOV  R6,R3
+       MOV  R5,R4
+*
+       RT
+
 
        END

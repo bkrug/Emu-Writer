@@ -173,14 +173,41 @@ PAR1E  DATA 55+54+56+55+54+56+55+54+56+3
        DATA WRP1E
        TEXT 'Beg..End'
 WRP1E  DATA 9,1
+       DATA 55
+       DATA 55+54
+       DATA 55+54+56
+       DATA 55+54+56+55
+       DATA 55+54+56+55+54
+       DATA 55+54+56+55+54+56
+       DATA 55+54+56+55+54+56+55
+       DATA 55+54+56+55+54+56+55+54
+       DATA 55+54+56+55+54+56+55+54+56
 PAR1F  DATA 55+54+56+55+54+56+55+54+3
-       DATA WRP1E
+       DATA WRP1F
        TEXT 'Beg..End'
 WRP1F  DATA 8,1
+       DATA 55
+       DATA 55+54
+       DATA 55+54+56
+       DATA 55+54+56+55
+       DATA 55+54+56+55+54
+       DATA 55+54+56+55+54+56
+       DATA 55+54+56+55+54+56+55
+       DATA 55+54+56+55+54+56+55+54
 PAR1G  DATA 55+54+56+55+54+56+55+54+56+55+3
-       DATA WRP1E
+       DATA WRP1G
        TEXT 'Beg..End'
 WRP1G  DATA 11,1
+       DATA 55
+       DATA 55+54
+       DATA 55+54+56
+       DATA 55+54+56+55
+       DATA 55+54+56+55+54
+       DATA 55+54+56+55+54+56
+       DATA 55+54+56+55+54+56+55
+       DATA 55+54+56+55+54+56+55+54
+       DATA 55+54+56+55+54+56+55+54+56
+       DATA 55+54+56+55+54+56+55+54+56+55
 PAR1H  DATA 57+58+40
        DATA WRP1H
        TEXT 'Beg..End'
@@ -1179,18 +1206,24 @@ PGD1   DECT R10
        BLWP @AEQ
 *
        LI   R0,2
+       MOV  @LININX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       LI   R0,55+54
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
        BLWP @AEQ
 *
-       LI   R0,14
+       LI   R0,5
        MOV  @WINPAR,R1
        LI   R2,WINM
        LI   R3,WINME-WINM
        BLWP @AEQ
 *
-       LI   R0,1
+       LI   R0,55
        MOV  @WINLIN,R1
        LI   R2,WINLM
        LI   R3,WINLME-WINLM
