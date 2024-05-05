@@ -279,26 +279,29 @@ LOOKUP DECT R10
        MOV  R5,*R10
 * Let R5 = value of WINMGN if screen actually scrolls
        CLR  R5
-CD1
+*
+* Loop through each paragraph that is not the target paragrah
+*
+PARALP
 * Does the paragraph have a margin entry?
        MOV  R2,R0
        BL   @MGNADR
        MOV  R1,R1
-       JEQ  CD2
+       JEQ  PLP1
 * Yes, increase reported size of paragraph by one line
        INC  R3
-CD2
+PLP1
 * Is number of remaining lines moving backwards
 * smaller than remaining lines in this paragraph?
        C    R4,R3
-       JLE  CD3
+       JLE  TGTPAR
 * No, look upwards by at least one paragraph.
 * Decrease R4 by this paragraph's line count.
        S    R3,R4
        DEC  R4
 * Point to earlier paragraph
        DEC  R2
-       JLT  CD4
+       JLT  FIRSTP
 * Let R1 = address in PARLST
        MOV  @PARLST,R0
        MOV  R2,R1
@@ -310,26 +313,32 @@ CD2
 * Let R3 = index of last line in paragraph
        MOV  *R1,R3
 * Try next paragraph
-       JMP  CD1
-* Earliest acceptable line is in this paragraph
-CD3    S    R4,R3
+       JMP  PARALP
+*
+* The target line is in this paragraph
+*
+TGTPAR S    R4,R3
 * Is this a paragraph with a Margin Entry?       
        MOV  R1,R1
-       JEQ  CD5
+       JEQ  CPYOUT
 * Yes, so R3 is one line too large.
        DEC  R3
-       JGT  CD5
-       JEQ  CD5
+       JGT  CPYOUT
+       JEQ  CPYOUT
 * Actually, R3 was fine,
 * but we need to display the margin entry. 
        CLR  R3       
        SETO R5
-       JMP  CD5
+       JMP  CPYOUT
+*
 * Earliest acceptable line is the beginning of the document
-CD4    CLR  R2
+*
+FIRSTP CLR  R2
        CLR  R3
+*
 * Move value of WINMGN to R4
-CD5    MOV  R5,R4
+*
+CPYOUT MOV  R5,R4
 *
        MOV  *R10+,R5
        MOV  *R10+,R11

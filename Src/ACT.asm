@@ -139,7 +139,7 @@ PGUP   DECT R10
        BL   @LOOKUP
        MOV  R2,@PARINX
        MOV  R3,R2
-*      * Ignore R4, the cursor cannot land on the margin description
+*      Ignore R4, the cursor cannot land on the margin description
 *
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
