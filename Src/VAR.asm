@@ -133,21 +133,16 @@ LNWDTH BSS  2
 WINMOD BSS  2
 
 * INPUT.asm
+*
+* Master values
+*
 * Current Paragraph Index
 PARINX BSS  2
 * Character Index in Paragraph
 CHRPAX BSS  2
-* Insert Mode. 0 = insert, -1 = overwrit
-INSTMD BSS  2
-* Input mode. 0 = unspecified,
-* 1 = text, 2 = movement
-INPTMD BSS  2
-
-* POSUPDT.asm
-* Line Index in Paragraph
-LININX BSS  2
-* Character Index in line
-CHRLIX BSS  2
+*
+* Window values
+*
 * Window horizontal offset
 WINOFF BSS  2
 * First Paragraph on screen
@@ -157,6 +152,23 @@ WINLIN BSS  2
 * If WINMGN = -1 and top screen paragraph has margin entry, display it.
 * If WINMGN = 0, do not display margin entry for top paragraph.
 WINMGN BSS  2
+*
+* Modes
+*
+* Insert Mode. 0 = insert, -1 = overwrit
+INSTMD BSS  2
+* Input mode. 0 = unspecified,
+* 1 = text, 2 = movement
+INPTMD BSS  2
+
+* POSUPDT.asm
+*
+* Calculated values. Dependent on Master and Window values.
+*
+* Line Index in Paragraph
+LININX BSS  2
+* Character Index in line
+CHRLIX BSS  2
 * Position of flashing cursor on screen
 CURSCN BSS  2
 
