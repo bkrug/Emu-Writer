@@ -21,16 +21,16 @@ UPUPSP DECT R10
 * Let R2 = line index
 * Let R6 = old horizontal position within line
        BL   @GETLIN
-*
-       MOV  R2,R2
-       JEQ  UPSP1
 * Move up within same paragraph
        DEC  R2
-       JMP  UPSP2
-* Don't move past start of document
+       JGT  UPSP2
+       JEQ  UPSP2
+* Cursor was already at the top of the paragraph.
+* Try to move up to previous one.
+* Is this the first of the of document?
 UPSP1  MOV  @PARINX,R0
        JEQ  UPSP3
-* Move up to previous paragraph
+* No, move up to previous paragraph
        DEC  @PARINX
        SOC  @STSDSH,*R13
 * Let R3 = Address of paragraph
@@ -208,8 +208,13 @@ LIN2   MOV  @CHRPAX,R6
 * No, subtract the previous line break from R6
        DECT R5
        S    *R5,R6
+* Let R0 = the indent for this line
+LIN3   MOV  @PARINX,R0
+       MOV  R2,R1
+       BL   @GETIDT
+* Increase horizontal position by indent
+       A    R0,R6
 *
-LIN3
        MOV  *R10+,R11
        RT
 
