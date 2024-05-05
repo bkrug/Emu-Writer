@@ -93,6 +93,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move down from first line of hanging indent
        DATA DOWN8
        TEXT 'DOWN8 '
+* Move down from indented to non-indented line
+       DATA DOWN9
+       TEXT 'DOWN9 '
 * Scroll down. Cursor starts from the first line in some paragraph.
        DATA PGD1
        TEXT 'PGD1  '
@@ -1166,6 +1169,40 @@ DOWN8  DECT R10
        BLWP @AEQ
 *
        LI   R0,61
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Move down from last line of a
+* paragraph with a hanging indent
+* to a non-indented line.
+*
+DOWN9  DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,61+57+48+56+7      * This line has an 8-char indent
+       MOV  R0,@CHRPAX
+       LI   R0,MGNHNG
+       MOV  R0,@MGNLST
+* Act
+       BL   @DOWNSP
+* Assert
+       LI   R0,3
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,15
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
