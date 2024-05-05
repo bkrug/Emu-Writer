@@ -6,6 +6,7 @@
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
        REF  GETIDT,GETMGN                        From UTIL.asm
+       REF  ARYADR                               From ARRAY
 
        COPY 'EQUKEY.asm'
 
@@ -45,26 +46,33 @@ DOWNSP DECT R10
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
+* Let R2 = line index
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
 * Is this the last paragraph-line?
-       C    @LININX,*R4
+       C    R2,*R4
        JEQ  DWNSP1
 * Move down within same paragraph
-       INC  @LININX
+       INC  R2
        JMP  DWNSP2
 * Don't move past end of document
 DWNSP1 MOV  @PARLST,R0
        MOV  *R0,R0
        DEC  R0
        C    @PARINX,R0
-       JEQ  ARRWRT
+       JEQ  DWNSP3
 * Move down to next paragraph
        INC  @PARINX
-       CLR  @LININX
+       CLR  R2
        SOC  @STSDSH,*R13
-* Recalculate R3 & R4
-DWNSP2 BL   @PARADR
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+       BL   @PARADR
+* Update CHRPAX
+DWNSP2 BL   @SETCHR
 *
-       JMP  ADJCHR
+DWNSP3 MOV  *R10+,R11
+       RT
 
 *
 * Move cursor and window-position
@@ -152,7 +160,110 @@ ADJC5
 *
 ARRWRT MOV  *R10+,R11
        RT
-       
+
+*
+* Given CHRPAX and address of wrap list,
+* find the paragraph-line index
+* and the horizontal position within the line (including indents).
+*
+* Input:
+*   CHRPAX
+*   R4 - address of wrap list
+* Output:
+*   R2 - line index
+*   R6 - horizontal position
+* Changed:
+*   R5
+GETLIN
+       DECT R10
+       MOV  R11,*R10
+* Let R5 = current location in wrap list
+* Let R6 = end of wrap list
+       MOV  R4,R5
+       C    *R5+,*R5+
+       MOV  *R4,R6
+       SLA  R6,1
+       A    R5,R6
+* Let R2 = line index
+       SETO R2
+       DECT R5
+* Increment line index until we find an entry >= CHRPAX
+LIN1   INC  R2
+       INCT R5
+       C    R5,R6
+       JEQ  LIN2
+       C    *R5,@CHRPAX
+       JLE  LIN1
+* Let R6 = horizontal position
+LIN2   MOV  @CHRPAX,R6
+* Is the current line, the first line?
+       MOV  R2,R2
+       JEQ  LIN3
+* No, subtract the previous line break from R6
+       DECT R5
+       S    *R5,R6
+*
+LIN3
+       MOV  *R10+,R11
+       RT
+
+*
+* Adjust CHRPAX
+*
+* Input:
+*   PARINX
+*   R2 - line index
+*   R3 - address of paragrah
+*   R4 - address of wrap list
+*   R6 - old horizontal position
+* Changed: R6
+SETCHR DECT R10
+       MOV  R11,*R10
+* Let R1 = address of line break
+* if this is the first line, it will point to before index 0 of wrap list.
+       MOV  R2,R1
+       SLA  R1,1
+       INCT R1
+       A    R4,R1
+* Let R7 = char index of line break
+       MOV  *R1,R7
+       MOV  R2,R2
+       JNE  CHR1
+       CLR  R7
+CHR1
+* Let R8 = length of line
+       MOV  @2(R1),R8
+       C    *R4,R2
+       JNE  CHR2
+       MOV  *R3,R8
+CHR2   S    R7,R8
+* Let R0 = the indent for this line
+       MOV  @PARINX,R0
+       MOV  R2,R1
+       BL   @GETIDT
+* Reduce horizontal position by size of indent
+       S    R0,R6
+       JGT  CHR3
+       CLR  R6
+CHR3
+* Is horizontal position longer than the line?
+       C    R6,R8
+       JHE  CHR4
+* No, add line break to horizontal position
+       A    R7,R6
+       JMP  CHR5
+* Yes, let R6 = char at end of line
+CHR4   MOV  R7,R6
+       A    R8,R6
+       DEC  R6
+* Update CHRPAX
+CHR5   MOV  R6,@CHRPAX
+* Edit document status
+       SOC  @STSARW,*R13
+*
+       MOV  *R10+,R11
+       RT
+
 *
 * Get paragraph address and wrap list
 * address.
