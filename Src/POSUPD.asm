@@ -1,12 +1,12 @@
-       DEF  POSUPD,GETROW,MGNADR
+       DEF  POSUPD,GETROW
 *
        REF  POSUWS
 *
        REF  STSWIN
 *
-       REF  GETMGN,GETIDT              From UTIL.asm
-       REF  GETLIN                     "
-       REF  ARYADR                     From ARRAY.asm
+       REF  GETMGN,GETIDT                    From UTIL.asm
+       REF  GETLIN,LOOKUP,MGNADR             "
+       REF  ARYADR                           From ARRAY.asm
 *
        REF  PARLST,MGNLST
        REF  FORTY
@@ -138,60 +138,11 @@ CHKDWN
        MOV  @LININX,R3
 * Let R4 = number of lines to look upwards
        LI   R4,TXTHGT-1
-* Let R5 = value of WINMGN if screen actually scrolls
-       CLR  R5
-CD1
-* Does the paragraph have a margin entry?
-       MOV  R2,R0
-       BL   @MGNADR
-       MOV  R1,R1
-       JEQ  CD2
-* Yes, increase reported size of paragraph by one line
-       INC  R3
-CD2
-* Is number of remaining lines moving backwards
-* smaller than remaining lines in this paragraph?
-       C    R4,R3
-       JLE  CD3
-* No, look upwards by at least one paragraph.
-* Decrease R4 by this paragraph's line count.
-       S    R3,R4
-       DEC  R4
-* Point to earlier paragraph
-       DEC  R2
-       JLT  CD4
-* Let R1 = address in PARLST
-       MOV  @PARLST,R0
-       MOV  R2,R1
-       BLWP @ARYADR
-* Let R1 = address of paragraph
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       MOV  @2(R1),R1
-* Let R3 = index of last line in paragraph
-       MOV  *R1,R3
-* Try next paragraph
-       JMP  CD1
-* Earliest acceptable line is in this paragraph
-CD3    S    R4,R3
-* Is this a paragraph with a Margin Entry?       
-       MOV  R1,R1
-       JEQ  CD5
-* Yes, so R3 is one line too large.
-       DEC  R3
-       JGT  CD5
-       JEQ  CD5
-* Actually, R3 was fine,
-* but we need to display the margin entry. 
-       CLR  R3       
-       SETO R5
-       JMP  CD5
-* Earliest acceptable line is the beginning of the document
-CD4    CLR  R2
-       CLR  R3
-CD5
-* R2 now contains earliest acceptable paragraph
+*
+       BL   @LOOKUP
+* R2 now contains earliest acceptable paragraph.
 * R3 now contains earliest acceptable paragraph-line.
+* R5 contains value for WINMGN.
 *
 * Is screen pointing to an earlier paragrah than R2?
        C    @WINPAR,R2
@@ -328,36 +279,6 @@ GR4
 * Let R0 = screen row
        MOV  R4,R0
 *
-       MOV  *R10+,R11
-       RT
-
-*
-* Get address of paragraph's
-* Margin entry
-*
-* Input:
-*   R0: paragraph index
-* Output:
-*   R1: address of margin entry, if any
-*       holds 0, if the margin entry is not exact
-*
-MGNADR DECT R10
-       MOV  R11,*R10
-       DECT R10
-       MOV  R0,*R10
-* Get MGNLST entry for this paragraph
-       BL   @GETMGN
-       MOV  R0,R1
-       JEQ  MA1
-* Is the entry pointing to an earlier paragraph?
-* top of stack contains original input for R0
-       C    *R1,*R10
-       JEQ  MA1
-* No, the entry is for a different paragraph.
-       CLR  R1
-*
-MA1
-       MOV  *R10+,R0
        MOV  *R10+,R11
        RT
 
