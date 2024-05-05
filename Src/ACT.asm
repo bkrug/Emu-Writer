@@ -5,6 +5,7 @@
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
        REF  GETIDT,GETMGN                        From UTIL.asm
+       REF  PARADR,GETLIN                        "
        REF  ARYADR                               From ARRAY
 
        COPY 'EQUKEY.asm'
@@ -14,10 +15,9 @@
 *
 UPUPSP DECT R10
        MOV  R11,*R10
+* Let R2 = line index
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
-       BL   @PARADR
-* Let R2 = line index
 * Let R6 = old horizontal position within line
        BL   @GETLIN
 * Move up within same paragraph
@@ -48,10 +48,9 @@ UPSP3  MOV  *R10+,R11
 *
 DOWNSP DECT R10
        MOV  R11,*R10
+* Let R2 = line index
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
-       BL   @PARADR
-* Let R2 = line index
 * Let R6 = old horizontal position within line
        BL   @GETLIN
 * Is this the last paragraph-line?
@@ -108,57 +107,6 @@ PGDOWN DECT R10
        BL   @PARADR
 * Update CHRPAX
        BL   @SETCHR
-*
-       MOV  *R10+,R11
-       RT
-
-*
-* Given CHRPAX and address of wrap list,
-* find the paragraph-line index
-* and the horizontal position within the line (including indents).
-*
-* Input:
-*   CHRPAX
-*   R4 - address of wrap list
-* Output:
-*   R2 - line index
-*   R6 - horizontal position
-* Changed:
-*   R5
-GETLIN
-       DECT R10
-       MOV  R11,*R10
-* Let R5 = current location in wrap list
-* Let R6 = end of wrap list
-       MOV  R4,R5
-       C    *R5+,*R5+
-       MOV  *R4,R6
-       SLA  R6,1
-       A    R5,R6
-* Let R2 = line index
-       SETO R2
-       DECT R5
-* Increment line index until we find an entry >= CHRPAX
-LIN1   INC  R2
-       INCT R5
-       C    R5,R6
-       JEQ  LIN2
-       C    *R5,@CHRPAX
-       JLE  LIN1
-* Let R6 = horizontal position
-LIN2   MOV  @CHRPAX,R6
-* Is the current line, the first line?
-       MOV  R2,R2
-       JEQ  LIN3
-* No, subtract the previous line break from R6
-       DECT R5
-       S    *R5,R6
-* Let R0 = the indent for this line
-LIN3   MOV  @PARINX,R0
-       MOV  R2,R1
-       BL   @GETIDT
-* Increase horizontal position by indent
-       A    R0,R6
 *
        MOV  *R10+,R11
        RT
@@ -223,29 +171,6 @@ CHR6   MOV  R6,@CHRPAX
        SOC  @STSARW,*R13
 *
        MOV  *R10+,R11
-       RT
-
-*
-* Get paragraph address and wrap list
-* address.
-*
-* Input:
-* R3 - paragraph index
-* Output:
-* R3 - paragraph address
-* R4 - wrap list address
-PARADR 
-* Set R3
-       MOV  @PARINX,R3
-       SLA  R3,1
-       A    @PARLST,R3
-       C    *R3+,*R3+
-       MOV  *R3,R3
-* Set R4
-       MOV  R3,R4
-       INCT R4
-       MOV  *R4,R4
-*
        RT
 
 *

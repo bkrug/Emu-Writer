@@ -165,12 +165,15 @@ INPTMD BSS  2
 *
 * Calculated values. Dependent on Master and Window values.
 *
+* Position of flashing cursor on screen
+CURSCN BSS  2
+*
+* Hopefully obsolete values.
+*
 * Line Index in Paragraph
 LININX BSS  2
 * Character Index in line
 CHRLIX BSS  2
-* Position of flashing cursor on screen
-CURSCN BSS  2
 
 * KEY.asm
 * Time remaining before character repeat
