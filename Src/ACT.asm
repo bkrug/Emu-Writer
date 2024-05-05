@@ -1,8 +1,7 @@
        DEF  UPUPSP,DOWNSP,PGDOWN
 *
        REF  PARLST                               From VAR.asm
-       REF  PARINX,CHRPAX,LININX,CHRLIX          "
-       REF  WINPAR,WINLIN                        "
+       REF  PARINX,CHRPAX,WINPAR,WINLIN          "
        REF  STSARW,STSDSH                        "
        REF  WINMOD                               "
        REF  GETIDT,GETMGN                        From UTIL.asm
@@ -92,79 +91,25 @@ PGDOWN DECT R10
        BL   @SCRLD
        MOV  R3,@WINPAR
        MOV  R4,@WINLIN
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+       BL   @PARADR
+* Let R2 = line index
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
 * Move cursor down by one screen
        MOV  @PARINX,R3
-       MOV  @LININX,R4
+       MOV  R2,R4
        BL   @SCRLD
        MOV  R3,@PARINX
-       MOV  R4,@LININX
-* Let R4 = address of wrap list
+       MOV  R4,R2
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
        BL   @PARADR
+* Update CHRPAX
+       BL   @SETCHR
 *
-       JMP  ADJCHR
-
-*
-* Adjust CHRPAX and CHRLIX
-*
-* Input:
-*    R4 = address of wrap list
-ADJCHR
-* Let R5 = address of prev line break
-* Let R6 = address of next iine break
-       MOV  @LININX,R6
-       SLA  R6,1
-       C    *R6+,*R6+
-       A    R4,R6
-       MOV  R6,R5
-       DECT R5
-* Let R5 = prev line break
-* Let R6 = next line break
-       MOV  *R5,R5
-       MOV  *R6,R6
-* If this is first paragraph-line,
-* prev line break is 0.
-       MOV  @LININX,R0
-       JNE  ADJC1
-       CLR  R5
-* If this is the last paragraph-line,
-* next line break is paragraph-length
-* plus one.
-ADJC1  C    *R4,@LININX
-       JNE  ADJC2
-       MOV  *R3,R6
-       INC  R6
-ADJC2
-* Let R7 = new CHRPAX
-       MOV  R5,R7
-       A    @CHRLIX,R7
-* Let R0 = the indent for this line
-       MOV  @PARINX,R0
-       MOV  R5,R1
-       BL   @GETIDT
-* Decrease R7 by the indent.
-ADJ3   S    R0,R7
-* Prevent CHRPAX from falling to before
-* line break.
-       C    R7,R5
-       JGT  ADJC4
-       MOV  R5,R7
-ADJC4
-* If new line is shorter than previous,
-* avoid wrapping around to the next line.
-* Just move to the end of the new line.
-       C    R7,R6
-       JL   ADJC5
-       MOV  R6,R7
-       DEC  R7
-ADJC5
-* update CHRPAX and CHRLIX
-       MOV  R7,@CHRPAX
-       S    R5,R7
-       MOV  R7,@CHRLIX
-* Edit document status
-       SOC  @STSARW,*R13
-*
-ARRWRT MOV  *R10+,R11
+       MOV  *R10+,R11
        RT
 
 *
@@ -314,6 +259,10 @@ PARADR
 *   R3 & R4
 SCRLD
        DECT R10
+       MOV  R5,*R10
+       DECT R10
+       MOV  R6,*R10
+       DECT R10
        MOV  R11,*R10
 * Let R5 = remaining lines
        LI   R5,TXTHGT
@@ -360,7 +309,8 @@ SD2    AI   R6,-4
        MOV  R5,R4
 *
        MOV  *R10+,R11
+       MOV  *R10+,R6
+       MOV  *R10+,R5
        RT
-
 
        END

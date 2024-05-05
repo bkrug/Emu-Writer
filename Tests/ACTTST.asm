@@ -136,8 +136,8 @@ MGNHNG DATA 1,3
 * Margin List with 2 entries
 *
 MGN3ET DATA 2,3
-       DATA 2,>0005,>0A0A,>0A0A
-       DATA 5,>001E,>0A0A,>0A0A
+       DATA 2,>0000,>0A0A,>0A0A
+       DATA 5,>0000,>0A0A,>0A0A
 
 **** Mock document ****
 
