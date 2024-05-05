@@ -1,11 +1,12 @@
-       DEF  UPUPSP,DOWNSP,PGDOWN
+       DEF  UPUPSP,DOWNSP,PGUP,PGDOWN
 *
        REF  PARLST                               From VAR.asm
-       REF  PARINX,CHRPAX,WINPAR,WINLIN          "
+       REF  PARINX,CHRPAX                        "
        REF  STSARW,STSDSH                        "
-       REF  WINMOD                               "
+       REF  WINPAR,WINLIN,WINMGN,WINMOD          "
+       REF  STSWIN                               From CONST.asm
        REF  GETIDT,GETMGN                        From UTIL.asm
-       REF  PARADR,GETLIN                        "
+       REF  PARADR,GETLIN,LOOKUP                 "
        REF  ARYADR                               From ARRAY
 
        COPY 'EQUKEY.asm'
@@ -106,6 +107,47 @@ PGDOWN DECT R10
        BL   @PARADR
 * Update CHRPAX
        BL   @SETCHR
+* Redraw whole screen
+       SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Move cursor and window-position
+* up by 22 lines.
+*
+PGUP   DECT R10
+       MOV  R11,*R10
+* Move window up by one screen
+       MOV  @WINPAR,R2
+       MOV  @WINLIN,R3
+       LI   R4,TXTHGT
+       BL   @LOOKUP
+       MOV  R2,@WINPAR
+       MOV  R3,@WINLIN
+       MOV  R4,@WINMGN
+* Let R2 = line index
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
+* Move cursor down by one screen
+       MOV  R2,R3
+       MOV  @PARINX,R2
+       LI   R4,TXTHGT
+       BL   @LOOKUP
+       MOV  R2,@PARINX
+       MOV  R3,R2
+*      * Ignore R4, the cursor cannot land on the margin description
+*
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+       BL   @PARADR
+* Update CHRPAX
+       BL   @SETCHR
+* Redraw whole screen
+       SOC  @STSWIN,*R13
 *
        MOV  *R10+,R11
        RT
