@@ -15,28 +15,34 @@
 *
 UPUPSP DECT R10
        MOV  R11,*R10
-*
-       MOV  @LININX,R0
-       JEQ  UPSP1
-* Move up within same paragraph
-       DEC  @LININX
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
+* Let R2 = line index
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
 *
+       MOV  R2,R2
+       JEQ  UPSP1
+* Move up within same paragraph
+       DEC  R2
        JMP  UPSP2
 * Don't move past start of document
 UPSP1  MOV  @PARINX,R0
-       JEQ  ARRWRT
+       JEQ  UPSP3
 * Move up to previous paragraph
        DEC  @PARINX
        SOC  @STSDSH,*R13
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
+* Let R2 = index of last line in paragraph
+       MOV  *R4,R2
+* Update CHRPAX
+UPSP2  BL   @SETCHR
 *
-       MOV  *R4,@LININX
-UPSP2  JMP  ADJCHR
+UPSP3  MOV  *R10+,R11
+       RT
 
 *
 * Move the cursor down by one line
@@ -237,27 +243,32 @@ CHR1
        JNE  CHR2
        MOV  *R3,R8
 CHR2   S    R7,R8
+* If R2 is the last line, then R8 can be one char longer (for implied carriage return)
+       C    R2,*R4
+       JNE  CHR3
+       INC  R8
+CHR3
 * Let R0 = the indent for this line
        MOV  @PARINX,R0
        MOV  R2,R1
        BL   @GETIDT
 * Reduce horizontal position by size of indent
        S    R0,R6
-       JGT  CHR3
+       JGT  CHR4
        CLR  R6
-CHR3
+CHR4
 * Is horizontal position longer than the line?
        C    R6,R8
-       JHE  CHR4
+       JHE  CHR5
 * No, add line break to horizontal position
        A    R7,R6
-       JMP  CHR5
+       JMP  CHR6
 * Yes, let R6 = char at end of line
-CHR4   MOV  R7,R6
+CHR5   MOV  R7,R6
        A    R8,R6
        DEC  R6
 * Update CHRPAX
-CHR5   MOV  R6,@CHRPAX
+CHR6   MOV  R6,@CHRPAX
 * Edit document status
        SOC  @STSARW,*R13
 *
