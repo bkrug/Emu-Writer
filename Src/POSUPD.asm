@@ -5,6 +5,7 @@
        REF  STSWIN
 *
        REF  GETMGN,GETIDT              From UTIL.asm
+       REF  GETLIN                     "
        REF  ARYADR                     From ARRAY.asm
 *
        REF  PARLST,MGNLST
@@ -42,48 +43,12 @@ POSUPD DATA POSUWS,POSUPD+4
 UPINDX
        DECT R10
        MOV  R11,*R10
-* Let R1 = address of current paragraph
-       MOV  @PARLST,R0
-       C    *R0+,*R0+
-       MOV  @PARINX,R1
-       SLA  R1,1
-       A    R0,R1
-       MOV  *R1,R1
-* R2 = addres of wrap list
-* R5 = index of last paragraph-line
-       MOV  @2(1),R2
-       MOV  *R2,R5
-* R2 = addres of wrap list's first element
-       C    *R2+,*R2+
-* R3 = index of first line in paragraph
-* R4 = character within paragraph
-       CLR  R3
-       MOV  @CHRPAX,R4
-* Change R3 to current line in para
-* Change R4 to current char in line
-POS1   C    R4,*R2
-       JL   POS2
-       C    R3,R5
-       JEQ  POS2
-       INC  R3
-       INCT R2
-       JMP  POS1
-* If cursor is not on first line,
-* subtract wrap position from R4
-POS2   MOV  R3,R3
-       JEQ  POS3
-       DECT R2
-       S    *R2,R4
-POS3
-* Let R0 = the indent for this line
-       MOV  @PARINX,R0
-       MOV  R3,R1
-       BL   @GETIDT
-* increase R4 by size of paragrah indent.
-       A    R0,R4
+* Let R2 = line index
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
 *
-       MOV  R3,@LININX
-       MOV  R4,@CHRLIX
+       MOV  R2,@LININX
+       MOV  R6,@CHRLIX
 *
        MOV  *R10+,R11
        RT
