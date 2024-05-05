@@ -272,9 +272,11 @@ LIN3   MOV  @PARINX,R0
 * Output:
 *   R2 = earlier paragraph index
 *   R3 = earlier line index
-*   R5 = value for WINMGN earlier in document
+*   R4 = value for WINMGN earlier in document
 LOOKUP DECT R10
        MOV  R11,*R10
+       DECT R10
+       MOV  R5,*R10
 * Let R5 = value of WINMGN if screen actually scrolls
        CLR  R5
 CD1
@@ -326,8 +328,10 @@ CD3    S    R4,R3
 * Earliest acceptable line is the beginning of the document
 CD4    CLR  R2
        CLR  R3
-CD5
+* Move value of WINMGN to R4
+CD5    MOV  R5,R4
 *
+       MOV  *R10+,R5
        MOV  *R10+,R11
        RT
 

@@ -90,10 +90,9 @@ PGDOWN DECT R10
        BL   @SCRLD
        MOV  R3,@WINPAR
        MOV  R4,@WINLIN
+* Let R2 = line index
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
-       BL   @PARADR
-* Let R2 = line index
 * Let R6 = old horizontal position within line
        BL   @GETLIN
 * Move cursor down by one screen

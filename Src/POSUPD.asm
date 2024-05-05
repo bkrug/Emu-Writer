@@ -142,7 +142,7 @@ CHKDWN
        BL   @LOOKUP
 * R2 now contains earliest acceptable paragraph.
 * R3 now contains earliest acceptable paragraph-line.
-* R5 contains value for WINMGN.
+* R4 contains value for WINMGN.
 *
 * Is screen pointing to an earlier paragrah than R2?
        C    @WINPAR,R2
@@ -158,13 +158,13 @@ CHKDWN
        MOV  @WINLIN,R0
        JNE  SKIP
 * Yes, is the Margin Entry Display flag set, when it needs to be unset?
-       C    @WINMGN,R5
+       C    @WINMGN,R4
        JGT  SKIP
        JEQ  SKIP
 * WINPAR and WINLIN are pointing to a paragraph that is too early.
 GODOWN MOV  R2,@WINPAR
        MOV  R3,@WINLIN
-       MOV  R5,@WINMGN
+       MOV  R4,@WINMGN
 * Redraw whole screen
        SOC  @STSWIN,*R13
 * If program jumped to this point,
