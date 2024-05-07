@@ -2,13 +2,13 @@
 *
        REF  PARLST,MGNLST
        REF  PARINX,CHRPAX,LININX,CHRLIX
-       REF  WINPAR,WINLIN
+       REF  WINPAR,WINLIN,WINMGN
        REF  STSARW
        REF  WINMOD
 * Assert methods
        REF  AEQ,AOC
 * Tested methods
-       REF  UPUPSP,DOWNSP,PGDOWN
+       REF  UPUPSP,DOWNSP,PGUP,PGDOWN
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Move from 3rd to 2nd line
@@ -109,6 +109,10 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll down. Top of the screen will ultimately show the first line of a paragraph with a margin entry.
 * Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
 * Scroll down. Top of the screen runs into the end of the document.
+* Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
+* Scroll up. Cursor starts from the first line in some paragraph.
+       DATA PGU1
+       TEXT 'PGU1  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -139,8 +143,8 @@ MGNHNG DATA 1,3
 * Margin List with 2 entries
 *
 MGN3ET DATA 2,3
-       DATA 2,>0000,>0A0A,>0A0A
-       DATA 5,>0000,>0A0A,>0A0A
+       DATA PARC,>0000,>0A0A,>0A0A
+       DATA PARF,>0000,>0A0A,>0A0A
 
 **** Mock document ****
 
@@ -217,6 +221,15 @@ PAR1H  DATA 57+58+40
 WRP1H  DATA 2,1
        DATA 57
        DATA 57+58
+
+PARA   EQU  0
+PARB   EQU  1
+PARC   EQU  2
+PARD   EQU  3
+PARE   EQU  4
+PARF   EQU  5
+PARG   EQU  6
+PARH   EQU  7
 
 * Mock return workspace address
 MOCKWS DATA 0
@@ -1258,6 +1271,60 @@ PGD1   DECT R10
        MOV  @WINLIN,R1
        LI   R2,WINLM
        LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll up. Cursor starts from the first line in some paragraph.
+*
+PGU1   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARF
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,PARG
+       MOV  R0,@PARINX
+       LI   R0,12
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGUP
+* Assert
+       LI   R0,PARA
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,3
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINLM                  * Add a new message
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,PARD
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,57+12
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
        BLWP @AEQ
 *
        MOV  *R10+,R11
