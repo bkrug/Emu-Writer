@@ -1,7 +1,7 @@
        DEF  TSTLST,RSLTFL
 *
        REF  PARLST,MGNLST
-       REF  PARINX,CHRPAX,LININX,CHRLIX
+       REF  PARINX,CHRPAX
        REF  WINPAR,WINLIN,WINMGN
        REF  STSARW
        REF  WINMOD
@@ -267,10 +267,6 @@ UP1    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+40
        MOV  R0,@CHRPAX
-       LI   R0,2
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -305,10 +301,6 @@ UP2    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+25
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,25
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -343,10 +335,6 @@ UP3    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+3
        MOV  R0,@CHRPAX
-       LI   R0,4
-       MOV  R0,@LININX
-       LI   R0,3
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -381,10 +369,6 @@ UP4    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,15
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,15
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -418,10 +402,6 @@ UP5    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,5
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,5
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -455,10 +435,6 @@ UP6    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,8
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,8
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -492,10 +468,6 @@ UP7    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+48+51
        MOV  R0,@CHRPAX
-       LI   R0,3
-       MOV  R0,@LININX
-       LI   R0,51
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -531,10 +503,6 @@ UP8    MOV  R11,@FRAMRT
 * 4th line is shorter.
        LI   R0,61+57+48+56+56
        MOV  R0,@CHRPAX
-       LI   R0,4
-       MOV  R0,@LININX
-       LI   R0,56
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -567,10 +535,6 @@ UP9    MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,40
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -605,10 +569,6 @@ UP10   MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,15
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,15
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -641,10 +601,6 @@ UP11   MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+40
        MOV  R0,@CHRPAX
-       LI   R0,2
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * R0 of the caller's workspace is a
@@ -676,10 +632,6 @@ UP12   MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+25
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,25
-       MOV  R0,@CHRLIX
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act
@@ -714,10 +666,6 @@ UP13   MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+2
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,2
-       MOV  R0,@CHRLIX
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act
@@ -752,10 +700,6 @@ UP14   MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+40
        MOV  R0,@CHRPAX
-       LI   R0,2
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act
@@ -797,10 +741,6 @@ UP15   MOV  R11,@FRAMRT
 * Cursor is at position 58 on 2nd line.
        LI   R0,56+58
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,58
-       MOV  R0,@CHRLIX
        LI   R0,MGN5
        MOV  R0,@MGNLST
 * Act
@@ -837,10 +777,6 @@ UP16   MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+25
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,25
-       MOV  R0,@CHRLIX
        LI   R0,MGN30
        MOV  R0,@MGNLST
        SETO @WINMOD
@@ -877,10 +813,6 @@ UP17   DECT R10
        MOV  R0,@PARINX
        LI   R0,6
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,6
-       MOV  R0,@CHRLIX
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
 * Act
@@ -912,10 +844,6 @@ DOWN1  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+40
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -947,10 +875,6 @@ DOWN2  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,0
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -982,10 +906,6 @@ DOWN3  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+24
        MOV  R0,@CHRPAX
-       LI   R0,4
-       MOV  R0,@LININX
-       LI   R0,24
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -1019,10 +939,6 @@ DOWN4  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+53
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,53
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -1056,10 +972,6 @@ DOWN5  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+57
        MOV  R0,@CHRPAX
-       LI   R0,4
-       MOV  R0,@LININX
-       LI   R0,57
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -1092,10 +1004,6 @@ DOWN6  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,57+58+15
        MOV  R0,@CHRPAX
-       LI   R0,2
-       MOV  R0,@LININX
-       LI   R0,15
-       MOV  R0,@CHRLIX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
@@ -1128,10 +1036,6 @@ DOWN7  MOV  R11,@FRAMRT
        MOV  R0,@PARINX
        LI   R0,61+40
        MOV  R0,@CHRPAX
-       LI   R0,1
-       MOV  R0,@LININX
-       LI   R0,40
-       MOV  R0,@CHRLIX
 * R0 of the caller's workspace is a
 * document status byte
 	LI   R13,MOCKWS
@@ -1166,10 +1070,6 @@ DOWN8  DECT R10
        MOV  R0,@PARINX
        LI   R0,4
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,4
-       MOV  R0,@CHRLIX
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
 * Act
@@ -1240,10 +1140,6 @@ PGD1   DECT R10
        MOV  R0,@PARINX
        LI   R0,0
        MOV  R0,@CHRPAX
-       LI   R0,0
-       MOV  R0,@LININX
-       LI   R0,0
-       MOV  R0,@CHRLIX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
 * Act
