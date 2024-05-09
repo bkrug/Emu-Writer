@@ -101,14 +101,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
        TEXT 'PGD1  '
 * Scroll down. Cursor starts from the middle line in some paragraph.
 * Scroll down. Cursor starts from the last line in some paragraph.
-* Scroll down. Cursor will move down 22 lines within the same paragraph.
-* Scroll down, passing two paragraphs that have a margin list entry.
 * Scroll down. Top of the screen originally shows a margin entry.
-* Scroll down. Top of the screen originally shows the first line of a paragraph with a margin entry.
 * Scroll down. Top of the screen will ultimately show a margin entry.
-* Scroll down. Top of the screen will ultimately show the first line of a paragraph with a margin entry.
 * Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
-* Scroll down. Top of the screen runs into the end of the document.
 * Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
 * Scroll up. Cursor starts from the first line in some paragraph.
        DATA PGU1
@@ -119,6 +114,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll up. Cursor starts from the last line in some paragraph.
        DATA PGU3
        TEXT 'PGU3  '
+* Scroll up. Top of the screen originally shows a margin entry.
+       DATA PGU4
+       TEXT 'PGU4  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -160,6 +158,7 @@ DOC1   DATA 8,1
 PAR1A  DATA 56+60+59+25
        DATA WRP1A
        TEXT 'Beg..End'
+* 4 lines
 WRP1A  DATA 3,1
        DATA 56
        DATA 56+60
@@ -167,10 +166,12 @@ WRP1A  DATA 3,1
 PAR1B  DATA 32
        DATA WRP1B
        TEXT 'Beg..End'
+* 1 line
 WRP1B  DATA 0,1
 PAR1C  DATA 61+57+48+56+60
        DATA WRP1C
        TEXT 'Beg..End'
+* 6 lines (when including margin header)
 WRP1C  DATA 4,1
        DATA 61
        DATA 61+57
@@ -179,12 +180,14 @@ WRP1C  DATA 4,1
 PAR1D  DATA 57+58+40
        DATA WRP1D
        TEXT 'Beg..End'
+* 3 lines
 WRP1D  DATA 2,1
        DATA 57
        DATA 57+58
 PAR1E  DATA 55+54+56+55+54+56+55+54+56+3
        DATA WRP1E
        TEXT 'Beg..End'
+* 10 lines
 WRP1E  DATA 9,1
        DATA 55
        DATA 55+54
@@ -1192,6 +1195,8 @@ PGU1   DECT R10
        MOV  R0,@WINPAR
        LI   R0,0
        MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
        LI   R0,PARG
        MOV  R0,@PARINX
        LI   R0,12
@@ -1246,6 +1251,8 @@ PGU2   DECT R10
        MOV  R0,@WINPAR
        LI   R0,4
        MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
        LI   R0,PARG
        MOV  R0,@PARINX
        LI   R0,55+54+56+55+54+12
@@ -1300,6 +1307,8 @@ PGU3   DECT R10
        MOV  R0,@WINPAR
        LI   R0,2
        MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
        LI   R0,PARF
        MOV  R0,@PARINX
        LI   R0,55+54+56+55+54+56+55+54+3
@@ -1316,6 +1325,62 @@ PGU3   DECT R10
        BLWP @AEQ
 *
        LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARD
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,3
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll up. Top of the screen originally shows a margin entry.
+*
+PGU4   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARF
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,-1
+       MOV  R0,@WINMGN
+       LI   R0,PARF
+       MOV  R0,@PARINX
+       LI   R0,55+54+56+55+54+56+55+54+3
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGUP
+* Assert
+       LI   R0,PARA
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,2
        MOV  @WINLIN,R1
        LI   R2,WINLM
        LI   R3,WINLME-WINLM
