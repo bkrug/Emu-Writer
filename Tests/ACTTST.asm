@@ -113,6 +113,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll up. Cursor starts from the first line in some paragraph.
        DATA PGU1
        TEXT 'PGU1  '
+* Scroll up. Cursor starts from the middle line in some paragraph.
+       DATA PGU2
+       TEXT 'PGU2  '
+* Scroll up. Cursor starts from the last line in some paragraph.
+       DATA PGU3
+       TEXT 'PGU3  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -251,6 +257,8 @@ WINM   TEXT 'Window paragraph is wrong.'
 WINME
 WINLM  TEXT 'Window paragraph-line is wrong.'
 WINLME
+WINMG  TEXT 'Window margin is wrong.'
+WINMGE
        EVEN
 
 *
@@ -1207,8 +1215,8 @@ PGU1   DECT R10
 *
        LI   R0,0
        MOV  @WINMGN,R1
-       LI   R2,WINLM                  * Add a new message
-       LI   R3,WINLME-WINLM
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
        BLWP @AEQ
 *
        LI   R0,PARD
@@ -1218,6 +1226,114 @@ PGU1   DECT R10
        BLWP @AEQ
 *
        LI   R0,57+12
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor starts from the middle line in some paragraph.
+*
+PGU2   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARE
+       MOV  R0,@WINPAR
+       LI   R0,4
+       MOV  R0,@WINLIN
+       LI   R0,PARG
+       MOV  R0,@PARINX
+       LI   R0,55+54+56+55+54+12
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGUP
+* Assert
+       LI   R0,PARA
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARE
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,55+54+56+12
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor starts from the last line in some paragraph.
+*
+PGU3   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARD
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN
+       LI   R0,PARF
+       MOV  R0,@PARINX
+       LI   R0,55+54+56+55+54+56+55+54+3
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGUP
+* Assert
+       LI   R0,PARA
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARD
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,3
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
