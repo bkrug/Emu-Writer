@@ -292,7 +292,7 @@ PLP1
 * Is number of remaining lines moving backwards
 * smaller than remaining lines in this paragraph?
        C    R4,R3
-       JLE  TGTPAR
+       JLE  TGTUP
 * No, look upwards by at least one paragraph.
 * Decrease R4 by this paragraph's line count.
        S    R3,R4
@@ -315,8 +315,10 @@ PLP1
 *
 * The target line is in this paragraph
 *
-TGTPAR S    R4,R3
+TGTUP  S    R4,R3
 * Is this a paragraph with a Margin Entry?       
+TGTPAR MOV  R2,R0
+       BL   @MGNADR
        MOV  R1,R1
        JEQ  CPYOUT
 * Yes, so R3 is one line too large.
@@ -413,20 +415,7 @@ PDLP1
 TGTDWN
 * Let R3 = index of line in destiantion paragrah
        MOV  R4,R3
-* Is this a paragraph with a Margin Entry?       
-       MOV  R2,R0
-       BL   @MGNADR
-       MOV  R1,R1
-       JEQ  CPYOUT
-* Yes, so decrease target line.
-       DEC  R3
-       JGT  CPYOUT
-       JEQ  CPYOUT
-* Actually, R3 was fine,
-* but we need to display the margin entry. 
-       CLR  R3       
-       SETO R5
-       JMP  CPYOUT
+       JMP  TGTPAR
 *
 * Earliest acceptable line is the beginning of the document
 *
