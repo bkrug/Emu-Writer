@@ -117,6 +117,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll up. Top of the screen originally shows a margin entry.
        DATA PGU4
        TEXT 'PGU4  '
+* Scroll up. Top of the screen will ultimately show a margin entry.
+       DATA PGU5
+       TEXT 'PGU5  '
+* Scroll up. Cursor is run's into the end of the document, but the top of the screen does not.
+* Scroll up. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -201,6 +206,7 @@ WRP1E  DATA 9,1
 PAR1F  DATA 55+54+56+55+54+56+55+54+3
        DATA WRP1F
        TEXT 'Beg..End'
+* 10 lines (including margin header)
 WRP1F  DATA 8,1
        DATA 55
        DATA 55+54
@@ -1387,6 +1393,62 @@ PGU4   DECT R10
        BLWP @AEQ
 *
        LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARD
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,3
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll up. Top of the screen will ultimately show a margin entry.
+*
+PGU5   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARF
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
+       LI   R0,PARF
+       MOV  R0,@PARINX
+       LI   R0,55+54+56+55+54+56+55+54+3
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGUP
+* Assert
+       LI   R0,PARC
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,-1
        MOV  @WINMGN,R1
        LI   R2,WINMG
        LI   R3,WINMGE-WINMG
