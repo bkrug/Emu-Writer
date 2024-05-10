@@ -83,54 +83,29 @@ DWNSP3 MOV  *R10+,R11
 * Move cursor and window-position
 * down by 22 lines.
 *
-PGDOWN DECT R10
-       MOV  R11,*R10
-* Move window up by one screen
-       MOV  @WINPAR,R2
-       MOV  @WINLIN,R3
-       A    @WINMGN,R3
-       LI   R4,TXTHGT
-       BL   @LOOKDW
-       MOV  R2,@WINPAR
-       MOV  R3,@WINLIN
-       MOV  R4,@WINMGN
-* Let R2 = line index
-* Let R3 = Address of paragraph
-* Let R4 = Wrap list address
-* Let R6 = old horizontal position within line
-       BL   @GETLIN
-* Move cursor down by one screen
-       MOV  R2,R3
-       MOV  @PARINX,R2
-       LI   R4,TXTHGT
-       BL   @LOOKDW
-       MOV  R2,@PARINX
-       MOV  R3,R2
-*      Ignore R4, the cursor cannot land on the margin description
-*
-* Let R3 = Address of paragraph
-* Let R4 = Wrap list address
-       BL   @PARADR
-* Update CHRPAX
-       BL   @SETCHR
-* Redraw whole screen
-       SOC  @STSWIN,*R13
-*
-       MOV  *R10+,R11
-       RT
+PGDOWN LI   R9,LOOKDW
+       JMP  PAGVRT
 
 *
 * Move cursor and window-position
 * up by 22 lines.
 *
-PGUP   DECT R10
+PGUP   LI   R9,LOOKUP
+
+*
+* Move cursor and window-position
+* vertically by 22 lines.
+*
+* Input:
+*   R9 - Address for either LOOKUP or LOOKDW
+PAGVRT DECT R10
        MOV  R11,*R10
 * Move window up by one screen
        MOV  @WINPAR,R2
        MOV  @WINLIN,R3
        A    @WINMGN,R3
        LI   R4,TXTHGT
-       BL   @LOOKUP
+       BL   *R9
        MOV  R2,@WINPAR
        MOV  R3,@WINLIN
        MOV  R4,@WINMGN
@@ -143,7 +118,7 @@ PGUP   DECT R10
        MOV  R2,R3
        MOV  @PARINX,R2
        LI   R4,TXTHGT
-       BL   @LOOKUP
+       BL   *R9
        MOV  R2,@PARINX
        MOV  R3,R2
 *      Ignore R4, the cursor cannot land on the margin description
