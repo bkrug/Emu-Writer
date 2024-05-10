@@ -122,6 +122,7 @@ PGUP   DECT R10
 * Move window up by one screen
        MOV  @WINPAR,R2
        MOV  @WINLIN,R3
+       A    @WINMGN,R3
        LI   R4,TXTHGT
        BL   @LOOKUP
        MOV  R2,@WINPAR

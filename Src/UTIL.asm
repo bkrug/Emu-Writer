@@ -267,7 +267,7 @@ LIN3   MOV  @PARINX,R0
 *
 * Input:
 *   R2 = original paragraph index
-*   R3 = original line index
+*   R3 = original line index (set to -1 if the starting point is on a margin header)
 *   R4 = number of lines to look upwards
 * Output:
 *   R2 = earlier paragraph index
