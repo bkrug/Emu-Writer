@@ -81,7 +81,7 @@ DISP2
        JHE  DISP5
 DISP3
 * Let R3 = address of paragraph
-       MOV  R9,R3
+       MOV  R9,R3                     * I think R3 is overwritten in the routine
        BL   @PARADR
 * Let R3 = address of paragraph text
 * Let R4 = length of paragraph

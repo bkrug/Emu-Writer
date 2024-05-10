@@ -6,7 +6,7 @@
        REF  WINPAR,WINLIN,WINMGN,WINMOD          "
        REF  STSWIN                               From CONST.asm
        REF  GETIDT,GETMGN                        From UTIL.asm
-       REF  PARADR,GETLIN,LOOKUP                 "
+       REF  PARADR,GETLIN,LOOKUP,LOOKDW          "
        REF  ARYADR                               From ARRAY
 
        COPY 'EQUKEY.asm'
@@ -85,23 +85,29 @@ DWNSP3 MOV  *R10+,R11
 *
 PGDOWN DECT R10
        MOV  R11,*R10
-* Move window down by one screen
-       MOV  @WINPAR,R3
-       MOV  @WINLIN,R4
-       BL   @SCRLD
-       MOV  R3,@WINPAR
-       MOV  R4,@WINLIN
+* Move window up by one screen
+       MOV  @WINPAR,R2
+       MOV  @WINLIN,R3
+       A    @WINMGN,R3
+       LI   R4,TXTHGT
+       BL   @LOOKDW
+       MOV  R2,@WINPAR
+       MOV  R3,@WINLIN
+       MOV  R4,@WINMGN
 * Let R2 = line index
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
 * Let R6 = old horizontal position within line
        BL   @GETLIN
 * Move cursor down by one screen
-       MOV  @PARINX,R3
-       MOV  R2,R4
-       BL   @SCRLD
-       MOV  R3,@PARINX
-       MOV  R4,R2
+       MOV  R2,R3
+       MOV  @PARINX,R2
+       LI   R4,TXTHGT
+       BL   @LOOKDW
+       MOV  R2,@PARINX
+       MOV  R3,R2
+*      Ignore R4, the cursor cannot land on the margin description
+*
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
        BL   @PARADR
@@ -213,71 +219,6 @@ CHR6   MOV  R6,@CHRPAX
        SOC  @STSARW,*R13
 *
        MOV  *R10+,R11
-       RT
-
-*
-* Given a paragraph and line index.
-* Get values one screen lower.
-*
-* Input:
-*   R3 - paragraph index
-*   R4 - line index
-* Output:
-*   R3 & R4
-SCRLD
-       DECT R10
-       MOV  R5,*R10
-       DECT R10
-       MOV  R6,*R10
-       DECT R10
-       MOV  R11,*R10
-* Let R5 = remaining lines
-       LI   R5,TXTHGT
-* Let R6 = address within PARLST minus two bytes
-       MOV  R3,R6
-       SLA  R6,1
-       INCT R6                * Skip 4 bytes for array header, but then subtract 2. We change R6 every time we loop through SDL1.
-       A    @PARLST,R6
-* Decrease R3 because we change it when we loop through SDL1.
-       DEC  R3
-* Let R6 = next entry in paragrah list
-* Let R3 = index of next paragrah
-SDL1   INCT R6
-       INC  R3
-* Does paragrah have a margin entry?
-       MOV  R3,R0
-       BL   @GETMGN
-       MOV  R0,R0
-       JEQ  SDL2
-       C    *R0,R3
-       JNE  SDL2
-* Yes, account for it in R5
-       DEC  R5
-* Let R7 = address of wrap list
-SDL2   MOV  *R6,R7
-       INCT R7
-       MOV  *R7,R7
-* Let R7 = number of lines in paragrah
-       MOV  *R7,R7
-       INC  R7
-* Decrease remaining lines
-       S    R7,R5
-* If R5 > 0, then loop
-       JGT  SDL1
-*
-       JEQ  SD2
-* R5 < 0, so we subtracted too many lines
-       A    R7,R5
-* Set new paragraph and line indexes
-SD2    AI   R6,-4
-       S    @PARLST,R6
-       SRL  R6,1
-       MOV  R6,R3
-       MOV  R5,R4
-*
-       MOV  *R10+,R11
-       MOV  *R10+,R6
-       MOV  *R10+,R5
        RT
 
        END

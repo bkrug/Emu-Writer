@@ -96,15 +96,6 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move down from indented to non-indented line
        DATA DOWN9
        TEXT 'DOWN9 '
-* Scroll down. Cursor starts from the first line in some paragraph.
-       DATA PGD1
-       TEXT 'PGD1  '
-* Scroll down. Cursor starts from the middle line in some paragraph.
-* Scroll down. Cursor starts from the last line in some paragraph.
-* Scroll down. Top of the screen originally shows a margin entry.
-* Scroll down. Top of the screen will ultimately show a margin entry.
-* Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
-* Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
 * Scroll up. Cursor starts from the first line in some paragraph.
        DATA PGU1
        TEXT 'PGU1  '
@@ -127,6 +118,15 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll up. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
        DATA PGU7
        TEXT 'PGU7  '
+* Scroll down. Cursor starts from the first line in some paragraph.
+       DATA PGD1
+       TEXT 'PGD1  '
+* Scroll down. Cursor starts from the middle line in some paragraph.
+* Scroll down. Cursor starts from the last line in some paragraph.
+* Scroll down. Top of the screen originally shows a margin entry.
+* Scroll down. Top of the screen will ultimately show a margin entry.
+* Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
+* Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1147,54 +1147,6 @@ DOWN9  DECT R10
        RT
 
 *
-* Scroll down. Cursor starts from the first line in some paragraph.
-*
-PGD1   DECT R10
-       MOV  R11,*R10
-* Arrange
-       LI   R0,DOC1
-       MOV  R0,@PARLST
-       LI   R0,1
-       MOV  R0,@WINPAR
-       LI   R0,0
-       MOV  R0,@WINLIN
-       LI   R0,4
-       MOV  R0,@PARINX
-       LI   R0,0
-       MOV  R0,@CHRPAX
-       LI   R0,MGN3ET
-       MOV  R0,@MGNLST
-* Act
-       BL   @PGDOWN
-* Assert
-       LI   R0,6
-       MOV  @PARINX,R1
-       LI   R2,PARM
-       LI   R3,PARME-PARM
-       BLWP @AEQ
-*
-       LI   R0,55+54
-       MOV  @CHRPAX,R1
-       LI   R2,CHRM
-       LI   R3,CHRME-CHRM
-       BLWP @AEQ
-*
-       LI   R0,5
-       MOV  @WINPAR,R1
-       LI   R2,WINM
-       LI   R3,WINME-WINM
-       BLWP @AEQ
-*
-       LI   R0,1
-       MOV  @WINLIN,R1
-       LI   R2,WINLM
-       LI   R3,WINLME-WINLM
-       BLWP @AEQ
-*
-       MOV  *R10+,R11
-       RT
-
-*
 * Scroll up. Cursor starts from the first line in some paragraph.
 *
 PGU1   DECT R10
@@ -1579,6 +1531,62 @@ PGU7   DECT R10
        BLWP @AEQ
 *
        LI   R0,2
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor starts from the first line in some paragraph.
+*
+PGD1   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARB
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
+       LI   R0,PARE
+       MOV  R0,@PARINX
+       LI   R0,0
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,PARF
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,1
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARG
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,55+54
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM

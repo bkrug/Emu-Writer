@@ -5,7 +5,7 @@
        DEF  GETMGN,GETIDT
        DEF  BYTSTR
        DEF  PARADR,GETLIN
-       DEF  LOOKUP,MGNADR
+       DEF  LOOKUP,LOOKDW,MGNADR
 *
        REF  MGNLST,PARLST                 From VAR.asm
        REF  KEYSTR,KEYEND,KEYRD           "    
@@ -189,8 +189,6 @@ BS6    RT
 * Get paragraph address and wrap list
 * address.
 *
-* Input:
-* R3 - paragraph index
 * Output:
 * R3 - paragraph address
 * R4 - wrap list address
@@ -343,6 +341,100 @@ CPYOUT MOV  R5,R4
        MOV  *R10+,R5
        MOV  *R10+,R11
        RT
+
+*
+* Find paragraph and line index a certain number of lines upwards.
+*
+* Input:
+*   R2 = original paragraph index
+*   R3 = original line index (set to -1 if the starting point is on a margin header)
+*   R4 = number of lines to look downwards
+* Output:
+*   R2 = earlier paragraph index
+*   R3 = earlier line index
+*   R4 = value for WINMGN earlier in document
+LOOKDW DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R5,*R10
+* Let R5 = value of WINMGN if screen actually scrolls
+       CLR  R5
+* Let R1 = address in PARLST
+       MOV  @PARLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R1 = address of paragraph
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       MOV  @2(R1),R1
+* Let R3 = number of remaining lines in paragraph
+       MOV  *R1,R1
+       S    R3,R1
+       MOV  R1,R3
+*
+* Loop through each paragraph that is not the target paragrah
+*
+PARDLP
+* Is number of remaining lines moving forwards
+* smaller than remaining lines in this paragraph?
+       C    R4,R3
+       JLE  TGTDWN
+* No, look downwards by at least one paragraph.
+* Decrease R4 by this paragraph's line count.
+       S    R3,R4
+       DEC  R4
+* Point to later paragraph
+       INC  R2
+* TODO: Last paragraph?
+*       JH   LASTP
+* Let R1 = address in PARLST
+       MOV  @PARLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R1 = address of paragraph
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       MOV  @2(R1),R1
+* Let R3 = index of last line in paragraph
+       MOV  *R1,R3
+* Does the paragraph have a margin entry?
+       MOV  R2,R0
+       BL   @MGNADR
+       MOV  R1,R1
+       JEQ  PDLP1
+* Yes, increase reported size of paragraph by one line
+       INC  R3
+PDLP1
+* Try next paragraph
+       JMP  PARDLP
+*
+* The target line is in this paragraph
+*
+TGTDWN
+* Let R3 = index of line in destiantion paragrah
+       MOV  R4,R3
+* Is this a paragraph with a Margin Entry?       
+       MOV  R2,R0
+       BL   @MGNADR
+       MOV  R1,R1
+       JEQ  CPYOUT
+* Yes, so decrease target line.
+       DEC  R3
+       JGT  CPYOUT
+       JEQ  CPYOUT
+* Actually, R3 was fine,
+* but we need to display the margin entry. 
+       CLR  R3       
+       SETO R5
+       JMP  CPYOUT
+*
+* Earliest acceptable line is the beginning of the document
+*
+LASTP  CLR  R2
+       CLR  R3
+*
+       JMP  CPYOUT
+
 
 *
 * Get address of paragraph's
