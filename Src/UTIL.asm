@@ -369,19 +369,22 @@ LOOKDW DECT R10
        MOV  *R1,R1
 * Let R1 = address of wrap list
        MOV  @2(R1),R1
-* Let R3 = number of remaining lines in paragraph
+* Let R1 = number of remaining lines in paragraph
        MOV  *R1,R1
        S    R3,R1
-       MOV  R1,R3
+* Are there enough remaining lines within the starting paragrah?
+       C    R4,R1
+       JH   DIFPAR
+* Yes, just increase original line index by requested line count
+       A    R4,R3
+       JMP  CPYOUT
+* No, let R3 = remaining lines
+DIFPAR MOV  R1,R3
 *
 * Loop through each paragraph that is not the target paragrah
 *
 PARDLP
-* Is number of remaining lines moving forwards
-* smaller than remaining lines in this paragraph?
-       C    R4,R3
-       JLE  TGTDWN
-* No, look downwards by at least one paragraph.
+* Look downwards by at least one paragraph.
 * Decrease R4 by this paragraph's line count.
        S    R3,R4
        DEC  R4
@@ -407,8 +410,10 @@ PARDLP
 * Yes, increase reported size of paragraph by one line
        INC  R3
 PDLP1
-* Try next paragraph
-       JMP  PARDLP
+* Is number of remaining lines moving forwards
+* smaller than remaining lines in this paragraph?
+       C    R4,R3
+       JH   PARDLP
 *
 * The target line is in this paragraph
 *

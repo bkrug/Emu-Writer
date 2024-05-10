@@ -54,19 +54,18 @@ DOWNSP DECT R10
 * Let R4 = Wrap list address
 * Let R6 = old horizontal position within line
        BL   @GETLIN
-* Is this the last paragraph-line?
-       C    R2,*R4
-       JEQ  DWNSP1
 * Move down within same paragraph
        INC  R2
-       JMP  DWNSP2
-* Don't move past end of document
+* Did we move past the last paragraph-line?
+       C    R2,*R4
+       JLE  DWNSP2
+* Yes, is this already the last paragraph in the document?
 DWNSP1 MOV  @PARLST,R0
        MOV  *R0,R0
        DEC  R0
        C    @PARINX,R0
        JEQ  DWNSP3
-* Move down to next paragraph
+* No, move down to next paragraph
        INC  @PARINX
        CLR  R2
        SOC  @STSDSH,*R13
