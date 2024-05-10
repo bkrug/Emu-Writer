@@ -112,6 +112,7 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA PGU2
        TEXT 'PGU2  '
 * Scroll up. Cursor starts from the last line in some paragraph.
+* Window runs into the top of the screen.
        DATA PGU3
        TEXT 'PGU3  '
 * Scroll up. Top of the screen originally shows a margin entry.
@@ -120,7 +121,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll up. Top of the screen will ultimately show a margin entry.
        DATA PGU5
        TEXT 'PGU5  '
-* Scroll up. Cursor is run's into the end of the document, but the top of the screen does not.
+* Scroll up. Cursor is runs into the beginning of the document.
+       DATA PGU6
+       TEXT 'PGU6  '
 * Scroll up. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
@@ -1303,6 +1306,7 @@ PGU2   DECT R10
 
 *
 * Scroll down. Cursor starts from the last line in some paragraph.
+* Window runs into the top of the screen.
 *
 PGU3   DECT R10
        MOV  R11,*R10
@@ -1461,6 +1465,62 @@ PGU5   DECT R10
        BLWP @AEQ
 *
        LI   R0,3
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll up. Cursor is runs into the beginning of the document.
+*
+PGU6   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARB
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
+       LI   R0,PARC
+       MOV  R0,@PARINX
+       LI   R0,61+57+17
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGUP
+* Assert
+       LI   R0,PARA
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARA
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,17
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
