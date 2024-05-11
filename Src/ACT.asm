@@ -1,3 +1,4 @@
+       DEF  LINBEG,LINEND
        DEF  UPUPSP,DOWNSP,PGUP,PGDOWN
 *
        REF  PARLST                               From VAR.asm
@@ -10,6 +11,32 @@
        REF  ARYADR                               From ARRAY
 
        COPY 'EQUKEY.asm'
+
+*
+* Beginning of Line
+*
+LINBEG CLR  R9
+       JMP  LINSID
+
+*
+* End of Line
+*
+LINEND LI   R9,>7FFF
+*
+LINSID DECT R10
+       MOV  R11,*R10
+* Let R2 = line index
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
+* Let horizontal position be some extreme position
+       MOV  R9,R6
+* Set char position to end of the line
+       BL   @SETCHR
+*
+       MOV  *R10+,R11
+       RT
 
 *
 * Move the cursor up by one line
