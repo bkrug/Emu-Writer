@@ -177,7 +177,7 @@ DRWCUR DECT R10
        COC  @STSARW,R0
        JEQ  DRWCR1
        MOV  @CURTIM,R0
-       JNE  DRWCR9
+       JGT  DRWCR9
 * Switch cursor mode
        INV  @CURMOD
        JMP  DRWCR3
@@ -196,11 +196,13 @@ DRWCR2 MOV  @CURSCN,@CUROLD
 * Draw cursor
 DRWCR3 MOV  @CURSCN,R0
        BL   @VDPADR
-*
+* Is this the time to display the cursor or the original character?
        MOV  @CURMOD,R0
        JNE  DRWCR4
+* Draw Original character
        LI   R0,CURRPL
        JMP  DRWCR5
+* Draw Cursor
 DRWCR4 LI   R0,CHRCUR
 DRWCR5 LI   R1,1
        BL   @VDPWRT
