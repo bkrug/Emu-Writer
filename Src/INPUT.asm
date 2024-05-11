@@ -204,7 +204,7 @@ ISENTR DECT R10
        MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYINS
-       JEQ  RTERR
+       JEQ  TERR0
 * Save addresses
        MOV  R0,@PARLST
        MOV  R1,R2
@@ -277,13 +277,12 @@ TERR1  MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYDEL
 * Decrement the PARINX to its previous value.
-       DEC  @PARINX
+TERR0  DEC  @PARINX
 *
-       JMP  RTERR
-
 * Somehow let the user know that there
 * is no remaining buffer space.
 * Do not reprocess the key that cause the overflow.
+*
 RTERR  MOV  @KEYRD,@KEYWRT
        SOC  @ERRMEM,*R13
        MOV  @FASTRT,R10
