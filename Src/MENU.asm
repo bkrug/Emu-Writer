@@ -193,7 +193,16 @@ TXTHK  DATA TXTHK1
        BYTE 0
        TEXT 'FCTN+3 Backspace Delete'
        BYTE 0
+       TEXT 'FCTN+4 Page Down'
+       BYTE 0
+       TEXT 'FCTN+6 Page Up'
+       BYTE 0
        TEXT 'FCTN+0 Vertical/Windowed Mode'
+       BYTE 0
+       BYTE 0
+       TEXT 'FCTN+L Beginning of Line'
+       BYTE 0
+       TEXT 'FCTN+; End of Line'
        BYTE 0
 TXTHK1 EVEN
 
