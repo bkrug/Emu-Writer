@@ -390,8 +390,10 @@ PARDLP
        DEC  R4
 * Point to later paragraph
        INC  R2
-* TODO: Last paragraph?
-*       JH   LASTP
+* Did we just pass the last paragrah?
+       MOV  @PARLST,R1
+       C    R2,*R1
+       JHE  LASTP
 * Let R1 = address in PARLST
        MOV  @PARLST,R0
        MOV  R2,R1
@@ -422,10 +424,21 @@ TGTDWN
        MOV  R4,R3
        JMP  TGTPAR
 *
-* Earliest acceptable line is the beginning of the document
+* acceptable line is at the end of the document
 *
-LASTP  CLR  R2
-       CLR  R3
+LASTP
+* Decrement paragraph because we had to pass final paragraph to get here.
+       DEC  R2
+* Let R1 = address in PARLST
+       MOV  @PARLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R1 = address of paragraph
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       MOV  @2(R1),R1
+* Let R3 = index of last line in paragraph
+       MOV  *R1,R3
 *
        JMP  CPYOUT
 
