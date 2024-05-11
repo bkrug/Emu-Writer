@@ -15,6 +15,9 @@
        COPY '../Src/EQUKEY.asm'
 
 TSTLST DATA TSTEND-TSTLST-2/8
+* SUSPECT: LININX and CHRLIX are just implementation details now.
+*    Should we really have unit tests for their calculation?
+*
 * Calculate LININX and CHRLIX
 * based on PARINX and CHRPAX
        DATA POS1
