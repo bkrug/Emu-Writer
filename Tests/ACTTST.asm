@@ -112,7 +112,7 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll up. Top of the screen will ultimately show a margin entry.
        DATA PGU5
        TEXT 'PGU5  '
-* Scroll up. Cursor is runs into the beginning of the document.
+* Scroll up. Cursor runs into the beginning of the document.
        DATA PGU6
        TEXT 'PGU6  '
 * Scroll up. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
@@ -133,8 +133,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll down. Top of the screen will ultimately show a margin entry.
        DATA PGD5
        TEXT 'PGD5  '
-* Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
+* Scroll down. Cursor runs into the end of the document, but the top of the screen does not.
+       DATA PGD6
+       TEXT 'PGD6  '
 * Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
+       DATA PGD7
+       TEXT 'PGD7  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -1829,5 +1833,66 @@ PGD5   DECT R10
 *
        MOV  *R10+,R11
        RT
+
+*
+* Scroll down. Cursor runs into the end of the document, but the top of the screen does not.
+*
+PGD6   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARF
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,-1
+       MOV  R0,@WINMGN
+       LI   R0,PARH
+       MOV  R0,@PARINX
+       LI   R0,43
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,PARH
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARH
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,57+58+40
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
+*
+PGD7   RT
 
        END
