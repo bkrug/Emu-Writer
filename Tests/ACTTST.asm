@@ -122,7 +122,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA PGD1
        TEXT 'PGD1  '
 * Scroll down. Cursor starts from the middle line in some paragraph.
+       DATA PGD2
+       TEXT 'PGD2  '
 * Scroll down. Cursor starts from the last line in some paragraph.
+       DATA PGD3
+       TEXT 'PGD3  '
 * Scroll down. Top of the screen originally shows a margin entry.
 * Scroll down. Top of the screen will ultimately show a margin entry.
 * Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
@@ -224,6 +228,7 @@ WRP1F  DATA 8,1
 PAR1G  DATA 55+54+56+55+54+56+55+54+56+55+3
        DATA WRP1G
        TEXT 'Beg..End'
+* 12 lines
 WRP1G  DATA 11,1
        DATA 55
        DATA 55+54
@@ -235,9 +240,11 @@ WRP1G  DATA 11,1
        DATA 55+54+56+55+54+56+55+54
        DATA 55+54+56+55+54+56+55+54+56
        DATA 55+54+56+55+54+56+55+54+56+55
+       DATA 55+54+56+55+54+56+55+54+56+55+54
 PAR1H  DATA 57+58+40
        DATA WRP1H
        TEXT 'Beg..End'
+* 3 lines
 WRP1H  DATA 2,1
        DATA 57
        DATA 57+58
@@ -1587,6 +1594,118 @@ PGD1   DECT R10
        BLWP @AEQ
 *
        LI   R0,55+54
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor starts from the middle line in some paragraph.
+*
+PGD2   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARC
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
+       LI   R0,PARE
+       MOV  R0,@PARINX
+       LI   R0,55+54+56+55+54+42
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,PARF
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,5
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARG
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,55+54+56+55+54+56+55+42
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Cursor starts from the last line in some paragraph.
+*
+PGD3   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARC
+       MOV  R0,@WINPAR
+       LI   R0,4
+       MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
+       LI   R0,PARE
+       MOV  R0,@PARINX
+       LI   R0,55+54+56+55+54+56+55+54+56+1
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,PARF
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,7
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARG
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,55+54+56+55+54+56+55+54+56+55+54+1
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
