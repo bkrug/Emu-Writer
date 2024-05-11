@@ -4,7 +4,7 @@
        DEF  INCKRD
        DEF  GETMGN,GETIDT
        DEF  BYTSTR
-       DEF  PARADR,GETLIN
+       DEF  PARADR,LSTIDX,GETLIN
        DEF  LOOKUP,LOOKDW,MGNADR
 *
        REF  MGNLST,PARLST                 From VAR.asm
@@ -207,6 +207,29 @@ PARADR
        RT
 
 *
+* Get last line index of paragrah
+*
+* Input:
+*   R2 - paragraph index
+* Output:
+*   R1 - index of last line
+* Changed:
+*   R0
+LSTIDX
+* Let R1 = address in PARLST
+       MOV  @PARLST,R0
+       MOV  R2,R1
+       BLWP @ARYADR
+* Let R1 = address of paragraph
+       MOV  *R1,R1
+* Let R1 = address of wrap list
+       MOV  @2(R1),R1
+* Let R3 = index of last line in paragraph
+       MOV  *R1,R1
+*
+       RT
+
+*
 * Given CHRPAX and address of wrap list,
 * find the paragraph-line index
 * and the horizontal position within the line (including indents).
@@ -300,16 +323,10 @@ PLP1
 * Point to earlier paragraph
        DEC  R2
        JLT  FIRSTP
-* Let R1 = address in PARLST
-       MOV  @PARLST,R0
-       MOV  R2,R1
-       BLWP @ARYADR
-* Let R1 = address of paragraph
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       MOV  @2(R1),R1
+* Let R1 = index of last line in paragraph
+       BL   @LSTIDX
 * Let R3 = index of last line in paragraph
-       MOV  *R1,R3
+       MOV  R1,R3
 * Try next paragraph
        JMP  PARALP
 *
@@ -361,16 +378,9 @@ LOOKDW DECT R10
        MOV  R5,*R10
 * Let R5 = value of WINMGN if screen actually scrolls
        CLR  R5
-* Let R1 = address in PARLST
-       MOV  @PARLST,R0
-       MOV  R2,R1
-       BLWP @ARYADR
-* Let R1 = address of paragraph
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       MOV  @2(R1),R1
+* Let R1 = index of last line in paragraph
+       BL   @LSTIDX
 * Let R1 = number of remaining lines in paragraph
-       MOV  *R1,R1
        S    R3,R1
 * Are there enough remaining lines within the starting paragrah?
        C    R4,R1
@@ -394,16 +404,9 @@ PARDLP
        MOV  @PARLST,R1
        C    R2,*R1
        JHE  LASTP
-* Let R1 = address in PARLST
-       MOV  @PARLST,R0
-       MOV  R2,R1
-       BLWP @ARYADR
-* Let R1 = address of paragraph
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       MOV  @2(R1),R1
 * Let R3 = index of last line in paragraph
-       MOV  *R1,R3
+       BL   @LSTIDX
+       MOV  R1,R3
 * Does the paragraph have a margin entry?
        MOV  R2,R0
        BL   @MGNADR
@@ -429,16 +432,9 @@ TGTDWN
 LASTP
 * Decrement paragraph because we had to pass final paragraph to get here.
        DEC  R2
-* Let R1 = address in PARLST
-       MOV  @PARLST,R0
-       MOV  R2,R1
-       BLWP @ARYADR
-* Let R1 = address of paragraph
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       MOV  @2(R1),R1
 * Let R3 = index of last line in paragraph
-       MOV  *R1,R3
+       BL   @LSTIDX
+       MOV  R1,R3
 *
        JMP  CPYOUT
 

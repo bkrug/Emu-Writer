@@ -4,11 +4,11 @@
 *
        REF  STSWIN
 *
-       REF  GETMGN,GETIDT                    From UTIL.asm
+       REF  GETMGN,GETIDT,LSTIDX             From UTIL.asm
        REF  GETLIN,LOOKUP,MGNADR             "
-       REF  ARYADR                           From ARRAY.asm
+       REF  ARYADR                           From ARRAY.obj
 *
-       REF  PARLST,MGNLST
+       REF  MGNLST
        REF  FORTY
        REF  PARINX,CHRPAX
        REF  LININX,CHRLIX
@@ -85,16 +85,9 @@ UPW3   RT
 *
 UPWTOP DECT R10
        MOV  R11,*R10
-* Let R1 = address of paragraph at top of screen
-       MOV  @PARLST,R0
-       MOV  @WINPAR,R1
-       BLWP @ARYADR
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       INCT R1
-       MOV  *R1,R1
 * Let R1 = index of last line in paragraph
-       MOV  *R1,R1
+       MOV  @WINPAR,R2
+       BL   @LSTIDX
 * Is WINLIN > max line index?
        C    @WINLIN,R1
        JLE  UT1
@@ -234,16 +227,10 @@ GETROW DECT R10
 * Is R2 pointing to the cursor paragraph yet?
 GR1    C    R2,R3
        JEQ  GR4
-* Let R1 = address in PARLST
-       MOV  @PARLST,R0
-       MOV  R2,R1
-       BLWP @ARYADR
-* Let R1 = address of paragraph
-       MOV  *R1,R1
-* Let R1 = address of wrap list
-       MOV  @2(R1),R1
+* Let R1 = index of last line in paragraph
+       BL   @LSTIDX
 * Increase R4 by number of lines in paragraph
-       A    *R1,R4
+       A    R1,R4
        INC  R4
 * Does the current paragraph have a MGNLST entry?
        MOV  R2,R0
