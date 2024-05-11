@@ -128,7 +128,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA PGD3
        TEXT 'PGD3  '
 * Scroll down. Top of the screen originally shows a margin entry.
+       DATA PGD4
+       TEXT 'PGD4  '
 * Scroll down. Top of the screen will ultimately show a margin entry.
+       DATA PGD5
+       TEXT 'PGD5  '
 * Scroll down. Cursor is run's into the end of the document, but the top of the screen does not.
 * Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
 TSTEND
@@ -1706,6 +1710,118 @@ PGD3   DECT R10
        BLWP @AEQ
 *
        LI   R0,55+54+56+55+54+56+55+54+56+55+54+1
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Top of the screen originally shows a margin entry.
+*
+PGD4   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARC
+       MOV  R0,@WINPAR
+       LI   R0,0
+       MOV  R0,@WINLIN
+       LI   R0,-1
+       MOV  R0,@WINMGN
+       LI   R0,PARC
+       MOV  R0,@PARINX
+       LI   R0,14
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,PARF
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,2
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARF
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,55+54+56+14
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll down. Top of the screen will ultimately show a margin entry.
+*
+PGD5   DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARA
+       MOV  R0,@WINPAR
+       LI   R0,2
+       MOV  R0,@WINLIN
+       LI   R0,0
+       MOV  R0,@WINMGN
+       LI   R0,PARB
+       MOV  R0,@PARINX
+       LI   R0,17
+       MOV  R0,@CHRPAX
+       LI   R0,MGN3ET
+       MOV  R0,@MGNLST
+* Act
+       BL   @PGDOWN
+* Assert
+       LI   R0,PARF
+       MOV  @WINPAR,R1
+       LI   R2,WINM
+       LI   R3,WINME-WINM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINLIN,R1
+       LI   R2,WINLM
+       LI   R3,WINLME-WINLM
+       BLWP @AEQ
+*
+       LI   R0,-1
+       MOV  @WINMGN,R1
+       LI   R2,WINMG
+       LI   R3,WINMGE-WINMG
+       BLWP @AEQ
+*
+       LI   R0,PARF
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,55+17
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
