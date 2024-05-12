@@ -42,7 +42,7 @@
 * POSUPD.asm
        DEF  LININX,CHRLIX
        DEF  WINOFF,WINPAR,WINLIN,WINMGN
-       DEF  CURSCN
+       DEF  PRFHRZ,CURSCN
 * KEY.asm
        DEF  TIMER,PREVKY,KEYBUF
        DEF  KEYSTR,KEYEND,KEYWRT,KEYRD
@@ -152,6 +152,10 @@ WINLIN BSS  2
 * If WINMGN = -1 and top screen paragraph has margin entry, display it.
 * If WINMGN = 0, do not display margin entry for top paragraph.
 WINMGN BSS  2
+* Prefered Horizontal Position
+* Set to -1 if vertical movements should use current horizontal position.
+* Set to non-negative values if vertical movements should attempt to move to that position.
+PRFHRZ BSS  2
 *
 * Modes
 *

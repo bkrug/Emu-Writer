@@ -2,7 +2,7 @@
 *
        REF  PARLST,MGNLST
        REF  PARINX,CHRPAX
-       REF  WINPAR,WINLIN,WINMGN
+       REF  WINPAR,WINLIN,WINMGN,PRFHRZ
        REF  STSARW
        REF  WINMOD
 * Assert methods
@@ -306,6 +306,8 @@ UP1    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -340,6 +342,8 @@ UP2    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -374,6 +378,8 @@ UP3    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -408,6 +414,8 @@ UP4    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -441,6 +449,8 @@ UP5    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -474,6 +484,8 @@ UP6    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -507,6 +519,8 @@ UP7    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -542,6 +556,8 @@ UP8    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -574,6 +590,8 @@ UP9    MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -608,6 +626,8 @@ UP10   MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -644,6 +664,8 @@ UP11   MOV  R11,@FRAMRT
 * document status byte
 	LI   R13,MOCKWS
 	CLR  *R13
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -671,6 +693,8 @@ UP12   MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,MGN5
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -705,6 +729,8 @@ UP13   MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,MGN5
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -739,6 +765,8 @@ UP14   MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,MGN5
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -780,6 +808,8 @@ UP15   MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,MGN5
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -817,6 +847,8 @@ UP16   MOV  R11,@FRAMRT
        LI   R0,MGN30
        MOV  R0,@MGNLST
        SETO @WINMOD
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -852,6 +884,8 @@ UP17   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -883,6 +917,8 @@ DOWN1  MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -914,6 +950,8 @@ DOWN2  MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -945,6 +983,8 @@ DOWN3  MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -978,6 +1018,8 @@ DOWN4  MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1011,6 +1053,8 @@ DOWN5  MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1043,6 +1087,8 @@ DOWN6  MOV  R11,@FRAMRT
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1079,6 +1125,8 @@ DOWN7  MOV  R11,@FRAMRT
 	CLR  *R13
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1109,6 +1157,8 @@ DOWN8  DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1143,6 +1193,8 @@ DOWN9  DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1181,6 +1233,8 @@ PGU1   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1237,6 +1291,8 @@ PGU2   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1294,6 +1350,8 @@ PGU3   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1350,6 +1408,8 @@ PGU4   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1406,6 +1466,8 @@ PGU5   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1462,6 +1524,8 @@ PGU6   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1518,6 +1582,8 @@ PGU7   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1574,6 +1640,8 @@ PGD1   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1630,6 +1698,8 @@ PGD2   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1686,6 +1756,8 @@ PGD3   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1742,6 +1814,10 @@ PGD4   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1798,6 +1874,8 @@ PGD5   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1854,6 +1932,8 @@ PGD6   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1910,6 +1990,8 @@ PGD7   DECT R10
        MOV  R0,@CHRPAX
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
+       LI   R0,-1
+       MOV  R9,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
