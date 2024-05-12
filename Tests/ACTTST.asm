@@ -96,6 +96,18 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Move down from indented to non-indented line
        DATA DOWN9
        TEXT 'DOWN9 '
+* When PRFHRZ is non-negative and the cursor moves down one line,
+* the new position will be PRFHRZ position (slightly to the left).
+       DATA DOWN10
+       TEXT 'DOWN10'
+* When PRFHRZ is non-negative and the cursor moves down one line,
+* the new position will be PRFHRZ position (slightly to the right).
+*       DATA DOWN11
+*       TEXT 'DOWN11'
+* When PRFHRZ is non-negative and the cursor moves down, the line is not long
+* enought to reach PRFHRZ, so the cursor moves to the end of the line.
+*       DATA DOWN12
+*       TEXT 'DOWN12'
 * Scroll up. Cursor starts from the first line in some paragraph.
        DATA PGU1
        TEXT 'PGU1  '
@@ -164,7 +176,7 @@ MGN30  DATA 1,3
 * Margin List with hanging indent
 *
 MGNHNG DATA 1,3
-       DATA 0,>00F8,>0A0A,>0A0A
+       DATA PARA,>00F8,>0A0A,>0A0A
 *
 * Margin List with 2 entries
 *
@@ -307,7 +319,7 @@ UP1    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -343,7 +355,7 @@ UP2    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -379,7 +391,7 @@ UP3    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -415,7 +427,7 @@ UP4    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -450,7 +462,7 @@ UP5    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -485,7 +497,7 @@ UP6    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -520,7 +532,7 @@ UP7    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -557,7 +569,7 @@ UP8    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -591,7 +603,7 @@ UP9    MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -627,7 +639,7 @@ UP10   MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -665,7 +677,7 @@ UP11   MOV  R11,@FRAMRT
 	LI   R13,MOCKWS
 	CLR  *R13
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -694,7 +706,7 @@ UP12   MOV  R11,@FRAMRT
        LI   R0,MGN5
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -730,7 +742,7 @@ UP13   MOV  R11,@FRAMRT
        LI   R0,MGN5
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -766,7 +778,7 @@ UP14   MOV  R11,@FRAMRT
        LI   R0,MGN5
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -809,7 +821,7 @@ UP15   MOV  R11,@FRAMRT
        LI   R0,MGN5
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -848,7 +860,7 @@ UP16   MOV  R11,@FRAMRT
        MOV  R0,@MGNLST
        SETO @WINMOD
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -885,7 +897,7 @@ UP17   DECT R10
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @UPUPSP
 * Assert
@@ -918,7 +930,7 @@ DOWN1  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -951,7 +963,7 @@ DOWN2  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -984,7 +996,7 @@ DOWN3  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1019,7 +1031,7 @@ DOWN4  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1054,7 +1066,7 @@ DOWN5  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1088,7 +1100,7 @@ DOWN6  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1126,7 +1138,7 @@ DOWN7  MOV  R11,@FRAMRT
        LI   R0,EMPLST
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1158,7 +1170,7 @@ DOWN8  DECT R10
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1187,14 +1199,14 @@ DOWN9  DECT R10
 * Arrange
        LI   R0,DOC1
        MOV  R0,@PARLST
-       LI   R0,2
+       LI   R0,PARC
        MOV  R0,@PARINX
        LI   R0,61+57+48+56+7      * This line has an 8-char indent
        MOV  R0,@CHRPAX
        LI   R0,MGNHNG
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @DOWNSP
 * Assert
@@ -1205,6 +1217,41 @@ DOWN9  DECT R10
        BLWP @AEQ
 *
        LI   R0,15
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* When PRFHRZ is non-negative and the cursor moves down one line,
+* the new position will be PRFHRZ position (slightly to the left).
+*
+DOWN10 DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARD
+       MOV  R0,@PARINX
+       LI   R0,57+58        * This is the left-edge of line with an 8-char indent
+       MOV  R0,@CHRPAX
+       LI   R0,MGNHNG
+       MOV  R0,@MGNLST
+       LI   R0,0
+       MOV  R0,@PRFHRZ
+* Act
+       BL   @DOWNSP
+* Assert
+       LI   R0,PARE
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,3           * Visually to the user this is further left than on the previous line
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
@@ -1234,7 +1281,7 @@ PGU1   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1292,7 +1339,7 @@ PGU2   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1351,7 +1398,7 @@ PGU3   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1409,7 +1456,7 @@ PGU4   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1467,7 +1514,7 @@ PGU5   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1525,7 +1572,7 @@ PGU6   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1583,7 +1630,7 @@ PGU7   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGUP
 * Assert
@@ -1641,7 +1688,7 @@ PGD1   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1699,7 +1746,7 @@ PGD2   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1757,7 +1804,7 @@ PGD3   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1815,9 +1862,9 @@ PGD4   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1875,7 +1922,7 @@ PGD5   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1933,7 +1980,7 @@ PGD6   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
@@ -1991,7 +2038,7 @@ PGD7   DECT R10
        LI   R0,MGN3ET
        MOV  R0,@MGNLST
        LI   R0,-1
-       MOV  R9,@PRFHRZ
+       MOV  R0,@PRFHRZ
 * Act
        BL   @PGDOWN
 * Assert
