@@ -5,6 +5,7 @@
        REF  PARINX,CHRPAX                        "
        REF  STSARW,STSDSH                        "
        REF  WINPAR,WINLIN,WINMGN,WINMOD          "
+       REF  PRFHRZ                               "
        REF  STSWIN                               From CONST.asm
        REF  GETIDT,GETMGN                        From UTIL.asm
        REF  PARADR,GETLIN,LOOKUP,LOOKDW          "
@@ -47,7 +48,7 @@ UPUPSP DECT R10
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
 * Let R6 = old horizontal position within line
-       BL   @GETLIN
+       BL   @GETLNH
 * Move up within same paragraph
        DEC  R2
        JGT  UPSP2
@@ -80,7 +81,7 @@ DOWNSP DECT R10
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
 * Let R6 = old horizontal position within line
-       BL   @GETLIN
+       BL   @GETLNH
 * Move down within same paragraph
        INC  R2
 * Did we move past the last paragraph-line?
@@ -139,7 +140,7 @@ PAGVRT DECT R10
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
 * Let R6 = old horizontal position within line
-       BL   @GETLIN
+       BL   @GETLNH
 * Move cursor down by one screen
        MOV  R2,R3
        MOV  @PARINX,R2
@@ -156,6 +157,35 @@ PAGVRT DECT R10
        BL   @SETCHR
 * Redraw whole screen
        SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Given CHRPAX and address of wrap list,
+* find the paragraph-line index
+* and some horizontal position within the line (including indents).
+* PRFHRZ can override the real position.
+*
+* Input:
+*   CHRPAX
+*   R4 - address of wrap list
+* Output:
+*   R2 - line index
+*   R3 - address of paragrah
+*   R4 - wrap list address
+*   R6 - horizontal position
+* Changed:
+*   R5
+GETLNH DECT R10
+       MOV  R11,*R10
+*
+       BL   @GETLIN
+*
+       MOV  @PRFHRZ,R0
+       JLT  NOOVRD
+       MOV  @PRFHRZ,R6
+NOOVRD
 *
        MOV  *R10+,R11
        RT

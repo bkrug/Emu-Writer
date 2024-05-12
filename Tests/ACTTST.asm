@@ -1251,7 +1251,7 @@ DOWN10 DECT R10
        LI   R3,PARME-PARM
        BLWP @AEQ
 *
-       LI   R0,3           * Visually to the user this is further left than on the previous line
+       LI   R0,0           * Visually to the user this is further left than on the previous line
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
