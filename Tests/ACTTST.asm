@@ -100,14 +100,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * the new position will be PRFHRZ position (slightly to the left).
        DATA DOWN10
        TEXT 'DOWN10'
-* When PRFHRZ is non-negative and the cursor moves down one line,
-* the new position will be PRFHRZ position (slightly to the right).
-*       DATA DOWN11
-*       TEXT 'DOWN11'
-* When PRFHRZ is non-negative and the cursor moves down, the line is not long
-* enought to reach PRFHRZ, so the cursor moves to the end of the line.
-*       DATA DOWN12
-*       TEXT 'DOWN12'
+* When PRFHRZ is non-negative and the cursor moves down,
+* the line is not long enought to reach PRFHRZ,
+* but longer than the previous line,
+* so the cursor moves to the end of the line.
+       DATA DOWN11
+       TEXT 'DOWN11'
 * Scroll up. Cursor starts from the first line in some paragraph.
        DATA PGU1
        TEXT 'PGU1  '
@@ -1252,6 +1250,43 @@ DOWN10 DECT R10
        BLWP @AEQ
 *
        LI   R0,0           * Visually to the user this is further left than on the previous line
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* When PRFHRZ is non-negative and the cursor moves down,
+* the line is not long enought to reach PRFHRZ,
+* but longer than the previous line,
+* so the cursor moves to the end of the line.
+*
+DOWN11 DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,PARC
+       MOV  R0,@PARINX
+       LI   R0,61+56                * End of second line
+       MOV  R0,@CHRPAX
+       LI   R0,MGNHNG
+       MOV  R0,@MGNLST
+       LI   R0,60
+       MOV  R0,@PRFHRZ
+* Act
+       BL   @DOWNSP
+* Assert
+       LI   R0,PARC
+       MOV  @PARINX,R1
+       LI   R2,PARM
+       LI   R3,PARME-PARM
+       BLWP @AEQ
+*
+       LI   R0,61+57+47            * End of third line
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
