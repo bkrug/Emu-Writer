@@ -184,10 +184,13 @@ GETLNH DECT R10
 *
        MOV  @PRFHRZ,R0
        JLT  NOOVRD
+* Get previously recorded horizontal position
        MOV  @PRFHRZ,R6
-NOOVRD
+       JMP  LNHRT
+* Record the current horizontal position
+NOOVRD MOV  R6,@PRFHRZ
 *
-       MOV  *R10+,R11
+LNHRT  MOV  *R10+,R11
        RT
 
 *

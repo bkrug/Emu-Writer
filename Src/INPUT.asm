@@ -6,7 +6,7 @@
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  BUFSRK
        REF  VDPADR,VDPWRT
-       REF  WINMOD,WINOFF
+       REF  WINMOD,WINOFF,PRFHRZ
        REF  DOCSTS,FASTRT
 
 * Key stroke routines in another file
@@ -99,6 +99,10 @@ EXPMOD BYTE MODEXT,MODEXT,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEXT,MODEXT
        BYTE MODMNU,MODEMV,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEMV
+HRZRPL BYTE 0,0,0,0
+       BYTE 1,1,0,0
+       BYTE 0,0,0,1
+       BYTE 1,0,0
        EVEN
 ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
@@ -510,6 +514,15 @@ KYBRC2 CB   *R4,*R0+
        JMP  KYBRC6
 KYBRC3 DEC  R0
        S    R2,R0
+* Should we clear the prefered horizontal position?
+       LI   R3,HRZRPL
+       A    R0,R3
+       MOV  *R3,R3
+       JNE  CLRHRZ
+* Yes, clear it
+       SETO @PRFHRZ
+*
+CLRHRZ
 * Let R3 = acceptable input mode
        LI   R3,EXPMOD
        A    R0,R3
