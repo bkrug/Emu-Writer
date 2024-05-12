@@ -61,7 +61,7 @@ INPUT
        SZC  @STSENT,*R13
        SZC  @STSARW,*R13
 * Reset the input mode to unspecified
-       CLR  @INPTMD
+       SB   @INPTMD,@INPTMD
 * Are there more keystrokes to process?
 INPUT1 C    @KEYRD,@KEYWRT
        JEQ  INPTRT
@@ -95,31 +95,31 @@ ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE ESCKEY,FCTN0,FCTN8,FCTN4
        BYTE FCTN6,FCTNL,FCTNSM
 ROUTKE
+EXPMOD BYTE MODEXT,MODEXT,MODEMV,MODEMV
+       BYTE MODEMV,MODEMV,MODEXT,MODEXT
+       BYTE MODMNU,MODEMV,MODEMV,MODEMV
+       BYTE MODEMV,MODEMV,MODEMV
        EVEN
 ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
        DATA MNUINT,WINVRT,SHOWHK,PGDOWN
        DATA PGUP,LINBEG,LINEND
-EXPMOD DATA MODEXT,MODEXT,MODEMV,MODEMV
-       DATA MODEMV,MODEMV,MODEXT,MODEXT
-       DATA MODMNU,MODEMV,MODEMV,MODEMV
-       DATA MODEMV,MODEMV,MODEMV
 
 * 
 * Input mode values
 *
 * Unspecified input mode
 MODENN EQU  0
-INPTNN DATA 0
+INPTNN BYTE 0
 * Text input mode
 MODEXT EQU  1
-INPTXT DATA 1
+INPTXT BYTE 1
 * Movement input mode
 MODEMV EQU  2
-INPTMV DATA 2
+* INPTMV BYTE 2
 * Menu input mode
 MODMNU EQU  3
-*INPTMN DATA 3
+*INPTMN BYTE 3
 
 * Specify address of cursor character
 * pattern.
@@ -413,12 +413,12 @@ DELCRT B    *R12
 ADDTXT DECT R10
        MOV  R11,*R10
 * Set input mode if currently unset
-       C    @INPTMD,@INPTNN
+       CB   @INPTMD,@INPTNN
        JNE  ADDT1
-       MOV  @INPTXT,@INPTMD
+       MOVB @INPTXT,@INPTMD
 * Does processing this key involve
 * switching input modes.
-ADDT1  C    @INPTMD,@INPTXT
+ADDT1  CB   @INPTMD,@INPTXT
        JEQ  ADDT2
 * Tell the caller to leave the INPUT routine.
        MOV  *R10+,R11
@@ -510,22 +510,22 @@ KYBRC2 CB   *R4,*R0+
        JMP  KYBRC6
 KYBRC3 DEC  R0
        S    R2,R0
+* Let R3 = acceptable input mode
+       LI   R3,EXPMOD
+       A    R0,R3
 * Let R1 = address of routine specified in ROUTKY element
        LI   R1,ROUTIN
        SLA  R0,1
        A    R0,R1
        MOV  *R1,R1
-* Let R3 = acceptable input mode
-       LI   R3,EXPMOD
-       A    R0,R3
 * Set Input mode if currently unset
-       C    @INPTMD,@INPTNN
+       CB   @INPTMD,@INPTNN
        JNE  KYBRC5
-       MOV  *R3,@INPTMD
+       MOVB *R3,@INPTMD
 KYBRC5
 * If the next key involves switching to a
 * different input mode, leave the routine
-       C    *R3,@INPTMD
+       CB   *R3,@INPTMD
        JNE  KYEXIT
 * Branch to routine associated with key
        BL   *R1

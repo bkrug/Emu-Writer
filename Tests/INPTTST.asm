@@ -309,7 +309,7 @@ PARLEN TEXT 'PARLEN'
 * some other text such that
 * "With a history, Wuhan"
 * became
-* "With a long HIStory, Wuhan"
+* "With a long HISTORY, Wuhan"
 TST1   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
