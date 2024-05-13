@@ -149,6 +149,16 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Scroll down. Cursor can only scroll by 21 lines, otherwise it would land on a margin header.
        DATA PGD7
        TEXT 'PGD7  '
+* When mode is vertical mode, Next Window button does nothing.
+*
+* When cursor can move 20 characters, both the cursor and the window move.
+*
+* When the cursor is fewer than 20 characters from the line-end,
+* but the window is more than 20 characters from the cursor,
+* just the window moves.
+*
+* When the window cannot move 20 characters without passing the cursor,
+* the window moves to the first column, and the cursor moves left by the same amount.
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
