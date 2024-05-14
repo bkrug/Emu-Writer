@@ -151,8 +151,8 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA PGD7
        TEXT 'PGD7  '
 * When mode is vertical mode, Next Window button does nothing.
-*       DATA NXWN1
-*       TEXT 'NXWN1 '
+       DATA NXWN1
+       TEXT 'NXWN1 '
 * When cursor can move 20 characters, both the cursor and the window move.
        DATA NXWN2
        TEXT 'NXWN2 '
@@ -2129,11 +2129,47 @@ PGD7   DECT R10
        RT
 
 *
+* When mode is vertical mode, Next Window button does nothing.
+*
+NXWN1  DECT R10
+       MOV  R11,*R10
+* Arrange
+       SETO @WINMOD
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+       LI   R0,PARA
+       MOV  R0,@PARINX
+       LI   R0,7             * There is a 5-char indent here
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Act
+       BL   @NXTWIN
+* Assert
+       LI   R0,7             * Nothing changed
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       LI   R0,0
+       MOV  @WINOFF,R1
+       LI   R2,WOFFM
+       LI   R3,WOFFME-WOFFM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
 * When cursor can move 20 characters, both the cursor and the window move.
 *
 NXWN2  DECT R10
        MOV  R11,*R10
 * Arrange
+       CLR  @WINMOD
        LI   R0,DOC1
        MOV  R0,@PARLST
        LI   R0,MGN5
@@ -2170,6 +2206,7 @@ NXWN2  DECT R10
 NXWN3  DECT R10
        MOV  R11,*R10
 * Arrange
+       CLR  @WINMOD
        LI   R0,DOC1
        MOV  R0,@PARLST
        LI   R0,MGN5
@@ -2205,6 +2242,7 @@ NXWN3  DECT R10
 NXWN4  DECT R10
        MOV  R11,*R10
 * Arrange
+       CLR  @WINMOD
        LI   R0,DOC1
        MOV  R0,@PARLST
        LI   R0,MGN5

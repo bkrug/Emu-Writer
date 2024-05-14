@@ -264,6 +264,9 @@ CHR6   MOV  R6,@CHRPAX
 *
 NXTWIN DECT R10
        MOV  R11,*R10
+* Disable this command in vertical mode
+       MOV  @WINMOD,R0
+       JNE  NXTRT
 *
        LI   R9,SCRNWD/2
 * Let R2 = line index
@@ -298,9 +301,9 @@ NXTOFF
 * Yes, increase it
        MOV  R7,@WINOFF
 *
-NXTRT  SOC  @STSWIN,*R13
+NXTSTS SOC  @STSWIN,*R13
 *
-       MOV  *R10+,R11
+NXTRT  MOV  *R10+,R11
        RT
 
 * No, set window back to left most position
@@ -311,6 +314,6 @@ FRSWIN MOV  @WINOFF,R0
        JMP  FRSWIN
 * sET CHRPAX to new horizontal position
 FRS1   BL   @SETCHR
-       JMP  NXTRT
+       JMP  NXTSTS
 
        END
