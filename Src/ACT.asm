@@ -203,7 +203,7 @@ LNHRT  MOV  *R10+,R11
 *   R3 - address of paragrah
 *   R4 - address of wrap list
 *   R6 - old horizontal position
-* Changed: R6, R8
+* Changed: R0, R1, R6, R8
 SETCHR DECT R10
        MOV  R11,*R10
        DECT R10
@@ -264,31 +264,51 @@ CHR6   MOV  R6,@CHRPAX
 *
 NXTWIN DECT R10
        MOV  R11,*R10
+*
+       LI   R9,SCRNWD/2
 * Let R2 = line index
 * Let R3 = Address of paragraph
 * Let R4 = Wrap list address
 * Let R6 = old horizontal position within line
        BL   @GETLIN
-* Let R7 = hypothetical new horizontal position
+* Set desired position
+       A    R9,R6
+* Let R7 = old CHRPAX value
        MOV  @CHRPAX,R7
-       AI   R7,SCRNWD/2
-       AI   R6,SCRNWD/2
 * Set char position
        BL   @SETCHR
 * Did cursor move by exactly 20 positions?
-       C    @CHRPAX,R7
+       MOV  R7,R0
+       A    R9,R0
+       C    @CHRPAX,R0
        JEQ  NXTOFF
 * No, set it back to old value
        MOV  R7,@CHRPAX
+NXTOFF
+* Let R2 = line index
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
 * Can WINOFF increase by 20 without passing cursor?
-NXTOFF MOV  @WINOFF,R7
-       AI   R7,SCRNWD/2
-       C    R7,@CHRPAX
-       JGT  NXTRT
+       MOV  @WINOFF,R7
+       A    R9,R7
+       C    R7,R6
+       JGT  FRSWIN
 * Yes, increase it
        MOV  R7,@WINOFF
 *
 NXTRT  MOV  *R10+,R11
        RT
+
+* No, set window back to left most position
+FRSWIN MOV  @WINOFF,R0
+       JEQ  FRS1
+       S    R9,@WINOFF
+       S    R9,R6
+       JMP  FRSWIN
+* sET CHRPAX to new horizontal position
+FRS1   BL   @SETCHR
+       JMP  NXTRT
 
        END

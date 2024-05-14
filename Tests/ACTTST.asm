@@ -159,9 +159,12 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * When the cursor is fewer than 20 characters from the line-end,
 * but the window is more than 20 characters from the cursor,
 * just the window moves.
-*
+       DATA NXWN3
+       TEXT 'NXWN3 '
 * When the window cannot move 20 characters without passing the cursor,
 * the window moves to the first column, and the cursor moves left by the same amount.
+       DATA NXWN4
+       TEXT 'NXWN4 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK2.TESTRESULT.TXT'
@@ -2125,6 +2128,9 @@ PGD7   DECT R10
        MOV  *R10+,R11
        RT
 
+*
+* When cursor can move 20 characters, both the cursor and the window move.
+*
 NXWN2  DECT R10
        MOV  R11,*R10
 * Arrange
@@ -2148,6 +2154,77 @@ NXWN2  DECT R10
        BLWP @AEQ
 *
        LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,WOFFM
+       LI   R3,WOFFME-WOFFM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* When the cursor is fewer than 20 characters from the line-end,
+* but the window is more than 20 characters from the cursor,
+* just the window moves.
+*
+NXWN3  DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+       LI   R0,PARA
+       MOV  R0,@PARINX
+       LI   R0,50             * This is horizontal position 55, due to index
+       MOV  R0,@CHRPAX
+       LI   R0,20
+       MOV  R0,@WINOFF
+* Act
+       BL   @NXTWIN
+* Assert
+       LI   R0,50
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       LI   R0,40
+       MOV  @WINOFF,R1
+       LI   R2,WOFFM
+       LI   R3,WOFFME-WOFFM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* When the window cannot move 20 characters without passing the cursor,
+* the window moves to the first column, and the cursor moves left by the same amount.
+*
+NXWN4  DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+       LI   R0,PARA
+       MOV  R0,@PARINX
+       LI   R0,50             * This is horizontal position 55, due to index
+       MOV  R0,@CHRPAX
+       LI   R0,40
+       MOV  R0,@WINOFF
+* Act
+       BL   @NXTWIN
+* Assert
+       LI   R0,10
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       LI   R0,0
        MOV  @WINOFF,R1
        LI   R2,WOFFM
        LI   R3,WOFFME-WOFFM
