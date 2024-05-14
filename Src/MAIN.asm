@@ -161,12 +161,9 @@ WRAP3  RT
 DRWCUR DECT R10
        MOV  R11,*R10
 *
-       COC  @STSTYP,R0
-       JEQ  DRWCR2
-       COC  @STSENT,R0
-       JEQ  DRWCR2
-       COC  @STSWIN,R0
-       JEQ  DRWCR2
+       MOV  R0,R1
+       ANDI R1,STATYP+STAENT+STAWIN
+       JNE  DRWCR2
        COC  @STSARW,R0
        JEQ  DRWCR1
        MOV  @CURTIM,R0
