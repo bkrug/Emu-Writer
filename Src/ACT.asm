@@ -6,7 +6,7 @@
        REF  PARINX,CHRPAX                        "
        REF  STSARW,STSDSH                        "
        REF  WINPAR,WINLIN,WINMGN,WINMOD          "
-       REF  PRFHRZ                               "
+       REF  PRFHRZ,WINOFF                        "
        REF  STSWIN                               From CONST.asm
        REF  GETIDT,GETMGN                        From UTIL.asm
        REF  PARADR,GETLIN,LOOKUP,LOOKDW          "
@@ -203,9 +203,11 @@ LNHRT  MOV  *R10+,R11
 *   R3 - address of paragrah
 *   R4 - address of wrap list
 *   R6 - old horizontal position
-* Changed: R6
+* Changed: R6, R8
 SETCHR DECT R10
        MOV  R11,*R10
+       DECT R10
+       MOV  R7,*R10
 * Let R1 = address of line break
 * if this is the first line, it will point to before index 0 of wrap list.
        MOV  R2,R1
@@ -253,6 +255,7 @@ CHR6   MOV  R6,@CHRPAX
 * Edit document status
        SOC  @STSARW,*R13
 *
+       MOV  *R10+,R7
        MOV  *R10+,R11
        RT
 
@@ -261,8 +264,31 @@ CHR6   MOV  R6,@CHRPAX
 *
 NXTWIN DECT R10
        MOV  R11,*R10
+* Let R2 = line index
+* Let R3 = Address of paragraph
+* Let R4 = Wrap list address
+* Let R6 = old horizontal position within line
+       BL   @GETLIN
+* Let R7 = hypothetical new horizontal position
+       MOV  @CHRPAX,R7
+       AI   R7,SCRNWD/2
+       AI   R6,SCRNWD/2
+* Set char position
+       BL   @SETCHR
+* Did cursor move by exactly 20 positions?
+       C    @CHRPAX,R7
+       JEQ  NXTOFF
+* No, set it back to old value
+       MOV  R7,@CHRPAX
+* Can WINOFF increase by 20 without passing cursor?
+NXTOFF MOV  @WINOFF,R7
+       AI   R7,SCRNWD/2
+       C    R7,@CHRPAX
+       JGT  NXTRT
+* Yes, increase it
+       MOV  R7,@WINOFF
 *
-       MOV  *R10+,R11
+NXTRT  MOV  *R10+,R11
        RT
 
        END
