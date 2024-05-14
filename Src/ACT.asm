@@ -1,5 +1,6 @@
        DEF  LINBEG,LINEND
        DEF  UPUPSP,DOWNSP,PGUP,PGDOWN
+       DEF  NXTWIN
 *
        REF  PARLST                               From VAR.asm
        REF  PARINX,CHRPAX                        "
@@ -251,6 +252,15 @@ CHR5   MOV  R7,R6
 CHR6   MOV  R6,@CHRPAX
 * Edit document status
        SOC  @STSARW,*R13
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Scroll horizontally by 20 characters
+*
+NXTWIN DECT R10
+       MOV  R11,*R10
 *
        MOV  *R10+,R11
        RT

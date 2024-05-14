@@ -3,12 +3,13 @@
        REF  PARLST,MGNLST
        REF  PARINX,CHRPAX
        REF  WINPAR,WINLIN,WINMGN,PRFHRZ
-       REF  STSARW
+       REF  STSARW,WINOFF
        REF  WINMOD
 * Assert methods
        REF  AEQ,AOC
 * Tested methods
        REF  UPUPSP,DOWNSP,PGUP,PGDOWN
+       REF  NXTWIN
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Move from 3rd to 2nd line
@@ -150,9 +151,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
        DATA PGD7
        TEXT 'PGD7  '
 * When mode is vertical mode, Next Window button does nothing.
-*
+*       DATA NXWN1
+*       TEXT 'NXWN1 '
 * When cursor can move 20 characters, both the cursor and the window move.
-*
+       DATA NXWN2
+       TEXT 'NXWN2 '
 * When the cursor is fewer than 20 characters from the line-end,
 * but the window is more than 20 characters from the cursor,
 * just the window moves.
@@ -308,6 +311,8 @@ WINLM  TEXT 'Window paragraph-line is wrong.'
 WINLME
 WINMG  TEXT 'Window margin is wrong.'
 WINMGE
+WOFFM  TEXT 'Window offset is wrong.'
+WOFFME
        EVEN
 
 *
@@ -2115,6 +2120,37 @@ PGD7   DECT R10
        MOV  @CHRPAX,R1
        LI   R2,CHRM
        LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+NXWN2  DECT R10
+       MOV  R11,*R10
+* Arrange
+       LI   R0,DOC1
+       MOV  R0,@PARLST
+       LI   R0,MGN5
+       MOV  R0,@MGNLST
+       LI   R0,PARA
+       MOV  R0,@PARINX
+       LI   R0,7             * There is a 5-char indent here
+       MOV  R0,@CHRPAX
+       LI   R0,0
+       MOV  R0,@WINOFF
+* Act
+       BL   @NXTWIN
+* Assert
+       LI   R0,27
+       MOV  @CHRPAX,R1
+       LI   R2,CHRM
+       LI   R3,CHRME-CHRM
+       BLWP @AEQ
+*
+       LI   R0,20
+       MOV  @WINOFF,R1
+       LI   R2,WOFFM
+       LI   R3,WOFFME-WOFFM
        BLWP @AEQ
 *
        MOV  *R10+,R11
