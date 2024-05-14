@@ -298,7 +298,9 @@ NXTOFF
 * Yes, increase it
        MOV  R7,@WINOFF
 *
-NXTRT  MOV  *R10+,R11
+NXTRT  SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
        RT
 
 * No, set window back to left most position

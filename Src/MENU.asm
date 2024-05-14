@@ -195,6 +195,8 @@ TXTHK  DATA TXTHK1
        BYTE 0
        TEXT 'FCTN+4 Page Down'
        BYTE 0
+       TEXT 'FCTN+5 Next Window (Windowed Mode only)'
+       BYTE 0
        TEXT 'FCTN+6 Page Up'
        BYTE 0
        TEXT 'FCTN+0 Vertical/Windowed Mode'
