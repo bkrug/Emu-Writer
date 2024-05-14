@@ -129,16 +129,8 @@ DISP5  RTWP
 *
 NOTHIN
        MOV  *R13,R0
-       COC  @STSTYP,R0
-       JEQ  NOT1
-       COC  @STSPAR,R0
-       JEQ  NOT1
-       COC  @STSDCR,R0
-       JEQ  NOT1
-       COC  @STSENT,R0
-       JEQ  NOT1
-       COC  @STSWIN,R0
-       JEQ  NOT1
+       ANDI R0,STATYP+STAPAR+STADCR+STAENT+STAWIN
+       JNE  NOT1
 * Nothing to redraw
        RTWP
 * Redraw some portion of the screen
@@ -449,14 +441,8 @@ NXTPAR DECT R10
 * If paragraph line-count changed,
 * continue drawing the screen.
        MOV  *R13,R0
-       COC  @STSPAR,R0
-       JEQ  NXT1
-       COC  @STSENT,R0
-       JEQ  NXT1
-       COC  @STSWIN,R0
-       JEQ  NXT1
-       COC  @STSDCR,R0
-       JEQ  NXT1
+       ANDI R0,STAPAR+STAENT+STAWIN+STADCR
+       JNE  NXT1
 * Don't write next paragraph
 NXTNO
        MOV  *R10+,R11

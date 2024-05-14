@@ -17,25 +17,19 @@
 * It is defined in MEMBUF.O
 * BLKUSE DATA >8000
 
+       COPY 'EQUKEY.asm'
+
 FORTY  DATA 40
 
 * Document status codes
-* Text Typed
-STSTYP DATA >1
-* Enter Pressed
-STSENT DATA >2
-* Deleted Carriage Return
-STSDCR DATA >4
-* Paragraph Line Count Changed
-STSPAR DATA >8
-* Window Moved
-STSWIN DATA >10
-* Redisplay dashboard line (margins, fonts)
-STSDSH DATA >20
-* Arrow Key Pressed
-STSARW DATA >40
-* Insufficient Memory Error
-ERRMEM DATA >8000
+STSTYP DATA STATYP        * Text Typed
+STSENT DATA STAENT        * Enter Pressed
+STSDCR DATA STADCR        * Deleted Carriage Return
+STSPAR DATA STAPAR        * Paragraph Line Count Changed
+STSWIN DATA STAWIN        * Window Moved
+STSDSH DATA STADSH        * Redisplay dashboard line (margins, fonts)
+STSARW DATA STAARW        * Arrow Key Pressed
+ERRMEM DATA ERAMEM        * Insufficient Memory Error
 
 * ASCII codes
 CHRMIN
