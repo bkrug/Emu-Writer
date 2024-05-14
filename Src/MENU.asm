@@ -454,7 +454,7 @@ KEYMG1
 
 FLDMG  DATA FLDMG1
 * Page Width (characters)
-       DATA 2*40+24          * Field position on screen
+       DATA 2*40+24         * Field position on screen
        DATA 3               * Length of field
 * Page Height (lines)
        DATA 3*40+24         * Field position on screen

@@ -94,34 +94,27 @@ INTDOC
        CLR  @CHRPAX
 * Insert one empty paragraph
 * Let R4 = paragraph address
-INTPAR LI   R0,PAREND-PAR
-       MOV  R0,R2
+INTPAR LI   R0,EMPPAR
        BLWP @BUFALC
        MOV  R0,R4
-       MOV  R0,R1
-       LI   R0,PAR
-       BLWP @BUFCPY
-* Insert one empty wrap list, and
-* place address inside paragraph object
-       LI   R0,1
-       BLWP @ARYALC
-       MOV  R0,@2(R4)
 * Put the paragraph into the
 * paragraph list
        MOV  @PARLST,R0
        BLWP @ARYADD
        MOV  R0,@PARLST
        MOV  R4,*R1
+* Specify the paragraph length as 0
+* Let R4 = address of address of wrap list
+       CLR  *R4+
+* Insert one empty wrap list, and
+* place address inside paragraph object
+       LI   R0,1
+       BLWP @ARYALC
+       MOV  R0,*R4
 *
        CLR  R0
 *
        RT
-
-* Default paragraph
-PAR    DATA 0
-       BSS  2
-       TEXT ''
-PAREND
 
 *
 * An interrupt routine to scan for keys

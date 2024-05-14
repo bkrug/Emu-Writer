@@ -65,6 +65,7 @@ MGNLNG EQU  8
 MGNPWR EQU  3
 
 MAXIDT EQU  20        Max indent in vertical mode
+EMPPAR EQU  4         The number of bytes used by an empty paragrah
 
 *
 * Indexes in margin entry
