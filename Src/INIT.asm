@@ -26,7 +26,6 @@
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
-       COPY 'EQUVDPADR.asm'
 
 *
 * Initialize Program

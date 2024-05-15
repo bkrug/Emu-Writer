@@ -21,7 +21,6 @@
 *
 
        COPY 'CPUADR.asm'
-       COPY 'EQUVDPADR.asm'
        COPY 'EQUKEY.asm'
 
 BEGIN  B    @INIT
