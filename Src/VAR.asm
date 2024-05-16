@@ -37,6 +37,7 @@
 * WRAP.asm
        DEF  LNWDT1,LNWDTH,WINMOD
 * INPUT.asm
+       DEF  PARENT
        DEF  PARINX,CHRPAX
        DEF  INSTMD,INPTMD
 * POSUPD.asm
@@ -133,6 +134,9 @@ LNWDTH BSS  2
 WINMOD BSS  2
 
 * INPUT.asm
+* If enter is pressed multiple times,
+* Wrap the paragraph before the value in PARENT, first.
+PARENT BSS  2
 *
 * Master values
 *

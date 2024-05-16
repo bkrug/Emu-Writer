@@ -16,6 +16,7 @@
        REF  MNUINT,PRINT
 
 * variables just for INPUT
+       REF  PARENT
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
        REF  KEYWRT,KEYRD
@@ -247,7 +248,7 @@ ISENTR DECT R10
        BLWP @BUFCPY
 * Adjust CHRPAX
 * PARINX was incremented previously.
-ENTR3  CLR  @CHRPAX
+       CLR  @CHRPAX
 * Shrink the previous paragraph.
 * Let R0 = address of paragraph.
 * Let R1 = required space.
@@ -266,6 +267,12 @@ ENTR3  CLR  @CHRPAX
        BL   @UPDMGN
 * Set document-status bit
        SOC  @STSENT,*R13
+* Is PARENT already set?
+* If not, let PARENT = the second paragraph to re-wrap
+       MOV  @PARENT,R0
+       JNE  ENT1
+       MOV  @PARINX,@PARENT
+ENT1
 *
        MOV  *R10+,R11
        RT

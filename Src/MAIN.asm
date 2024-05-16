@@ -5,7 +5,7 @@
        REF  KEYINT
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
-       REF  PARINX,CHRPAX
+       REF  PARENT,PARINX,CHRPAX
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  PARLST,MGNLST,FMTLST
@@ -133,22 +133,29 @@ MYWRAP
 * Let R2 = copy of document status
 	MOV  @DOCSTS,R2
 * If user pressed enter,
-* wrap the previous paragraph.
+* wrap at least 2 paragraphs.
        COC  @STSENT,R2
        JNE  WRAP1
-       MOV  @PARINX,R0
-       DEC  R0
-       BLWP @WRAP
+* Let R3 = first paragraph to wrap
+* If PARENT != 0, then it contains the first new paragraph from pressing enter.
+* Let's re-wrap the paragraph right before it, too.
+       MOV  @PARENT,R3
+       DEC  R3
 *
-	MOV  @DOCSTS,R2
-* If the user pressed enter or typed something,
+	JMP  WRAP2
+* If the user typed something,
 * wrap the current paragraph.
-WRAP1  COC  @STSENT,R2
-       JEQ  WRAP2
-       COC  @STSTYP,R2
+WRAP1  COC  @STSTYP,R2
        JNE  WRAP3
-WRAP2  MOV  @PARINX,R0
+* Let R3 = first paragraph to wrap
+       MOV  @PARINX,R3
+* Wrap each paragraph up to the current one
+WRAP2  MOV  R3,R0
        BLWP @WRAP
+       INC  R3
+       C    R3,@PARINX
+       JLE  WRAP2
+       CLR  @PARENT
 *
 WRAP3  RT
 
