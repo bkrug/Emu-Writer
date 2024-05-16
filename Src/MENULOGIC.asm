@@ -11,7 +11,7 @@
        REF  CCHMHM,CCHFSV,CCHIPT          From CACHETBL.asm
        REF  STSWIN,STSTYP,STSARW
        REF  DRWCUR
-       REF  CUROLD,CURRPL,CURMOD
+       REF  CURMOD
        REF  CURSCN
        REF  BUFALC,BUFREE
 
@@ -53,11 +53,7 @@ ENTMNU
        DECT R10
        MOV  R0,*R10
        DECT R10
-       MOV  @CUROLD,*R10
-       DECT R10
        MOV  @CURMOD,*R10
-       DECT R10
-       MOV  @CURRPL,*R10
        DECT R10
        MOV  @CURSCN,*R10
 *
@@ -84,9 +80,7 @@ MNULP
        BL   @LOADCH
 *
        MOV  *R10+,@CURSCN
-       MOV  *R10+,@CURRPL
        MOV  *R10+,@CURMOD
-       MOV  *R10+,@CUROLD
 *
        MOV  *R10+,R0
 *
