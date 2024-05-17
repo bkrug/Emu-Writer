@@ -96,15 +96,13 @@ MNUDSP
 *
        LIMI 0
 * Clear screen
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
 *
        LI   R1,2*SCRNWD
        BL   @VDPSPI
 *
-       LI   R0,SCRNWD
-       LI   R2,22
-       MPY  R2,R0
+       LI   R1,22*SCRNWD
        BL   @VDPSPC
 * Let R2 = address of menu
 * Let R3 = address of strings
@@ -113,21 +111,20 @@ MNUDSP
        MOV  *R2,R3
        MOV  *R3+,R4
 * Write Hot keys
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
 *
        MOV  @KEYTXT(R2),R0
        BL   @VDPINV
 * Write title
-       LI   R0,SCRNWD
+       LI   R0,SCRTBL+SCRNWD
        BL   @VDPADR
 *
        MOV  R2,R0
        AI   R0,MTITLE
        BL   @VDPINV
 * Set VDP address for strings
-       LI   R0,SCRNWD
-       SLA  R0,1
+       LI   R0,SCRTBL+(2*SCRNWD)
        BL   @VDPADR
 * Write strings
        MOV  R3,R0
@@ -223,7 +220,7 @@ INITF1 SB   *R1,*R1+
        JEQ  INITF2
        LI   R9,FLDVAL
 * Set cursor position on screen
-       LI   R0,2*SCRNWD
+       LI   R0,SCRTBL+2*SCRNWD
        A    @2(R1),R0
        MOV  R0,@CURSCN
 *
@@ -424,7 +421,7 @@ DSPVAL
        LI   R7,FLDVAL
 * Let R3 = screen address of first field
 * Let R4 = length of field
-DSPV1  LI   R3,2*SCRNWD
+DSPV1  LI   R3,SCRTBL+2*SCRNWD
        A    *R5+,R3
        MOV  *R5+,R4
 * Write field value to VDP
@@ -615,11 +612,11 @@ GORERR
        MOV  R0,*R10
        MOV  R1,R2
 *
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
        LI   R1,SCRNWD
        BL   @VDPSPI
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
        MOV  R2,R0
        BL   @VDPINV
