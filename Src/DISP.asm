@@ -16,7 +16,7 @@
 *
        REF  DISPWS
        REF  PARLST,FMTLST,MGNLST
-       REF  PARINX
+       REF  PARINX,PARENT
        REF  WINOFF,WINPAR,WINLIN,WINMGN
        REF  WINMOD
        REF  STSTYP,STSENT,STSDCR
@@ -142,21 +142,21 @@ NOT1   RT
 STRPAR 
 * Let R0 = contain document status
        MOV  *R13,R0
-* If window has moved, redraw screen.
+* Did the user press enter?
+       COC  @STSENT,R0
+       JEQ  SP1
+* Did the window move?
        COC  @STSWIN,R0
        JEQ  SP2
 * Set starting position to cursor's
 * paragraph.
        MOV  @PARINX,R9
-* Avoid setting R9 to -1.
-       JEQ  SP1
-* If the user pressed enter, start from
-* previous paragraph.
-       COC  @STSENT,R0
-       JNE  SP1
+       RT
+* The user pressed enter, so start from
+* a previous paragraph.
+SP1    MOV  @PARENT,R9
        DEC  R9
-*
-SP1    RT
+       RT
 * Set starting position based on window
 * position.
 SP2    MOV  @WINPAR,R9

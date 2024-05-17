@@ -6,7 +6,7 @@
        REF  ABLCK,AOC,AZC
        REF  AEQ,ANEQ,AL
        REF  DISP,PARLST,FMTLST,MGNLST
-       REF  PARINX
+       REF  PARINX,PARENT
        REF  WINOFF,WINPAR,WINLIN,WINMOD
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN
@@ -1250,9 +1250,13 @@ DSP10
        LI   R0,EMPLST
        MOV  R0,@MGNLST
 * Act
-* Imply that the user pressed enter.
+* Imply that the user pressed enter, once.
        CLR  R0
        SOC  @STSENT,R0
+*
+       MOV  @PARINX,@PARENT
+       DEC  @PARENT
+*
        BLWP @DISP
 * Assert
        LI   R0,SCRN10

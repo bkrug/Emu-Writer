@@ -31,6 +31,8 @@ MAIN
 * Clear the document status register
        CLR  R0
        MOV  R0,@DOCSTS
+* Clear the "Paragraph Enter" index
+       CLR  @PARENT
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
        JEQ  MAIN1
@@ -155,7 +157,6 @@ WRAP2  MOV  R3,R0
        INC  R3
        C    R3,@PARINX
        JLE  WRAP2
-       CLR  @PARENT
 *
 WRAP3  RT
 
