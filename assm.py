@@ -108,9 +108,14 @@ os.system("xdm99.py -X sssd " + disk_image)
 program_files = glob.glob(WORK_FOLDER + "EMUWRITE*")
 for program_file in program_files:
     if not program_file.endswith(".dsk"):
+        # Add the program files to disk
         add_command_1 = "xdm99.py {disk_image} -a {program_file} -f PROGRAM"
         add_command_2 = add_command_1.format(disk_image = disk_image, program_file = program_file)
         os.system(add_command_2)
+        # Write-Protect the program files
+        protect_command_1 = "xdm99.py {disk_image} -w {program_file}"
+        protect_command_2 = protect_command_1.format(disk_image = disk_image, program_file = program_file.replace("./Fiad\\", ""))
+        os.system(protect_command_2)
 
 # Add example documents to disk imageE
 text_files = ["HANSEL", "THREELANG"]
