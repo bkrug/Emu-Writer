@@ -142,24 +142,24 @@ NOT1   RT
 STRPAR 
 * Let R0 = contain document status
        MOV  *R13,R0
-* Did the user press enter?
-       COC  @STSENT,R0
-       JEQ  SP1
 * Did the window move?
        COC  @STSWIN,R0
+       JEQ  SP1
+* Did the user press enter?
+       COC  @STSENT,R0
        JEQ  SP2
 * Set starting position to cursor's
 * paragraph.
        MOV  @PARINX,R9
        RT
-* The user pressed enter, so start from
-* a previous paragraph.
-SP1    MOV  @PARENT,R9
-       DEC  R9
-       RT
 * Set starting position based on window
 * position.
-SP2    MOV  @WINPAR,R9
+SP1    MOV  @WINPAR,R9
+       RT
+* The user pressed enter, so start from
+* a previous paragraph.
+SP2    MOV  @PARENT,R9
+       DEC  R9
        RT
        
 *
