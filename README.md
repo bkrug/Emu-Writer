@@ -101,4 +101,4 @@ Scroll back down to the last empty line and it stops blinking again.
 
 ### Personal Notes
 
-mame ti99_4a -ioport peb -ioport:peb:slot2 32kmem -ioport:peb:slot7 tirs232 -parl pio.txt -serl1 rs232.txt -ioport:peb:slot8 hfdc -window -cart "/run/media/benjaminkrug/Documents/Cloud Backup/TI-99/carts-rpk/Programming/Editor-Assembler.rpk" -flop1 "/home/benjaminkrug/repos/Emu-Writer/EmuWriter.v0.3.dsk"
+mame ti99_4a -ioport peb -ioport:peb:slot2 32kmem -ioport:peb:slot7 tirs232 -parl pio.txt -serl1 rs232.txt -ioport:peb:slot8 tifdc -window -cart "/run/media/benjaminkrug/Documents/Cloud Backup/TI-99/carts-rpk/Programming/Editor-Assembler.rpk" -flop1 "/home/benjaminkrug/repos/Emu-Writer/EmuWriter.v0.3.dsk"
