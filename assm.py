@@ -7,10 +7,10 @@ import os, glob
 from itertools import chain
 
 #Functions
-WORK_FOLDER = "./Fiad/"
+WORK_FOLDER = "Fiad"
 
 def get_work_file(filename):
-    return WORK_FOLDER + filename
+    return os.path.join(WORK_FOLDER, filename)
 
 def get_unlinked_string(include_membuf, object_files):
     unlinked_files = []
@@ -36,8 +36,10 @@ def link_main_files(linked_file, include_membuf, object_files):
     os.system(link_command_2)
 
 #Assemble Src and Tests
-files1 = os.scandir(".//Src")
-files2 = os.scandir(".//Tests")
+srcPath = os.path.join("Src")
+testsPath = os.path.join("Tests")
+files1 = os.scandir(srcPath)
+files2 = os.scandir(testsPath)
 files = chain(files1, files2)
 
 for file_obj in files:
@@ -96,16 +98,16 @@ temp_files = [
 link_main_files("EMUWRITER", True, temp_files)
 
 #Clean up
-for file in glob.glob(WORK_FOLDER + "*.lst"):
+for file in glob.glob(os.path.join(WORK_FOLDER, "*.lst")):
     os.remove(file)
-for file in glob.glob(WORK_FOLDER + "*.obj.temp"):
+for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj.temp")):
     os.remove(file)
 
 # Create disk image
 print("Creating disk image")
-disk_image = 'EmuWriter.v0.3.dsk'
+disk_image = os.path.join('EmuWriter.v0.4.dsk')
 os.system("xdm99.py -X sssd " + disk_image)
-program_files = glob.glob(WORK_FOLDER + "EMUWRITE*")
+program_files = glob.glob(os.path.join(".", WORK_FOLDER, "EMUWRITE*"))
 for program_file in program_files:
     if not program_file.endswith(".dsk"):
         # Add the program files to disk
@@ -114,7 +116,7 @@ for program_file in program_files:
         os.system(add_command_2)
         # Write-Protect the program files
         protect_command_1 = "xdm99.py {disk_image} -w {program_file}"
-        protect_command_2 = protect_command_1.format(disk_image = disk_image, program_file = program_file.replace("./Fiad\\", ""))
+        protect_command_2 = protect_command_1.format(disk_image = disk_image, program_file = program_file.replace("./Fiad/", ""))
         os.system(protect_command_2)
 
 # Add example documents to disk imageE
@@ -130,7 +132,7 @@ for text_file in text_files:
 
 # Add TIFILES header to all object files
 print("Adding TIFILES header")
-for file in glob.glob(WORK_FOLDER + "*.obj"):
+for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj")):
     if not file.endswith(".noheader.obj"):
         header_command_1 = "xdm99.py -T {object_file} -f DIS/FIX80 -o {object_file}"
         header_command_2 = header_command_1.format(object_file = file)
