@@ -106,7 +106,7 @@ for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj.temp")):
 # Create disk image
 print("Creating disk image")
 disk_image = os.path.join('EmuWriter.v0.4.dsk')
-os.system("xdm99.py -X sssd " + disk_image)
+os.system("xdm99.py -X sssd -n EMU " + disk_image)
 program_files = glob.glob(os.path.join(".", WORK_FOLDER, "EMUWRITE*"))
 for program_file in program_files:
     if not program_file.endswith(".dsk"):
@@ -119,7 +119,7 @@ for program_file in program_files:
         protect_command_2 = protect_command_1.format(disk_image = disk_image, program_file = program_file.replace("./Fiad/", ""))
         os.system(protect_command_2)
 
-# Add example documents to disk imageE
+# Add example documents to disk image
 text_files = ["HANSEL", "THREELANG"]
 for text_file in text_files:
     remove_header1 = "xdm99.py -F Fiad/{text_file} -o TEMPFILE"
@@ -129,6 +129,17 @@ for text_file in text_files:
     add_doc_2 = add_doc_1.format(disk_image = disk_image, text_file = text_file)
     os.system(add_doc_2)
     os.remove("TEMPFILE")
+
+# Create test-runner disk image
+print("Creating test-runner disk image")
+disk_image = os.path.join('EmuWriter.Tests.dsk')
+os.system("xdm99.py -X dsdd -n EMUTEST " + disk_image)
+object_files = glob.glob(os.path.join(".", WORK_FOLDER, "*RUN.obj"))
+for object_file in object_files:
+    # Add the program files to disk
+    add_command_1 = "xdm99.py {disk_image} -a {object_file} -n{file_name} -f DIS/FIX80"
+    add_command_2 = add_command_1.format(disk_image = disk_image, object_file = object_file, file_name = object_file.replace(".obj", "").replace("./Fiad/", ""))
+    os.system(add_command_2)
 
 # Add TIFILES header to all object files
 print("Adding TIFILES header")
