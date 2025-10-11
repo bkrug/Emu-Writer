@@ -63,6 +63,9 @@ link_test_files("DISPARUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "ACT", "WRAP", "UTIL", "VAR", "CONST" ]
 link_test_files("INPTRUN.obj", True, temp_files)
 
+temp_files = [ "TESTFRAM", "UNDOTST", "INPUT", "ACT", "WRAP", "UTIL", "VAR", "CONST" ]
+link_test_files("UNDORUN.obj", True, temp_files)
+
 temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "VAR", "CONST" ]
 link_test_files("POSRUN.obj", True, temp_files)
 
@@ -132,13 +135,24 @@ for text_file in text_files:
 
 # Create test-runner disk image
 print("Creating test-runner disk image")
-disk_image = os.path.join('EmuWriter.Tests.dsk')
+disk_image = os.path.join('EmuWriter.Tests1.dsk')
 os.system("xdm99.py -X dsdd -n EMUTEST " + disk_image)
-object_files = glob.glob(os.path.join(".", WORK_FOLDER, "*RUN.obj"))
+object_files = ["ACTRUN.obj", "DISPRUN.obj", "DISPARUN.obj", "INPTRUN.obj", "KEYRUN.obj", "POSRUN.obj", "WRAPRUN.obj"]
 for object_file in object_files:
     # Add the program files to disk
     add_command_1 = "xdm99.py {disk_image} -a {object_file} -n{file_name} -f DIS/FIX80"
-    add_command_2 = add_command_1.format(disk_image = disk_image, object_file = object_file, file_name = object_file.replace(".obj", "").replace("./Fiad/", ""))
+    file_and_path = os.path.join(".", "Fiad", object_file)
+    add_command_2 = add_command_1.format(disk_image = disk_image, object_file = file_and_path, file_name = object_file.replace(".obj", ""))
+    os.system(add_command_2)
+
+disk_image = os.path.join('EmuWriter.Tests2.dsk')
+os.system("xdm99.py -X dsdd -n EMUTEST " + disk_image)
+object_files = ["UNDORUN.obj"]
+for object_file in object_files:
+    # Add the program files to disk
+    add_command_1 = "xdm99.py {disk_image} -a {object_file} -n{file_name} -f DIS/FIX80"
+    file_and_path = os.path.join(".", "Fiad", object_file)
+    add_command_2 = add_command_1.format(disk_image = disk_image, object_file = file_and_path, file_name = object_file.replace(".obj", ""))
     os.system(add_command_2)
 
 # Add TIFILES header to all object files

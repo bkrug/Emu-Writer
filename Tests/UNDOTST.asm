@@ -1,0 +1,216 @@
+       DEF  TSTLST,RSLTFL
+* Mocks
+       DEF  VDPADR,VDPWRT
+       DEF  MNUHK
+       DEF  MNUINT,PRINT
+
+* Assert Routine
+       REF  AEQ,AZC,AOC,ABLCK
+
+*
+       REF  INPUT
+       REF  INPTS,INPTE
+
+* from VAR.asm
+       REF  PARLST,FMTLST,MGNLST
+       REF  MAKETX,PRINTL,OPENF,CLOSEF
+       REF  ARYALC,ARYADD,ARYINS,ARYDEL
+       REF  ARYADR
+       REF  BUFALC,BUFINT,BUFCPY
+       REF  KEYSTR,KEYEND,KEYWRT,KEYRD       
+       REF  DOCSTS
+
+* variables just for INPUT
+       REF  PARINX,CHRPAX
+       REF  INSTMD
+
+* constants
+       REF  STSTYP,STSENT,STSDCR
+       REF  STSPAR,STSWIN,STSARW
+
+       COPY '../Src/CPUADR.asm'
+*
+INSKEY EQU  >04
+DELKEY EQU  >03
+FNCTN3 EQU  >07
+FNCTN4 EQU  >02
+FNCTN5 EQU  >0E
+FNCTN6 EQU  >0C
+FNCTN7 EQU  >01
+FNCTN8 EQU  >06
+FNCTN9 EQU  >0F
+FNCTN0 EQU  >BC
+*
+BCKKEY EQU  >08
+FWDKEY EQU  >09
+UPPKEY EQU  >0B
+DWNKEY EQU  >0A
+*
+ENTER  EQU  >0D
+
+TSTLST DATA (TSTEND-TSTLST-2)/8
+*
+* User inserted some text and overwrote
+* some other text
+       DATA TST1
+       TEXT 'TST1  '
+TSTEND
+RSLTFL BYTE RSLTFE-RSLTFL-1
+       TEXT 'DSK.EMUTEST.TESTRESULT'
+RSLTFE
+       EVEN
+
+****************************************
+*
+* Test initialization
+*
+****************************************
+TSTINT
+* In production, the code that we are testing
+* is initially loaded to address >E000,
+* copied to the VDP cache,
+* and then loaded to address LOADED when needed.
+* For the purposes of the tests, copy it straight
+* to address LOADED.
+       LI   R0,INPTS
+       LI   R1,LOADED
+       LI   R2,INPTE
+       S    R0,R2
+       BLWP @BUFCPY
+* Initialize buffer.
+       LI   R0,SPACE
+       LI   R1,SPCEND-SPACE
+       BLWP @BUFINT
+* Reserve space for margin and format
+* and paragraph list.
+       LI   R0,3
+       BLWP @ARYALC
+       MOV  R0,@FMTLST
+       LI   R0,3
+       BLWP @ARYALC
+       MOV  R0,@MGNLST
+       LI   R0,1
+       BLWP @ARYALC
+       MOV  R0,@PARLST
+*
+       LI   R6,INTADR
+* Copy a paragraph into buffer
+TSTIN1
+       MOV  *R6+,R0
+       MOV  R0,R2
+       BLWP @BUFALC
+       MOV  R0,R1
+       MOV  *R6+,R0
+       BLWP @BUFCPY
+       MOV  R1,R4
+* and a wrap list
+       MOV  *R6+,R0
+       MOV  R0,R2
+       BLWP @BUFALC
+       MOV  R0,R1
+       MOV  *R6+,R0
+       BLWP @BUFCPY
+       MOV  R1,R5
+* Put the paragraph into the
+* paragraph list
+       MOV  @PARLST,R0
+       BLWP @ARYADD
+       MOV  R0,@PARLST
+       MOV  R4,*R1
+* Put the wrap list in the paragraph
+* header
+       INCT R4
+       MOV  R5,*R4
+* Loop
+       CI   R6,INTADE
+       JL   TSTIN1
+       RT
+
+****************************************
+*
+* Starting Data
+*
+****************************************
+
+* paragraph size, paragraph address,
+* wrap list size, wrap list address
+INTADR DATA PAR0A-PAR0,PAR0,PAR0-WRAP0,WRAP0
+INTADE
+
+WRAP0  DATA 20,1
+       DATA 40,38,40,37,34,41,34,39,39,33
+       DATA 39,40,39,39,37,30,39,40,39,38
+PAR0   DATA PAR0A-PAR0-4,WRAP0
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+       TEXT 'Doty purchased over a thousand acres (4 '
+       TEXT 'km2) of swamp and forest land on the '
+       TEXT 'isthmus between Lakes Mendota and '
+       TEXT 'Monona, with the intention of building a '
+       TEXT 'city in the Four Lakes region. He '
+       TEXT 'purchased 1,261 acres for $1,500. When '
+       TEXT 'the Wisconsin Territory was created in '
+       TEXT '1836 the territorial legislature '
+       TEXT 'convened in Belmont, Wisconsin. One of '
+       TEXT 'the legislature"s tasks was to select a '
+       TEXT 'permanent location for the territory"s '
+       TEXT 'capital. Doty lobbied aggressively for '
+       TEXT 'Madison as the new capital, offering '
+       TEXT 'buffalo robes to the freezing '
+       TEXT 'legislators and choice lots in Madison '
+       TEXT 'at discount prices to undecided voters. '
+       TEXT 'He had James Slaughter plat two cities '
+       TEXT 'in the area, Madison and "The City of '
+       TEXT 'Four Lakes", near present-day Middleton.'
+PAR0A
+       EVEN
+
+****************************************
+*
+* Each Test
+*
+****************************************
+
+* Test 1
+* ------
+TST1   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       LI   R0,7
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+*       LI   R0,KEYL1
+*       LI   R1,KEYL1E
+*       CLR  R2
+*       BL   @CPYKEY
+* Act
+*       BL   @INPUT
+* Assert
+       LI   R0,2
+       LI   R1,2
+       LI   R2,PAR0+4
+       LI   R3,6
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+******* MOCKS **************
+MNUHK
+MNUINT
+PRINT
+* These VDP routines should do nothing
+VDPADR
+VDPWRT RT
+
+****************************************
+
+SPACE  BSS  >1000
+SPCEND
+
+       END
