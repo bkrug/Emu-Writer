@@ -20,7 +20,9 @@
        DEF  BUFADR,BUFEND
 * Arrays
        DEF  PARLST,FMTLST,MGNLST
-       DEF  PGHGHT,PGWDTH
+       DEF  UNDLST
+*
+       DEF  PGHGHT,PGWDTH,UNDIDX
 * MAIN.asm
        DEF  DOCSTS
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
@@ -84,6 +86,10 @@ PARLST BSS  2
 FMTLST BSS  2
 * Address of margin list
 MGNLST BSS  2
+* Address of list of undo/redo actions
+UNDLST BSS  2
+* Index of next action to redo, or next location of an undo action
+UNDIDX BSS  2
 * Page height and width in lines and characters
 PGHGHT BSS  1
 PGWDTH BSS  1

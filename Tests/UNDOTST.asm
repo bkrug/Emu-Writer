@@ -13,6 +13,7 @@
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
+       REF  UNDLST,UNDIDX
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
@@ -93,6 +94,11 @@ TSTINT
        BLWP @ARYALC
        MOV  R0,@PARLST
 *
+       LI   R0,1
+       BLWP @ARYALC
+       MOV  R0,@UNDLST
+       CLR  @UNDIDX
+*
        LI   R6,INTADR
 * Copy a paragraph into buffer
 TSTIN1
@@ -165,6 +171,9 @@ PAR0   DATA PAR0A-PAR0-4,WRAP0
 PAR0A
        EVEN
 
+UNDLEN TEXT 'UNDLST length'
+       EVEN
+
 ****************************************
 *
 * Each Test
@@ -179,25 +188,64 @@ TST1   DECT R10
        BL   @TSTINT
 * Set position values
        CLR  @INSTMD
-       LI   R0,2
+       LI   R0,0
        MOV  R0,@PARINX
-       LI   R0,7
+       LI   R0,10
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-*       LI   R0,KEYL1
-*       LI   R1,KEYL1E
-*       CLR  R2
-*       BL   @CPYKEY
+       LI   R0,KEYL1
+       LI   R1,KEYL1E
+       CLR  R2
+       BL   @CPYKEY
 * Act
-*       BL   @INPUT
+       BL   @INPUT
 * Assert
+* Expect two undo-operations in the list
        LI   R0,2
-       LI   R1,2
-       LI   R2,PAR0+4
-       LI   R3,6
+       MOV  @UNDLST,R1
+       MOV  @2(R2),R1
+       LI   R2,UNDLEN
+       LI   R3,13
        BLWP @AEQ
 *
        MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL1  BYTE DELKEY,DELKEY,DELKEY,DELKEY
+       BYTE DELKEY,DELKEY,DELKEY
+*
+       BYTE DWNKEY,DWNKEY
+       BYTE FWDKEY,FWDKEY,FWDKEY,FWDKEY
+       BYTE FWDKEY
+*
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY
+       BYTE DELKEY
+       TEXT 'HISTORY'
+KEYL1E EVEN
+
+*** Test Utils *******************************
+
+* Copy test keypresses to the key stream
+* R0 = Address of first test key
+* R1 = Address following last test key
+* R2 = Offset within key stream
+CPYKEY
+* Prohibit keystreams longer than 14 bytes
+       CI   R2,14
+       JL   CPY0
+       LI   R2,14
+*
+CPY0   AI   R2,KEYSTR
+       MOV  R2,@KEYRD
+CPYLP  MOVB *R0+,*R2+
+       CI   R2,KEYEND
+       JL   CPY1
+       LI   R2,KEYSTR
+CPY1   C    R0,R1
+       JL   CPYLP
+CPYRT
+       MOV  R2,@KEYWRT
        RT
 
 ******* MOCKS **************

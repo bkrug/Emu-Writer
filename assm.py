@@ -134,7 +134,7 @@ for text_file in text_files:
     os.remove("TEMPFILE")
 
 # Create test-runner disk image
-print("Creating test-runner disk image")
+print("Creating test-runner disk images")
 disk_image = os.path.join('EmuWriter.Tests1.dsk')
 os.system("xdm99.py -X dsdd -n EMUTEST " + disk_image)
 object_files = ["ACTRUN.obj", "DISPRUN.obj", "DISPARUN.obj", "INPTRUN.obj", "KEYRUN.obj", "POSRUN.obj", "WRAPRUN.obj"]
