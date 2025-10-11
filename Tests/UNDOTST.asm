@@ -93,7 +93,7 @@ TSTINT
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@PARLST
-*
+* Initialize undo/redo list
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@UNDLST
@@ -203,7 +203,7 @@ TST1   DECT R10
 * Expect two undo-operations in the list
        LI   R0,2
        MOV  @UNDLST,R1
-       MOV  @2(R2),R1
+       MOV  *R1,R1
        LI   R2,UNDLEN
        LI   R3,13
        BLWP @AEQ

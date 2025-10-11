@@ -13,6 +13,7 @@
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
+       REF  UNDLST,UNDIDX
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
@@ -184,6 +185,11 @@ TSTINT
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@PARLST
+* Initialize undo/redo list
+       LI   R0,1
+       BLWP @ARYALC
+       MOV  R0,@UNDLST
+       CLR  @UNDIDX
 *
        LI   R6,INTADR
 * Copy a paragraph into buffer

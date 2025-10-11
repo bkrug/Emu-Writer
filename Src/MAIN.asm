@@ -9,6 +9,7 @@
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  PARLST,MGNLST,FMTLST
+       REF  UNDLST,UNDIDX
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP,STSENT,STSWIN,STSARW
@@ -90,9 +91,14 @@ INTDOC
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@PARLST
+       LI   R0,1
+       BLWP @ARYALC
+       MOV  R0,@UNDLST
 * Set cursor position to document start
        CLR  @PARINX
        CLR  @CHRPAX
+* Initialize index in undo/redo list
+       CLR  @UNDIDX
 * Insert one empty paragraph
 * Let R4 = paragraph address
 INTPAR LI   R0,EMPPAR
