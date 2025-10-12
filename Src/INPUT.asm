@@ -93,6 +93,65 @@ INPUT3 BL   @INCKRD
 INPTRT MOV  *R10+,R11
        RT                  *RTWP
 
+*
+* Branch to non-typing routine specified
+* by key code in R4
+*
+* Output:
+*   EQ status bit = if true, leave INPUT routine
+KEYBRC DECT R10
+       MOV  R11,*R10
+* Let R0 = Address of element within ROUTKY
+* that corresponds to the pressed key
+       LI   R0,ROUTKY
+       MOV  R0,R2
+KYBRC2 CB   *R4,*R0+
+       JEQ  KYBRC3
+       CI   R0,ROUTKE
+       JL   KYBRC2
+       JMP  KYBRC6
+KYBRC3 DEC  R0
+       S    R2,R0
+* Should we clear the prefered horizontal position? (Relevant when moving the cursor up or down)
+       LI   R3,HRZRPL
+       A    R0,R3
+       MOV  *R3,R3
+       JNE  CLRHRZ
+* Yes, clear it
+       SETO @PRFHRZ
+*
+CLRHRZ
+* Let R3 = acceptable input mode
+       LI   R3,EXPMOD
+       A    R0,R3
+* Let R1 = address of routine specified in ROUTKY element
+       LI   R1,ROUTIN
+       SLA  R0,1
+       A    R0,R1
+       MOV  *R1,R1
+* Set Input mode if currently unset
+       CB   @INPTMD,@INPTNN
+       JNE  KYBRC5
+       MOVB *R3,@INPTMD
+KYBRC5
+* If the next key involves switching to a
+* different input mode, leave the routine
+       CB   *R3,@INPTMD
+       JNE  KYEXIT
+* Branch to routine associated with key
+       BL   *R1
+* Jump here when the caller is allowed to 
+* continue with the next key.
+* This sets the EQ status bit to false.
+KYBRC6 MOV  *R10+,R11
+       RT
+* Jump here when the caller should leave
+* the input routine.
+* This sets the EQ status bit to true.
+KYEXIT MOV  *R10+,R11
+       SB   R0,R0
+       RT
+
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
        BYTE ESCKEY,FCTN0,FCTN8,FCTN4
@@ -502,65 +561,6 @@ RPLTXT
        INC  @CHRPAX
 *
        MOV  *R10+,R11
-       RT
-
-*
-* Branch to non-typing routine specified
-* by key code in R4
-*
-* Output:
-*   EQ status bit = if true, leave INPUT routine
-KEYBRC DECT R10
-       MOV  R11,*R10
-* Let R0 = Address of element within ROUTKY
-* that corresponds to the pressed key
-       LI   R0,ROUTKY
-       MOV  R0,R2
-KYBRC2 CB   *R4,*R0+
-       JEQ  KYBRC3
-       CI   R0,ROUTKE
-       JL   KYBRC2
-       JMP  KYBRC6
-KYBRC3 DEC  R0
-       S    R2,R0
-* Should we clear the prefered horizontal position?
-       LI   R3,HRZRPL
-       A    R0,R3
-       MOV  *R3,R3
-       JNE  CLRHRZ
-* Yes, clear it
-       SETO @PRFHRZ
-*
-CLRHRZ
-* Let R3 = acceptable input mode
-       LI   R3,EXPMOD
-       A    R0,R3
-* Let R1 = address of routine specified in ROUTKY element
-       LI   R1,ROUTIN
-       SLA  R0,1
-       A    R0,R1
-       MOV  *R1,R1
-* Set Input mode if currently unset
-       CB   @INPTMD,@INPTNN
-       JNE  KYBRC5
-       MOVB *R3,@INPTMD
-KYBRC5
-* If the next key involves switching to a
-* different input mode, leave the routine
-       CB   *R3,@INPTMD
-       JNE  KYEXIT
-* Branch to routine associated with key
-       BL   *R1
-* Jump here when the caller is allowed to 
-* continue with the next key.
-* This sets the EQ status bit to false.
-KYBRC6 MOV  *R10+,R11
-       RT
-* Jump here when the caller should leave
-* the input routine.
-* This sets the EQ status bit to true.
-KYEXIT MOV  *R10+,R11
-       SB   R0,R0
        RT
 
 *
