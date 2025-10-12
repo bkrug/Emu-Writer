@@ -4,6 +4,7 @@
        REF  PARLST,FMTLST,MGNLST
        REF  UNDLST,UNDIDX
        REF  ARYALC,ARYINS,ARYDEL,ARYADR
+       REF  ARYADD
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  BUFSRK
        REF  VDPADR,VDPWRT
@@ -21,6 +22,7 @@
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
        REF  KEYWRT,KEYRD
+       REF  PREV_ACTION
 
 * constants
        REF  BLKUSE
@@ -74,9 +76,13 @@ INPUT1 C    @KEYRD,@KEYWRT
        BL   @KEYBRC
 * If the key is invalid and no routine was found, skip it
        JEQ  INPUT3
-* Call either the typing routine (ADDTXT)
-* or the control-key routine (KEYBRC)
+* Store routine to the stack
+       DECT R10
+       MOV  R1,*R10
+* Call the routine associated with the current key
 INPUT2 BL   *R1
+* Note the most recent action
+       MOV  *R10+,@PREV_ACTION
 * Increment the key read position
 INPUT3 BL   @INCKRD
        JMP  INPUT1
@@ -373,6 +379,16 @@ RTERR  MOV  @KEYRD,@KEYWRT
 DELCHR MOV  R11,R12
 * Set document status bit
        SOC  @STSTYP,*R13
+* Do we need to make a new undo action?
+       LI   R2,DELCHR
+       C    @PREV_ACTION,R2
+       JEQ  UNDO_DEL_EXISTS
+* Yes, add element
+       MOV  @UNDLST,R0
+       BLWP @ARYADD
+       JEQ  RTERR
+       MOV  R0,@UNDLST
+UNDO_DEL_EXISTS
 *
 * Let R1 = Address in Paragraph list
        MOV  @PARLST,R0

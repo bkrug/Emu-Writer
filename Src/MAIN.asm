@@ -10,6 +10,7 @@
        REF  ARYALC,ARYADD
        REF  PARLST,MGNLST,FMTLST
        REF  UNDLST,UNDIDX
+       REF  PREV_ACTION
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP,STSENT,STSWIN,STSARW
@@ -94,6 +95,7 @@ INTDOC
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@UNDLST
+       CLR  @PREV_ACTION
 * Set cursor position to document start
        CLR  @PARINX
        CLR  @CHRPAX
