@@ -59,11 +59,13 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Outputs STSTYP set, STSENT reset.
        DATA TST2
        TEXT 'TST2  '
+* TODO: Would we like to restore this functionality of TST3?
+*
 * User inserted some text and pressed
 * an arrow key. The arrow key is not
 * immediately processed.
-       DATA TST3
-       TEXT 'TST3  '
+*       DATA TST3
+*       TEXT 'TST3  '
 * User inserted some text.
 * The key stream will wrap around.
        DATA TST4

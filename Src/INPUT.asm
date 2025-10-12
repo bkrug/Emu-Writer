@@ -70,37 +70,44 @@ INPUT1 C    @KEYRD,@KEYWRT
        JEQ  INPTRT
 * Yes, let R4 = KEYRD
        MOV  @KEYRD,R4
-* Let R3 = address of either the typing routine (ADDTXT)
-* or the control-key routine (KEYBRC)
-       LI   R3,KEYBRC
-* Is the detected key a visible character?
-       CB   *R4,@CHRMIN
-       JL   INPUT2
-       CB   *R4,@CHRMAX
-       JH   INPUT2
-* Yes, handle visible character key strokes
-       LI   R3,ADDTXT
+* No, let R1 = address of non-typing routine
+       BL   @KEYBRC
+* If the key is invalid and no routine was found, skip it
+       JEQ  INPUT3
 * Call either the typing routine (ADDTXT)
 * or the control-key routine (KEYBRC)
-INPUT2 BL   *R3
-       JEQ  INPTRT
+INPUT2 BL   *R1
 * Increment the key read position
 INPUT3 BL   @INCKRD
        JMP  INPUT1
 * There are either no more keys to process,
-* or the input mode changed.
+* or the input mode changed,
+* or the key was invalid.
 * Return to caller.
 INPTRT MOV  *R10+,R11
        RT                  *RTWP
 
 *
-* Branch to non-typing routine specified
+* Let R1 = address of a non-typing routine specified
 * by key code in R4
 *
+* Input:
+*   R4 (highbyte) = detected key
 * Output:
 *   EQ status bit = if true, leave INPUT routine
 KEYBRC DECT R10
        MOV  R11,*R10
+* Is the detected key a visible character?
+       CB   *R4,@CHRMIN
+       JL   !
+       CB   *R4,@CHRMAX
+       JH   !
+* Yes, set keyboard routine and clear preferred horizontal position.
+       LI   R1,ADDTXT
+       SETO @PRFHRZ
+       JMP  KYBRC6
+!
+* No,
 * Let R0 = Address of element within ROUTKY
 * that corresponds to the pressed key
        LI   R0,ROUTKY
@@ -109,17 +116,18 @@ KYBRC2 CB   *R4,*R0+
        JEQ  KYBRC3
        CI   R0,ROUTKE
        JL   KYBRC2
-       JMP  KYBRC6
+       JMP  INVALID_KEY
 KYBRC3 DEC  R0
        S    R2,R0
-* Should we clear the prefered horizontal position? (Relevant when moving the cursor up or down)
+* Let R3 = a value from the HRZRPL list.
        LI   R3,HRZRPL
        A    R0,R3
        MOV  *R3,R3
+* Does the value from HRZRPL suggest that we should clear
+* the perferred horizontal position for moving the cursor up and down by a line?
        JNE  CLRHRZ
 * Yes, clear it
        SETO @PRFHRZ
-*
 CLRHRZ
 * Let R3 = acceptable input mode
        LI   R3,EXPMOD
@@ -136,20 +144,18 @@ CLRHRZ
 KYBRC5
 * If the next key involves switching to a
 * different input mode, leave the routine
-       CB   *R3,@INPTMD
-       JNE  KYEXIT
-* Branch to routine associated with key
-       BL   *R1
-* Jump here when the caller is allowed to 
-* continue with the next key.
+*       CB   *R3,@INPTMD
+*       JNE  KYEXIT
+* Return to caller.
+* Find routine for the next key.
 * This sets the EQ status bit to false.
 KYBRC6 MOV  *R10+,R11
        RT
-* Jump here when the caller should leave
-* the input routine.
-* This sets the EQ status bit to true.
-KYEXIT MOV  *R10+,R11
-       SB   R0,R0
+* Key does not have a routine associated with it.
+* Set R1 to null and the EQ status bit to true.
+INVALID_KEY
+       MOV  *R10+,R11
+       S    R1,R1
        RT
 
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
@@ -176,16 +182,16 @@ ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
 *
 * Unspecified input mode
 MODENN EQU  0
-INPTNN BYTE 0
+INPTNN BYTE MODENN
 * Text input mode
 MODEXT EQU  1
-INPTXT BYTE 1
+INPTXT BYTE MODEXT
 * Movement input mode
 MODEMV EQU  2
-* INPTMV BYTE 2
+* INPTMV BYTE MODEMV
 * Menu input mode
 MODMNU EQU  3
-*INPTMN BYTE 3
+*INPTMN BYTE MODMNU
 
 * Specify address of cursor character
 * pattern.
