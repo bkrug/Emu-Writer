@@ -137,6 +137,11 @@ for text_file in text_files:
 print("Creating test-runner disk images")
 disk_image = os.path.join('EmuWriter.Tests1.dsk')
 os.system("xdm99.py -X dsdd -n EMUTEST " + disk_image)
+#
+add_command_1 = "xdm99.py {disk_image} -a ./Fiad/EDIT1 -n EDIT1"
+add_command_2 = add_command_1.format(disk_image = disk_image)
+os.system(add_command_2)
+#
 object_files = ["ACTRUN.obj", "DISPRUN.obj", "DISPARUN.obj", "INPTRUN.obj", "KEYRUN.obj", "POSRUN.obj", "WRAPRUN.obj"]
 for object_file in object_files:
     # Add the program files to disk
@@ -147,6 +152,11 @@ for object_file in object_files:
 
 disk_image = os.path.join('EmuWriter.Tests2.dsk')
 os.system("xdm99.py -X dsdd -n EMUTEST " + disk_image)
+#
+add_command_1 = "xdm99.py {disk_image} -a ./Fiad/EDIT1 -n EDIT1"
+add_command_2 = add_command_1.format(disk_image = disk_image)
+os.system(add_command_2)
+#
 object_files = ["UNDORUN.obj"]
 for object_file in object_files:
     # Add the program files to disk
