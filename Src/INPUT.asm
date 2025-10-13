@@ -76,13 +76,15 @@ INPUT1 C    @KEYRD,@KEYWRT
        BL   @KEYBRC
 * If the key is invalid and no routine was found, skip it
        JEQ  INPUT3
-* Store routine to the stack
+* Store routine's double-index to the stack
        DECT R10
-       MOV  R1,*R10
+       MOV  R0,*R10
 * Call the routine associated with the current key
 INPUT2 BL   *R1
 * Note the most recent action
-       MOV  *R10+,@PREV_ACTION
+       MOV  *R10+,R0
+       AI   R0,UNDO_ACTIONS
+       MOV  *R0,@PREV_ACTION
 * Increment the key read position
 INPUT3 BL   @INCKRD
        JMP  INPUT1
@@ -100,6 +102,8 @@ INPTRT MOV  *R10+,R11
 * Input:
 *   R4 (highbyte) = detected key
 * Output:
+*   R0 = double-index of the routine
+*   R1 = address of the routine
 *   EQ status bit = if true, leave INPUT routine
 KEYBRC DECT R10
        MOV  R11,*R10
@@ -109,12 +113,13 @@ KEYBRC DECT R10
        CB   *R4,@CHRMAX
        JH   !
 * Yes, set keyboard routine and clear preferred horizontal position.
+       SETO R0
        LI   R1,ADDTXT
        SETO @PRFHRZ
        JMP  KYBRC6
 !
 * No,
-* Let R0 = Address of element within ROUTKY
+* Let R0 = index of element within ROUTKY
 * that corresponds to the pressed key
        LI   R0,ROUTKY
        MOV  R0,R2
@@ -182,6 +187,11 @@ ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
        DATA MNUINT,WINVRT,SHOWHK,PGDOWN
        DATA NXTWIN,PGUP,LINBEG,LINEND
+UNDO_ACTIONS
+       DATA UNDO_DEL,0,0,0
+       DATA 0,0,0,0
+       DATA 0,0,0,0
+       DATA 0,0,0,0
 
 * 
 * Input mode values
@@ -380,8 +390,8 @@ DELCHR MOV  R11,R12
 * Set document status bit
        SOC  @STSTYP,*R13
 * Do we need to make a new undo action?
-       LI   R2,DELCHR
-       C    @PREV_ACTION,R2
+       MOV  @PREV_ACTION,R2
+       CI   R2,UNDO_DEL
        JEQ  UNDO_DEL_EXISTS
 * Yes, add element
        MOV  @UNDLST,R0
