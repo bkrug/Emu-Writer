@@ -198,20 +198,22 @@ TST1   DECT R10
        CLR  R1
        BLWP @ARYADR
        MOV  *R1,R1
+*
        LI   R0,EXPECT_TST1_UNDO1
        LI   R2,EXPECT_TST1_UNDO2-EXPECT_TST1_UNDO1
        LI   R3,FAIL_UNDO1+2
-       LI   R4,FAIL_UNDO1
+       MOV  @FAIL_UNDO1,R4
        BLWP @ABLCK
 * Assert first undo operation records correct deleted letters
        MOV  @UNDLST,R0
        LI   R1,1
        BLWP @ARYADR
        MOV  *R1,R1
+*
        LI   R0,EXPECT_TST1_UNDO2
        LI   R2,EXPECT_TST1_UNDO2_END-EXPECT_TST1_UNDO2
        LI   R3,FAIL_UNDO2+2
-       LI   R4,FAIL_UNDO2
+       MOV  @FAIL_UNDO2,R4
        BLWP @ABLCK
 *
        MOV  *R10+,R11
@@ -231,6 +233,7 @@ EXPECT_TST1_UNDO1
        DATA 0,10            * Paragraph index, character index
        DATA 3               * String length
        TEXT 'mod'           * Deleted Bytes
+       BYTE 0
 
 EXPECT_TST1_UNDO2
        DATA UNDO_DEL        * Undo Operation Type
