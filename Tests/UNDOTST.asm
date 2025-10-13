@@ -31,24 +31,7 @@
        REF  STSPAR,STSWIN,STSARW
 
        COPY '../Src/CPUADR.asm'
-*
-INSKEY EQU  >04
-DELKEY EQU  >03
-FNCTN3 EQU  >07
-FNCTN4 EQU  >02
-FNCTN5 EQU  >0E
-FNCTN6 EQU  >0C
-FNCTN7 EQU  >01
-FNCTN8 EQU  >06
-FNCTN9 EQU  >0F
-FNCTN0 EQU  >BC
-*
-BCKKEY EQU  >08
-FWDKEY EQU  >09
-UPPKEY EQU  >0B
-DWNKEY EQU  >0A
-*
-ENTER  EQU  >0D
+       COPY '../Src/EQUKEY.asm'
 
 TSTLST DATA (TSTEND-TSTLST-2)/8
 *
@@ -210,6 +193,26 @@ TST1   DECT R10
        LI   R2,UNDLEN
        LI   R3,13
        BLWP @AEQ
+* Assert first undo operation records correct deleted letters
+       MOV  @UNDLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       LI   R0,EXPECT_TST1_UNDO1
+       LI   R2,EXPECT_TST1_UNDO2-EXPECT_TST1_UNDO1
+       LI   R3,FAIL_UNDO1+2
+       LI   R4,FAIL_UNDO1
+       BLWP @ABLCK
+* Assert first undo operation records correct deleted letters
+       MOV  @UNDLST,R0
+       LI   R1,1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       LI   R0,EXPECT_TST1_UNDO2
+       LI   R2,EXPECT_TST1_UNDO2_END-EXPECT_TST1_UNDO2
+       LI   R3,FAIL_UNDO2+2
+       LI   R4,FAIL_UNDO2
+       BLWP @ABLCK
 *
        MOV  *R10+,R11
        RT
@@ -222,6 +225,28 @@ KEYL1  BYTE DELKEY,DELKEY,DELKEY
 *
        BYTE DELKEY,DELKEY
 KEYL1E EVEN
+
+EXPECT_TST1_UNDO1
+       DATA UNDO_DEL        * Undo Operation Type
+       DATA 0,10            * Paragraph index, character index
+       DATA 3               * String length
+       TEXT 'mod'           * Deleted Bytes
+
+EXPECT_TST1_UNDO2
+       DATA UNDO_DEL        * Undo Operation Type
+       DATA 0,91            * Paragraph index, character index
+       DATA 2               * String length
+       TEXT 'd '            * Deleted Bytes
+EXPECT_TST1_UNDO2_END
+
+FAIL_UNDO1
+       DATA 27
+       TEXT '1ST undo block has bad data'
+       EVEN
+FAIL_UNDO2
+       DATA 27
+       TEXT '2ND undo block has bad data'
+       EVEN
 
 *** Test Utils *******************************
 

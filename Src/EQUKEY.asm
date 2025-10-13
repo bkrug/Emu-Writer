@@ -94,3 +94,8 @@ STAWIN EQU  >10             * Window Moved
 STADSH EQU  >20             * Redisplay dashboard line (margins, fonts)
 STAARW EQU  >40             * Arrow Key Pressed
 ERAMEM EQU  >8000           * Insufficient Memory Error
+
+* Undo Types
+UNDO_INS    EQU  >0002      * Insert text
+UNDO_OVR    EQU  >0004      * Overwrite text
+UNDO_DEL    EQU  >0006      * Delete right-of-cursor
