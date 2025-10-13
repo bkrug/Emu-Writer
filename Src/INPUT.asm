@@ -390,14 +390,22 @@ DELCHR MOV  R11,R12
 * Set document status bit
        SOC  @STSTYP,*R13
 * Do we need to make a new undo action?
-       MOV  @PREV_ACTION,R2
-       CI   R2,UNDO_DEL
+       LI   R2,UNDO_DEL
+       C    @PREV_ACTION,R2
        JEQ  UNDO_DEL_EXISTS
 * Yes, add element
        MOV  @UNDLST,R0
        BLWP @ARYADD
        JEQ  RTERR
        MOV  R0,@UNDLST
+* Create undo action and store its location in the undo list
+       LI   R0,8
+       BLWP @BUFALC
+       MOV  R0,*R1
+* Populate undo action
+       MOV  R2,*R0+
+       MOV  @PARINX,*R0+
+       MOV  @CHRPAX,*R0+
 UNDO_DEL_EXISTS
 *
 * Let R1 = Address in Paragraph list
