@@ -220,7 +220,7 @@ TST1   DECT R10
        RT
 
 * input from the keyboard.
-KEYL1  BYTE DELKEY,DELKEY,DELKEY
+KEYL1  BYTE DELKEY,DELKEY,DELKEY,DELKEY
 *
        BYTE DWNKEY,DWNKEY
        BYTE FWDKEY,FWDKEY,FWDKEY
@@ -231,9 +231,8 @@ KEYL1E EVEN
 EXPECT_TST1_UNDO1
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,10            * Paragraph index, character index
-       DATA 3               * String length
-       TEXT 'mod'           * Deleted Bytes
-       BYTE 0
+       DATA 4               * String length
+       TEXT 'mode'          * Deleted Bytes
 
 EXPECT_TST1_UNDO2
        DATA UNDO_DEL        * Undo Operation Type

@@ -99,3 +99,7 @@ ERAMEM EQU  >8000           * Insufficient Memory Error
 UNDO_INS    EQU  >0002      * Insert text
 UNDO_OVR    EQU  >0004      * Overwrite text
 UNDO_DEL    EQU  >0006      * Delete right-of-cursor
+
+*
+UNDO_DEL_LEN   EQU  >0006      * Location in delete-action of string-length
+UNDO_DEL_TEXT  EQU  >0008      * Location in delete-action of deleted text

@@ -22,7 +22,7 @@
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
        REF  KEYWRT,KEYRD
-       REF  PREV_ACTION
+       REF  UNDO_ADDRESS,PREV_ACTION
 
 * constants
        REF  BLKUSE
@@ -401,11 +401,15 @@ DELCHR MOV  R11,R12
 * Create undo action and store its location in the undo list
        LI   R0,8
        BLWP @BUFALC
+       JEQ  RTERR
        MOV  R0,*R1
+* Sore address of undo action longer-term
+       MOV  R0,@UNDO_ADDRESS
 * Populate undo action
-       MOV  R2,*R0+
+       MOV  R2,*R0+                * type of action
        MOV  @PARINX,*R0+
        MOV  @CHRPAX,*R0+
+       CLR  *R0                    * length of delete text
 UNDO_DEL_EXISTS
 *
 * Let R1 = Address in Paragraph list
@@ -417,7 +421,7 @@ UNDO_DEL_EXISTS
 * If cursor is at end of paragraph,
 * merge two paragraphs together.
        C    @CHRPAX,*R3
-       JEQ  DELC2
+       JEQ  MERGE_PARAGRAPHS
 * Reduce paragraph length
        DEC  *R3
 * Let R4 = position in paragraph
@@ -430,6 +434,21 @@ UNDO_DEL_EXISTS
 * Let R5 = next position
        MOV  R4,R5
        INC  R5
+* Let R7 = address of undo action
+       MOV  @UNDO_ADDRESS,R7
+* Increase length of undo-action
+       MOV  R7,R0
+       LI   R1,UNDO_DEL_TEXT+1
+       A    @UNDO_DEL_LEN(R7),R1
+       BLWP @BUFGRW
+       JEQ  RTERR
+       MOV  R0,R7
+* Store deleted character to undo-action
+       MOV  R7,R8
+       AI   R8,UNDO_DEL_TEXT
+       A    @UNDO_DEL_LEN(R7),R8
+       MOVB *R4,*R8
+       INC  @UNDO_DEL_LEN(R7)
 * Move characters backwards
 DELC1  MOVB *R5+,*R4+
        C    R4,R6
@@ -441,9 +460,12 @@ DELC1  MOVB *R5+,*R4+
        BLWP @BUFSRK
 *
        B    *R12
+*
+*
+MERGE_PARAGRAPHS:
 * If this is the end of document,
 * delete nothing.
-DELC2  MOV  @PARLST,R9
+       MOV  @PARLST,R9
        MOV  @PARINX,R5
        INC  R5
        C    R5,*R9

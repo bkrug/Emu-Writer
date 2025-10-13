@@ -42,7 +42,7 @@
        DEF  PARENT
        DEF  PARINX,CHRPAX
        DEF  INSTMD,INPTMD
-       DEF  PREV_ACTION
+       DEF  UNDO_ADDRESS,PREV_ACTION
 * POSUPD.asm
        DEF  LININX,CHRLIX
        DEF  WINOFF,WINPAR,WINLIN,WINMGN
@@ -175,10 +175,11 @@ INSTMD BSS  2
 * Input mode. 0 = unspecified,
 * 1 = text, 2 = movement
 INPTMD BSS  2
+* Address of the current undo action
+UNDO_ADDRESS      BSS  2
 * Previous action
 * Address of most recent input routine to be processed
-PREV_ACTION
-       BSS  2
+PREV_ACTION       BSS  2
 
 * POSUPDT.asm
 *
