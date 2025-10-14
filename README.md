@@ -58,6 +58,24 @@ assoc .py=PythonScript
 ftype PythonScript=C:\bin\python.exe "%1" %*
 ```
 
+*Running Python Scripts from Linux*
+
+Edit the path
+```
+kwrite .bashrc
+```
+add this code
+```
+if ! [[ "$PATH" =~ "$HOME/Python/xdt99:" ]]; then
+    PATH="$HOME/Python/xdt99:$PATH"
+fi
+```
+
+Make the scripts executable:
+```
+chmod +x /home/bkrug/Python/xdt99/*.py
+```
+
 *Assembly Results*
 
 * Assembled code is placed in two places:
