@@ -59,13 +59,11 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Outputs STSTYP set, STSENT reset.
        DATA TST2
        TEXT 'TST2  '
-* TODO: Would we like to restore this functionality of TST3?
-*
 * User inserted some text and pressed
 * an arrow key. The arrow key is not
 * immediately processed.
-*       DATA TST3
-*       TEXT 'TST3  '
+       DATA TST3
+       TEXT 'TST3  '
 * User inserted some text.
 * The key stream will wrap around.
        DATA TST4
@@ -497,6 +495,11 @@ EXP2B
 * User inserted some text and pressed
 * an arrow key. The arrow key is not
 * immediately processed.
+*
+* This ensures that word wraps will
+* occur, even if someone types so fast
+* that keypresses and arrow keys
+* appear in the keybuffer simultaneously.
 TST3   DECT R10
        MOV  R11,*R10
 * Initialize Test Data

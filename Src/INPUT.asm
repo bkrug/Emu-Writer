@@ -109,18 +109,18 @@ KEYBRC DECT R10
        MOV  R11,*R10
 * Is the detected key a visible character?
        CB   *R4,@CHRMIN
-       JL   !
+       JL   NONVISIBLE_KEY
        CB   *R4,@CHRMAX
-       JH   !
+       JH   NONVISIBLE_KEY
 * Yes, set keyboard routine and clear preferred horizontal position.
        SETO R0
        LI   R1,ADDTXT
        SETO @PRFHRZ
        JMP  KYBRC6
-!
 * No,
 * Let R0 = index of element within ROUTKY
 * that corresponds to the pressed key
+NONVISIBLE_KEY
        LI   R0,ROUTKY
        MOV  R0,R2
 KYBRC2 CB   *R4,*R0+
@@ -154,7 +154,12 @@ CLRHRZ
        MOVB *R3,@INPTMD
 KYBRC5
 * If the next key involves switching to a
-* different input mode, leave the routine
+* different input mode, leave the routine.
+*
+* This ensures that word wraps will
+* occur, even if someone types so fast
+* that keypresses and arrow keys
+* appear in the keybuffer simultaneously.
 *       CB   *R3,@INPTMD
 *       JNE  KYEXIT
 * Return to caller.
