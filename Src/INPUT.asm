@@ -75,7 +75,7 @@ INPUT1 C    @KEYRD,@KEYWRT
 * No, let R1 = address of non-typing routine
        BL   @KEYBRC
 * If the key is invalid and no routine was found, skip it
-       JEQ  INPUT3
+       JEQ  INPTRT
 * Store routine's double-index to the stack
        DECT R10
        MOV  R0,*R10
@@ -89,8 +89,7 @@ INPUT2 BL   *R1
 INPUT3 BL   @INCKRD
        JMP  INPUT1
 * There are either no more keys to process,
-* or the input mode changed,
-* or the key was invalid.
+* or the input mode changed.
 * Return to caller.
 INPTRT MOV  *R10+,R11
        RT                  *RTWP
@@ -160,19 +159,25 @@ KYBRC5
 * occur, even if someone types so fast
 * that keypresses and arrow keys
 * appear in the keybuffer simultaneously.
-*       CB   *R3,@INPTMD
-*       JNE  KYEXIT
+       CB   *R3,@INPTMD
+       JNE  KYEXIT
 * Return to caller.
 * Find routine for the next key.
 * This sets the EQ status bit to false.
 KYBRC6 MOV  *R10+,R11
        RT
 * Key does not have a routine associated with it.
-* Set R1 to null and the EQ status bit to true.
 INVALID_KEY
+       LI   R1,DO_NOTHING
        MOV  *R10+,R11
+       RT
+* Input Mode changed.
+* Leave the routine so that word-wrap runs.
+* Set R1 to null and the EQ status bit to true.
+KYEXIT MOV  *R10+,R11
        S    R1,R1
        RT
+
 
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
@@ -699,6 +704,12 @@ UM2    C    R0,R1
        AI   R0,MGNLNG
        JMP  UM2
 MGNRT  RT
+
+*
+* Key is not valid
+*
+DO_NOTHING
+       RT
 
 INPTE  AORG
        END

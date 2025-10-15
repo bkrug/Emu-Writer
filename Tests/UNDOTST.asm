@@ -176,7 +176,7 @@ TST1   DECT R10
        CLR  @INSTMD
        LI   R0,0
        MOV  R0,@PARINX
-       LI   R0,10
+       LI   R0,143
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
        LI   R0,KEYL1
@@ -184,6 +184,10 @@ TST1   DECT R10
        CLR  R2
        BL   @CPYKEY
 * Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
        BL   @INPUT
 * Assert
 * Expect two undo-operations in the list
@@ -222,23 +226,22 @@ TST1   DECT R10
 * input from the keyboard.
 KEYL1  BYTE DELKEY,DELKEY,DELKEY,DELKEY
 *
-       BYTE DWNKEY
-       BYTE FWDKEY,FWDKEY,FWDKEY
+       BYTE BCKKEY,BCKKEY,BCKKEY
 *
        BYTE DELKEY,DELKEY
 KEYL1E EVEN
 
 EXPECT_TST1_UNDO1
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,10            * Paragraph index, character index
+       DATA 0,143           * Paragraph index, character index
        DATA 4               * String length
-       TEXT 'mode'          * Deleted Bytes
+       TEXT 'land'          * Deleted Bytes
 
 EXPECT_TST1_UNDO2
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,53            * Paragraph index, character index
+       DATA 0,140           * Paragraph index, character index
        DATA 2               * String length
-       TEXT 'ed'            * Deleted Bytes
+       TEXT 'st'            * Deleted Bytes
 EXPECT_TST1_UNDO2_END
 
 FAIL_UNDO1
