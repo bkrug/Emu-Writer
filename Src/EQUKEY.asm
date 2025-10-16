@@ -11,9 +11,14 @@ FCTN9  EQU  >0F
 FCTN0  EQU  >BC
 FCTNL  EQU  >C2
 FCTNSM EQU  >BD        * FCTN+Semicolon
+FCTNS  EQU  >08
+FCTND  EQU  >09
+FCTNX  EQU  >0A
+FCTNE  EQU  >0B
 
 CTRLL  EQU  >8C
 CTRLY  EQU  >99
+CTRLZ  EQU  >9A
 CTRLSM EQU  >9C        * CTRL+Semicolon
 CTRL8  EQU  >9E
 
@@ -22,10 +27,12 @@ INSKEY EQU  FCTN2
 ERSKEY EQU  FCTN3
 TABKEY EQU  FCTN7
 ESCKEY EQU  FCTN9
-BCKKEY EQU  >08
-FWDKEY EQU  >09
-DWNKEY EQU  >0A
-UPPKEY EQU  >0B
+BCKKEY EQU  FCTNS
+FWDKEY EQU  FCTND
+DWNKEY EQU  FCTNX
+UPPKEY EQU  FCTNE
+UNDKEY EQU  CTRLZ
+RDOKEY EQU  CTRLY
 ENTER  EQU  >0D
 SPCBAR EQU  >20
 
@@ -94,6 +101,10 @@ STAWIN EQU  >10             * Window Moved
 STADSH EQU  >20             * Redisplay dashboard line (margins, fonts)
 STAARW EQU  >40             * Arrow Key Pressed
 ERAMEM EQU  >8000           * Insufficient Memory Error
+
+* Paragraph Locations
+PARAGRAPH_WRAPLIST_OFFSET   EQU  >0002
+PARAGRAPH_TEXT_OFFSET       EQU  >0004
 
 * Undo Types
 UNDO_INS    EQU  >0002      * Insert text

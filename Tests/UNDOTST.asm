@@ -35,10 +35,17 @@
 
 TSTLST DATA (TSTEND-TSTLST-2)/8
 *
-* User inserted some text and overwrote
-* some other text
+* Test implementation details.
+* Assert undo list looks right.
        DATA TST1
        TEXT 'TST1  '
+*
+       DATA TST2
+       TEXT 'TST2  '
+*
+       DATA TST3
+       TEXT 'TST3  '
+*
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -168,6 +175,7 @@ UNDLEN TEXT 'UNDLST length'
 
 * Test 1
 * ------
+* Assert the undo list has two entries
 TST1   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -252,6 +260,121 @@ FAIL_UNDO2
        DATA 27
        TEXT '2ND undo block has bad data'
        EVEN
+
+* Test 2
+* ------
+* Assert that text is deleted when undo is not pressed.
+TST2   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL2
+       LI   R1,KEYL2E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,TST2_EXPECTED_TEXT
+       LI   R2,80
+       LI   R3,TST2_FAIL+2
+       MOV  @TST2_FAIL,R4
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL2  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
+*
+       BYTE FWDKEY,FWDKEY,FWDKEY,FWDKEY
+*
+       BYTE DELKEY,DELKEY,DELKEY
+KEYL2E EVEN
+
+* First 80 characters of the paragraph after delting
+TST2_EXPECTED_TEXT
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'formfederal judge James Duane Doty purch'
+TST2_FAIL
+       DATA 49
+       TEXT 'Not all of the characters were deleted correctly.'
+
+* Test 3
+* ------
+* Assert that text is deleted when undo is not pressed.
+TST3   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL3
+       LI   R1,KEYL3E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,TST3_EXPECTED_TEXT
+       LI   R2,80
+       LI   R3,TST3_FAIL+2
+       MOV  @TST3_FAIL,R4
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL3  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
+       BYTE FWDKEY,FWDKEY,FWDKEY,FWDKEY
+       BYTE DELKEY,DELKEY,DELKEY
+       BYTE UNDKEY
+KEYL3E EVEN
+
+* First 80 characters of the paragraph after delting
+TST3_EXPECTED_TEXT
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'former federal judge James Duane Doty pu'
+TST3_FAIL
+       DATA 49
+       TEXT 'Some characters should have been restored.'
 
 *** Test Utils *******************************
 
