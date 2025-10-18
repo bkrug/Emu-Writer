@@ -178,30 +178,36 @@ KYEXIT MOV  *R10+,R11
        S    R1,R1
        RT
 
-
+* TODO: Make the first two entries -1
+* And use them for insert/overwrite text
 ROUTKY BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
        BYTE ESCKEY,FCTN0,FCTN8,FCTN4
        BYTE FCTN5,FCTN6,FCTNL,FCTNSM
+       BYTE UNDKEY
 ROUTKE
 EXPMOD BYTE MODEXT,MODEXT,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEXT,MODEXT
        BYTE MODMNU,MODEMV,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEMV,MODEMV
+       BYTE MODEXT
 HRZRPL BYTE 0,0,0,0
        BYTE 1,1,0,0
        BYTE 0,0,0,1
        BYTE 0,1,0,0
+       BYTE 0
        EVEN
 ROUTIN DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
        DATA MNUINT,WINVRT,SHOWHK,PGDOWN
        DATA NXTWIN,PGUP,LINBEG,LINEND
+       DATA UNDO_OP
 UNDO_ACTIONS
        DATA UNDO_DEL,0,0,0
        DATA 0,0,0,0
        DATA 0,0,0,0
        DATA 0,0,0,0
+       DATA 0
 
 * 
 * Input mode values
@@ -620,6 +626,9 @@ INSERT MOV  R1,R3
 * R4 = character index within paragraph
 * R5 (high byte) = character to insert
 *
+* Output:
+* value at address within R3 could update to reflect paragraph's new position
+*
 INSERT_CHARACTER_IN_PARA
        DECT R10
        MOV  R11,*R10
@@ -729,6 +738,50 @@ UM2    C    R0,R1
        AI   R0,MGNLNG
        JMP  UM2
 MGNRT  RT
+
+*
+* Undo operation
+*
+UNDO_OP
+       DECT R10
+       MOV  R11,*R10
+* Are there any undo operations in the list?
+       MOV  @UNDLST,R0
+       MOV  *R0,R1
+       JEQ  UNDO_COMPLETE
+* Yes, Let R6 = address of last operation in list
+       DEC  R1
+       BLWP @ARYADR
+       MOV  *R1,R6
+* Let R7 = address of text to restore
+       MOV  R6,R7
+       AI   R7,UNDO_DEL_TEXT
+* Let R8 = end of undo text
+       MOV  R7,R8
+       A    @UNDO_DEL_LEN(R6),R8
+* Let R3 = address within paragraph list
+       MOV  @PARLST,R0
+       MOV  @UNDO_ANY_PARA(R6),R1
+       BLWP @ARYADR
+       MOV  R1,R3
+* Let R4 = character insertion point with paragraph
+       MOV  @UNDO_ANY_CHAR(R6),R4
+* Is insertion complete?
+TEXT_RESTORE_LOOP
+       C    R7,R8
+       JHE  TEXT_RESTORE_DONE
+       MOVB *R7+,R5
+       BL   @INSERT_CHARACTER_IN_PARA
+* Repeat
+       INC  R4
+       JMP  TEXT_RESTORE_LOOP
+TEXT_RESTORE_DONE
+* Set document status bit, as this is necessary regardless of what we are undoing
+       SOC  @STSTYP,*R13       
+UNDO_COMPLETE
+       MOV  *R10+,R11
+       RT
+
 
 *
 * Key is not valid

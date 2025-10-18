@@ -112,5 +112,7 @@ UNDO_OVR    EQU  >0004      * Overwrite text
 UNDO_DEL    EQU  >0006      * Delete right-of-cursor
 
 *
+UNDO_ANY_PARA  EQU  >0002
+UNDO_ANY_CHAR  EQU  >0004
 UNDO_DEL_LEN   EQU  >0006      * Location in delete-action of string-length
 UNDO_DEL_TEXT  EQU  >0008      * Location in delete-action of deleted text
