@@ -39,15 +39,18 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert undo list looks right.
        DATA TST1
        TEXT 'TST1  '
-*
+* Assert that text is deleted when undo is not pressed.
        DATA TST2
        TEXT 'TST2  '
-*
+* Assert that text is restored when undo is pressed once.
        DATA TST3
        TEXT 'TST3  '
-*
+* Assert that text is restored when undo is pressed twice.
        DATA TST4
        TEXT 'TST4  '
+* Assert that only some text is restored when undo, undo, and redo are pressed.
+       DATA TST5
+       TEXT 'TST5  '
 *
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
@@ -347,7 +350,7 @@ CHAR_IDX_FAIL
 
 * Test 3
 * ------
-* Assert that text is deleted when undo is not pressed.
+* Assert that text is restored when undo is pressed once.
 TST3   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -416,7 +419,7 @@ TST3_FAIL
 
 * Test 4
 * ------
-* Assert that text is deleted when undo is not pressed.
+* Assert that text is restored when undo is pressed twice.
 TST4   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -482,6 +485,76 @@ TST4_EXPECTED_TEXT
        TEXT 'Madison"s modern origins begin in 1829, '
        TEXT 'when former federal judge James Duane Do'
 TST4_FAIL
+       DATA 50
+       TEXT 'Not all of the characters were restored correctly.'
+
+* Test 5
+* ------
+* Assert that only some text is restored when undo, undo, and redo are pressed.
+TST5   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,10
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL5
+       LI   R1,KEYL5E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,TST5_EXPECTED_TEXT
+       LI   R2,40
+       LI   R3,TST5_FAIL+2
+       MOV  @TST5_FAIL,R4
+       BLWP @ABLCK
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,11
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL5  BYTE DELKEY,DELKEY
+*
+       BYTE FWDKEY
+*
+       BYTE DELKEY,DELKEY
+       BYTE UNDKEY,UNDKEY,RDOKEY
+KEYL5E EVEN
+
+* First 40 characters of the paragraph after delting
+TST5_EXPECTED_TEXT
+       TEXT 'Madison"s dern origins begin in 1829, '
+TST5_FAIL
        DATA 50
        TEXT 'Not all of the characters were restored correctly.'
 

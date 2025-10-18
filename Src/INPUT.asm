@@ -756,7 +756,6 @@ MGNRT  RT
 *
 * Undo operation
 *
-* TODO: Update cursor position
 UNDO_OP
        DECT R10
        MOV  R11,*R10
@@ -787,6 +786,7 @@ UNDO_OP
 TEXT_RESTORE_LOOP
        C    R7,R8
        JHE  TEXT_RESTORE_DONE
+* No, insert one character
        MOVB *R7+,R5
        BL   @INSERT_CHARACTER_IN_PARA
 * Repeat
