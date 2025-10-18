@@ -781,11 +781,13 @@ TEXT_RESTORE_LOOP
        INC  R4
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
+* Restore PARINX and CHRPAX
+       MOV  @UNDO_ANY_PARA(R6),@PARINX
+       MOV  @UNDO_ANY_CHAR(R6),@CHRPAX
 * Move undo position one location earlier
        DEC  @UNDOIDX
 * Set document status bit, as this is necessary regardless of what we are undoing
-* TODO: It might be more complicated than this
-       SOC  @STSTYP,*R13       
+       SOC  @STSWIN,*R13       
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT

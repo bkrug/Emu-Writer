@@ -303,6 +303,18 @@ TST2   DECT R10
        MOV  @TST2_FAIL,R4
        BLWP @ABLCK
 *
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,44
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
        MOV  *R10+,R11
        RT
 
@@ -318,9 +330,20 @@ KEYL2E EVEN
 TST2_EXPECTED_TEXT
        TEXT 'Madison"s modern origins begin in 1829, '
        TEXT 'formfederal judge James Duane Doty purch'
+       EVEN
 TST2_FAIL
        DATA 49
        TEXT 'Not all of the characters were deleted correctly.'
+       EVEN
+
+PARA_IDX_FAIL
+       DATA 21
+       TEXT 'Wrong paragraph index'
+       EVEN
+CHAR_IDX_FAIL
+       DATA 38
+       TEXT 'Wrong character index within paragraph'
+       EVEN
 
 * Test 3
 * ------
@@ -360,6 +383,18 @@ TST3   DECT R10
        LI   R3,TST3_FAIL+2
        MOV  @TST3_FAIL,R4
        BLWP @ABLCK
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,44
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
 *
        MOV  *R10+,R11
        RT
@@ -417,6 +452,18 @@ TST4   DECT R10
        LI   R3,TST4_FAIL+2
        MOV  @TST4_FAIL,R4
        BLWP @ABLCK
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,40
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
 *
        MOV  *R10+,R11
        RT
