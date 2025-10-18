@@ -46,6 +46,9 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
        DATA TST3
        TEXT 'TST3  '
 *
+       DATA TST4
+       TEXT 'TST4  '
+*
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -375,6 +378,65 @@ TST3_EXPECTED_TEXT
 TST3_FAIL
        DATA 49
        TEXT 'Some characters should have been restored.'
+
+* Test 4
+* ------
+* Assert that text is deleted when undo is not pressed.
+TST4   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL4
+       LI   R1,KEYL4E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,TST4_EXPECTED_TEXT
+       LI   R2,80
+       LI   R3,TST4_FAIL+2
+       MOV  @TST4_FAIL,R4
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL4  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
+*
+       BYTE FWDKEY,FWDKEY,FWDKEY,FWDKEY
+*
+       BYTE DELKEY,DELKEY,DELKEY
+       BYTE UNDKEY,UNDKEY
+KEYL4E EVEN
+
+* First 80 characters of the paragraph after delting
+TST4_EXPECTED_TEXT
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane Do'
+TST4_FAIL
+       DATA 50
+       TEXT 'Not all of the characters were restored correctly.'
 
 *** Test Utils *******************************
 

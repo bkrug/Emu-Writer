@@ -22,7 +22,7 @@
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
        REF  KEYWRT,KEYRD
-       REF  UNDO_ADDRESS,PREV_ACTION
+       REF  UNDOIDX,UNDO_ADDRESS,PREV_ACTION
 
 * constants
        REF  BLKUSE
@@ -414,12 +414,15 @@ DELCHR MOV  R11,R12
        BLWP @ARYADD
        JEQ  RTERR
        MOV  R0,@UNDLST
+* Store undo index
+       MOV  *R0,@UNDOIDX
+       DEC  @UNDOIDX
 * Create undo action and store its location in the undo list
        LI   R0,8
        BLWP @BUFALC
        JEQ  RTERR
        MOV  R0,*R1
-* Sore address of undo action longer-term
+* Store address of undo action longer-term
        MOV  R0,@UNDO_ADDRESS
 * Populate undo action
        MOV  R2,*R0+                * type of action
@@ -749,8 +752,8 @@ UNDO_OP
        MOV  @UNDLST,R0
        MOV  *R0,R1
        JEQ  UNDO_COMPLETE
-* Yes, Let R6 = address of last operation in list
-       DEC  R1
+* Yes, Let R6 = address of most recent operation in list
+       MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R6
 * Let R7 = address of text to restore
@@ -776,12 +779,13 @@ TEXT_RESTORE_LOOP
        INC  R4
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
+* Move undo position one location earlier
+       DEC  @UNDOIDX
 * Set document status bit, as this is necessary regardless of what we are undoing
        SOC  @STSTYP,*R13       
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT
-
 
 *
 * Key is not valid
