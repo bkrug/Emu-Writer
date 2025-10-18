@@ -112,7 +112,25 @@ GET_KEY_ROUTINE
        JL   NONVISIBLE_KEY
        CB   *R4,@CHRMAX
        JH   NONVISIBLE_KEY
-* Yes, Let R0 = index of ADDTXT in ROUTKY
+* Yes
+* Is mode insert or overwrite?
+       MOV  @INSTMD,R2
+       JEQ  SET_INSERT_RT
+* Let R1 = address of paragraph's
+* entry in the paragraph list
+       MOV  @PARLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+* Let R0 = address of paragraph and it's length.
+* Is overwrite position at the end of the paragraph?
+       MOV  *R1,R0
+       C    *R0,@CHRPAX
+       JEQ  SET_INSERT_RT
+* No, Let R0 = index of OVERWRITE_TEXT in ROUTKY
+       LI   R0,1
+       JMP  ROUTINE_SELECTED
+SET_INSERT_RT
+* Let R0 = index of INSERT_TEXT in ROUTKY
        CLR  R0
        JMP  ROUTINE_SELECTED
 * No,
@@ -179,36 +197,34 @@ KYEXIT MOV  *R10+,R11
        S    R1,R1
        RT
 
-* TODO: Make the first two entries -1
-* And use them for insert/overwrite text
-ROUTKY BYTE -1
+ROUTKY BYTE -1,-1
        BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
        BYTE ESCKEY,FCTN0,FCTN8,FCTN4
        BYTE FCTN5,FCTN6,FCTNL,FCTNSM
        BYTE UNDKEY
 ROUTKE
-EXPMOD BYTE MODEXT
+EXPMOD BYTE MODEXT,MODEXT
        BYTE MODEXT,MODEXT,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEXT,MODEXT
        BYTE MODMNU,MODEMV,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEMV,MODEMV
        BYTE MODEXT
-HRZRPL BYTE 0
+HRZRPL BYTE 0,0
        BYTE 0,0,0,0
        BYTE 1,1,0,0
        BYTE 0,0,0,1
        BYTE 0,1,0,0
        BYTE 0
        EVEN
-ROUTIN DATA ADDTXT
+ROUTIN DATA INSERT_TEXT,OVERWRITE_TEXT
        DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
        DATA MNUINT,WINVRT,SHOWHK,PGDOWN
        DATA NXTWIN,PGUP,LINBEG,LINEND
        DATA UNDO_OP
 UNDO_ACTIONS
-       DATA 0
+       DATA 0,0
        DATA UNDO_DEL,0,0,0
        DATA 0,0,0,0
        DATA 0,0,0,0
@@ -562,34 +578,13 @@ DELC5  DEC  R2
        JEQ  DELC4
 * 
 DELCRT B    *R12
-       
 
-* User typed some text.
-* Put it in the buffer.
 *
-* Output:
-*   EQ status bit = if true, leave INPUT routine
-ADDTXT DECT R10
-       MOV  R11,*R10
-* Set document status bit
-       SOC  @STSTYP,*R13
-* Let R1 = address of paragraph's
-* entry in the paragraph list
-       MOV  @PARLST,R0
-       MOV  @PARINX,R1
-       BLWP @ARYADR
-* Is mode insert or overwrite?
-       MOV  @INSTMD,R2
-       JEQ  INSERT_TEXT
-* Let R0 = address of paragraph.
-* If Overwrite position is at the end of
-* the paragraph, then act as if this
-* were insert mode.
-       MOV  *R1,R0
-       C    *R0,@CHRPAX
-       JEQ  INSERT_TEXT
-
+* Overwrite text in paragraph
+*
 OVERWRITE_TEXT
+       DECT R10
+       MOV  R11,*R10
 * Set document status bit
        SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's
@@ -611,7 +606,12 @@ OVERWRITE_TEXT
        MOV  *R10+,R11
        RT
 
+*
+* Insert text in paragraph
+*
 INSERT_TEXT
+       DECT R10
+       MOV  R11,*R10
 * Set document status bit
        SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's
