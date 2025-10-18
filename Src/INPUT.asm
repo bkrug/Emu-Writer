@@ -70,11 +70,11 @@ INPUT
 * Are there more keystrokes to process?
 INPUT1 C    @KEYRD,@KEYWRT
        JEQ  INPTRT
-* Yes, let R4 = KEYRD
+* Yes, let R4 (high byte) = ascii value of key read
        MOV  @KEYRD,R4
 * No, let R1 = address of non-typing routine
-       BL   @KEYBRC
-* If the key is invalid and no routine was found, skip it
+       BL   @GET_KEY_ROUTINE
+* If the input mode changed, leave the input routine
        JEQ  INPTRT
 * Store routine's double-index to the stack
        DECT R10
@@ -104,7 +104,8 @@ INPTRT MOV  *R10+,R11
 *   R0 = double-index of the routine
 *   R1 = address of the routine
 *   EQ status bit = if true, leave INPUT routine
-KEYBRC DECT R10
+GET_KEY_ROUTINE
+       DECT R10
        MOV  R11,*R10
 * Is the detected key a visible character?
        CB   *R4,@CHRMIN
@@ -134,10 +135,10 @@ ROUTINE_SELECTED
        MOV  *R3,R3
 * Does the value from HRZRPL suggest that we should clear
 * the perferred horizontal position for moving the cursor up and down by a line?
-       JNE  CLRHRZ
+       JNE  !
 * Yes, clear it
        SETO @PRFHRZ
-CLRHRZ
+!
 * Let R3 = acceptable input mode
        LI   R3,EXPMOD
        A    R0,R3
@@ -167,6 +168,7 @@ CLRHRZ
        RT
 * Key does not have a routine associated with it.
 INVALID_KEY
+       SETO R0
        LI   R1,DO_NOTHING
        MOV  *R10+,R11
        RT
@@ -570,7 +572,7 @@ DELCRT B    *R12
 ADDTXT DECT R10
        MOV  R11,*R10
 * Set document status bit
-ADDT2  SOC  @STSTYP,*R13
+       SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's
 * entry in the paragraph list
        MOV  @PARLST,R0
@@ -578,18 +580,27 @@ ADDT2  SOC  @STSTYP,*R13
        BLWP @ARYADR
 * Is mode insert or overwrite?
        MOV  @INSTMD,R2
-       JEQ  INSERT
+       JEQ  INSERT_TEXT
 * Let R0 = address of paragraph.
 * If Overwrite position is at the end of
 * the paragraph, then act as if this
 * were insert mode.
        MOV  *R1,R0
        C    *R0,@CHRPAX
-       JEQ  INSERT
-* Overwrite text
-* R0 contains address of paragraph.
+       JEQ  INSERT_TEXT
+
+OVERWRITE_TEXT
+* Set document status bit
+       SOC  @STSTYP,*R13
+* Let R1 = address of paragraph's
+* entry in the paragraph list
+       MOV  @PARLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+* Let R0 = address of paragraph.
+       MOV  *R1,R0
 * Let R0 = address to overwrite text at
-       C    *R0+,*R0+
+       AI   R0,PARAGRAPH_TEXT_OFFSET
        A    @CHRPAX,R0
 * put keystroke in new space
        MOV  @KEYRD,R2
@@ -599,8 +610,17 @@ ADDT2  SOC  @STSTYP,*R13
 *
        MOV  *R10+,R11
        RT
+
+INSERT_TEXT
+* Set document status bit
+       SOC  @STSTYP,*R13
+* Let R1 = address of paragraph's
+* entry in the paragraph list
+       MOV  @PARLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
 * Insert character at CHRPAX location
-INSERT MOV  R1,R3
+       MOV  R1,R3
        MOV  @CHRPAX,R4
        MOV  @KEYRD,R5
        MOVB *R5,R5
