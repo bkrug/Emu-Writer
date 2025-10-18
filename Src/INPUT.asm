@@ -745,15 +745,17 @@ MGNRT  RT
 *
 * Undo operation
 *
+* TODO: Update cursor position
 UNDO_OP
        DECT R10
        MOV  R11,*R10
-* Are there any undo operations in the list?
+* Let R0 = address of undo list
+* Let R1 = index in undo operation list
        MOV  @UNDLST,R0
-       MOV  *R0,R1
-       JEQ  UNDO_COMPLETE
-* Yes, Let R6 = address of most recent operation in list
        MOV  @UNDOIDX,R1
+* Are there any undo operations remaining?
+       JLT  UNDO_COMPLETE
+* Yes, Let R6 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R6
 * Let R7 = address of text to restore
@@ -782,13 +784,14 @@ TEXT_RESTORE_DONE
 * Move undo position one location earlier
        DEC  @UNDOIDX
 * Set document status bit, as this is necessary regardless of what we are undoing
+* TODO: It might be more complicated than this
        SOC  @STSTYP,*R13       
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT
 
 *
-* Key is not valid
+* Key is not recognized
 *
 DO_NOTHING
        RT
