@@ -614,13 +614,8 @@ INSERT_TEXT
        MOV  R11,*R10
 * Set document status bit
        SOC  @STSTYP,*R13
-* Let R1 = address of paragraph's
-* entry in the paragraph list
-       MOV  @PARLST,R0
-       MOV  @PARINX,R1
-       BLWP @ARYADR
 * Insert character at CHRPAX location
-       MOV  R1,R3
+       MOV  @PARINX,R3
        MOV  @CHRPAX,R4
        MOV  @KEYRD,R5
        MOVB *R5,R5
@@ -635,7 +630,7 @@ INSERT_TEXT
 * Insert character in arbitrary paragraph
 *
 * Input:
-* R3 = address in paragraph list
+* R3 = index of paragraph
 * R4 = character index within paragraph
 * R5 (high byte) = character to insert
 *
@@ -645,6 +640,11 @@ INSERT_TEXT
 INSERT_CHARACTER_IN_PARA
        DECT R10
        MOV  R11,*R10
+* Let R1 & R2 = address within paragraph list
+       MOV  @PARLST,R0
+       MOV  R3,R1
+       BLWP @ARYADR
+       MOV  R1,R2
 * Grow the paragraph's allocated
 * block, if necessary.
 * Let R0 be the address of the
@@ -652,15 +652,16 @@ INSERT_CHARACTER_IN_PARA
 * Let R1 be the length of the paragraph
 * plus one new character plus four-byte
 * paragraph header.
-       MOV  *R3,R0
+       MOV  *R1,R0
        MOV  *R0,R1
        AI   R1,PARAGRAPH_TEXT_OFFSET+1
        BLWP @BUFGRW
        JNE  !
 * Handle memory error       
        B    @RTERR
+!
 * Store new paragraph address
-!      MOV  R0,*R3
+       MOV  R0,*R2
 * Let R2 = number of characters after insertion point
        MOV  *R0,R2
        S    R4,R2
@@ -774,13 +775,14 @@ UNDO_OP
 * Let R8 = end of undo text
        MOV  R7,R8
        A    @UNDO_DEL_LEN(R6),R8
-* Let R3 = address within paragraph list
-       MOV  @PARLST,R0
-       MOV  @UNDO_ANY_PARA(R6),R1
-       BLWP @ARYADR
-       MOV  R1,R3
+* Set @INSERT_CHARACTER_IN_PARA parameters
+* Let R3 = paragraph index
 * Let R4 = character insertion point with paragraph
+       MOV  @UNDO_ANY_PARA(R6),R3
        MOV  @UNDO_ANY_CHAR(R6),R4
+* Restore PARINX and CHRPAX
+       MOV  R3,@PARINX
+       MOV  R4,@CHRPAX
 * Is insertion complete?
 TEXT_RESTORE_LOOP
        C    R7,R8
@@ -791,9 +793,6 @@ TEXT_RESTORE_LOOP
        INC  R4
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
-* Restore PARINX and CHRPAX
-       MOV  @UNDO_ANY_PARA(R6),@PARINX
-       MOV  @UNDO_ANY_CHAR(R6),@CHRPAX
 * Move undo position one location earlier
        DEC  @UNDOIDX
 * Set document status bit, as this is necessary regardless of what we are undoing
