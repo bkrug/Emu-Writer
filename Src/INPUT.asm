@@ -589,11 +589,40 @@ ADDT2  SOC  @STSTYP,*R13
        JEQ  INSERT
 * Overwrite text
 * R0 contains address of paragraph.
-* Set it to the address to overwrite
-* text at.
+* Let R0 = address to overwrite text at
        C    *R0+,*R0+
        A    @CHRPAX,R0
-       JMP  RPLTXT
+* put keystroke in new space
+       MOV  @KEYRD,R2
+       MOVB *R2,*R0
+* Increase character index.
+       INC  @CHRPAX
+*
+       MOV  *R10+,R11
+       RT
+* Insert character at CHRPAX location
+INSERT MOV  R1,R3
+       MOV  @CHRPAX,R4
+       MOV  @KEYRD,R5
+       MOVB *R5,R5
+       BL   @INSERT_CHARACTER_IN_PARA
+* Increase character index.
+       INC  @CHRPAX
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* Insert character in arbitrary paragraph
+*
+* Input:
+* R3 = address in paragraph list
+* R4 = character index within paragraph
+* R5 (high byte) = character to insert
+*
+INSERT_CHARACTER_IN_PARA
+       DECT R10
+       MOV  R11,*R10
 * Grow the paragraph's allocated
 * block, if necessary.
 * Let R0 be the address of the
@@ -601,36 +630,31 @@ ADDT2  SOC  @STSTYP,*R13
 * Let R1 be the length of the paragraph
 * plus one new character plus four-byte
 * paragraph header.
-* Let R6 be the address in the
-* paragraph list.
-INSERT MOV  R1,R6
-       MOV  *R6,R0
+       MOV  *R3,R0
        MOV  *R0,R1
-       AI   R1,5
+       AI   R1,PARAGRAPH_TEXT_OFFSET+1
        BLWP @BUFGRW
-       JNE  INS1
+       JNE  !
+* Handle memory error       
        B    @RTERR
-INS1   MOV  R0,*R6
-* Insert character.
-* Let R2 contain address following
-* the paragraph
+* Store new paragraph address
+!      MOV  R0,*R3
+* Let R2 = number of characters after insertion point
        MOV  *R0,R2
-       S    @CHRPAX,R2
+       S    R4,R2
 * Increase paragraph length by one.
        INC  *R0
+* Move part of paragraph ahead one position
 * Let R0 = insertion address.
-       C    *R0+,*R0+
-       A    @CHRPAX,R0
 * Let R1 = next address.
+* R2 already contains length of data
+       C    *R0+,*R0+
+       A    R4,R0
        MOV  R0,R1
        INC  R1
        BLWP @BUFCPY
-RPLTXT
-* put keystroke in new space
-       MOV  @KEYRD,R2
-       MOVB *R2,*R0
-* Increase character index.
-       INC  @CHRPAX
+* put character in new space
+       MOVB R5,*R0
 *
        MOV  *R10+,R11
        RT
