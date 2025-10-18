@@ -111,11 +111,9 @@ KEYBRC DECT R10
        JL   NONVISIBLE_KEY
        CB   *R4,@CHRMAX
        JH   NONVISIBLE_KEY
-* Yes, set keyboard routine and clear preferred horizontal position.
+* Yes, Let R0 = index of ADDTXT in ROUTKY
        CLR  R0
-       LI   R1,ADDTXT
-       SETO @PRFHRZ
-       JMP  KYBRC6
+       JMP  ROUTINE_SELECTED
 * No,
 * Let R0 = index of element within ROUTKY
 * that corresponds to the pressed key
@@ -129,6 +127,7 @@ KYBRC2 CB   *R4,*R0+
        JMP  INVALID_KEY
 KYBRC3 DEC  R0
        S    R2,R0
+ROUTINE_SELECTED
 * Let R3 = a value from the HRZRPL list.
        LI   R3,HRZRPL
        A    R0,R3
@@ -149,9 +148,9 @@ CLRHRZ
        MOV  *R1,R1
 * Set Input mode if currently unset
        CB   @INPTMD,@INPTNN
-       JNE  KYBRC5
+       JNE  !
        MOVB *R3,@INPTMD
-KYBRC5
+!
 * If the next key involves switching to a
 * different input mode, leave the routine.
 *
@@ -164,7 +163,7 @@ KYBRC5
 * Return to caller.
 * Find routine for the next key.
 * This sets the EQ status bit to false.
-KYBRC6 MOV  *R10+,R11
+       MOV  *R10+,R11
        RT
 * Key does not have a routine associated with it.
 INVALID_KEY
@@ -570,18 +569,6 @@ DELCRT B    *R12
 *   EQ status bit = if true, leave INPUT routine
 ADDTXT DECT R10
        MOV  R11,*R10
-* Set input mode if currently unset
-       CB   @INPTMD,@INPTNN
-       JNE  ADDT1
-       MOVB @INPTXT,@INPTMD
-* Does processing this key involve
-* switching input modes.
-ADDT1  CB   @INPTMD,@INPTXT
-       JEQ  ADDT2
-* Tell the caller to leave the INPUT routine.
-       MOV  *R10+,R11
-       S    R0,R0
-       RT
 * Set document status bit
 ADDT2  SOC  @STSTYP,*R13
 * Let R1 = address of paragraph's
@@ -592,8 +579,6 @@ ADDT2  SOC  @STSTYP,*R13
 * Is mode insert or overwrite?
        MOV  @INSTMD,R2
        JEQ  INSERT
-* R1 already contains address in
-* paragraph list.
 * Let R0 = address of paragraph.
 * If Overwrite position is at the end of
 * the paragraph, then act as if this
