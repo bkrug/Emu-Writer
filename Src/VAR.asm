@@ -22,7 +22,7 @@
        DEF  PARLST,FMTLST,MGNLST
        DEF  UNDLST
 *
-       DEF  PGHGHT,PGWDTH,UNDIDX
+       DEF  PGHGHT,PGWDTH
 * MAIN.asm
        DEF  DOCSTS
        DEF  CURTIM,CUROLD,CURRPL,CURMOD
@@ -89,8 +89,6 @@ FMTLST BSS  2
 MGNLST BSS  2
 * Address of list of undo/redo actions
 UNDLST BSS  2
-* Index of next action to redo, or next location of an undo action
-UNDIDX BSS  2
 * Page height and width in lines and characters
 PGHGHT BSS  1
 PGWDTH BSS  1

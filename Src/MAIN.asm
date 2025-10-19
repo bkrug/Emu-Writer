@@ -9,7 +9,7 @@
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  PARLST,MGNLST,FMTLST
-       REF  UNDLST,UNDIDX
+       REF  UNDLST,UNDOIDX
        REF  PREV_ACTION
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
@@ -100,7 +100,7 @@ INTDOC
        CLR  @PARINX
        CLR  @CHRPAX
 * Initialize index in undo/redo list
-       CLR  @UNDIDX
+       SETO @UNDOIDX
 * Insert one empty paragraph
 * Let R4 = paragraph address
 INTPAR LI   R0,EMPPAR

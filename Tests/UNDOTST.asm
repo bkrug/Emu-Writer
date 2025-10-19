@@ -13,7 +13,7 @@
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST,UNDIDX
+       REF  UNDLST,UNDOIDX
        REF  PREV_ACTION
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -51,6 +51,9 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that only some text is restored when undo, undo, and redo are pressed.
        DATA TST5
        TEXT 'TST5  '
+* Assert that pressing the undo button with an empty undo list doesn't hurt anything.
+       DATA EMPTY1
+       TEXT 'EMPTY1'
 *
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
@@ -96,7 +99,9 @@ TSTINT
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@UNDLST
-       CLR  @UNDIDX
+* With an empty list, the current index is -1,
+* (no entry to point at).
+       SETO @UNDOIDX
 *
        LI   R6,INTADR
 * Copy a paragraph into buffer
@@ -558,6 +563,77 @@ TST5_EXPECTED_TEXT
 TST5_FAIL
        DATA 50
        TEXT 'Not all of the characters were restored correctly.'
+
+* Empty 1
+* -------
+* Assert that pressing the undo button with an empty undo list doesn't hurt anything.
+EMPTY1 DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL_EMPTY1
+       LI   R1,KEYL_EMPTY1_END
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,EMPTY1_EXPECTED_TEXT+2
+       MOV  @EMPTY1_EXPECTED_TEXT,R2
+       LI   R3,EMPTY1_FAIL+2
+       MOV  @EMPTY1_FAIL,R4
+       BLWP @ABLCK
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,40
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL_EMPTY1
+       BYTE FWDKEY,BCKKEY,UNDKEY
+KEYL_EMPTY1_END
+       EVEN
+
+* First 80 characters of the paragraph after delting
+EMPTY1_EXPECTED_TEXT
+       DATA 78
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+       EVEN
+EMPTY1_FAIL
+       DATA 29
+       TEXT 'Text should not have changed.'
+       EVEN
 
 *** Test Utils *******************************
 

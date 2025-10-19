@@ -13,7 +13,7 @@
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST,UNDIDX
+       REF  UNDLST,UNDOIDX
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
@@ -189,7 +189,7 @@ TSTINT
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@UNDLST
-       CLR  @UNDIDX
+       SETO @UNDOIDX
 *
        LI   R6,INTADR
 * Copy a paragraph into buffer

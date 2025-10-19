@@ -2,7 +2,7 @@
        DEF  INPTS,INPTE
 *
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST,UNDIDX
+       REF  UNDLST
        REF  ARYALC,ARYINS,ARYDEL,ARYADR
        REF  ARYADD
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
@@ -475,7 +475,7 @@ UNDO_DEL_EXISTS
        MOV  R0,R7
        MOV  R0,@UNDO_ADDRESS
 *       MOV  @UNDLST,R0
-*       MOV  @UNDIDX,R1
+*       MOV  @UNDOIDX,R1
 *       BLWP @ARYADR
 *       MOV  R7,*R1
 * Store deleted character to undo-action
