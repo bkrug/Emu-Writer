@@ -474,10 +474,10 @@ UNDO_DEL_EXISTS
 * Store new address of undo-action
        MOV  R0,R7
        MOV  R0,@UNDO_ADDRESS
-*       MOV  @UNDLST,R0
-*       MOV  @UNDOIDX,R1
-*       BLWP @ARYADR
-*       MOV  R7,*R1
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  R7,*R1
 * Store deleted character to undo-action
        MOV  R7,R8
        AI   R8,UNDO_DEL_TEXT
