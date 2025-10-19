@@ -424,7 +424,8 @@ RTERR  MOV  @KEYRD,@KEYWRT
 *
 * Delete key was pressed.
 *
-DELCHR MOV  R11,R12
+DELCHR DECT R10
+       MOV  R11,*R10
 * Set document status bit
        SOC  @STSTYP,*R13
 * Do we need to make a new undo action?
@@ -454,27 +455,14 @@ DELCHR MOV  R11,R12
 UNDO_DEL_EXISTS
 *
 * Let R1 = Address in Paragraph list
-       MOV  @PARLST,R0
+* Let R2 = CHRPAX
        MOV  @PARINX,R1
-       BLWP @ARYADR
-* Let R3 = address of paragraph
-       MOV  *R1,R3
-* If cursor is at end of paragraph,
-* merge two paragraphs together.
-       C    @CHRPAX,*R3
-       JEQ  MERGE_PARAGRAPHS
+       MOV  @CHRPAX,R2
 * Reduce paragraph length
-       DEC  *R3
-* Let R4 = position in paragraph
-* Let R6 = end of paragraph
-       MOV  R3,R4
-       C    *R4+,*R4+
-       MOV  R4,R6
-       A    @CHRPAX,R4
-       A    *R3,R6
-* Let R5 = next position
-       MOV  R4,R5
-       INC  R5
+       BL   @DELETE_CHARACTER_IN_PARA
+* Was there any character to delete?
+       MOVB R2,R2
+       JEQ  MERGE_PARAGRAPHS
 * Let R7 = address of undo action
        MOV  @UNDO_ADDRESS,R7
 * Increase length of undo-action
@@ -484,23 +472,17 @@ UNDO_DEL_EXISTS
        BLWP @BUFGRW
        JEQ  RTERR
        MOV  R0,R7
+       MOV  R0,@UNDO_ADDRESS
+* TODO: update address in undo list
 * Store deleted character to undo-action
        MOV  R7,R8
        AI   R8,UNDO_DEL_TEXT
        A    @UNDO_DEL_LEN(R7),R8
-       MOVB *R4,*R8
+       MOVB R2,*R8
        INC  @UNDO_DEL_LEN(R7)
-* Move characters backwards
-DELC1  MOVB *R5+,*R4+
-       C    R4,R6
-       JLE  DELC1
-* Shrink memory block if needed.
-       MOV  R3,R0
-       MOV  *R3,R1
-       C    *R1+,*R1+
-       BLWP @BUFSRK
 *
-       B    *R12
+       MOV  *R10+,R11
+       RT
 *
 *
 MERGE_PARAGRAPHS:
@@ -577,7 +559,9 @@ DELC5  DEC  R2
        JGT  DELC4
        JEQ  DELC4
 * 
-DELCRT B    *R12
+DELCRT
+       MOV  *R10+,R11
+       RT
 
 *
 * Overwrite text in paragraph
@@ -848,6 +832,54 @@ REDO_COMPLETE
 * Key is not recognized
 *
 DO_NOTHING
+       RT
+
+*
+*
+* Input:
+*   R1 = paragraph index
+*   R2 = character index within paragraph
+* Ouput:
+*   R2 (high byte) = character deleted (0 if deleting from the end of the paragraph)
+DELETE_CHARACTER_IN_PARA
+       DECT R10
+       MOV  R11,*R10
+* Let R1 = Address in Paragraph list
+       MOV  @PARLST,R0
+       BLWP @ARYADR
+* Let R3 = address of paragraph
+       MOV  *R1,R3
+* Is this the end of the paragraph?
+       C    R2,*R3
+       JL   !
+* Yes, report that no character was remove and leave routine
+       SB   R2,R2
+       JMP  DELETE_CHARACTER_RETURN
+!
+* No, reduce paragraph length
+       DEC  *R3
+* Let R4 = position in paragraph
+* Let R6 = end of paragraph
+       MOV  R3,R4
+       AI   R4,PARAGRAPH_TEXT_OFFSET
+       MOV  R4,R6
+       A    R2,R4
+       A    *R3,R6
+* Let R5 = next position
+       MOV  R4,R5
+       INC  R5
+* Move characters backwards
+DELC1  MOVB *R5+,*R4+
+       C    R4,R6
+       JLE  DELC1
+* Shrink memory block if needed.
+       MOV  R3,R0
+       MOV  *R3,R1
+       C    *R1+,*R1+
+       BLWP @BUFSRK
+*
+DELETE_CHARACTER_RETURN
+       MOV  *R10+,R11
        RT
 
 INPTE  AORG
