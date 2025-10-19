@@ -202,34 +202,34 @@ ROUTKY BYTE -1,-1
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
        BYTE ESCKEY,FCTN0,FCTN8,FCTN4
        BYTE FCTN5,FCTN6,FCTNL,FCTNSM
-       BYTE UNDKEY
+       BYTE UNDKEY,RDOKEY
 ROUTKE
 EXPMOD BYTE MODEXT,MODEXT
        BYTE MODEXT,MODEXT,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEXT,MODEXT
        BYTE MODMNU,MODEMV,MODEMV,MODEMV
        BYTE MODEMV,MODEMV,MODEMV,MODEMV
-       BYTE MODEXT
+       BYTE MODEXT,MODEXT
 HRZRPL BYTE 0,0
        BYTE 0,0,0,0
        BYTE 1,1,0,0
        BYTE 0,0,0,1
        BYTE 0,1,0,0
-       BYTE 0
+       BYTE 0,0
        EVEN
 ROUTIN DATA INSERT_TEXT,OVERWRITE_TEXT
        DATA DELCHR,INSSWP,BACKSP,FWRDSP
        DATA UPUPSP,DOWNSP,ISENTR,BCKDEL
        DATA MNUINT,WINVRT,SHOWHK,PGDOWN
        DATA NXTWIN,PGUP,LINBEG,LINEND
-       DATA UNDO_OP
+       DATA UNDO_OP,REDO_OP
 UNDO_ACTIONS
        DATA 0,0
        DATA UNDO_DEL,0,0,0
        DATA 0,0,0,0
        DATA 0,0,0,0
        DATA 0,0,0,0
-       DATA 0
+       DATA 0,0
 
 * 
 * Input mode values
@@ -798,6 +798,49 @@ TEXT_RESTORE_DONE
 * Set document status bit, as this is necessary regardless of what we are undoing
        SOC  @STSWIN,*R13       
 UNDO_COMPLETE
+       MOV  *R10+,R11
+       RT
+
+*
+* Redo operation
+*
+REDO_OP
+       DECT R10
+       MOV  R11,*R10
+* Let R0 = address of undo list
+* Let R1 = index of operation to redo
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       INC  R1
+* Are there any redo operations remaining?
+       C    R1,*R0
+       JHE  REDO_COMPLETE
+* Yes, Let R5 = address of current undo operation in list
+       BLWP @ARYADR
+       MOV  *R1,R5
+* Let R6 = number of characters to remove
+       MOV  @UNDO_DEL_LEN(R5),R6
+* Set @DELETE_CHARACTER_IN_PARA parameters
+* Let R3 = paragraph index
+* Let R4 = character insertion point with paragraph
+       MOV  @UNDO_ANY_PARA(R5),R3
+       MOV  @UNDO_ANY_CHAR(R5),R4
+* Restore PARINX and CHRPAX
+       MOV  R3,@PARINX
+       MOV  R4,@CHRPAX
+* Is deletion complete?
+REDO_DEL_LOOP
+       MOV  R6,R6
+       JEQ  TEXT_REDELETE_DONE
+* No, continue
+       DEC  R6
+       JMP  REDO_DEL_LOOP
+TEXT_REDELETE_DONE
+* Move undo position one location earlier
+       INC  @UNDOIDX
+* Set document status bit, as this is necessary regardless of what we are undoing
+       SOC  @STSWIN,*R13
+REDO_COMPLETE
        MOV  *R10+,R11
        RT
 
