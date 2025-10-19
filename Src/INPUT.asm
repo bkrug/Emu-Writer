@@ -458,7 +458,7 @@ UNDO_DEL_EXISTS
 * Let R2 = CHRPAX
        MOV  @PARINX,R1
        MOV  @CHRPAX,R2
-* Reduce paragraph length
+* Delete character from paragraph
        BL   @DELETE_CHARACTER_IN_PARA
 * Was there any character to delete?
        MOVB R2,R2
@@ -471,9 +471,13 @@ UNDO_DEL_EXISTS
        A    @UNDO_DEL_LEN(R7),R1
        BLWP @BUFGRW
        JEQ  RTERR
+* Store new address of undo-action
        MOV  R0,R7
        MOV  R0,@UNDO_ADDRESS
-* TODO: update address in undo list
+*       MOV  @UNDLST,R0
+*       MOV  @UNDIDX,R1
+*       BLWP @ARYADR
+*       MOV  R7,*R1
 * Store deleted character to undo-action
        MOV  R7,R8
        AI   R8,UNDO_DEL_TEXT
@@ -799,26 +803,24 @@ REDO_OP
 * Are there any redo operations remaining?
        C    R1,*R0
        JHE  REDO_COMPLETE
-* Yes, Let R5 = address of current undo operation in list
+* Yes, Let R7 = address of current undo operation in list
        BLWP @ARYADR
-       MOV  *R1,R5
-* Let R6 = number of characters to remove
-       MOV  @UNDO_DEL_LEN(R5),R6
-* Set @DELETE_CHARACTER_IN_PARA parameters
-* Let R3 = paragraph index
-* Let R4 = character insertion point with paragraph
-       MOV  @UNDO_ANY_PARA(R5),R3
-       MOV  @UNDO_ANY_CHAR(R5),R4
+       MOV  *R1,R7
 * Restore PARINX and CHRPAX
-       MOV  R3,@PARINX
-       MOV  R4,@CHRPAX
-* Is deletion complete?
-REDO_DEL_LOOP
-       MOV  R6,R6
+       MOV  @UNDO_ANY_PARA(R7),@PARINX
+       MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
+* Let R8 = number of characters to remove
+       MOV  @UNDO_DEL_LEN(R7),R8
        JEQ  TEXT_REDELETE_DONE
-* No, continue
-       DEC  R6
-       JMP  REDO_DEL_LOOP
+REDO_DEL_LOOP
+* No, continue set @DELETE_CHARACTER_IN_PARA parameters
+       MOV  @UNDO_ANY_PARA(R7),R1
+       MOV  @UNDO_ANY_CHAR(R7),R2
+* Delete character from paragraph
+       BL   @DELETE_CHARACTER_IN_PARA
+* Is deletion complete?
+       DEC  R8
+       JNE  REDO_DEL_LOOP
 TEXT_REDELETE_DONE
 * Move undo position one location earlier
        INC  @UNDOIDX
@@ -868,6 +870,8 @@ DELETE_CHARACTER_IN_PARA
 * Let R5 = next position
        MOV  R4,R5
        INC  R5
+* Store character to delete
+       MOVB *R4,R2
 * Move characters backwards
 DELC1  MOVB *R5+,*R4+
        C    R4,R6

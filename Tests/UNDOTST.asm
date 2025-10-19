@@ -526,14 +526,15 @@ TST5   DECT R10
        LI   R3,TST5_FAIL+2
        MOV  @TST5_FAIL,R4
        BLWP @ABLCK
-*
+* Assert cursor is at the same position
+* as the action we redid.
        CLR  R0
        MOV  @PARINX,R1
        LI   R2,PARA_IDX_FAIL+2
        MOV  @PARA_IDX_FAIL,R3
        BLWP @AEQ
 *
-       LI   R0,11
+       LI   R0,10
        MOV  @CHRPAX,R1
        LI   R2,CHAR_IDX_FAIL+2
        MOV  @CHAR_IDX_FAIL,R3
@@ -553,7 +554,7 @@ KEYL5E EVEN
 
 * First 40 characters of the paragraph after delting
 TST5_EXPECTED_TEXT
-       TEXT 'Madison"s dern origins begin in 1829, '
+       TEXT 'Madison"s dern origins begin in 1829, wh'
 TST5_FAIL
        DATA 50
        TEXT 'Not all of the characters were restored correctly.'
