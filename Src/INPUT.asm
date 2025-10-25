@@ -475,7 +475,7 @@ UNDO_DEL_EXISTS
        BL   @DELETE_CHARACTER_IN_PARA
 * Was a character to deleted?
        MOVB R2,R2
-       JEQ  MERGE_PARAGRAPHS
+       JEQ  DELETE_CR
 * Yes, record this character in undo action.
 * Let R7 = address of undo action
        MOV  @UNDO_ADDRESS,R7
@@ -502,80 +502,10 @@ UNDO_DEL_EXISTS
        MOV  *R10+,R11
        RT
 *
-*
-MERGE_PARAGRAPHS:
-* If this is the end of document,
-* delete nothing.
-       MOV  @PARLST,R9
+DELETE_CR
+* Delete a carriage return
        MOV  @PARINX,R5
-       INC  R5
-       C    R5,*R9
-       JEQ  DELCRT
-* Merge two paragraphs
-* Set document status
-       SOC  @STSDCR,*R13
-* Let R2 = Address in paragraph list
-* Let R4 = Address of second paragraph
-       MOV  R1,R2
-       INCT R2
-       MOV  *R2,R4
-* Let R1 = space to reserve
-       MOV  *R3,R1
-       A    *R4,R1
-       C    *R1+,*R1+
-* Grow memory block for first paragraph
-       MOV  R3,R0
-       BLWP @BUFGRW
-       JEQ  RTERR
-* Let R3 = (possibly new) address of first paragraph
-       MOV  R0,R3
-* Copy bytes from second paragraph
-       MOV  R4,R0
-       C    *R0+,*R0+
-       MOV  R3,R1
-       C    *R1+,*R1+
-       A    *R3,R1
-       MOV  *R4,R2
-       BLWP @BUFCPY
-* Set length of new paragraph
-       A    *R4,*R3
-* Deallocate wrap list for second para
-       MOV  @2(4),R0
-       BLWP @BUFREE
-* Deallocate second paragraph
-       MOV  R4,R0
-       BLWP @BUFREE
-* Put merged paragraph in paragraph list
-       MOV  @PARLST,R0
-       MOV  @PARINX,R1
-       BLWP @ARYADR
-       MOV  R3,*R1
-* Remove one element from paragraph list
-       MOV  @PARLST,R0
-       MOV  @PARINX,R1
-       INC  R1
-       BLWP @ARYDEL
-* Update Margin List
-       LI   R2,-1
-       MOV  @PARINX,R3
-       INCT R3
-       BL   @UPDMGN
-* Find any pair of MGNLST entries with
-* matching paragraph indeces, and
-* delete the earlier of the pair.
-       MOV  @MGNLST,R0
-       MOV  *R0,R2
-       DECT R2
-       JLT  DELCRT
-DELC4  MOV  R2,R1
-       BLWP @ARYADR
-       C    *R1,@MGNLNG(R1)
-       JNE  DELC5
-       MOV  R2,R1
-       BLWP @ARYDEL
-DELC5  DEC  R2
-       JGT  DELC4
-       JEQ  DELC4
+       BL   @MERGE_PARAGRAPHS
 * 
 DELCRT
        MOV  *R10+,R11
@@ -624,62 +554,6 @@ INSERT_TEXT
        BL   @INSERT_CHARACTER_IN_PARA
 * Increase character index.
        INC  @CHRPAX
-*
-       MOV  *R10+,R11
-       RT
-
-*
-* Insert character in arbitrary paragraph
-*
-* Input:
-* R3 = index of paragraph
-* R4 = character index within paragraph
-* R5 (high byte) = character to insert
-*
-* Output:
-* value at address within R3 could update to reflect paragraph's new position
-*
-INSERT_CHARACTER_IN_PARA
-       DECT R10
-       MOV  R11,*R10
-* Let R1 & R2 = address within paragraph list
-       MOV  @PARLST,R0
-       MOV  R3,R1
-       BLWP @ARYADR
-       MOV  R1,R2
-* Grow the paragraph's allocated
-* block, if necessary.
-* Let R0 be the address of the
-* paragraph.
-* Let R1 be the length of the paragraph
-* plus one new character plus four-byte
-* paragraph header.
-       MOV  *R1,R0
-       MOV  *R0,R1
-       AI   R1,PARAGRAPH_TEXT_OFFSET+1
-       BLWP @BUFGRW
-       JNE  !
-* Handle memory error       
-       B    @RTERR
-!
-* Store new paragraph address
-       MOV  R0,*R2
-* Let R2 = number of characters after insertion point
-       MOV  *R0,R2
-       S    R4,R2
-* Increase paragraph length by one.
-       INC  *R0
-* Move part of paragraph ahead one position
-* Let R0 = insertion address.
-* Let R1 = next address.
-* R2 already contains length of data
-       C    *R0+,*R0+
-       A    R4,R0
-       MOV  R0,R1
-       INC  R1
-       BLWP @BUFCPY
-* put character in new space
-       MOVB R5,*R0
 *
        MOV  *R10+,R11
        RT
@@ -855,6 +729,62 @@ DO_NOTHING
        RT
 
 *
+* Insert character in arbitrary paragraph
+*
+* Input:
+* R3 = index of paragraph
+* R4 = character index within paragraph
+* R5 (high byte) = character to insert
+*
+* Output:
+* value at address within R3 could update to reflect paragraph's new position
+*
+INSERT_CHARACTER_IN_PARA
+       DECT R10
+       MOV  R11,*R10
+* Let R1 & R2 = address within paragraph list
+       MOV  @PARLST,R0
+       MOV  R3,R1
+       BLWP @ARYADR
+       MOV  R1,R2
+* Grow the paragraph's allocated
+* block, if necessary.
+* Let R0 be the address of the
+* paragraph.
+* Let R1 be the length of the paragraph
+* plus one new character plus four-byte
+* paragraph header.
+       MOV  *R1,R0
+       MOV  *R0,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET+1
+       BLWP @BUFGRW
+       JNE  !
+* Handle memory error       
+       B    @RTERR
+!
+* Store new paragraph address
+       MOV  R0,*R2
+* Let R2 = number of characters after insertion point
+       MOV  *R0,R2
+       S    R4,R2
+* Increase paragraph length by one.
+       INC  *R0
+* Move part of paragraph ahead one position
+* Let R0 = insertion address.
+* Let R1 = next address.
+* R2 already contains length of data
+       C    *R0+,*R0+
+       A    R4,R0
+       MOV  R0,R1
+       INC  R1
+       BLWP @BUFCPY
+* put character in new space
+       MOVB R5,*R0
+*
+       MOV  *R10+,R11
+       RT
+
+*
 *
 * Input:
 *   R1 = paragraph index
@@ -901,6 +831,96 @@ DELC1  MOVB *R5+,*R4+
        BLWP @BUFSRK
 *
 DELETE_CHARACTER_RETURN
+       MOV  *R10+,R11
+       RT
+
+*
+* Merge paragraphs
+*
+* Input:
+*  R1 - address of earlier paragraph
+*  R5 - index of earlier paragraph
+*
+MERGE_PARAGRAPHS
+       DECT R10
+       MOV  R11,*R10
+* If this is the end of document,
+* delete nothing.
+       MOV  @PARLST,R9
+       INC  R5
+       C    R5,*R9
+       JEQ  MERGE_PARAGRAPHS_RETURN
+* Merge two paragraphs
+* Set document status
+       SOC  @STSDCR,*R13
+* Let R2 = Address in paragraph list
+* Let R4 = Address of second paragraph
+       MOV  R1,R2
+       INCT R2
+       MOV  *R2,R4
+* Let R1 = space to reserve
+       MOV  *R3,R1
+       A    *R4,R1
+       C    *R1+,*R1+
+* Grow memory block for first paragraph
+       MOV  R3,R0
+       BLWP @BUFGRW
+       JNE  !
+* Handle memory error       
+       B    @RTERR
+!
+* Let R3 = (possibly new) address of first paragraph
+       MOV  R0,R3
+* Copy bytes from second paragraph
+       MOV  R4,R0
+       C    *R0+,*R0+
+       MOV  R3,R1
+       C    *R1+,*R1+
+       A    *R3,R1
+       MOV  *R4,R2
+       BLWP @BUFCPY
+* Set length of new paragraph
+       A    *R4,*R3
+* Deallocate wrap list for second para
+       MOV  @2(4),R0
+       BLWP @BUFREE
+* Deallocate second paragraph
+       MOV  R4,R0
+       BLWP @BUFREE
+* Put merged paragraph in paragraph list
+       MOV  @PARLST,R0
+       MOV  @PARINX,R1
+       BLWP @ARYADR
+       MOV  R3,*R1
+* Remove one element from paragraph list
+       MOV  @PARLST,R0
+       MOV  @PARINX,R1
+       INC  R1
+       BLWP @ARYDEL
+* Update Margin List
+       LI   R2,-1
+       MOV  @PARINX,R3
+       INCT R3
+       BL   @UPDMGN
+* Find any pair of MGNLST entries with
+* matching paragraph indeces, and
+* delete the earlier of the pair.
+       MOV  @MGNLST,R0
+       MOV  *R0,R2
+       DECT R2
+       JLT  MERGE_PARAGRAPHS_RETURN
+MERGE_PARAGRAPHS_MARGIN_LOOP
+       MOV  R2,R1
+       BLWP @ARYADR
+       C    *R1,@MGNLNG(R1)
+       JNE  !
+       MOV  R2,R1
+       BLWP @ARYDEL
+!      DEC  R2
+       JGT  MERGE_PARAGRAPHS_MARGIN_LOOP
+       JEQ  MERGE_PARAGRAPHS_MARGIN_LOOP
+* 
+MERGE_PARAGRAPHS_RETURN
        MOV  *R10+,R11
        RT
 
