@@ -473,9 +473,10 @@ UNDO_DEL_EXISTS
        MOV  @CHRPAX,R2
 * Delete character from paragraph
        BL   @DELETE_CHARACTER_IN_PARA
-* Was there any character to delete?
+* Was a character to deleted?
        MOVB R2,R2
        JEQ  MERGE_PARAGRAPHS
+* Yes, record this character in undo action.
 * Let R7 = address of undo action
        MOV  @UNDO_ADDRESS,R7
 * Increase length of undo-action
@@ -796,6 +797,7 @@ TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
 * Move undo position one location earlier
        DEC  @UNDOIDX
+* TODO: This should probably be the job of @INSERT_CHARACTER_IN_PARA
 * Set document status bit, as this is necessary regardless of what we are undoing
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
@@ -838,6 +840,7 @@ REDO_DEL_LOOP
 TEXT_REDELETE_DONE
 * Move undo position one location earlier
        INC  @UNDOIDX
+* TODO: This should probably be the job of @DELETE_CHARACTER_IN_PARA
 * Set document status bit, as this is necessary regardless of what we are undoing
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
