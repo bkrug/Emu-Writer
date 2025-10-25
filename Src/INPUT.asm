@@ -428,19 +428,32 @@ DELCHR DECT R10
        MOV  R11,*R10
 * Set document status bit
        SOC  @STSTYP,*R13
-* Do we need to make a new undo action?
+* Do we need to begin a new undo action?
        LI   R2,UNDO_DEL
        C    @PREV_ACTION,R2
        JEQ  UNDO_DEL_EXISTS
-* Yes, add element
+* Yes, increment undo index.
+       INC  @UNDOIDX
+* Is there already an old undo action at current index?
        MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       C    *R0,R1
+       JLE  ADD_UNDO_ELEM
+* Yes, Let R1 = address of element in undo list
+       BLWP @ARYADR
+* Delete old undo-object
+       MOV  *R1,R0
+       BLWP @BUFREE
+*
+       JMP  RECORD_UNDO_ACTION
+* Add new element at end of undo list
+* Let R1 = address of element in undo list
+ADD_UNDO_ELEM
        BLWP @ARYADD
        JEQ  RTERR
        MOV  R0,@UNDLST
-* Store undo index
-       MOV  *R0,@UNDOIDX
-       DEC  @UNDOIDX
 * Create undo action and store its location in the undo list
+RECORD_UNDO_ACTION
        LI   R0,8
        BLWP @BUFALC
        JEQ  RTERR

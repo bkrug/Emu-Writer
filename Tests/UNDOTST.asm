@@ -656,7 +656,8 @@ KEY_DEL6B
 *
        BYTE DELKEY,DELKEY,DELKEY,DELKEY
        BYTE UNDKEY,RDOKEY,RDOKEY
-KEY_DEL6E EVEN
+KEY_DEL6E
+       EVEN
 
 * First 40 characters of the paragraph after delting
 DEL6_EXPECTED_TEXT
