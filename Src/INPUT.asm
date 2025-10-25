@@ -797,7 +797,8 @@ TEXT_RESTORE_DONE
 * Move undo position one location earlier
        DEC  @UNDOIDX
 * Set document status bit, as this is necessary regardless of what we are undoing
-       SOC  @STSWIN,*R13       
+       SOC  @STSTYP,*R13
+       SOC  @STSWIN,*R13
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT
@@ -838,6 +839,7 @@ TEXT_REDELETE_DONE
 * Move undo position one location earlier
        INC  @UNDOIDX
 * Set document status bit, as this is necessary regardless of what we are undoing
+       SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
 REDO_COMPLETE
        MOV  *R10+,R11
