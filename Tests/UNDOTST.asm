@@ -51,6 +51,9 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that only some text is restored when undo, undo, and redo are pressed.
        DATA TST5
        TEXT 'TST5  '
+* Assert that a redo action inbetween two undo actions, does not result in repeated redos.
+       DATA DEL6
+       TEXT 'DEL6  '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -573,6 +576,103 @@ TST5_EXPECTED_TEXT
 TST5_FAIL
        DATA 50
        TEXT 'Not all of the characters were restored correctly.'
+
+* Delete 6
+* --------
+* Assert that a redo action inbetween two undo actions, does not result in repeated redos.
+DEL6   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,40
+       MOV  R0,@CHRPAX
+*
+* Act
+*
+* Copy test keypresses to stream
+       LI   R0,KEY_DEL6A
+       LI   R1,KEY_DEL6B
+       CLR  R2
+       BL   @CPYKEY
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Copy test keypresses to stream
+       LI   R0,KEY_DEL6B
+       LI   R1,KEY_DEL6E
+       CLR  R2
+       BL   @CPYKEY
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+*
+* Assert
+*
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,DEL6_EXPECTED_TEXT+2
+       MOV  @DEL6_EXPECTED_TEXT,R2
+       LI   R3,DEL6_FAIL+2
+       MOV  @DEL6_FAIL,R4
+       BLWP @ABLCK
+* Assert cursor is at the same position
+* as the action we redid.
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,34
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_DEL6A
+       BYTE DELKEY,DELKEY
+*
+       BYTE FWDKEY
+*
+       BYTE DELKEY,DELKEY
+       BYTE UNDKEY,RDOKEY
+KEY_DEL6B
+*
+       BYTE BCKKEY,BCKKEY,BCKKEY,BCKKEY,BCKKEY,BCKKEY
+*
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY
+       BYTE UNDKEY,RDOKEY,RDOKEY
+KEY_DEL6E EVEN
+
+* First 40 characters of the paragraph after delting
+DEL6_EXPECTED_TEXT
+       DATA 72
+       TEXT 'Madison"s modern origins begin in , '
+       TEXT 'en former federal judge James Duane '
+       EVEN
+DEL6_FAIL
+       DATA 49
+       TEXT 'All actions should have been redone exactly once.'
+       EVEN
+
 
 * Empty 1
 * -------
