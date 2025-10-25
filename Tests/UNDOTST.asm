@@ -612,7 +612,6 @@ DEL6   DECT R10
 * because it will exit when switching between delete and arrow keys.
        BL   @INPUT
        BL   @INPUT
-       BL   @INPUT
 *
 * Assert
 *
@@ -650,9 +649,6 @@ DEL6   DECT R10
 KEY_DEL6A
        BYTE DELKEY,DELKEY
 *
-       BYTE FWDKEY
-*
-       BYTE DELKEY,DELKEY
        BYTE UNDKEY,RDOKEY
 KEY_DEL6B
 *
