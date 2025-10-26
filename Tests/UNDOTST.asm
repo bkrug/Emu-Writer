@@ -57,6 +57,9 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that a redo action inbetween two undo actions, does not result in repeated redos.
        DATA DEL6
        TEXT 'DEL6  '
+* Assert that deleting a carriage return can be undone.
+       DATA DEL7
+       TEXT 'DEL7  '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -161,6 +164,7 @@ TSTIN1
 * paragraph size, paragraph address,
 * wrap list size, wrap list address
 INTADR DATA PAR0A-PAR0,PAR0,PAR0-WRAP0,WRAP0
+       DATA PAR1A-PAR1,PAR1,PAR1-WRAP1,WRAP1
 INTADE
 
 WRAP0  DATA 20,1
@@ -190,6 +194,11 @@ PAR0   DATA PAR0A-PAR0-4,WRAP0
        TEXT 'Four Lakes", near present-day Middleton.'
 PAR0A
        EVEN
+
+WRAP1  DATA 0,1
+PAR1   DATA PAR1A-PAR1-4,WRAP1
+       TEXT 'That"s all I have to say about that.'
+PAR1A
 
 UNDLEN TEXT 'UNDLST length'
        EVEN
@@ -732,6 +741,78 @@ DEL6_FAIL
        DATA 49
        TEXT 'All actions should have been redone exactly once.'
        EVEN
+
+* Delete 7
+* --------
+* Assert that deleting a carriage return can be undone.
+DEL7   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set cursor postion to the end of a paragraph
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       MOV  @PAR0,@CHRPAX
+*
+* Act
+*
+* Copy test keypresses to stream
+       LI   R0,KEY_DEL7
+       LI   R1,KEY_DEL7E
+       CLR  R2
+       BL   @CPYKEY
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+*
+* Assert
+*
+       LI   R0,2
+       MOV  @PARLST,R1
+       MOV  *R1,R1
+       LI   R2,DEL7_PARA_COUNT+2
+       MOV  @DEL7_PARA_COUNT,R3
+       BLWP @AEQ
+*
+       MOV  @PARLST,R0
+       LI   R1,1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,DEL7_EXPECTED_TEXT+2
+       MOV  @DEL7_EXPECTED_TEXT,R2
+       LI   R3,DEL7_FAIL+2
+       MOV  @DEL7_FAIL,R4
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_DEL7
+       BYTE DELKEY,DELKEY
+*
+       BYTE UNDKEY,RDOKEY
+KEY_DEL7E
+       EVEN
+
+DEL7_PARA_COUNT
+       DATA 35
+       TEXT 'Expected two paragraphs after undo.'
+* First 40 characters of the paragraph after delting
+DEL7_EXPECTED_TEXT
+       DATA 36
+       TEXT 'That"s all I have to say about that.'
+       EVEN
+DEL7_FAIL
+       DATA 55
+       TEXT 'Text in the second paragraph should have been restored.'
+       EVEN
+
 
 
 * Empty 1
