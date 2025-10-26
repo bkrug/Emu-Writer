@@ -206,6 +206,10 @@ CREATE_UNDO_ACTION
        MOV  R1,*R10
        DECT R10
        MOV  R0,*R10
+* If the double-index is less than zero, the received key was invalid. Skip it
+       CLR  R2
+       MOV  R0,R0
+       JLT  NO_NEW_UNDO
 * Let R2 = undo action for this key
        AI   R0,UNDO_ACTIONS
        MOV  *R0,R2
@@ -214,9 +218,6 @@ CREATE_UNDO_ACTION
        JEQ  NO_NEW_UNDO
        C    @PREV_ACTION,R2
        JEQ  NO_NEW_UNDO
-* If the double-index is less than zero, the received key was invalid. Skip it
-       MOV  *R10,*R10
-       JLT  NO_NEW_UNDO
 * Yes, increment undo index.
        INC  @UNDOIDX
 * Is there already an old undo action at current index?

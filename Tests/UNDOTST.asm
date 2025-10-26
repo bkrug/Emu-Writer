@@ -37,8 +37,11 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 *
 * Test implementation details.
 * Assert undo list looks right.
-       DATA TST1
-       TEXT 'TST1  '
+       DATA LIST1
+       TEXT 'LIST1 '
+* Assert that an invalid key doesn't hurt anything.
+       DATA LIST2
+       TEXT 'LIST2 '
 * Assert that text is deleted when undo is not pressed.
        DATA TST2
        TEXT 'TST2  '
@@ -197,10 +200,10 @@ UNDLEN TEXT 'UNDLST length'
 *
 ****************************************
 
-* Test 1
-* ------
+* Undo List 1
+* -----------
 * Assert the undo list has two entries
-TST1   DECT R10
+LIST1  DECT R10
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
@@ -235,8 +238,8 @@ TST1   DECT R10
        BLWP @ARYADR
        MOV  *R1,R1
 *
-       LI   R0,EXPECT_TST1_UNDO1
-       LI   R2,EXPECT_TST1_UNDO2-EXPECT_TST1_UNDO1
+       LI   R0,EXPECT_LIST1_UNDO1
+       LI   R2,EXPECT_LIST1_UNDO2-EXPECT_LIST1_UNDO1
        LI   R3,FAIL_UNDO1+2
        MOV  @FAIL_UNDO1,R4
        BLWP @ABLCK
@@ -246,8 +249,8 @@ TST1   DECT R10
        BLWP @ARYADR
        MOV  *R1,R1
 *
-       LI   R0,EXPECT_TST1_UNDO2
-       LI   R2,EXPECT_TST1_UNDO2_END-EXPECT_TST1_UNDO2
+       LI   R0,EXPECT_LIST1_UNDO2
+       LI   R2,EXPECT_LIST1_UNDO2_END-EXPECT_LIST1_UNDO2
        LI   R3,FAIL_UNDO2+2
        MOV  @FAIL_UNDO2,R4
        BLWP @ABLCK
@@ -263,18 +266,18 @@ KEYL1  BYTE DELKEY,DELKEY,DELKEY,DELKEY
        BYTE DELKEY,DELKEY
 KEYL1E EVEN
 
-EXPECT_TST1_UNDO1
+EXPECT_LIST1_UNDO1
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,143           * Paragraph index, character index
        DATA 4               * String length
        TEXT 'land'          * Deleted Bytes
 
-EXPECT_TST1_UNDO2
+EXPECT_LIST1_UNDO2
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,140           * Paragraph index, character index
        DATA 2               * String length
        TEXT 'st'            * Deleted Bytes
-EXPECT_TST1_UNDO2_END
+EXPECT_LIST1_UNDO2_END
 
 FAIL_UNDO1
        DATA 27
@@ -284,6 +287,66 @@ FAIL_UNDO2
        DATA 27
        TEXT '2ND undo block has bad data'
        EVEN
+
+* Undo List 2
+* -----------
+* Assert that an invalid key doesn't hurt anything.
+LIST2  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,10
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_LIST2
+       LI   R1,KEY_LIST2E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+* Assert
+* Expect zero undo-operations in the list
+       CLR  R0
+       MOV  @UNDLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDLEN
+       LI   R3,13
+       BLWP @AEQ
+* Assert first undo operation records correct deleted letters
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,EXPECT_LIST2_TEXT+2
+       MOV  @EXPECT_LIST2_TEXT,R2
+       LI   R3,FAIL_LIST2+2
+       MOV  @FAIL_LIST2,R4
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_LIST2
+       BYTE -4
+KEY_LIST2E
+       EVEN       
+
+EXPECT_LIST2_TEXT
+       DATA 40
+       TEXT 'Madison"s modern origins begin in 1829, '       
+FAIL_LIST2
+       DATA 29
+       TEXT 'Text should not have changed.'
+
 
 * Test 2
 * ------
