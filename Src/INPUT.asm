@@ -706,17 +706,32 @@ REDO_OP
 * Restore PARINX and CHRPAX
        MOV  @UNDO_ANY_PARA(R7),@PARINX
        MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
-* Let R8 = number of characters to remove
-       MOV  @UNDO_DEL_LEN(R7),R8
-       JEQ  TEXT_REDELETE_DONE
+* Let R8 = address within delete text
+       MOV  R7,R8
+       AI   R8,UNDO_DEL_TEXT
+* Let R9 = address of end of text
+       MOV  R8,R9
+       A    @UNDO_DEL_LEN(R7),R9
 REDO_DEL_LOOP
-* No, continue set @DELETE_CHARACTER_IN_PARA parameters
+* Is there anything left to delete?
+       C    R8,R9
+       JEQ  TEXT_REDELETE_DONE
+* Is the next character a CR?
+       CB   *R8,@CRBYTE
+       JEQ  REDO_PARA_MERGE
+* set @DELETE_CHARACTER_IN_PARA parameters
        MOV  @UNDO_ANY_PARA(R7),R1
        MOV  @UNDO_ANY_CHAR(R7),R2
 * Delete character from paragraph
        BL   @DELETE_CHARACTER_IN_PARA
 * Is deletion complete?
-       DEC  R8
+       INC  R8
+       JNE  REDO_DEL_LOOP
+REDO_PARA_MERGE
+       MOV  @UNDO_ANY_PARA(R7),R1
+       BL   @MERGE_PARAGRAPHS
+* Is deletion complete?
+       INC  R8
        JNE  REDO_DEL_LOOP
 TEXT_REDELETE_DONE
 * Move undo position one location earlier
