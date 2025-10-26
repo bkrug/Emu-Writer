@@ -262,6 +262,48 @@ NO_NEW_UNDO
        MOV  *R10+,R11
        RT
 
+*
+* Reserve space for undo data
+*
+*
+* Input:
+*   R0 - number of bytes to reserve
+* Output:
+*   R0 - address of reserved bytes
+RESERVE_UNDO_SPACE
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R0,*R10
+* Yes, record this character in undo action.
+* Let R7 = address of undo action
+       MOV  @UNDO_ADDRESS,R7
+* Increase length of undo-action
+       LI   R1,UNDO_DEL_TEXT
+       A    @UNDO_DEL_LEN(R7),R1
+       A    R0,R1
+       MOV  R7,R0
+       BLWP @BUFGRW
+       JNE  !
+       B    @RTERR
+!
+* Store new address of undo-action
+       MOV  R0,R7
+       MOV  R0,@UNDO_ADDRESS
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  R7,*R1
+* Let R0 = address of reserved space
+       MOV  R7,R0
+       AI   R0,UNDO_DEL_TEXT
+       A    @UNDO_DEL_LEN(R7),R0
+* Record the new undo length
+       A    *R10+,@UNDO_DEL_LEN(R7)
+*
+       MOV  *R10+,R11
+       RT
+
 ROUTKY BYTE -1,-1
        BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
@@ -443,28 +485,10 @@ DELCHR DECT R10
 * Was a character to deleted?
        MOVB R2,R2
        JEQ  DELETE_CR
-* Yes, record this character in undo action.
-* Let R7 = address of undo action
-       MOV  @UNDO_ADDRESS,R7
-* Increase length of undo-action
-       MOV  R7,R0
-       LI   R1,UNDO_DEL_TEXT+1
-       A    @UNDO_DEL_LEN(R7),R1
-       BLWP @BUFGRW
-       JEQ  RTERR
-* Store new address of undo-action
-       MOV  R0,R7
-       MOV  R0,@UNDO_ADDRESS
-       MOV  @UNDLST,R0
-       MOV  @UNDOIDX,R1
-       BLWP @ARYADR
-       MOV  R7,*R1
-* Store deleted character to undo-action
-       MOV  R7,R8
-       AI   R8,UNDO_DEL_TEXT
-       A    @UNDO_DEL_LEN(R7),R8
-       MOVB R2,*R8
-       INC  @UNDO_DEL_LEN(R7)
+* Record deleted character
+       LI   R0,1
+       BL   @RESERVE_UNDO_SPACE
+       MOVB R2,*R0
 *
        MOV  *R10+,R11
        RT
