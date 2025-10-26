@@ -60,6 +60,9 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that deleting a carriage return can be undone.
        DATA DEL7
        TEXT 'DEL7  '
+* * Assert that deleting a carriage return can be redone.
+       DATA DEL8
+       TEXT 'DEL8  '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -814,7 +817,56 @@ DEL7_FAIL
        TEXT 'Text in the second paragraph should have been restored.'
        EVEN
 
+* Delete 8
+* --------
+* Assert that deleting a carriage return can be redone.
+DEL8   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set cursor postion to the end of a paragraph
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       MOV  @PAR0,@CHRPAX
+*
+* Act
+*
+* Copy test keypresses to stream
+       LI   R0,KEY_DEL8
+       LI   R1,KEY_DEL8E
+       CLR  R2
+       BL   @CPYKEY
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+*
+* Assert
+*
+       LI   R0,1
+       MOV  @PARLST,R1
+       MOV  *R1,R1
+       LI   R2,DEL8_PARA_COUNT+2
+       MOV  @DEL8_PARA_COUNT,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
 
+* input from the keyboard.
+KEY_DEL8
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY
+*
+       BYTE UNDKEY,RDOKEY
+KEY_DEL8E
+       EVEN
+
+DEL8_PARA_COUNT
+       DATA 34
+       TEXT 'Expected one paragraph after redo.'
+       EVEN
 
 * Empty 1
 * -------
