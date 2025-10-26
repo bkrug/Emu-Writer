@@ -324,75 +324,18 @@ FWRDRT SOC  @STSARW,*R13
 ISENTR DECT R10
        MOV  R11,*R10
 *
-       INC  @PARINX
-* Break a paragraph in two.
-* Create space in paragraph list.
-       MOV  @PARLST,R0
        MOV  @PARINX,R1
-       BLWP @ARYINS
-       JEQ  TERR0
-* Save addresses
-       MOV  R0,@PARLST
-       MOV  R1,R2
-* Allocate space for wraplist
-       LI   R0,1
-       BLWP @ARYALC
-       JEQ  TERR1
-* Save address
-       MOV  R0,R3
-* Calculate length of new paragraph.
-       DECT R1
-       MOV  *R1,R1
-       MOV  *R1,R4
-       S    @CHRPAX,R4
-* Allocate space for new paragraph
-       MOV  R4,R0
-       C    *R0+,*R0+
-       BLWP @BUFALC
-       JEQ  TERR2
-       MOV  R0,R5
-* Change length of old paragraph.
-       MOV  @CHRPAX,*R1
-* Put paragraph in list
-       MOV  R0,*R2
-* Set new paragraph length and wrap
-* list address
-       MOV  R4,*R5+
-       MOV  R3,*R5+
-* Copy part of old paragraph.
-       MOV  R4,R2
-       MOV  R1,R0
-       C    *R0+,*R0+
-       A    @CHRPAX,R0
-       MOV  R5,R1
-       BLWP @BUFCPY
-* Adjust CHRPAX
-* PARINX was incremented previously.
-       CLR  @CHRPAX
-* Shrink the previous paragraph.
-* Let R0 = address of paragraph.
-* Let R1 = required space.
-       MOV  @PARLST,R0
-       MOV  @PARINX,R1
-       DEC  R1
-       BLWP @ARYADR
-       MOV  *R1,R0
-       MOV  *R0,R1
-       C    *R1+,*R1+
+       MOV  @CHRPAX,R2
+       BL   @SPLIT_PARAGRAPH
 *
-       BLWP @BUFSRK
-* Update margins
-       LI   R2,1
-       MOV  @PARINX,R3
-       BL   @UPDMGN
-* Set document-status bit
-       SOC  @STSENT,*R13
+       INC  @PARINX
+       CLR  @CHRPAX
 * Is PARENT already set?
 * If not, let PARENT = the second paragraph to re-wrap
        MOV  @PARENT,R0
-       JNE  ENT1
+       JNE  !
        MOV  @PARINX,@PARENT
-ENT1
+!
 *
        MOV  *R10+,R11
        RT
@@ -925,6 +868,97 @@ MERGE_PARAGRAPHS_MARGIN_LOOP
        JEQ  MERGE_PARAGRAPHS_MARGIN_LOOP
 * 
 MERGE_PARAGRAPHS_RETURN
+       MOV  *R10+,R1
+       MOV  *R10+,R11
+       RT
+
+*
+* Split paragraph
+*
+* Input:
+*  R1 - index of paragraph
+*  R2 - character index of split
+*
+SPLIT_PARAGRAPH
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R1,*R10       
+       DECT R10
+       MOV  R2,*R10
+* Create space in paragraph list.
+       MOV  @PARLST,R0
+       INC  R1
+       BLWP @ARYINS
+       JNE  !
+       B    @TERR0
+!
+* Save (possibly new) addresses of paragraph list
+       MOV  R0,@PARLST
+* Let R3 = address of old entry in paragraph list
+* Let R4 = address of new entry in paragraph list
+       MOV  R1,R4
+       MOV  R1,R3
+       DECT R3
+* Allocate space for wraplist
+       LI   R0,1
+       BLWP @ARYALC
+       JNE  !
+       B    @TERR1
+!
+* Let R8 = address of new wrap list
+       MOV  R0,R8
+* Let R5 = Address of old paragraph.
+* Let R7 = Length of new paragraph.
+* (stack pointer currently points to split position)
+       MOV  *R3,R5
+       MOV  *R5,R7
+       S    *R10,R7
+* Allocate space for new paragraph (including paragraph header)
+       MOV  R7,R0
+       C    *R0+,*R0+
+       BLWP @BUFALC
+       JNE  !
+       B    @TERR2
+!
+* Let R6 = address of new paragraph
+       MOV  R0,R6
+* Put new paragraph in list
+       MOV  R6,*R4
+* Set new paragraph length and wrap list address
+       MOV  R7,*R6
+       MOV  R8,@2(R6)
+* Change length of old paragraph.
+* (stack pointer currently points to split position)
+       MOV  *R10,*R5
+* Copy part of old paragraph.
+* Let R0 = address of text from old paragraph
+* Let R1 = address of text of new paragraph
+* Let R2 = length of new paragraph
+       MOV  R5,R0
+       C    *R0+,*R0+
+       A    *R10,R0
+       MOV  R6,R1
+       C    *R1+,*R1+
+       MOV  R7,R2
+       BLWP @BUFCPY
+* Shrink the previous paragraph.
+* Let R0 = address of paragrah
+* Let R1 = length of paragraph + paragrah header
+       MOV  R5,R0
+       MOV  *R5,R1
+       C    *R1+,*R1+
+       BLWP @BUFSRK
+* Update margins
+       LI   R2,1
+       MOV  @2(R10),R3
+       INC  R3
+       BL   @UPDMGN
+* Set document-status bit
+       SOC  @STSENT,*R13
+*
+SPLIT_PARA_RETURN
+       MOV  *R10+,R2
        MOV  *R10+,R1
        MOV  *R10+,R11
        RT
