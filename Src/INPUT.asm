@@ -284,6 +284,7 @@ RESERVE_UNDO_SPACE
        MOV  *R1,R7
        MOV  R1,R3
 * Increase length of undo-action
+* Let R0 = new address of undo-action
        MOV  R7,R0
        LI   R1,UNDO_DEL_TEXT
        A    @UNDO_DEL_LEN(R7),R1
@@ -296,7 +297,6 @@ RESERVE_UNDO_SPACE
        MOV  R0,R7
        MOV  R0,*R3
 * Let R0 = address of reserved space
-       MOV  R7,R0
        AI   R0,UNDO_DEL_TEXT
        A    @UNDO_DEL_LEN(R7),R0
 * Update the length of the undo text
