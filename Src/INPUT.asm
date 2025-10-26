@@ -77,19 +77,10 @@ INPUT1 C    @KEYRD,@KEYWRT
        BL   @GET_KEY_ROUTINE
 * If the input mode changed, leave the input routine
        JEQ  INPTRT
-* Store routine's double-index to the stack
-       DECT R10
-       MOV  R0,*R10
-* If the double-index is less than zero, the received key was invalid. Skip it
-       JLT  INPUT2
 * Create an undo entry if required for the given key
        BL   @CREATE_UNDO_ACTION
 * Call the routine associated with the current key
 INPUT2 BL   *R1
-* Note the most recent action
-       MOV  *R10+,R0
-       AI   R0,UNDO_ACTIONS
-       MOV  *R0,@PREV_ACTION
 * Increment the key read position
 INPUT3 BL   @INCKRD
        JMP  INPUT1
@@ -216,12 +207,16 @@ CREATE_UNDO_ACTION
        DECT R10
        MOV  R0,*R10
 * Let R2 = undo action for this key
-* Do we need to begin a new undo action?
        AI   R0,UNDO_ACTIONS
        MOV  *R0,R2
+* If the undo action is 0 or the same as the old one,
+* do not create a new undo object.
        JEQ  NO_NEW_UNDO
        C    @PREV_ACTION,R2
        JEQ  NO_NEW_UNDO
+* If the double-index is less than zero, the received key was invalid. Skip it
+       MOV  *R10,*R10
+       JLT  NO_NEW_UNDO
 * Yes, increment undo index.
        INC  @UNDOIDX
 * Is there already an old undo action at current index?
@@ -257,8 +252,10 @@ CREATE_NEW_UNDO
        MOV  @PARINX,*R0+
        MOV  @CHRPAX,*R0+
        CLR  *R0                    * length of delete text
-*
 NO_NEW_UNDO
+* Record the current undo action
+       MOV  R2,@PREV_ACTION
+*
        MOV  *R10+,R0
        MOV  *R10+,R1
        MOV  *R10+,R11
