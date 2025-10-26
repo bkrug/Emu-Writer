@@ -794,15 +794,16 @@ DEL7   DECT R10
 
 * input from the keyboard.
 KEY_DEL7
-       BYTE DELKEY,DELKEY
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY
 *
-       BYTE UNDKEY,RDOKEY
+       BYTE UNDKEY
 KEY_DEL7E
        EVEN
 
 DEL7_PARA_COUNT
        DATA 35
        TEXT 'Expected two paragraphs after undo.'
+       EVEN
 * First 40 characters of the paragraph after delting
 DEL7_EXPECTED_TEXT
        DATA 36

@@ -1,4 +1,6 @@
+*
 * Key codes
+*
 FCTN1  EQU  >03
 FCTN2  EQU  >04
 FCTN3  EQU  >07
@@ -22,6 +24,20 @@ CTRLZ  EQU  >9A
 CTRLSM EQU  >9C        * CTRL+Semicolon
 CTRL8  EQU  >9E
 
+SPCBAR EQU  >20
+
+*
+* Control codes
+*
+VRTCHR EQU  >01
+WINCHR EQU  >02
+LF     EQU  >0A
+CR     EQU  >0D
+INV    EQU  >80
+
+*
+* Alias keys
+*
 DELKEY EQU  FCTN1
 INSKEY EQU  FCTN2
 ERSKEY EQU  FCTN3
@@ -33,17 +49,7 @@ DWNKEY EQU  FCTNX
 UPPKEY EQU  FCTNE
 UNDKEY EQU  CTRLZ
 RDOKEY EQU  CTRLY
-ENTER  EQU  >0D
-SPCBAR EQU  >20
-
-*
-* Control codes
-*
-VRTCHR EQU  >01
-WINCHR EQU  >02
-LF     EQU  >0A
-CR     EQU  >0D
-INV    EQU  >80
+ENTER  EQU  CR
 
 * If key pressed, go to menu
 NXTMNU EQU  0

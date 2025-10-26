@@ -305,6 +305,7 @@ RESERVE_UNDO_SPACE
        MOV  *R10+,R11
        RT
 
+CRBYTE BYTE ENTER
 ROUTKY BYTE -1,-1
        BYTE DELKEY,INSKEY,BCKKEY,FWDKEY
        BYTE UPPKEY,DWNKEY,ENTER,ERSKEY
@@ -435,9 +436,11 @@ ISENTR DECT R10
        MOV  @PARINX,R1
        MOV  @CHRPAX,R2
        BL   @SPLIT_PARAGRAPH
-*
+* Update cursor position
        INC  @PARINX
        CLR  @CHRPAX
+* Set document-status bit
+       SOC  @STSENT,*R13
 * Is PARENT already set?
 * If not, let PARENT = the second paragraph to re-wrap
        MOV  @PARENT,R0
@@ -482,10 +485,17 @@ DELCHR DECT R10
        MOV  @PARINX,R1
        MOV  @CHRPAX,R2
 * Delete character from paragraph
+* Sets R2 (high byte) = deleted character
        BL   @DELETE_CHARACTER_IN_PARA
 * Was a character to deleted?
        MOVB R2,R2
-       JEQ  DELETE_CR
+       JNE  RECORD_DELETE
+* No, cursor is either at the end of a paragraph or of the document.
+       MOV  @PARINX,R1
+       BL   @MERGE_PARAGRAPHS
+* Set delete character as a carriage return
+       MOVB @CRBYTE,R2
+RECORD_DELETE
 * Record deleted character
        LI   R0,1
        BL   @RESERVE_UNDO_SPACE
@@ -494,13 +504,6 @@ DELCHR DECT R10
        MOV  *R10+,R11
        RT
 *
-DELETE_CR
-* Delete a carriage return from current paragraph
-       MOV  @PARINX,R1
-       BL   @MERGE_PARAGRAPHS
-* 
-       MOV  *R10+,R11
-       RT
 
 *
 * Overwrite text in paragraph
@@ -653,11 +656,24 @@ UNDO_OP
 TEXT_RESTORE_LOOP
        C    R7,R8
        JHE  TEXT_RESTORE_DONE
-* No, insert one character
+* No, let R5 = character to insert
        MOVB *R7+,R5
+* Insert a character or a carriage return?
+       CB   R5,@CRBYTE
+       JEQ  RESTORE_CR
+* Insert one character
        BL   @INSERT_CHARACTER_IN_PARA
 * Repeat
        INC  R4
+       JMP  TEXT_RESTORE_LOOP
+* Insert a carraige return
+RESTORE_CR
+       MOV  @PARINX,R1
+       MOV  R4,R2
+       BL   @SPLIT_PARAGRAPH
+* Reset insert position
+       INC  R3
+       CLR  R4
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
 * Move undo position one location earlier
@@ -933,6 +949,18 @@ SPLIT_PARAGRAPH
        DECT R10
        MOV  R11,*R10
        DECT R10
+       MOV  R8,*R10
+       DECT R10
+       MOV  R7,*R10
+       DECT R10
+       MOV  R6,*R10
+       DECT R10
+       MOV  R5,*R10
+       DECT R10
+       MOV  R4,*R10
+       DECT R10
+       MOV  R3,*R10
+       DECT R10
        MOV  R1,*R10       
        DECT R10
        MOV  R2,*R10
@@ -1004,12 +1032,16 @@ SPLIT_PARAGRAPH
        MOV  @2(R10),R3
        INC  R3
        BL   @UPDMGN
-* Set document-status bit
-       SOC  @STSENT,*R13
 *
 SPLIT_PARA_RETURN
        MOV  *R10+,R2
        MOV  *R10+,R1
+       MOV  *R10+,R3
+       MOV  *R10+,R4
+       MOV  *R10+,R5
+       MOV  *R10+,R6
+       MOV  *R10+,R7
+       MOV  *R10+,R8
        MOV  *R10+,R11
        RT
 
