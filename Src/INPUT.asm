@@ -436,9 +436,6 @@ RTERR  MOV  @KEYRD,@KEYWRT
 *
 DELCHR DECT R10
        MOV  R11,*R10
-* TODO: Consider putting this in @DELETE_CHARACTER_IN_PARA
-* Set document status bit
-       SOC  @STSTYP,*R13
 * Let R1 = Address in Paragraph list
 * Let R2 = CHRPAX
        MOV  @PARINX,R1
@@ -685,9 +682,8 @@ REDO_DEL_LOOP
 TEXT_REDELETE_DONE
 * Move undo position one location earlier
        INC  @UNDOIDX
-* TODO: This should probably be the job of @DELETE_CHARACTER_IN_PARA
-* Set document status bit, as this is necessary regardless of what we are undoing
-       SOC  @STSTYP,*R13
+* Set document status bit. We have to assume that the window moved because
+* the redo action can move the user to a different part of the document.
        SOC  @STSWIN,*R13
 REDO_COMPLETE
        MOV  *R10+,R11
@@ -800,6 +796,8 @@ DELC1  MOVB *R5+,*R4+
        MOV  *R3,R1
        C    *R1+,*R1+
        BLWP @BUFSRK
+* Set document status bit
+       SOC  @STSTYP,*R13
 *
 DELETE_CHARACTER_RETURN
        MOV  *R10+,R11
