@@ -276,13 +276,17 @@ RESERVE_UNDO_SPACE
        DECT R10
        MOV  R0,*R10
 * Yes, record this character in undo action.
-* Let R7 = address of undo action
-       MOV  @UNDO_ADDRESS,R7
+* Let R3 = address in undo list
+* Let R4 = address of undo action
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
 * Increase length of undo-action
+       MOV  R7,R0
        LI   R1,UNDO_DEL_TEXT
        A    @UNDO_DEL_LEN(R7),R1
-       A    R0,R1
-       MOV  R7,R0
+       A    *R10,R1
        BLWP @BUFGRW
        JNE  !
        B    @RTERR
@@ -298,7 +302,7 @@ RESERVE_UNDO_SPACE
        MOV  R7,R0
        AI   R0,UNDO_DEL_TEXT
        A    @UNDO_DEL_LEN(R7),R0
-* Record the new undo length
+* Update the length of the undo text
        A    *R10+,@UNDO_DEL_LEN(R7)
 *
        MOV  *R10+,R11
