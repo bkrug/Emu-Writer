@@ -277,11 +277,12 @@ RESERVE_UNDO_SPACE
        MOV  R0,*R10
 * Yes, record this character in undo action.
 * Let R3 = address in undo list
-* Let R4 = address of undo action
+* Let R7 = address of undo action
        MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
+       MOV  R1,R3
 * Increase length of undo-action
        MOV  R7,R0
        LI   R1,UNDO_DEL_TEXT
@@ -291,13 +292,9 @@ RESERVE_UNDO_SPACE
        JNE  !
        B    @RTERR
 !
-* Store new address of undo-action
+* Store new address of undo-action in the undo list
        MOV  R0,R7
-       MOV  R0,@UNDO_ADDRESS
-       MOV  @UNDLST,R0
-       MOV  @UNDOIDX,R1
-       BLWP @ARYADR
-       MOV  R7,*R1
+       MOV  R0,*R3
 * Let R0 = address of reserved space
        MOV  R7,R0
        AI   R0,UNDO_DEL_TEXT
