@@ -679,9 +679,8 @@ RESTORE_CR
 * Set document-status bit
        SOC  @STSENT,*R13
 * Set the first paragraph to rewrap
-       C    @WRAP_START,R3
-       JEQ  !
-       JL   !
+       MOV  @WRAP_START,R0
+       JNE  !
        MOV  R3,@WRAP_START
 !
 * Update insert position
