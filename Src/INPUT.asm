@@ -146,7 +146,7 @@ ROUTINE_SELECTED
 * Let R3 = a value from the HRZRPL list.
        LI   R3,HRZRPL
        A    R0,R3
-       MOV  *R3,R3
+       MOVB *R3,R3
 * Does the value from HRZRPL suggest that we should clear
 * the perferred horizontal position for moving the cursor up and down by a line?
        JNE  !
