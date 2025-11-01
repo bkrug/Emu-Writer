@@ -680,6 +680,7 @@ RESTORE_CR
        SOC  @STSENT,*R13
 * Set the first paragraph to rewrap
        C    @WRAP_START,R3
+       JEQ  !
        JL   !
        MOV  R3,@WRAP_START
 !
