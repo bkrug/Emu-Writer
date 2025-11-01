@@ -670,8 +670,10 @@ TEXT_RESTORE_LOOP
        INC  R4
        JMP  TEXT_RESTORE_LOOP
 * Insert a carraige return
+* Let param R1 = paragraph index
+* Let param R2 = char index to split at
 RESTORE_CR
-       MOV  @PARINX,R1
+       MOV  R3,R1
        MOV  R4,R2
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
