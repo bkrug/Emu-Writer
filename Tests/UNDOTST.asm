@@ -43,17 +43,17 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
        DATA LIST2
        TEXT 'LIST2 '
 * Assert that text is deleted when undo is not pressed.
-       DATA TST2
-       TEXT 'TST2  '
+       DATA DEL2
+       TEXT 'DEL2  '
 * Assert that text is restored when undo is pressed once.
-       DATA TST3
-       TEXT 'TST3  '
+       DATA DEL3
+       TEXT 'DEL3  '
 * Assert that text is restored when undo is pressed twice.
-       DATA TST4
-       TEXT 'TST4  '
+       DATA DEL4
+       TEXT 'DEL4  '
 * Assert that only some text is restored when undo, undo, and redo are pressed.
-       DATA TST5
-       TEXT 'TST5  '
+       DATA DEL5
+       TEXT 'DEL5  '
 * Assert that a redo action inbetween two undo actions, does not result in repeated redos.
        DATA DEL6
        TEXT 'DEL6  '
@@ -384,7 +384,7 @@ FAIL_LIST2
 * Test 2
 * ------
 * Assert that text is deleted when undo is not pressed.
-TST2   DECT R10
+DEL2   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
@@ -414,10 +414,10 @@ TST2   DECT R10
        MOV  *R1,R1
        AI   R1,PARAGRAPH_TEXT_OFFSET
 *
-       LI   R0,TST2_EXPECTED_TEXT
+       LI   R0,DEL2_EXPECTED_TEXT
        LI   R2,80
-       LI   R3,TST2_FAIL+2
-       MOV  @TST2_FAIL,R4
+       LI   R3,DEL2_FAIL+2
+       MOV  @DEL2_FAIL,R4
        BLWP @ABLCK
 *
        CLR  R0
@@ -444,11 +444,11 @@ KEYL2  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
 KEYL2E EVEN
 
 * First 80 characters of the paragraph after delting
-TST2_EXPECTED_TEXT
+DEL2_EXPECTED_TEXT
        TEXT 'Madison"s modern origins begin in 1829, '
        TEXT 'formfederal judge James Duane Doty purch'
        EVEN
-TST2_FAIL
+DEL2_FAIL
        DATA 49
        TEXT 'Not all of the characters were deleted correctly.'
        EVEN
@@ -465,7 +465,7 @@ CHAR_IDX_FAIL
 * Test 3
 * ------
 * Assert that text is restored when undo is pressed once.
-TST3   DECT R10
+DEL3   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
@@ -495,10 +495,10 @@ TST3   DECT R10
        MOV  *R1,R1
        AI   R1,PARAGRAPH_TEXT_OFFSET
 *
-       LI   R0,TST3_EXPECTED_TEXT
+       LI   R0,DEL3_EXPECTED_TEXT
        LI   R2,80
-       LI   R3,TST3_FAIL+2
-       MOV  @TST3_FAIL,R4
+       LI   R3,DEL3_FAIL+2
+       MOV  @DEL3_FAIL,R4
        BLWP @ABLCK
 *
        CLR  R0
@@ -524,17 +524,17 @@ KEYL3  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
 KEYL3E EVEN
 
 * First 80 characters of the paragraph after delting
-TST3_EXPECTED_TEXT
+DEL3_EXPECTED_TEXT
        TEXT 'Madison"s modern origins begin in 1829, '
        TEXT 'former federal judge James Duane Doty pu'
-TST3_FAIL
+DEL3_FAIL
        DATA 49
        TEXT 'Some characters should have been restored.'
 
 * Test 4
 * ------
 * Assert that text is restored when undo is pressed twice.
-TST4   DECT R10
+DEL4   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
@@ -564,10 +564,10 @@ TST4   DECT R10
        MOV  *R1,R1
        AI   R1,PARAGRAPH_TEXT_OFFSET
 *
-       LI   R0,TST4_EXPECTED_TEXT
+       LI   R0,DEL4_EXPECTED_TEXT
        LI   R2,80
-       LI   R3,TST4_FAIL+2
-       MOV  @TST4_FAIL,R4
+       LI   R3,DEL4_FAIL+2
+       MOV  @DEL4_FAIL,R4
        BLWP @ABLCK
 *
        CLR  R0
@@ -595,17 +595,17 @@ KEYL4  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
 KEYL4E EVEN
 
 * First 80 characters of the paragraph after delting
-TST4_EXPECTED_TEXT
+DEL4_EXPECTED_TEXT
        TEXT 'Madison"s modern origins begin in 1829, '
        TEXT 'when former federal judge James Duane Do'
-TST4_FAIL
+DEL4_FAIL
        DATA 50
        TEXT 'Not all of the characters were restored correctly.'
 
 * Test 5
 * ------
 * Assert that only some text is restored when undo, undo, and redo are pressed.
-TST5   DECT R10
+DEL5   DECT R10
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
@@ -635,10 +635,10 @@ TST5   DECT R10
        MOV  *R1,R1
        AI   R1,PARAGRAPH_TEXT_OFFSET
 *
-       LI   R0,TST5_EXPECTED_TEXT
+       LI   R0,DEL5_EXPECTED_TEXT
        LI   R2,40
-       LI   R3,TST5_FAIL+2
-       MOV  @TST5_FAIL,R4
+       LI   R3,DEL5_FAIL+2
+       MOV  @DEL5_FAIL,R4
        BLWP @ABLCK
 * Assert cursor is at the same position
 * as the action we redid.
@@ -667,9 +667,9 @@ KEYL5  BYTE DELKEY,DELKEY
 KEYL5E EVEN
 
 * First 40 characters of the paragraph after delting
-TST5_EXPECTED_TEXT
+DEL5_EXPECTED_TEXT
        TEXT 'Madison"s dern origins begin in 1829, wh'
-TST5_FAIL
+DEL5_FAIL
        DATA 50
        TEXT 'Not all of the characters were restored correctly.'
 
