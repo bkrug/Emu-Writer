@@ -678,18 +678,20 @@ RESTORE_CR
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
        SOC  @STSENT,*R13
-* Is this the first CR to be restored?
-       MOV  @WRAP_START,R0
-       JNE  !
-* Yes, set the first paragraph to rewrap
-       MOV  @PARINX,@WRAP_START
-       MOV  @PARINX,@WRAP_END
+* Set the first paragraph to rewrap
+       C    @WRAP_START,R3
+       JL   !
+       MOV  R3,@WRAP_START
 !
-* Note that one more paragraph needs to be re-wrapped
-       INC  @WRAP_END
-* Reset insert position
+* Update insert position
        INC  R3
        CLR  R4
+* Set the last paragraph to rewrap
+       C    @WRAP_END,R3
+       JH   !
+       MOV  R3,@WRAP_END
+!
+*
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
 * Move undo position one location earlier
