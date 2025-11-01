@@ -42,6 +42,12 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that an invalid key doesn't hurt anything.
        DATA LIST2
        TEXT 'LIST2 '
+* Assert that the undo/redo list will not exceed 16
+*       DATA LIST3
+*       TEXT 'LIST3 '
+* Assert that the undo/redo list total characters will not exceed 2000
+*       DATA LIST4
+*       TEXT 'LIST4 '
 * Assert that text is deleted when undo is not pressed.
        DATA DEL2
        TEXT 'DEL2  '
