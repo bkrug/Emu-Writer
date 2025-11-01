@@ -442,7 +442,8 @@ ISENTR DECT R10
 * Set document-status bit
        SOC  @STSENT,*R13
 * Is PARENT already set?
-* If not, let PARENT = the second paragraph to re-wrap
+* If not, let PARENT = the current paragraph so it and preceeding paragraph can be re-wrapped.
+* TODO: consider decrementing @PARENT here, so that it doesn't need to be decremented in DISP or MAIN.
        MOV  @PARENT,R0
        JNE  !
        MOV  @PARINX,@PARENT
@@ -671,6 +672,16 @@ RESTORE_CR
        MOV  @PARINX,R1
        MOV  R4,R2
        BL   @SPLIT_PARAGRAPH
+* Set document-status bit
+       SOC  @STSENT,*R13
+* Is PARENT already set?
+* If not, let PARENT = the current paragraph so it and preceeding paragraph can be re-wrapped.
+* TODO: If an undo or redo operation splits several paragraphs, this won't lead to enough word-wrapping.
+       MOV  @PARENT,R0
+       JNE  !
+       MOV  @PARINX,@PARENT
+       INC  @PARENT
+!
 * Reset insert position
        INC  R3
        CLR  R4
@@ -876,6 +887,7 @@ MERGE_PARAGRAPHS
        C    R5,*R0
        JEQ  MERGE_PARAGRAPHS_RETURN
 * Set document status
+       SOC  @STSTYP,*R13
        SOC  @STSDCR,*R13
 * Let R1 = address in pargraph list of earlier paragraph
 * Let R3 = address of earlier paragraph
