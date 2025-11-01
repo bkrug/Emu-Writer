@@ -60,9 +60,12 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that deleting a carriage return can be undone.
        DATA DEL7
        TEXT 'DEL7  '
-* * Assert that deleting a carriage return can be redone.
+* Assert that deleting a carriage return can be redone.
        DATA DEL8
        TEXT 'DEL8  '
+* Assert that deletion of two non-consequtive CRs can be undon.
+       DATA DEL9
+       TEXT 'DEL9  '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -168,6 +171,9 @@ TSTIN1
 * wrap list size, wrap list address
 INTADR DATA PAR0A-PAR0,PAR0,PAR0-WRAP0,WRAP0
        DATA PAR1A-PAR1,PAR1,PAR1-WRAP1,WRAP1
+       DATA PAR2A-PAR2,PAR2,PAR2-WRAP2,WRAP2
+       DATA PAR3A-PAR3,PAR3,PAR3-WRAP3,WRAP3
+       DATA PAR4A-PAR4,PAR4,PAR4-WRAP4,WRAP4
 INTADE
 
 WRAP0  DATA 20,1
@@ -202,6 +208,21 @@ WRAP1  DATA 0,1
 PAR1   DATA PAR1A-PAR1-4,WRAP1
        TEXT 'That"s all I have to say about that.'
 PAR1A
+
+WRAP2  DATA 0,1
+PAR2   DATA PAR2A-PAR2-4,WRAP2
+       TEXT '1'
+PAR2A
+
+WRAP3  DATA 0,1
+PAR3   DATA PAR3A-PAR3-4,WRAP3
+       TEXT '2'
+PAR3A
+
+WRAP4  DATA 0,1
+PAR4   DATA PAR4A-PAR4-4,WRAP4
+       TEXT '3'
+PAR4A
 
 UNDLEN TEXT 'UNDLST length'
        EVEN
@@ -773,7 +794,7 @@ DEL7   DECT R10
 *
 * Assert
 *
-       LI   R0,2
+       LI   R0,(INTADE-INTADR)/8
        MOV  @PARLST,R1
        MOV  *R1,R1
        LI   R2,DEL7_PARA_COUNT+2
@@ -804,8 +825,8 @@ KEY_DEL7E
        EVEN
 
 DEL7_PARA_COUNT
-       DATA 35
-       TEXT 'Expected two paragraphs after undo.'
+       DATA 45
+       TEXT 'Expected original paragraph count after undo.'
        EVEN
 * First 40 characters of the paragraph after delting
 DEL7_EXPECTED_TEXT
@@ -845,7 +866,7 @@ DEL8   DECT R10
 *
 * Assert
 *
-       LI   R0,1
+       LI   R0,(INTADE-INTADR)/8-1
        MOV  @PARLST,R1
        MOV  *R1,R1
        LI   R2,DEL8_PARA_COUNT+2
@@ -864,9 +885,87 @@ KEY_DEL8E
        EVEN
 
 DEL8_PARA_COUNT
-       DATA 34
-       TEXT 'Expected one paragraph after redo.'
+       DATA 40
+       TEXT 'Expected one fewer paragraph after redo.'
        EVEN
+
+* Delete 9
+* --------
+* Assert that deletion of two non-consequtive CRs can be undon.
+DEL9   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set cursor the beginning of a one character paragraph
+       CLR  @INSTMD
+       LI   R0,2
+       MOV  R0,@PARINX
+       CLR  @CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_DEL9
+       LI   R1,KEY_DEL9E
+       CLR  R2
+       BL   @CPYKEY
+*
+* Act
+*
+* Run the input routine 3 times.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+*
+* Assert
+*
+* Assert that paragraph at index 2 contains "1"
+       MOV  @PARLST,R0
+       LI   R1,2
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+       MOVB *R1,R1
+       ANDI R1,>FF00
+*
+       CLR  R0
+       MOVB @PAR2+PARAGRAPH_TEXT_OFFSET,R0
+       LI   R2,DEL9_ONE_MSG+2
+       MOV  @DEL9_ONE_MSG,R3
+       BLWP @AEQ
+* Assert that paragraph at index 3 contains "2"
+       MOV  @PARLST,R0
+       LI   R1,3
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+       MOVB *R1,R1
+       ANDI R1,>FF00
+*
+       CLR  R0
+       MOVB @PAR3+PARAGRAPH_TEXT_OFFSET,R0
+       LI   R2,DEL9_TWO_MSG+2
+       MOV  @DEL9_TWO_MSG,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_DEL9
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY
+*
+       BYTE UNDKEY
+KEY_DEL9E
+       EVEN
+
+DEL9_ONE_MSG
+       DATA 23
+       TEXT 'Expected character "1".'
+       EVEN
+DEL9_TWO_MSG
+       DATA 23
+       TEXT 'Expected character "2".'
+       EVEN
+
+
 
 * Empty 1
 * -------
