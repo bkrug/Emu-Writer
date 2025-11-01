@@ -18,7 +18,7 @@
        REF  MNUINT,PRINT
 
 * variables just for INPUT
-       REF  PARENT
+       REF  WRAP_START,WRAP_END
        REF  PARINX,CHRPAX
        REF  INSTMD,INPTMD
        REF  KEYWRT,KEYRD
@@ -441,13 +441,15 @@ ISENTR DECT R10
        CLR  @CHRPAX
 * Set document-status bit
        SOC  @STSENT,*R13
-* Is PARENT already set?
-* If not, let PARENT = the current paragraph so it and preceeding paragraph can be re-wrapped.
-* TODO: consider decrementing @PARENT here, so that it doesn't need to be decremented in DISP or MAIN.
-       MOV  @PARENT,R0
+* WRAP_START may already be set if someone presses enter twice in a row
+* Otherwise, set it here
+       MOV  @WRAP_START,R0
        JNE  !
-       MOV  @PARINX,@PARENT
+       MOV  @PARINX,@WRAP_START
+       DEC  @WRAP_START
 !
+* Specify that the current paragraph is the last one to re-wrap
+       MOV  @PARINX,@WRAP_END
 *
        MOV  *R10+,R11
        RT
@@ -674,14 +676,15 @@ RESTORE_CR
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
        SOC  @STSENT,*R13
-* Is PARENT already set?
-* If not, let PARENT = the current paragraph so it and preceeding paragraph can be re-wrapped.
-* TODO: If an undo or redo operation splits several paragraphs, this won't lead to enough word-wrapping.
-       MOV  @PARENT,R0
+* Is this the first CR to be restored?
+       MOV  @WRAP_START,R0
        JNE  !
-       MOV  @PARINX,@PARENT
-       INC  @PARENT
+* Yes, set the first paragraph to rewrap
+       MOV  @PARINX,@WRAP_START
+       MOV  @PARINX,@WRAP_END
 !
+* Note that one more paragraph needs to be re-wrapped
+       INC  @WRAP_END
 * Reset insert position
        INC  R3
        CLR  R4

@@ -16,7 +16,8 @@
 *
        REF  DISPWS
        REF  PARLST,FMTLST,MGNLST
-       REF  PARINX,PARENT
+       REF  WRAP_START
+       REF  PARINX
        REF  WINOFF,WINPAR,WINLIN,WINMGN
        REF  WINMOD
        REF  STSTYP,STSENT,STSWIN
@@ -157,8 +158,7 @@ SP1    MOV  @WINPAR,R9
        RT
 * The user pressed enter, so start from
 * a previous paragraph.
-SP2    MOV  @PARENT,R9
-       DEC  R9
+SP2    MOV  @WRAP_START,R9
        RT
        
 *

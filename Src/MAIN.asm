@@ -5,7 +5,8 @@
        REF  KEYINT
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
-       REF  PARENT,PARINX,CHRPAX
+       REF  WRAP_START,WRAP_END
+       REF  PARINX,CHRPAX
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  PARLST,MGNLST,FMTLST
@@ -34,7 +35,8 @@ MAIN
        CLR  R0
        MOV  R0,@DOCSTS
 * Clear the "Paragraph Enter" index
-       CLR  @PARENT
+       CLR  @WRAP_START
+       CLR  @WRAP_END
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
        JEQ  MAIN1
@@ -147,10 +149,11 @@ MYWRAP
        COC  @STSENT,R2
        JNE  WRAP1
 * Let R3 = first paragraph to wrap
-* If PARENT != 0, then it contains the first new paragraph from pressing enter.
-* Let's re-wrap the paragraph right before it, too.
-       MOV  @PARENT,R3
-       DEC  R3
+* Let R4 = last paragraph to wrap
+* If WRAP_START != 0, then it contains the first new paragraph from pressing enter.
+       MOV  @WRAP_START,R3
+       JEQ  WRAP1
+       MOV  @WRAP_END,R4
 *
 	JMP  WRAP2
 * If the user typed something,
@@ -158,12 +161,14 @@ MYWRAP
 WRAP1  COC  @STSTYP,R2
        JNE  WRAP3
 * Let R3 = first paragraph to wrap
+* Let R4 = last paragraph to wrap
        MOV  @PARINX,R3
+       MOV  R3,R4
 * Wrap each paragraph up to the current one
 WRAP2  MOV  R3,R0
        BLWP @WRAP
        INC  R3
-       C    R3,@PARINX
+       C    R3,R4
        JLE  WRAP2
 *
 WRAP3  RT
