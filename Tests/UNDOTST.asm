@@ -46,8 +46,8 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
        DATA LIST3
        TEXT 'LIST3 '
 * Assert that an undo object larger than 255 bytes will split in two
-*       DATA LIST4
-*       TEXT 'LIST4 '
+       DATA LIST4
+       TEXT 'LIST4 '
 * Assert that the undo/redo list total characters will not exceed 2000
 *       DATA LIST5
 *       TEXT 'LIST5 '
@@ -523,8 +523,118 @@ LIST3_YOUNGEST_MSG
        TEXT 'New undo-object not as expected.'
        EVEN
 
-* Test 2
-* ------
+* Undo List 4
+* -----------
+* Assert that an undo object larger than 255 bytes will split in two
+LIST4  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Populate undo list with 1 item containing 254 characters
+       MOV  @UNDLST,R0
+       BLWP @ARYADD
+       MOV  R0,@UNDLST
+       MOV  R1,R4
+*
+       LI   R0,UNDO_PAYLOAD+254
+       BLWP @BUFALC
+       MOV  R0,*R4
+*
+       LI   R0,LIST4_OLD_UNDO_OBJ
+       MOV  *R4,R1
+       LI   R2,LIST4_OLD_UNDO_OBJ_END-LIST4_OLD_UNDO_OBJ
+       BLWP @BUFCPY
+* Set undo index to the end of the undo-list
+       LI   R0,0
+       MOV  R0,@UNDOIDX
+* Set prev action to imply that user has already been deleting text
+       LI   R0,UNDO_DEL
+       MOV  R0,@PREV_ACTION
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,45
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_LIST4
+       LI   R1,KEY_LIST4E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Expect number of undo operations to increase
+       LI   R0,2
+       MOV  @UNDLST,R1
+       MOV  *R1,R1
+       LI   R2,LIST4_LIST_LENGTH_MSG+2
+       MOV  @LIST4_LIST_LENGTH_MSG,R3
+       BLWP @AEQ
+* Expect old undo-object to now have 255 characters
+       MOV  @UNDLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       MOV  @UNDO_ANY_LEN(R1),R1
+*
+       LI   R0,255
+       LI   R2,LIST4_CHANGED_LEN_MSG+2
+       MOV  @LIST4_CHANGED_LEN_MSG,R3
+       BLWP @AEQ
+* Assert that the most new undo-object contains what we expect
+       MOV  @UNDLST,R0
+       LI   R1,1
+       BLWP @ARYADR
+       MOV  *R1,R1
+*
+       LI   R0,LIST4_EXPECTED_UNDO_OBJ
+       LI   R2,LIST4_EXPECTED_UNDO_OBJ_END-LIST4_EXPECTED_UNDO_OBJ
+       LI   R3,LIST4_NEW_OBJECT_MSG+2
+       MOV  @LIST4_NEW_OBJECT_MSG,R4
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_LIST4
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
+KEY_LIST4E
+       EVEN
+
+LIST4_OLD_UNDO_OBJ
+       DATA UNDO_DEL        * Undo Operation Type
+       DATA 0,45            * Paragraph index, character index
+       DATA 254             * String length
+       TEXT 'some text...'  * Deleted Bytes
+       EVEN
+LIST4_OLD_UNDO_OBJ_END
+
+LIST4_EXPECTED_UNDO_OBJ
+       DATA UNDO_DEL        * Undo Operation Type
+       DATA 0,45            * Paragraph index, character index
+       DATA 4               * String length
+       TEXT 'orme'          * Deleted Bytes
+       EVEN
+LIST4_EXPECTED_UNDO_OBJ_END
+
+LIST4_LIST_LENGTH_MSG
+       DATA 46
+       TEXT 'Undo list should have increased to 2 elements.'
+       EVEN
+LIST4_CHANGED_LEN_MSG
+       DATA 47
+       TEXT 'Old object should have increased by 1 character.'
+       EVEN
+LIST4_NEW_OBJECT_MSG
+       DATA 40
+       TEXT 'New undo-object not as expected.'
+       EVEN
+
+* Delete 2
+* --------
 * Assert that text is deleted when undo is not pressed.
 DEL2   DECT R10
        MOV  R11,*R10
