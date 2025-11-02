@@ -286,7 +286,7 @@ RESERVE_UNDO_SPACE
 * Increase length of undo-action
 * Let R0 = new address of undo-action
        MOV  R7,R0
-       LI   R1,UNDO_DEL_TEXT
+       LI   R1,UNDO_PAYLOAD
        A    @UNDO_ANY_LEN(R7),R1
        A    *R10,R1
        BLWP @BUFGRW
@@ -297,7 +297,7 @@ RESERVE_UNDO_SPACE
        MOV  R0,R7
        MOV  R0,*R3
 * Let R0 = address of reserved space
-       AI   R0,UNDO_DEL_TEXT
+       AI   R0,UNDO_PAYLOAD
        A    @UNDO_ANY_LEN(R7),R0
 * Update the length of the undo text
        A    *R10+,@UNDO_ANY_LEN(R7)
@@ -643,7 +643,7 @@ UNDO_OP
        MOV  *R1,R6
 * Let R7 = address of text to restore
        MOV  R6,R7
-       AI   R7,UNDO_DEL_TEXT
+       AI   R7,UNDO_PAYLOAD
 * Let R8 = end of undo text
        MOV  R7,R8
        A    @UNDO_ANY_LEN(R6),R8
@@ -726,7 +726,7 @@ REDO_OP
        MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
 * Let R8 = address within delete text
        MOV  R7,R8
-       AI   R8,UNDO_DEL_TEXT
+       AI   R8,UNDO_PAYLOAD
 * Let R9 = address of end of text
        MOV  R8,R9
        A    @UNDO_ANY_LEN(R7),R9
