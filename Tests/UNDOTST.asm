@@ -501,7 +501,7 @@ LIST3_OLD_UNDO_OBJ_END
 LIST3_EXPECTED_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,45            * Paragraph index, character index
-       DATA 1               * String length
+       DATA 6               * String length
        TEXT 'former'        * Deleted Bytes
        EVEN
 LIST3_EXPECTED_UNDO_OBJ_END

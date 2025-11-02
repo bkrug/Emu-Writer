@@ -232,9 +232,26 @@ CREATE_UNDO_ACTION
        BLWP @BUFREE
 *
        JMP  CREATE_NEW_UNDO
+ADD_UNDO_ELEM
+* Has undo list reached maximum length?
+       CI   R1,MAX_UNDO_LIST_LENGTH
+       JL   UNDO_LENGTH_OKAY
+* Yes, deallocate the oldest undo-object
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R0
+       BLWP @BUFREE
+* Delete the oldest undo list element
+       MOV  @UNDLST,R0
+       CLR  R1
+       BLWP @ARYDEL
+* Decrease the undo index since the list is shorter
+       DEC  @UNDOIDX
+UNDO_LENGTH_OKAY
 * Add new element at end of undo list
 * Let R1 = address of element in undo list
-ADD_UNDO_ELEM
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
        BLWP @ARYADD
        JNE  !
        B    @RTERR
