@@ -287,7 +287,7 @@ RESERVE_UNDO_SPACE
 * Let R0 = new address of undo-action
        MOV  R7,R0
        LI   R1,UNDO_DEL_TEXT
-       A    @UNDO_DEL_LEN(R7),R1
+       A    @UNDO_ANY_LEN(R7),R1
        A    *R10,R1
        BLWP @BUFGRW
        JNE  !
@@ -298,9 +298,9 @@ RESERVE_UNDO_SPACE
        MOV  R0,*R3
 * Let R0 = address of reserved space
        AI   R0,UNDO_DEL_TEXT
-       A    @UNDO_DEL_LEN(R7),R0
+       A    @UNDO_ANY_LEN(R7),R0
 * Update the length of the undo text
-       A    *R10+,@UNDO_DEL_LEN(R7)
+       A    *R10+,@UNDO_ANY_LEN(R7)
 *
        MOV  *R10+,R11
        RT
@@ -646,7 +646,7 @@ UNDO_OP
        AI   R7,UNDO_DEL_TEXT
 * Let R8 = end of undo text
        MOV  R7,R8
-       A    @UNDO_DEL_LEN(R6),R8
+       A    @UNDO_ANY_LEN(R6),R8
 * Set @INSERT_CHARACTER_IN_PARA parameters
 * Let R3 = paragraph index
 * Let R4 = character insertion point with paragraph
@@ -729,7 +729,7 @@ REDO_OP
        AI   R8,UNDO_DEL_TEXT
 * Let R9 = address of end of text
        MOV  R8,R9
-       A    @UNDO_DEL_LEN(R7),R9
+       A    @UNDO_ANY_LEN(R7),R9
 REDO_DEL_LOOP
 * Is there anything left to delete?
        C    R8,R9
