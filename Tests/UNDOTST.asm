@@ -43,11 +43,14 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
        DATA LIST2
        TEXT 'LIST2 '
 * Assert that the undo/redo list will not exceed 16
-*       DATA LIST3
-*       TEXT 'LIST3 '
-* Assert that the undo/redo list total characters will not exceed 2000
+       DATA LIST3
+       TEXT 'LIST3 '
+* Assert that an undo object larger than 255 bytes will split in two
 *       DATA LIST4
 *       TEXT 'LIST4 '
+* Assert that the undo/redo list total characters will not exceed 2000
+*       DATA LIST5
+*       TEXT 'LIST5 '
 * Assert that text is deleted when undo is not pressed.
        DATA DEL2
        TEXT 'DEL2  '
@@ -386,6 +389,139 @@ FAIL_LIST2
        DATA 29
        TEXT 'Text should not have changed.'
 
+* Undo List 3
+* -----------
+* Assert that the undo/redo list will not exceed 16 elements
+LIST3  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Populate undo list with 16 items
+* Let R3 = element index
+* Let R4 = address of most recent entry in undo-list
+       CLR  R3
+LIST3_POPULATE_LOOP
+       MOV  @UNDLST,R0
+       BLWP @ARYADD
+       JEQ  LIST3_DONE
+       MOV  R0,@UNDLST
+       MOV  R1,R4
+*
+       LI   R0,9
+       BLWP @BUFALC
+       JEQ  LIST3_DONE
+       MOV  R0,*R4
+*
+       LI   R0,LIST3_OLD_UNDO_OBJ
+       MOV  *R4,R1
+       LI   R2,LIST3_OLD_UNDO_OBJ_END-LIST3_OLD_UNDO_OBJ
+       BLWP @BUFCPY
+* Use the character index as a UK for each object
+       MOV  R3,@UNDO_ANY_CHAR(R1)
+*
+       INC  R3
+       CI   R3,MAX_UNDO_LIST_LENGTH
+       JL   LIST3_POPULATE_LOOP
+* Set undo index to the end of the undo-list
+       LI   R0,15
+       MOV  R0,@UNDOIDX
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,44
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEYL3
+       LI   R1,KEYL3E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Expect number of undo operations to remain unchanged
+       LI   R0,MAX_UNDO_LIST_LENGTH
+       MOV  @UNDLST,R1
+       MOV  *R1,R1
+       LI   R2,LIST3_LENGTH_MSG+2
+       MOV  @LIST3_LENGTH_MSG,R3
+       BLWP @AEQ
+* Expect oldest undo-object to be what was previously the second oldest
+       MOV  @UNDLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       MOV  @UNDO_ANY_CHAR(R1),R1
+*
+       LI   R0,1
+       LI   R2,LIST3_OLDEST_MSG+2
+       MOV  @LIST3_OLDEST_MSG,R3
+       BLWP @AEQ
+* Expect second youngest undo-object to be what previously the youngest
+       MOV  @UNDLST,R0
+       LI   R1,14
+       BLWP @ARYADR
+       MOV  *R1,R1
+       MOV  @UNDO_ANY_CHAR(R1),R1
+*
+       LI   R0,15
+       LI   R2,LIST3_SECOND_YOUNGEST_MSG+2
+       MOV  @LIST3_SECOND_YOUNGEST_MSG,R3
+       BLWP @AEQ
+* Assert that the most recent undo-object is the letter we just deleted
+       MOV  @UNDLST,R0
+       LI   R1,15
+       BLWP @ARYADR
+       MOV  *R1,R1
+*
+       LI   R0,LIST3_EXPECTED_UNDO_OBJ
+       LI   R2,LIST3_EXPECTED_UNDO_OBJ_END-LIST3_EXPECTED_UNDO_OBJ
+       LI   R3,LIST3_YOUNGEST_MSG+2
+       MOV  @LIST3_YOUNGEST_MSG,R4
+       BLWP @ABLCK
+*
+LIST3_DONE
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEYL3  BYTE FWDKEY
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
+KEYL3E EVEN
+
+LIST3_OLD_UNDO_OBJ
+       DATA UNDO_DEL        * Undo Operation Type
+       DATA 1,5             * Paragraph index, character index
+       DATA 1               * String length
+       TEXT '$'             * Deleted Bytes
+       EVEN
+LIST3_OLD_UNDO_OBJ_END
+
+LIST3_EXPECTED_UNDO_OBJ
+       DATA UNDO_DEL        * Undo Operation Type
+       DATA 0,45            * Paragraph index, character index
+       DATA 1               * String length
+       TEXT 'former'        * Deleted Bytes
+       EVEN
+LIST3_EXPECTED_UNDO_OBJ_END
+
+LIST3_LENGTH_MSG
+       DATA 37
+       TEXT 'Undo list was not of expected length.'
+       EVEN
+LIST3_OLDEST_MSG
+       DATA 35
+       TEXT 'Oldest undo-object not as expected.'
+       EVEN
+LIST3_SECOND_YOUNGEST_MSG
+       DATA 42
+       TEXT 'Second oldest undo-object not as expected.'
+       EVEN
+LIST3_YOUNGEST_MSG
+       DATA 32
+       TEXT 'New undo-object not as expected.'
+       EVEN
 
 * Test 2
 * ------
@@ -468,8 +604,8 @@ CHAR_IDX_FAIL
        TEXT 'Wrong character index within paragraph'
        EVEN
 
-* Test 3
-* ------
+* Delete 3
+* --------
 * Assert that text is restored when undo is pressed once.
 DEL3   DECT R10
        MOV  R11,*R10
@@ -482,8 +618,8 @@ DEL3   DECT R10
        LI   R0,40
        MOV  R0,@CHRPAX
 * Copy test keypresses to stream
-       LI   R0,KEYL3
-       LI   R1,KEYL3E
+       LI   R0,KEY_DEL3
+       LI   R1,KEY_DEL3E
        CLR  R2
        BL   @CPYKEY
 * Act
@@ -523,11 +659,13 @@ DEL3   DECT R10
        RT
 
 * input from the keyboard.
-KEYL3  BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
+KEY_DEL3
+       BYTE DELKEY,DELKEY,DELKEY,DELKEY,DELKEY
        BYTE FWDKEY,FWDKEY,FWDKEY,FWDKEY
        BYTE DELKEY,DELKEY,DELKEY
        BYTE UNDKEY
-KEYL3E EVEN
+KEY_DEL3E
+       EVEN
 
 * First 80 characters of the paragraph after delting
 DEL3_EXPECTED_TEXT
