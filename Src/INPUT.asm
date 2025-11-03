@@ -78,7 +78,7 @@ INPUT1 C    @KEYRD,@KEYWRT
 * If the input mode changed, leave the input routine
        JEQ  INPTRT
 * Create an undo entry if required for the given key
-       BL   @CREATE_UNDO_ACTION
+       BL   @TEST_UNDO_ACTION
 * Call the routine associated with the current key
 INPUT2 BL   *R1
 * Increment the key read position
@@ -194,12 +194,13 @@ KYEXIT MOV  *R10+,R11
        RT
 
 *
-* Create Undo Action
+* Check if the circumstances require a new undo object.
+* If yes, make one.
 *
 * Input:
 *   R0 - Double-index of Undo Action
 *
-CREATE_UNDO_ACTION
+TEST_UNDO_ACTION
        DECT R10
        MOV  R11,*R10
        DECT R10
@@ -218,24 +219,42 @@ CREATE_UNDO_ACTION
        JEQ  NO_NEW_UNDO
        C    @PREV_ACTION,R2
        JEQ  NO_NEW_UNDO
+*
+       BL   @START_FRESH_UNDO_ENTRY
+NO_NEW_UNDO
+* Record the current undo action
+       MOV  R2,@PREV_ACTION
+*
+       MOV  *R10+,R0
+       MOV  *R10+,R1
+       MOV  *R10+,R11
+       RT
+
+*
+* Increment UNDO index and create a new undo object
+* without validating that it is necessary.
+*
+START_FRESH_UNDO_ENTRY
+       DECT R10
+       MOV  R11,*R10
 * Yes, increment undo index.
        INC  @UNDOIDX
 * Is there already an old undo action at current index?
        MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        C    *R0,R1
-       JLE  ADD_UNDO_ELEM
+       JLE  ADD_UNDO_LIST_ELEM
 * Yes, Let R1 = address of element in undo list
        BLWP @ARYADR
 * Delete old undo-object
        MOV  *R1,R0
        BLWP @BUFREE
 *
-       JMP  CREATE_NEW_UNDO
-ADD_UNDO_ELEM
+       JMP  ALLOCATE_UNDO_OBJECT
+ADD_UNDO_LIST_ELEM
 * Has undo list reached maximum length?
        CI   R1,MAX_UNDO_LIST_LENGTH
-       JL   UNDO_LENGTH_OKAY
+       JL   UNDO_LIST_LENGTH_OKAY
 * Yes, deallocate the oldest undo-object
        CLR  R1
        BLWP @ARYADR
@@ -247,7 +266,7 @@ ADD_UNDO_ELEM
        BLWP @ARYDEL
 * Decrease the undo index since the list is shorter
        DEC  @UNDOIDX
-UNDO_LENGTH_OKAY
+UNDO_LIST_LENGTH_OKAY
 * Add new element at end of undo list
 * Let R1 = address of element in undo list
        MOV  @UNDLST,R0
@@ -257,7 +276,7 @@ UNDO_LENGTH_OKAY
        B    @RTERR
 !      MOV  R0,@UNDLST
 * Create undo action and store its location in the undo list
-CREATE_NEW_UNDO
+ALLOCATE_UNDO_OBJECT
        LI   R0,8
        BLWP @BUFALC
        JNE  !
@@ -269,13 +288,8 @@ CREATE_NEW_UNDO
        MOV  R2,*R0+                * type of action
        MOV  @PARINX,*R0+
        MOV  @CHRPAX,*R0+
-       CLR  *R0                    * length of delete text
-NO_NEW_UNDO
-* Record the current undo action
-       MOV  R2,@PREV_ACTION
+       CLR  *R0                    * length of undo payload
 *
-       MOV  *R10+,R0
-       MOV  *R10+,R1
        MOV  *R10+,R11
        RT
 
