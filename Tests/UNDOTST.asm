@@ -629,7 +629,7 @@ LIST4_CHANGED_LEN_MSG
        TEXT 'Old object should have increased by 1 character.'
        EVEN
 LIST4_NEW_OBJECT_MSG
-       DATA 40
+       DATA 32
        TEXT 'New undo-object not as expected.'
        EVEN
 

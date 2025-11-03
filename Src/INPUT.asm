@@ -234,7 +234,11 @@ NO_NEW_UNDO
 * Increment UNDO index and create a new undo object
 * without validating that it is necessary.
 *
-* Input/Output: None in WS registers
+* Input:
+*  R2 - undo type
+* Output:
+*  R0 - address of new undo object
+*  R1 - address of new element in undo list
 *
 START_FRESH_UNDO_ENTRY
        DECT R10
@@ -288,9 +292,11 @@ ALLOCATE_UNDO_OBJECT
        MOV  R0,@UNDO_ADDRESS
 * Populate undo action
        MOV  R2,*R0+                * type of action
-       MOV  @PARINX,*R0+
-       MOV  @CHRPAX,*R0+
+       MOV  @PARINX,*R0+           * paragraph index describing location
+       MOV  @CHRPAX,*R0+           * character index describing location
        CLR  *R0                    * length of undo payload
+* Restore the value of R0 to point to address of undo object
+       AI   R0,-UNDO_ANY_LEN
 *
        MOV  *R10+,R11
        RT
@@ -306,6 +312,8 @@ RESERVE_UNDO_SPACE
        DECT R10
        MOV  R11,*R10
        DECT R10
+       MOV  R2,*R10
+       DECT R10
        MOV  R0,*R10
 * Let R3 = address in undo list
 * Let R4 = address of undo action
@@ -314,6 +322,21 @@ RESERVE_UNDO_SPACE
        BLWP @ARYADR
        MOV  *R1,R4
        MOV  R1,R3
+* Will undo payload surpass max length?
+       MOV  @UNDO_ANY_LEN(R4),R0
+       A    *R10,R0
+       CI   R0,MAX_UNDO_PAYLOAD
+       JLE  INCREASE_ACTION_LENGTH
+* Yes, create a new undo object
+* Let R2 = undo type
+* Let R3 = address of new element in undo list
+* Let R4 = address of new action
+       MOV  *R4,R2
+       BL   @START_FRESH_UNDO_ENTRY
+       MOV  R1,R3
+       MOV  R0,R4
+*
+INCREASE_ACTION_LENGTH
 * Increase length of undo-action
 * Let R0 = new address of undo-action
        MOV  R4,R0
@@ -333,6 +356,7 @@ RESERVE_UNDO_SPACE
 * Update the length of the undo text
        A    *R10+,@UNDO_ANY_LEN(R4)
 *
+       MOV  *R10+,R2
        MOV  *R10+,R11
        RT
 

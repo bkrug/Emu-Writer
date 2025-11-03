@@ -125,3 +125,4 @@ UNDO_PAYLOAD   EQU  >0008      * Location in undo-action of deleted text
 
 *
 MAX_UNDO_LIST_LENGTH   EQU  16
+MAX_UNDO_PAYLOAD       EQU  255
