@@ -234,6 +234,8 @@ NO_NEW_UNDO
 * Increment UNDO index and create a new undo object
 * without validating that it is necessary.
 *
+* Input/Output: None in WS registers
+*
 START_FRESH_UNDO_ENTRY
        DECT R10
        MOV  R11,*R10
@@ -296,7 +298,6 @@ ALLOCATE_UNDO_OBJECT
 *
 * Reserve space for undo data
 *
-*
 * Input:
 *   R0 - number of bytes to reserve
 * Output:
@@ -306,32 +307,31 @@ RESERVE_UNDO_SPACE
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
-* Yes, record this character in undo action.
 * Let R3 = address in undo list
-* Let R7 = address of undo action
+* Let R4 = address of undo action
        MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
-       MOV  *R1,R7
+       MOV  *R1,R4
        MOV  R1,R3
 * Increase length of undo-action
 * Let R0 = new address of undo-action
-       MOV  R7,R0
+       MOV  R4,R0
        LI   R1,UNDO_PAYLOAD
-       A    @UNDO_ANY_LEN(R7),R1
+       A    @UNDO_ANY_LEN(R4),R1
        A    *R10,R1
        BLWP @BUFGRW
        JNE  !
        B    @RTERR
 !
 * Store new address of undo-action in the undo list
-       MOV  R0,R7
+       MOV  R0,R4
        MOV  R0,*R3
 * Let R0 = address of reserved space
        AI   R0,UNDO_PAYLOAD
-       A    @UNDO_ANY_LEN(R7),R0
+       A    @UNDO_ANY_LEN(R4),R0
 * Update the length of the undo text
-       A    *R10+,@UNDO_ANY_LEN(R7)
+       A    *R10+,@UNDO_ANY_LEN(R4)
 *
        MOV  *R10+,R11
        RT
