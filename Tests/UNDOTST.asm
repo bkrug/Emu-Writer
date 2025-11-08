@@ -48,9 +48,6 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that an undo object larger than 255 bytes will split in two
        DATA LIST4
        TEXT 'LIST4 '
-* Assert that the undo/redo list total characters will not exceed 2000
-*       DATA LIST5
-*       TEXT 'LIST5 '
 * Assert that text is deleted when undo is not pressed.
        DATA DEL2
        TEXT 'DEL2  '
@@ -75,6 +72,12 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that deletion of two non-consequtive CRs can be undon.
        DATA DEL9
        TEXT 'DEL9  '
+* Assert that text is restored when undo is pressed once.
+       DATA BACK1
+       TEXT 'BACK1 '
+* Assert that text is re-deleted when undo and redo are pressed.
+       DATA BACK2
+       TEXT 'BACK2 '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -1219,7 +1222,147 @@ DEL9_TWO_MSG
        TEXT 'Expected character "2".'
        EVEN
 
+* Backspace Delete 1
+* ------------------
+* Assert that text is restored when undo is pressed once.
+BACK1  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,71
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_BACK1
+       LI   R1,KEY_BACK1E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,BACK1_EXPECTED_TEXT+2
+       MOV  @BACK1_EXPECTED_TEXT,R2
+       LI   R3,BACK1_FAIL+2
+       MOV  @BACK1_FAIL,R4
+       BLWP @ABLCK
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,71
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
 
+* input from the keyboard.
+KEY_BACK1
+       BYTE ERSKEY,ERSKEY,ERSKEY,ERSKEY,ERSKEY
+       BYTE FWDKEY,FWDKEY,FWDKEY,FWDKEY
+       BYTE UNDKEY
+KEY_BACK1E
+       EVEN
+
+* First 80 characters of the paragraph after delting
+BACK1_EXPECTED_TEXT
+       DATA 78
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+BACK1_FAIL
+       DATA 42
+       TEXT 'Some characters should have been restored.'
+
+* Backspace Delete 2
+* ------------------
+* Assert that text is re-deleted when undo and redo are pressed.
+BACK2  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,71
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_BACK2
+       LI   R1,KEY_BACK2E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,BACK2_EXPECTED_TEXT+2
+       MOV  @BACK2_EXPECTED_TEXT,R2
+       LI   R3,BACK2_FAIL+2
+       MOV  @BACK2_FAIL,R4
+       BLWP @ABLCK
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,71
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_BACK2
+       BYTE ERSKEY,ERSKEY,ERSKEY,ERSKEY,ERSKEY
+       BYTE FWDKEY,FWDKEY
+       BYTE UNDKEY,RDOKEY
+KEY_BACK2E
+       EVEN
+
+* First 80 characters of the paragraph after delting
+BACK2_EXPECTED_TEXT
+       DATA 72
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge  Duane '
+BACK2_FAIL
+       DATA 42
+       TEXT 'All characters should have been redeleted.'
 
 * Empty 1
 * -------
