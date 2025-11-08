@@ -116,6 +116,7 @@ PARAGRAPH_TEXT_OFFSET       EQU  >0004
 UNDO_INS    EQU  >0002      * Insert text
 UNDO_OVR    EQU  >0004      * Overwrite text
 UNDO_DEL    EQU  >0006      * Delete right-of-cursor
+UNDO_BCK    EQU  >0008      * Delete left-of-cursor
 
 *
 UNDO_ANY_PARA  EQU  >0002      * Location in undo-action of paragraph index

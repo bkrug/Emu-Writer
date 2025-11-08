@@ -390,7 +390,7 @@ ROUTIN DATA INSERT_TEXT,OVERWRITE_TEXT
 UNDO_ACTIONS
        DATA 0,0
        DATA UNDO_DEL,0,0,0
-       DATA 0,0,0,0
+       DATA 0,0,0,UNDO_BCK
        DATA 0,0,0,0
        DATA 0,0,0,0
        DATA 0,0
@@ -622,6 +622,15 @@ BCKDEL DECT R10
 * No, delete previous character
        BL   @BACKSP
        BL   @DELCHR
+* Let R1 = address of undo action
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Point undo action to the current cursor position
+       MOV  @PARINX,@UNDO_ANY_PARA(R1)
+       MOV  @CHRPAX,@UNDO_ANY_CHAR(R1)
+*
 BCKDL1 MOV  *R10+,R11
        RT
 
