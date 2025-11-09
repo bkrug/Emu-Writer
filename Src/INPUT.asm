@@ -292,10 +292,10 @@ ALLOCATE_UNDO_OBJECT
        MOV  R0,@UNDO_ADDRESS
 * Populate undo action
        MOV  R2,*R0+                * type of action
-       MOV  @PARINX,*R0+           * paragraph index before change
-       MOV  @CHRPAX,*R0+           * character index before change
-       MOV  @PARINX,*R0+           * paragraph index after change
-       MOV  @CHRPAX,*R0+           * character index after change
+       MOV  @PARINX,*R0+           * paragraph index before action
+       MOV  @CHRPAX,*R0+           * character index before action
+       MOV  @PARINX,*R0+           * paragraph index after action
+       MOV  @CHRPAX,*R0+           * character index after action
        CLR  *R0+                   * length of undo payload
 * Restore the value of R0 to point to address of undo object
        AI   R0,-UNDO_PAYLOAD
@@ -560,6 +560,14 @@ RECORD_DELETE
        LI   R0,1
        BL   @RESERVE_UNDO_SPACE
        MOVB R2,*R0
+* Let R1 = address of undo action
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Point undo action to the current cursor position
+       MOV  @PARINX,@UNDO_ANY_PARA_AFTER(R1)
+       MOV  @CHRPAX,@UNDO_ANY_CHAR_AFTER(R1)
 *
        MOV  *R10+,R11
        RT
@@ -630,8 +638,8 @@ BCKDEL DECT R10
        BLWP @ARYADR
        MOV  *R1,R1
 * Point undo action to the current cursor position
-       MOV  @PARINX,@UNDO_ANY_PARA(R1)
-       MOV  @CHRPAX,@UNDO_ANY_CHAR(R1)
+       MOV  @PARINX,@UNDO_ANY_PARA_AFTER(R1)
+       MOV  @CHRPAX,@UNDO_ANY_CHAR_AFTER(R1)
 *
 BCKDL1 MOV  *R10+,R11
        RT
@@ -716,11 +724,8 @@ UNDO_OP
 * Set @INSERT_CHARACTER_IN_PARA parameters
 * Let R3 = paragraph index
 * Let R4 = character insertion point with paragraph
-       MOV  @UNDO_ANY_PARA(R6),R3
-       MOV  @UNDO_ANY_CHAR(R6),R4
-* Restore PARINX and CHRPAX
-       MOV  R3,@PARINX
-       MOV  R4,@CHRPAX
+       MOV  @UNDO_ANY_PARA_AFTER(R6),R3
+       MOV  @UNDO_ANY_CHAR_AFTER(R6),R4
 * Is insertion complete?
 TEXT_RESTORE_LOOP
        C    R7,R8
@@ -732,7 +737,10 @@ TEXT_RESTORE_LOOP
        JEQ  RESTORE_CR
 * Insert one character
        BL   @INSERT_CHARACTER_IN_PARA
-* Repeat
+* If undoing a backspace delete, repeat
+       C    *R6,@RESTORE_BACKWARDS
+       JEQ  TEXT_RESTORE_LOOP 
+* Otherwise, move the insert position and repeat
        INC  R4
        JMP  TEXT_RESTORE_LOOP
 * Insert a carraige return
@@ -760,6 +768,9 @@ RESTORE_CR
 *
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
+* Restore PARINX and CHRPAX
+       MOV  @UNDO_ANY_PARA(R6),@PARINX
+       MOV  @UNDO_ANY_CHAR(R6),@CHRPAX
 * Move undo position one location earlier
        DEC  @UNDOIDX
 * TODO: This should probably be the job of @INSERT_CHARACTER_IN_PARA
@@ -769,6 +780,9 @@ TEXT_RESTORE_DONE
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT
+
+RESTORE_BACKWARDS
+       DATA UNDO_BCK
 
 *
 * Redo operation

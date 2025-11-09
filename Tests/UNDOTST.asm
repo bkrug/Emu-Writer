@@ -1366,6 +1366,7 @@ BACK2_EXPECTED_TEXT
        DATA 72
        TEXT 'Madison"s modern origins begin in 1829, '
        TEXT 'when former federal judge  Duane '
+       EVEN
 BACK2_FAIL
        DATA 42
        TEXT 'All characters should have been redeleted.'
