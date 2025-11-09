@@ -206,6 +206,11 @@ TXTHK  DATA TXTHK1
        BYTE 0
        TEXT 'FCTN+; End of Line'
        BYTE 0
+       BYTE 0
+       TEXT 'CTRL+Y Redo'
+       BYTE 0
+       TEXT 'CTRL+Z Undo'
+       BYTE 0
 TXTHK1 EVEN
 
 KEYHK  DATA KEYHK1
