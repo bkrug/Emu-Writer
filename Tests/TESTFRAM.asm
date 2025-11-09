@@ -5,8 +5,10 @@
 * Prints text at screen bottom
        DEF  PRINTL
 *******
-* Assert block contents are equal
+* Assert block contents are equal (16-bit words)
        DEF  ABLCK
+* Assert string contents are equal (8-bit bytes)
+       DEF  ASTR
 * Assert Ones Corresponding, Zeros Corresponding
        DEF  AOC,AZC
 * Assert Words Equal, Words Not Equal
@@ -410,7 +412,7 @@ ERRRT
 * ----------------------
 * R0: Address of Expected block
 * R1: Address of Actual block
-* R2: Length of expected block
+* R2: Length of expected block (must be even number of bytes)
 * R2: Address of fail message
 * R3: Length of fail message
 *
@@ -470,6 +472,91 @@ ABFL   DECT R0
        JL   AB2
        LI   R1,>200
 AB2    BL   @SCRLPT
+* Don't return to the test being run. No
+* need to run extra assertions
+* in the same test.
+       B    @TSTL20
+
+********************************
+
+* Assert Strings Are Identical
+* ----------------------
+* R0: Address of Expected string
+* R1: Address of Actual string
+* R2: Length of expected string (odd numbers are okay)
+* R2: Address of fail message
+* R3: Length of fail message
+*
+* Return true if contents of two strings
+* are equal. Displays first point where
+* they are different.
+ASTR   DATA WORKSP,ASTRP
+ASTR_MSG_START
+       TEXT 'Expected '
+ASTR_MSG_INTRPL_1
+       BSS  >4
+       TEXT ' but actual '
+ASTR_MSG_INTRPL_2
+       BSS  >4
+       TEXT ' at byte offset '
+ASTR_MSG_INTRPL_3
+       BSS  >4
+       TEXT '.'
+ASTR_MSG_END
+       EVEN
+ASTRP
+* Copy Parameters
+       BL   @COPYP
+* R5 = Current Byte
+       CLR  R5
+* Compare each byte
+ASTR_COMP
+       CB   *R0+,*R1+
+       JNE  ASTR_FAIL
+       INC  R5
+       C    R5,R2
+       JL   ASTR_COMP
+* Report success
+       RTWP
+* Report Failure
+* Backtrack to unmatching bytes.
+ASTR_FAIL
+       DEC  R0
+       DEC  R1
+* 
+       MOV  R1,R6
+* Convert values to Hexadecimal Text.
+* R0 previously contains address of 
+* the expected value
+       MOV  R0,R1
+       MOVB *R1+,R0
+       SWPB R0
+       MOVB *R1,R0
+       SWPB R0
+       LI   R1,ASTR_MSG_INTRPL_1
+       BL   @MAKEHX
+* the actual value is copied from R6
+       MOVB *R6+,R0
+       SWPB R0
+       MOVB *R6,R0
+       SWPB R0
+       LI   R1,ASTR_MSG_INTRPL_2
+       BL   @MAKEHX
+* 
+       MOV  R5,R0
+       LI   R1,ASTR_MSG_INTRPL_3
+       BL   @MAKEHX
+* Display standard failure message
+       LI   R0,ASTR_MSG_START
+       LI   R1,ASTR_MSG_END-ASTR_MSG_START
+       BL   @SCRLPT
+* Display user-defined failure message
+       MOV  @6(13),R0
+       MOV  @8(13),R1
+       CI   R1,>200
+       JL   !
+       LI   R1,>200
+!      BL   @SCRLPT
 * Don't return to the test being run. No
 * need to run extra assertions
 * in the same test.
