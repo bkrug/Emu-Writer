@@ -1503,14 +1503,16 @@ BACK4  DECT R10
        CLR  R1
        BLWP @ARYADR
        MOV  *R1,R1
+       MOV  *R1,R1
 *
        MOV  @PAR0,R0
+       A    @PAR1,R0
        AI   R0,-4
        LI   R2,BACK4_PARA_LENGTH+2
        MOV  @BACK4_PARA_LENGTH,R3
        BLWP @AEQ
 *
-       LI   R1,0
+       LI   R0,0
        MOV  @PARINX,R1
        LI   R2,PARA_IDX_FAIL+2
        MOV  @PARA_IDX_FAIL,R3

@@ -805,41 +805,37 @@ REDO_OP
 * Are there any redo operations remaining?
        C    R1,*R0
        JHE  REDO_COMPLETE
-* Yes, Let R7 = address of current undo operation in list
+* Yes, let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
-* Let R8 = address within delete text
-       MOV  R7,R8
-       AI   R8,UNDO_PAYLOAD
-* Let R9 = address of end of text
-       MOV  R8,R9
-       A    @UNDO_ANY_LEN(R7),R9
-REDO_DEL_LOOP
-* Is there anything left to delete?
-       C    R8,R9
+* Let R8 = amount to delete
+       MOV  @UNDO_ANY_LEN(R7),R8
        JEQ  TEXT_REDELETE_DONE
-* Is the next character a CR?
-       CB   *R8,@CRBYTE
-       JEQ  REDO_PARA_MERGE
-* set @DELETE_CHARACTER_IN_PARA parameters
+REDO_DEL_LOOP
+* Let R1 & R2 be the point in document from where we are deleting
        C    *R7,@RESTORE_BACKWARDS
        JEQ  !
        MOV  @UNDO_ANY_PARA(R7),R1
        MOV  @UNDO_ANY_CHAR(R7),R2
-       JMP  CALL_DELETE_CHAR_ROUTINE
+       JMP  REDO_DELETE_CHAR
 !      MOV  @UNDO_ANY_PARA_AFTER(R7),R1
        MOV  @UNDO_ANY_CHAR_AFTER(R7),R2
-CALL_DELETE_CHAR_ROUTINE
+REDO_DELETE_CHAR
 * Delete character from paragraph
        BL   @DELETE_CHARACTER_IN_PARA
-* Is deletion complete?
-       INC  R8
-       JMP  REDO_DEL_LOOP
-REDO_PARA_MERGE
+* If nothing was deleted, merge paragraphs
+       C    *R7,@RESTORE_BACKWARDS
+       JEQ  !
        MOV  @UNDO_ANY_PARA(R7),R1
+       JMP  REDO_HAVE_PARAM
+!      MOV  @UNDO_ANY_PARA_AFTER(R7),R1
+REDO_HAVE_PARAM
+       MOVB R2,R2
+       JNE  !
        BL   @MERGE_PARAGRAPHS
-* Is deletion complete?
-       INC  R8
+!
+* Do next character
+       DEC  R8
        JNE  REDO_DEL_LOOP
 TEXT_REDELETE_DONE
 * Restore PARINX and CHRPAX
