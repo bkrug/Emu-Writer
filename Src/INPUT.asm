@@ -732,9 +732,11 @@ TEXT_RESTORE_LOOP
        INC  R4
        JMP  TEXT_RESTORE_LOOP
 * Insert a carraige return
+RESTORE_CR
+       C    *R6,@RESTORE_BACKWARDS
+       JEQ  RESTORE_CR_BACKWARDS
 * Let param R1 = paragraph index
 * Let param R2 = char index to split at
-RESTORE_CR
        MOV  R3,R1
        MOV  R4,R2
        BL   @SPLIT_PARAGRAPH
@@ -753,6 +755,23 @@ RESTORE_CR
        JH   !
        MOV  R3,@WRAP_END
 !
+*
+       JMP  TEXT_RESTORE_LOOP
+RESTORE_CR_BACKWARDS
+* Let param R1 = paragraph index
+* Let param R2 = char index to split at
+       MOV  R3,R1
+       MOV  R4,R2
+       BL   @SPLIT_PARAGRAPH
+* Set document-status bit
+       SOC  @STSENT,*R13
+* Set the first paragraph to rewrap
+       MOV  @WRAP_START,R0
+       JNE  !
+       MOV  @UNDO_ANY_PARA_AFTER(R6),@WRAP_START
+!
+* Set the last paragraph to rewrap
+       MOV  @UNDO_ANY_PARA(R6),@WRAP_END
 *
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
@@ -789,9 +808,6 @@ REDO_OP
 * Yes, Let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
-* Restore PARINX and CHRPAX
-       MOV  @UNDO_ANY_PARA_AFTER(R7),@PARINX
-       MOV  @UNDO_ANY_CHAR_AFTER(R7),@CHRPAX
 * Let R8 = address within delete text
        MOV  R7,R8
        AI   R8,UNDO_PAYLOAD
@@ -826,6 +842,9 @@ REDO_PARA_MERGE
        INC  R8
        JNE  REDO_DEL_LOOP
 TEXT_REDELETE_DONE
+* Restore PARINX and CHRPAX
+       MOV  @UNDO_ANY_PARA_AFTER(R7),@PARINX
+       MOV  @UNDO_ANY_CHAR_AFTER(R7),@CHRPAX
 * Move undo position one location earlier
        INC  @UNDOIDX
 * Set document status bit. We have to assume that the window moved because

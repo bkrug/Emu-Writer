@@ -1407,7 +1407,7 @@ BACK3  DECT R10
        MOV  @BACK3_PARAGRAPH_COUNT,R3
        BLWP @AEQ
 * Assert that expected letters
-* Let R1 = address of last 4 characters in 1st paragraph.
+* Let R1 = address of close to end of 1st paragraph.
 * Let R2 = length of pargraph
        MOV  @PARLST,R0
        CLR  R1
@@ -1416,7 +1416,7 @@ BACK3  DECT R10
        MOV  *R1,R2
        AI   R1,PARAGRAPH_TEXT_OFFSET
        A    R2,R1
-       AI   R1,-4
+       S    @BACK3_EXPECTED_TEXT,R1
 *
        LI   R0,BACK3_EXPECTED_TEXT+2
        MOV  @BACK3_EXPECTED_TEXT,R2
