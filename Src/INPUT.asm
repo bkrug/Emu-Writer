@@ -812,26 +812,22 @@ REDO_OP
        MOV  @UNDO_ANY_LEN(R7),R8
        JEQ  TEXT_REDELETE_DONE
 REDO_DEL_LOOP
-* Let R1 & R2 be the point in document from where we are deleting
+* Let R9 & R2 be the point in document from where we are deleting
        C    *R7,@RESTORE_BACKWARDS
        JEQ  !
-       MOV  @UNDO_ANY_PARA(R7),R1
+       MOV  @UNDO_ANY_PARA(R7),R9
        MOV  @UNDO_ANY_CHAR(R7),R2
        JMP  REDO_DELETE_CHAR
-!      MOV  @UNDO_ANY_PARA_AFTER(R7),R1
+!      MOV  @UNDO_ANY_PARA_AFTER(R7),R9
        MOV  @UNDO_ANY_CHAR_AFTER(R7),R2
 REDO_DELETE_CHAR
 * Delete character from paragraph
+       MOV  R9,R1
        BL   @DELETE_CHARACTER_IN_PARA
 * If nothing was deleted, merge paragraphs
-       C    *R7,@RESTORE_BACKWARDS
-       JEQ  !
-       MOV  @UNDO_ANY_PARA(R7),R1
-       JMP  REDO_HAVE_PARAM
-!      MOV  @UNDO_ANY_PARA_AFTER(R7),R1
-REDO_HAVE_PARAM
        MOVB R2,R2
        JNE  !
+       MOV  R9,R1
        BL   @MERGE_PARAGRAPHS
 !
 * Do next character
