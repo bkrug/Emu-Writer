@@ -313,15 +313,15 @@ KEYL1E EVEN
 
 EXPECT_LIST1_UNDO1
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,143           * Paragraph index, character index
-       DATA 0,0
+       DATA 0,143           * Paragraph index, character index (before action)
+       DATA 0,143           * Paragraph index, character index (ater action)
        DATA 4               * String length
        TEXT 'land'          * Deleted Bytes
 
 EXPECT_LIST1_UNDO2
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,140           * Paragraph index, character index
-       DATA 0,0
+       DATA 0,140           * Paragraph index, character index (before action)
+       DATA 0,140           * Paragraph index, character index (ater action)
        DATA 2               * String length
        TEXT 'st'            * Deleted Bytes
 EXPECT_LIST1_UNDO2_END
@@ -497,8 +497,8 @@ KEYL3E EVEN
 
 LIST3_OLD_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 1,5             * Paragraph index, character index
-       DATA 0,0
+       DATA 1,5             * Paragraph index, character index (before action)
+       DATA 1,5             * Paragraph index, character index (ater action)
        DATA 1               * String length
        TEXT '$'             * Deleted Bytes
        BYTE 0
@@ -506,8 +506,8 @@ LIST3_OLD_UNDO_OBJ_END
 
 LIST3_EXPECTED_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,45            * Paragraph index, character index
-       DATA 0,0
+       DATA 0,45            * Paragraph index, character index (before action)
+       DATA 0,45            * Paragraph index, character index (ater action)
        DATA 6               * String length
        TEXT 'former'        * Deleted Bytes
        EVEN
@@ -613,8 +613,8 @@ KEY_LIST4E
 
 LIST4_OLD_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,45            * Paragraph index, character index
-       DATA 0,0
+       DATA 0,45            * Paragraph index, character index (before action)
+       DATA 0,45            * Paragraph index, character index (ater action)
        DATA 254             * String length
        TEXT 'some text...'  * Deleted Bytes
        EVEN
@@ -622,8 +622,8 @@ LIST4_OLD_UNDO_OBJ_END
 
 LIST4_EXPECTED_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,45            * Paragraph index, character index
-       DATA 0,0
+       DATA 0,45            * Paragraph index, character index (before action)
+       DATA 0,45            * Paragraph index, character index (ater action)
        DATA 4               * String length
        TEXT 'orme'          * Deleted Bytes
        EVEN

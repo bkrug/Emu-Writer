@@ -292,10 +292,10 @@ ALLOCATE_UNDO_OBJECT
        MOV  R0,@UNDO_ADDRESS
 * Populate undo action
        MOV  R2,*R0+                * type of action
-       MOV  @PARINX,*R0+           * paragraph index describing location
-       MOV  @CHRPAX,*R0+           * character index describing location
-       CLR  *R0+                   * length of undo payload
-       CLR  *R0+                   * length of undo payload
+       MOV  @PARINX,*R0+           * paragraph index before change
+       MOV  @CHRPAX,*R0+           * character index before change
+       MOV  @PARINX,*R0+           * paragraph index after change
+       MOV  @CHRPAX,*R0+           * character index after change
        CLR  *R0+                   * length of undo payload
 * Restore the value of R0 to point to address of undo object
        AI   R0,-UNDO_PAYLOAD
