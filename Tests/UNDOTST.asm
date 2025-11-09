@@ -1344,7 +1344,7 @@ BACK2  DECT R10
        MOV  @PARA_IDX_FAIL,R3
        BLWP @AEQ
 *
-       LI   R0,71
+       LI   R0,66
        MOV  @CHRPAX,R1
        LI   R2,CHAR_IDX_FAIL+2
        MOV  @CHAR_IDX_FAIL,R3

@@ -790,8 +790,8 @@ REDO_OP
        BLWP @ARYADR
        MOV  *R1,R7
 * Restore PARINX and CHRPAX
-       MOV  @UNDO_ANY_PARA(R7),@PARINX
-       MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
+       MOV  @UNDO_ANY_PARA_AFTER(R7),@PARINX
+       MOV  @UNDO_ANY_CHAR_AFTER(R7),@CHRPAX
 * Let R8 = address within delete text
        MOV  R7,R8
        AI   R8,UNDO_PAYLOAD
@@ -806,13 +806,19 @@ REDO_DEL_LOOP
        CB   *R8,@CRBYTE
        JEQ  REDO_PARA_MERGE
 * set @DELETE_CHARACTER_IN_PARA parameters
+       C    *R7,@RESTORE_BACKWARDS
+       JEQ  !
        MOV  @UNDO_ANY_PARA(R7),R1
        MOV  @UNDO_ANY_CHAR(R7),R2
+       JMP  CALL_DELETE_CHAR_ROUTINE
+!      MOV  @UNDO_ANY_PARA_AFTER(R7),R1
+       MOV  @UNDO_ANY_CHAR_AFTER(R7),R2
+CALL_DELETE_CHAR_ROUTINE
 * Delete character from paragraph
        BL   @DELETE_CHARACTER_IN_PARA
 * Is deletion complete?
        INC  R8
-       JNE  REDO_DEL_LOOP
+       JMP  REDO_DEL_LOOP
 REDO_PARA_MERGE
        MOV  @UNDO_ANY_PARA(R7),R1
        BL   @MERGE_PARAGRAPHS
