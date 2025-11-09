@@ -314,12 +314,14 @@ KEYL1E EVEN
 EXPECT_LIST1_UNDO1
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,143           * Paragraph index, character index
+       DATA 0,0
        DATA 4               * String length
        TEXT 'land'          * Deleted Bytes
 
 EXPECT_LIST1_UNDO2
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,140           * Paragraph index, character index
+       DATA 0,0
        DATA 2               * String length
        TEXT 'st'            * Deleted Bytes
 EXPECT_LIST1_UNDO2_END
@@ -410,7 +412,7 @@ LIST3_POPULATE_LOOP
        MOV  R0,@UNDLST
        MOV  R1,R4
 *
-       LI   R0,9
+       LI   R0,UNDO_PAYLOAD+1
        BLWP @BUFALC
        JEQ  LIST3_DONE
        MOV  R0,*R4
@@ -496,14 +498,16 @@ KEYL3E EVEN
 LIST3_OLD_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
        DATA 1,5             * Paragraph index, character index
+       DATA 0,0
        DATA 1               * String length
        TEXT '$'             * Deleted Bytes
-       EVEN
+       BYTE 0
 LIST3_OLD_UNDO_OBJ_END
 
 LIST3_EXPECTED_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,45            * Paragraph index, character index
+       DATA 0,0
        DATA 6               * String length
        TEXT 'former'        * Deleted Bytes
        EVEN
@@ -610,6 +614,7 @@ KEY_LIST4E
 LIST4_OLD_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,45            * Paragraph index, character index
+       DATA 0,0
        DATA 254             * String length
        TEXT 'some text...'  * Deleted Bytes
        EVEN
@@ -618,6 +623,7 @@ LIST4_OLD_UNDO_OBJ_END
 LIST4_EXPECTED_UNDO_OBJ
        DATA UNDO_DEL        * Undo Operation Type
        DATA 0,45            * Paragraph index, character index
+       DATA 0,0
        DATA 4               * String length
        TEXT 'orme'          * Deleted Bytes
        EVEN

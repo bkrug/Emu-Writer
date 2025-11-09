@@ -119,10 +119,12 @@ UNDO_DEL    EQU  >0006      * Delete right-of-cursor
 UNDO_BCK    EQU  >0008      * Delete left-of-cursor
 
 *
-UNDO_ANY_PARA  EQU  >0002      * Location in undo-action of paragraph index
-UNDO_ANY_CHAR  EQU  >0004      * Location in undo-action of character index
-UNDO_ANY_LEN   EQU  >0006      * Location in undo-action of string-length
-UNDO_PAYLOAD   EQU  >0008      * Location in undo-action of deleted text
+UNDO_ANY_PARA       EQU  >0002      * paragraph index before action
+UNDO_ANY_CHAR       EQU  >0004      * character index before action
+UNDO_ANY_PARA_AFTER EQU  >0006      * paragraph index after action
+UNDO_ANY_CHAR_AFTER EQU  >0008      * character index after action
+UNDO_ANY_LEN        EQU  >000A      * Location in undo-action of string-length
+UNDO_PAYLOAD        EQU  >000C      * Location in undo-action of deleted text
 
 *
 MAX_UNDO_LIST_LENGTH   EQU  16

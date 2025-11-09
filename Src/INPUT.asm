@@ -283,7 +283,7 @@ UNDO_LIST_LENGTH_OKAY
 !      MOV  R0,@UNDLST
 * Create undo action and store its location in the undo list
 ALLOCATE_UNDO_OBJECT
-       LI   R0,8
+       LI   R0,UNDO_PAYLOAD
        BLWP @BUFALC
        JNE  !
        B    @RTERR
@@ -294,9 +294,11 @@ ALLOCATE_UNDO_OBJECT
        MOV  R2,*R0+                * type of action
        MOV  @PARINX,*R0+           * paragraph index describing location
        MOV  @CHRPAX,*R0+           * character index describing location
-       CLR  *R0                    * length of undo payload
+       CLR  *R0+                   * length of undo payload
+       CLR  *R0+                   * length of undo payload
+       CLR  *R0+                   * length of undo payload
 * Restore the value of R0 to point to address of undo object
-       AI   R0,-UNDO_ANY_LEN
+       AI   R0,-UNDO_PAYLOAD
 *
        MOV  *R10+,R11
        RT
