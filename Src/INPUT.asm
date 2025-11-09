@@ -560,14 +560,8 @@ RECORD_DELETE
        LI   R0,1
        BL   @RESERVE_UNDO_SPACE
        MOVB R2,*R0
-* Let R1 = address of undo action
-       MOV  @UNDLST,R0
-       MOV  @UNDOIDX,R1
-       BLWP @ARYADR
-       MOV  *R1,R1
-* Point undo action to the current cursor position
-       MOV  @PARINX,@UNDO_ANY_PARA_AFTER(R1)
-       MOV  @CHRPAX,@UNDO_ANY_CHAR_AFTER(R1)
+* Record position of cursor after action complete
+       BL   @RECORD_CURSOR_AFTER_ACTION
 *
        MOV  *R10+,R11
        RT
@@ -632,14 +626,8 @@ BCKDEL DECT R10
 * No, delete previous character
        BL   @BACKSP
        BL   @DELCHR
-* Let R1 = address of undo action
-       MOV  @UNDLST,R0
-       MOV  @UNDOIDX,R1
-       BLWP @ARYADR
-       MOV  *R1,R1
-* Point undo action to the current cursor position
-       MOV  @PARINX,@UNDO_ANY_PARA_AFTER(R1)
-       MOV  @CHRPAX,@UNDO_ANY_CHAR_AFTER(R1)
+* Record position of cursor after action complete
+       BL   @RECORD_CURSOR_AFTER_ACTION
 *
 BCKDL1 MOV  *R10+,R11
        RT
@@ -1157,6 +1145,21 @@ SPLIT_PARA_RETURN
        MOV  *R10+,R7
        MOV  *R10+,R8
        MOV  *R10+,R11
+       RT
+
+*
+* Record position of cursor after action complete
+*
+RECORD_CURSOR_AFTER_ACTION
+* Let R1 = address of undo action
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+* Point undo action to the current cursor position
+       MOV  @PARINX,@UNDO_ANY_PARA_AFTER(R1)
+       MOV  @CHRPAX,@UNDO_ANY_CHAR_AFTER(R1)
+*
        RT
 
 INPTE  AORG
