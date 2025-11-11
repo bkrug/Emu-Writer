@@ -394,7 +394,7 @@ ROUTIN DATA INSERT_TEXT,OVERWRITE_TEXT
        DATA NXTWIN,PGUP,LINBEG,LINEND
        DATA UNDO_OP,REDO_OP
 UNDO_ACTIONS
-       DATA 0,0
+       DATA UNDO_INS,0
        DATA UNDO_DEL,0,0,0
        DATA 0,0,0,UNDO_BCK
        DATA 0,0,0,0
@@ -614,6 +614,8 @@ INSERT_TEXT
        BL   @INSERT_CHARACTER_IN_PARA
 * Increase character index.
        INC  @CHRPAX
+* Record position of cursor after action complete
+       BL   @RECORD_CURSOR_AFTER_ACTION
 *
        MOV  *R10+,R11
        RT
@@ -704,96 +706,19 @@ UNDO_OP
        MOV  @UNDOIDX,R1
 * Are there any undo operations remaining?
        JLT  UNDO_COMPLETE
-* Yes, Let R6 = address of current undo operation in list
+* Yes, Let R7 = address of current undo operation in list
        BLWP @ARYADR
-       MOV  *R1,R6
-* Let R7 = address of text to restore
-       MOV  R6,R7
-       AI   R7,UNDO_PAYLOAD
-* Let R8 = end of undo text
-       MOV  R7,R8
-       A    @UNDO_ANY_LEN(R6),R8
-* Set @INSERT_CHARACTER_IN_PARA parameters
-* Let R3 = paragraph index
-* Let R4 = character insertion point with paragraph
-       MOV  @UNDO_ANY_PARA_AFTER(R6),R3
-       MOV  @UNDO_ANY_CHAR_AFTER(R6),R4
-* Is insertion complete?
-TEXT_RESTORE_LOOP
-       C    R7,R8
-       JHE  TEXT_RESTORE_DONE
-* No, let R5 = character to insert
-       MOVB *R7+,R5
-* Insert a character or a carriage return?
-       CB   R5,@CRBYTE
-       JEQ  RESTORE_CR
-* Insert one character
-       BL   @INSERT_CHARACTER_IN_PARA
-* If undoing a backspace delete, repeat
-       C    *R6,@RESTORE_BACKWARDS
-       JEQ  TEXT_RESTORE_LOOP 
-* Otherwise, move the insert position and repeat
-       INC  R4
-       JMP  TEXT_RESTORE_LOOP
-* Insert a carraige return
-RESTORE_CR
-       C    *R6,@RESTORE_BACKWARDS
-       JEQ  RESTORE_CR_BACKWARDS
-* Let param R1 = paragraph index
-* Let param R2 = char index to split at
-       MOV  R3,R1
-       MOV  R4,R2
-       BL   @SPLIT_PARAGRAPH
-* Set document-status bit
-       SOC  @STSENT,*R13
-* Set the first paragraph to rewrap
-       MOV  @WRAP_START,R0
-       JNE  !
-       MOV  R3,@WRAP_START
-!
-* Update insert position
-       INC  R3
-       CLR  R4
-* Set the last paragraph to rewrap
-       C    @WRAP_END,R3
-       JH   !
-       MOV  R3,@WRAP_END
-!
+       MOV  *R1,R7
 *
-       JMP  TEXT_RESTORE_LOOP
-RESTORE_CR_BACKWARDS
-* Let param R1 = paragraph index
-* Let param R2 = char index to split at
-       MOV  R3,R1
-       MOV  R4,R2
-       BL   @SPLIT_PARAGRAPH
-* Set document-status bit
-       SOC  @STSENT,*R13
-* Set the first paragraph to rewrap
-       MOV  @WRAP_START,R0
-       JNE  !
-       MOV  @UNDO_ANY_PARA_AFTER(R6),@WRAP_START
-!
-* Set the last paragraph to rewrap
-       MOV  @UNDO_ANY_PARA(R6),@WRAP_END
-*
-       JMP  TEXT_RESTORE_LOOP
-TEXT_RESTORE_DONE
+       BL   @RESTORE_TEXT_IN_UNDO_ACTION
 * Restore PARINX and CHRPAX
-       MOV  @UNDO_ANY_PARA(R6),@PARINX
-       MOV  @UNDO_ANY_CHAR(R6),@CHRPAX
+       MOV  @UNDO_ANY_PARA(R7),@PARINX
+       MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
 * Move undo position one location earlier
        DEC  @UNDOIDX
-* TODO: This should probably be the job of @INSERT_CHARACTER_IN_PARA
-* Set document status bit, as this is necessary regardless of what we are undoing
-       SOC  @STSTYP,*R13
-       SOC  @STSWIN,*R13
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT
-
-RESTORE_BACKWARDS
-       DATA UNDO_BCK
 
 *
 * Redo operation
@@ -812,40 +737,13 @@ REDO_OP
 * Yes, let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
-* Let R8 = amount to delete
-       MOV  @UNDO_ANY_LEN(R7),R8
-       JEQ  TEXT_REDELETE_DONE
-REDO_DEL_LOOP
-* Let R9 & R2 be the point in document from where we are deleting
-       C    *R7,@RESTORE_BACKWARDS
-       JEQ  !
-       MOV  @UNDO_ANY_PARA(R7),R9
-       MOV  @UNDO_ANY_CHAR(R7),R2
-       JMP  REDO_DELETE_CHAR
-!      MOV  @UNDO_ANY_PARA_AFTER(R7),R9
-       MOV  @UNDO_ANY_CHAR_AFTER(R7),R2
-REDO_DELETE_CHAR
-* Delete character from paragraph
-       MOV  R9,R1
-       BL   @DELETE_CHARACTER_IN_PARA
-* If nothing was deleted, merge paragraphs
-       MOVB R2,R2
-       JNE  !
-       MOV  R9,R1
-       BL   @MERGE_PARAGRAPHS
-!
-* Do next character
-       DEC  R8
-       JNE  REDO_DEL_LOOP
-TEXT_REDELETE_DONE
+* For now, assume that this is redoing a delete or backspace-delete.
+       BL   @REMOVE_TEXT_IN_UNDO_ACTION
 * Restore PARINX and CHRPAX
        MOV  @UNDO_ANY_PARA_AFTER(R7),@PARINX
        MOV  @UNDO_ANY_CHAR_AFTER(R7),@CHRPAX
 * Move undo position one location earlier
        INC  @UNDOIDX
-* Set document status bit. We have to assume that the window moved because
-* the redo action can move the user to a different part of the document.
-       SOC  @STSWIN,*R13
 REDO_COMPLETE
        MOV  *R10+,R11
        RT
@@ -1167,6 +1065,135 @@ SPLIT_PARA_RETURN
        MOV  *R10+,R8
        MOV  *R10+,R11
        RT
+
+*
+* Input:
+*   R7 = address of undo action
+*
+REMOVE_TEXT_IN_UNDO_ACTION
+       DECT R10
+       MOV  R11,*R10
+* Let R8 = amount to delete
+       MOV  @UNDO_ANY_LEN(R7),R8
+       JEQ  TEXT_REDELETE_DONE
+REDO_DEL_LOOP
+* Let R9 & R2 be the point in document from where we are deleting
+       C    *R7,@RESTORE_BACKWARDS
+       JEQ  !
+       MOV  @UNDO_ANY_PARA(R7),R9
+       MOV  @UNDO_ANY_CHAR(R7),R2
+       JMP  REDO_DELETE_CHAR
+!      MOV  @UNDO_ANY_PARA_AFTER(R7),R9
+       MOV  @UNDO_ANY_CHAR_AFTER(R7),R2
+REDO_DELETE_CHAR
+* Delete character from paragraph
+       MOV  R9,R1
+       BL   @DELETE_CHARACTER_IN_PARA
+* If nothing was deleted, merge paragraphs
+       MOVB R2,R2
+       JNE  !
+       MOV  R9,R1
+       BL   @MERGE_PARAGRAPHS
+!
+* Do next character
+       DEC  R8
+       JNE  REDO_DEL_LOOP
+TEXT_REDELETE_DONE
+* Set document status bit. We have to assume that the window moved because
+* the redo action can move the user to a different part of the document.
+       SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
+       RT
+
+*
+*
+* Input:
+*   R7 = address of undo action
+RESTORE_TEXT_IN_UNDO_ACTION
+       DECT R10
+       MOV  R11,*R10
+* Let R8 = address of text to restore
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+* Let R9 = end of undo text
+       MOV  R8,R9
+       A    @UNDO_ANY_LEN(R7),R9
+* Set @INSERT_CHARACTER_IN_PARA parameters
+* Let R3 = paragraph index
+* Let R4 = character insertion point with paragraph
+       MOV  @UNDO_ANY_PARA_AFTER(R7),R3
+       MOV  @UNDO_ANY_CHAR_AFTER(R7),R4
+* Is insertion complete?
+TEXT_RESTORE_LOOP
+       C    R8,R9
+       JHE  TEXT_RESTORE_DONE
+* No, let R5 = character to insert
+       MOVB *R8+,R5
+* Insert a character or a carriage return?
+       CB   R5,@CRBYTE
+       JEQ  RESTORE_CR
+* Insert one character
+       BL   @INSERT_CHARACTER_IN_PARA
+* If undoing a backspace delete, repeat
+       C    *R7,@RESTORE_BACKWARDS
+       JEQ  TEXT_RESTORE_LOOP 
+* Otherwise, move the insert position and repeat
+       INC  R4
+       JMP  TEXT_RESTORE_LOOP
+* Insert a carraige return
+RESTORE_CR
+       C    *R7,@RESTORE_BACKWARDS
+       JEQ  RESTORE_CR_BACKWARDS
+* Let param R1 = paragraph index
+* Let param R2 = char index to split at
+       MOV  R3,R1
+       MOV  R4,R2
+       BL   @SPLIT_PARAGRAPH
+* Set document-status bit
+       SOC  @STSENT,*R13
+* Set the first paragraph to rewrap
+       MOV  @WRAP_START,R0
+       JNE  !
+       MOV  R3,@WRAP_START
+!
+* Update insert position
+       INC  R3
+       CLR  R4
+* Set the last paragraph to rewrap
+       C    @WRAP_END,R3
+       JH   !
+       MOV  R3,@WRAP_END
+!
+*
+       JMP  TEXT_RESTORE_LOOP
+RESTORE_CR_BACKWARDS
+* Let param R1 = paragraph index
+* Let param R2 = char index to split at
+       MOV  R3,R1
+       MOV  R4,R2
+       BL   @SPLIT_PARAGRAPH
+* Set document-status bit
+       SOC  @STSENT,*R13
+* Set the first paragraph to rewrap
+       MOV  @WRAP_START,R0
+       JNE  !
+       MOV  @UNDO_ANY_PARA_AFTER(R7),@WRAP_START
+!
+* Set the last paragraph to rewrap
+       MOV  @UNDO_ANY_PARA(R7),@WRAP_END
+*
+       JMP  TEXT_RESTORE_LOOP
+TEXT_RESTORE_DONE
+* Set document status bit, as this is necessary regardless of what we are undoing
+       SOC  @STSTYP,*R13
+       SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
+       RT
+
+RESTORE_BACKWARDS
+       DATA UNDO_BCK
 
 *
 * Record position of cursor after action complete
