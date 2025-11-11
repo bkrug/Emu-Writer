@@ -69,9 +69,12 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that deleting a carriage return can be redone.
        DATA DEL8
        TEXT 'DEL8  '
-* Assert that deletion of two non-consequtive CRs can be undon.
+* Assert that deletion of two non-consequtive CRs can be undone.
        DATA DEL9
        TEXT 'DEL9  '
+* Assert that replacing one redo replaces all later redos.
+       DATA DEL10
+       TEXT 'DEL10 '
 * Assert that text is restored when undo is pressed once.
        DATA BACK1
        TEXT 'BACK1 '
@@ -1232,6 +1235,89 @@ DEL9_ONE_MSG
 DEL9_TWO_MSG
        DATA 23
        TEXT 'Expected character "2".'
+       EVEN
+
+* Delete 10
+* ---------
+* Assert that replacing one redo replaces all later redos.
+DEL10  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set cursor the beginning of a one character paragraph
+       CLR  @INSTMD
+       CLR  @PARINX
+       CLR  @CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_DEL10
+       LI   R1,KEY_DEL10E
+       CLR  R2
+       BL   @CPYKEY
+*
+* Act
+*
+* Run the input routine 3 times.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+*
+* Assert
+*
+* Assert text at beginning of first paragraph
+       MOV  @PARLST,R0
+       LI   R1,0
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,DEL10_EXPECTED+2
+       MOV  @DEL10_EXPECTED,R2
+       LI   R3,DEL10_TEXT_MSG+2
+       MOV  @DEL10_TEXT_MSG,R4
+       BLWP @ASTR
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,2
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_DEL10
+* Delete 'M' 'd' 's' from 'Madison"s'
+       BYTE DELKEY,FWDKEY,DELKEY,FWDKEY,DELKEY
+* Restore 's' and 'd'
+       BYTE UNDKEY,UNDKEY
+* Delete 'i'
+       BYTE FWDKEY,DELKEY
+* Redo should not delete anything
+       BYTE RDOKEY
+KEY_DEL10E
+       EVEN
+
+DEL10_EXPECTED
+       DATA 7
+       TEXT 'adson"s'
+       EVEN
+
+DEL10_TEXT_MSG
+       DATA 67
+       TEXT '"d" and first "s" should be restored. "s" should not be re-deleted.'
        EVEN
 
 * Backspace Delete 1
