@@ -87,6 +87,12 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that a carriage return is re-deleted when backspace-delete is undone and redone.
        DATA BACK4
        TEXT 'BACK4 '
+* Assert that inserted text is removed when undo is pressed once.
+       DATA INS1
+       TEXT 'INS1  '
+* Assert that inserted text is restored when undo and redo are pressed.
+       DATA INS2
+       TEXT 'INS2  '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -1550,7 +1556,7 @@ BACK3_PARAGRAPH_COUNT
        TEXT 'Paragraph count should have been restored.'
        EVEN
 
-* Backspace Delete 3
+* Backspace Delete 4
 * ------------------
 * Assert that a carriage return is re-deleted when backspace-delete is undone and redone.
 BACK4  DECT R10
@@ -1632,6 +1638,147 @@ BACK4_PARAGRAPH_COUNT
        TEXT 'There should be one less paragraph.'
        EVEN
 
+
+* Insert 1
+* --------
+* Assert that inserted text is removed when undo is pressed once.
+INS1   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,10
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_INS1
+       LI   R1,KEY_INS1E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,INS1_EXPECTED_TEXT+2
+       MOV  @INS1_EXPECTED_TEXT,R2
+       LI   R3,INS1_FAIL+2
+       MOV  @INS1_FAIL,R4
+       BLWP @ASTR
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,10
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_INS1
+       TEXT 'SNOOPY '
+       BYTE UNDKEY
+KEY_INS1E
+       EVEN
+
+* First 80 characters of the paragraph after delting
+INS1_EXPECTED_TEXT
+       DATA 78
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+INS1_FAIL
+       DATA 35
+       TEXT '"SNOOPY " should have been removed.'
+
+* Insert 2
+* --------
+* Assert that inserted text is restored when undo and redo are pressed.
+INS2   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,10
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_INS2
+       LI   R1,KEY_INS2E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,INS2_EXPECTED_TEXT+2
+       MOV  @INS2_EXPECTED_TEXT,R2
+       LI   R3,INS2_FAIL+2
+       MOV  @INS2_FAIL,R4
+       BLWP @ASTR
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,17
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_INS2
+       TEXT 'SNOOPY '
+       BYTE FWDKEY,UNDKEY,RDOKEY
+KEY_INS2E
+       EVEN
+
+* First 80 characters of the paragraph after delting
+INS2_EXPECTED_TEXT
+       DATA 85
+       TEXT 'Madison"s SNOOPY modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+INS2_FAIL
+       DATA 36
+       TEXT '"SNOOPY " should have been restored.'
+
 * Empty 1
 * -------
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
@@ -1669,7 +1816,7 @@ EMPTY1 DECT R10
        MOV  @EMPTY1_EXPECTED_TEXT,R2
        LI   R3,EMPTY1_FAIL+2
        MOV  @EMPTY1_FAIL,R4
-       BLWP @ABLCK
+       BLWP @ASTR
 *
        CLR  R0
        MOV  @PARINX,R1
@@ -1741,7 +1888,7 @@ EMPTY2 DECT R10
        MOV  @EMPTY2_EXPECTED_TEXT,R2
        LI   R3,EMPTY2_FAIL+2
        MOV  @EMPTY2_FAIL,R4
-       BLWP @ABLCK
+       BLWP @ASTR
 *
        CLR  R0
        MOV  @PARINX,R1
