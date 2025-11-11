@@ -396,7 +396,7 @@ ROUTIN DATA INSERT_TEXT,OVERWRITE_TEXT
 UNDO_ACTIONS
        DATA UNDO_INS,0
        DATA UNDO_DEL,0,0,0
-       DATA 0,0,0,UNDO_BCK
+       DATA 0,0,UNDO_INS,UNDO_BCK
        DATA 0,0,0,0
        DATA 0,0,0,0
        DATA 0,0
@@ -511,6 +511,12 @@ ISENTR DECT R10
 !
 * Specify that the current paragraph is the last one to re-wrap
        MOV  @PARINX,@WRAP_END
+* Record inserted character
+       LI   R0,1
+       BL   @RESERVE_UNDO_SPACE
+       MOVB @CRBYTE,*R0
+* Record position of cursor after action complete
+       BL   @RECORD_CURSOR_AFTER_ACTION
 *
        MOV  *R10+,R11
        RT
@@ -614,7 +620,7 @@ INSERT_TEXT
        BL   @INSERT_CHARACTER_IN_PARA
 * Increase character index.
        INC  @CHRPAX
-* Record deleted character
+* Record inserted character
        LI   R0,1
        BL   @RESERVE_UNDO_SPACE
        MOV  @KEYRD,R5
