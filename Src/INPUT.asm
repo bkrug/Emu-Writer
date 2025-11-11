@@ -245,18 +245,23 @@ START_FRESH_UNDO_ENTRY
        MOV  R11,*R10
 * Yes, increment undo index.
        INC  @UNDOIDX
+REMOVE_UNDO_ACTION_LOOP
 * Is there already an old undo action at current index?
        MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        C    *R0,R1
        JLE  ADD_UNDO_LIST_ELEM
-* Yes, Let R1 = address of element in undo list
+* Yes, deallocate old undo action from memory
        BLWP @ARYADR
-* Delete old undo-object
        MOV  *R1,R0
        BLWP @BUFREE
+* Delete element from undo list
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYDEL
 *
-       JMP  ALLOCATE_UNDO_OBJECT
+       JMP  REMOVE_UNDO_ACTION_LOOP
+*
 ADD_UNDO_LIST_ELEM
 * Has undo list reached maximum length?
        CI   R1,MAX_UNDO_LIST_LENGTH
@@ -282,7 +287,6 @@ UNDO_LIST_LENGTH_OKAY
        B    @RTERR
 !      MOV  R0,@UNDLST
 * Create undo action and store its location in the undo list
-ALLOCATE_UNDO_OBJECT
        LI   R0,UNDO_PAYLOAD
        BLWP @BUFALC
        JNE  !
