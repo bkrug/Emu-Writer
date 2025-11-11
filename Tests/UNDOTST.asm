@@ -93,6 +93,12 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that inserted text is restored when undo and redo are pressed.
        DATA INS2
        TEXT 'INS2  '
+* Assert that inserted carriage returns can be undone.
+       DATA INS3
+       TEXT 'INS3  '
+* Assert that a carriage return is re-inserted after pressing undo and redo.
+*       DATA INS4
+*       TEXT 'INS4  '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -1780,6 +1786,88 @@ INS2_FAIL
        DATA 36
        TEXT '"SNOOPY " should have been restored.'
        EVEN
+
+* Insert 3
+* --------
+* Assert that inserted carriage returns can be undone.
+INS3   DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set position values
+       CLR  @INSTMD
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,10
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_INS3
+       LI   R1,KEY_INS3E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,INS3_EXPECTED_TEXT+2
+       MOV  @INS3_EXPECTED_TEXT,R2
+       LI   R3,INS3_FAIL+2
+       MOV  @INS3_FAIL,R4
+       BLWP @ASTR
+*
+       MOV  @PARLST,R0
+       MOV  *R0,R0
+       LI   R1,(INTADE-INTADR)/8
+       LI   R2,INS3_PARA_COUNT+2
+       MOV  @INS3_PARA_COUNT,R3
+       BLWP @AEQ
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,10
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_INS3
+       TEXT 'AB'
+       BYTE ENTER
+       TEXT 'CD'
+       BYTE FWDKEY,UNDKEY
+KEY_INS3E
+       EVEN
+
+* First 80 characters of the paragraph after delting
+INS3_EXPECTED_TEXT
+       DATA 78
+       TEXT 'Madison"s modern origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+INS3_FAIL
+       DATA 29
+       TEXT 'Text should not have changed.'
+INS3_PARA_COUNT
+       DATA 47
+       TEXT 'Number of paragraphs should have been restored.'
 
 * Empty 1
 * -------
