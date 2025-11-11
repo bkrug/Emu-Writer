@@ -1775,9 +1775,11 @@ INS2_EXPECTED_TEXT
        DATA 85
        TEXT 'Madison"s SNOOPY modern origins begin in 1829, '
        TEXT 'when former federal judge James Duane '
+       EVEN
 INS2_FAIL
        DATA 36
        TEXT '"SNOOPY " should have been restored.'
+       EVEN
 
 * Empty 1
 * -------

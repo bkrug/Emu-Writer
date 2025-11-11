@@ -614,6 +614,11 @@ INSERT_TEXT
        BL   @INSERT_CHARACTER_IN_PARA
 * Increase character index.
        INC  @CHRPAX
+* Record deleted character
+       LI   R0,1
+       BL   @RESERVE_UNDO_SPACE
+       MOV  @KEYRD,R5
+       MOVB *R5,*R0
 * Record position of cursor after action complete
        BL   @RECORD_CURSOR_AFTER_ACTION
 *
@@ -709,8 +714,13 @@ UNDO_OP
 * Yes, Let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
-*
-       BL   @RESTORE_TEXT_IN_UNDO_ACTION
+* Restore or remove text
+* Address in R7 contains an undo type,
+* Lowest possible undo type is UNDO_INS (0002) and all are even numbers
+       LI   R8,UNDO_SUB_ROUTINES-UNDO_INS
+       A    *R7,R8
+       MOV  *R8,R8
+       BL   *R8
 * Restore PARINX and CHRPAX
        MOV  @UNDO_ANY_PARA(R7),@PARINX
        MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
@@ -719,6 +729,12 @@ UNDO_OP
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT
+
+UNDO_SUB_ROUTINES
+       DATA REMOVE_TEXT_IN_UNDO_ACTION
+       DATA REMOVE_TEXT_IN_UNDO_ACTION
+       DATA RESTORE_TEXT_IN_UNDO_ACTION
+       DATA RESTORE_TEXT_IN_UNDO_ACTION
 
 *
 * Redo operation
@@ -737,8 +753,13 @@ REDO_OP
 * Yes, let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
-* For now, assume that this is redoing a delete or backspace-delete.
-       BL   @REMOVE_TEXT_IN_UNDO_ACTION
+* Restore or remove text
+* Address in R7 contains an undo type,
+* Lowest possible undo type is UNDO_INS (0002) and all are even numbers
+       LI   R8,REDO_SUB_ROUTINES-UNDO_INS
+       A    *R7,R8
+       MOV  *R8,R8
+       BL   *R8
 * Restore PARINX and CHRPAX
        MOV  @UNDO_ANY_PARA_AFTER(R7),@PARINX
        MOV  @UNDO_ANY_CHAR_AFTER(R7),@CHRPAX
@@ -747,6 +768,12 @@ REDO_OP
 REDO_COMPLETE
        MOV  *R10+,R11
        RT
+
+REDO_SUB_ROUTINES
+       DATA RESTORE_TEXT_IN_UNDO_ACTION
+       DATA 0
+       DATA REMOVE_TEXT_IN_UNDO_ACTION
+       DATA REMOVE_TEXT_IN_UNDO_ACTION
 
 *
 * Key is not recognized
@@ -1122,8 +1149,13 @@ RESTORE_TEXT_IN_UNDO_ACTION
 * Set @INSERT_CHARACTER_IN_PARA parameters
 * Let R3 = paragraph index
 * Let R4 = character insertion point with paragraph
+       C    *R7,@INSERT_ACTION
+       JEQ  !
        MOV  @UNDO_ANY_PARA_AFTER(R7),R3
        MOV  @UNDO_ANY_CHAR_AFTER(R7),R4
+       JMP  TEXT_RESTORE_LOOP
+!      MOV  @UNDO_ANY_PARA(R7),R3
+       MOV  @UNDO_ANY_CHAR(R7),R4
 * Is insertion complete?
 TEXT_RESTORE_LOOP
        C    R8,R9
@@ -1192,8 +1224,8 @@ TEXT_RESTORE_DONE
        MOV  *R10+,R11
        RT
 
-RESTORE_BACKWARDS
-       DATA UNDO_BCK
+RESTORE_BACKWARDS   DATA UNDO_BCK
+INSERT_ACTION       DATA UNDO_INS
 
 *
 * Record position of cursor after action complete
