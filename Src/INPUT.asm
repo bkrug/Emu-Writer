@@ -1183,8 +1183,6 @@ TEXT_RESTORE_LOOP
        JMP  TEXT_RESTORE_LOOP
 * Insert a carraige return
 RESTORE_CR
-       C    *R7,@RESTORE_BACKWARDS
-       JEQ  RESTORE_CR_BACKWARDS
 * Let param R1 = paragraph index
 * Let param R2 = char index to split at
        MOV  R3,R1
@@ -1192,19 +1190,12 @@ RESTORE_CR
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
        SOC  @STSENT,*R13
+*
+       C    *R7,@RESTORE_BACKWARDS
+       JEQ  TEXT_RESTORE_LOOP
 * Update insert position
        INC  R3
        CLR  R4
-*
-       JMP  TEXT_RESTORE_LOOP
-RESTORE_CR_BACKWARDS
-* Let param R1 = paragraph index
-* Let param R2 = char index to split at
-       MOV  R3,R1
-       MOV  R4,R2
-       BL   @SPLIT_PARAGRAPH
-* Set document-status bit
-       SOC  @STSENT,*R13
 *
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
