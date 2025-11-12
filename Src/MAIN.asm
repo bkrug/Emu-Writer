@@ -34,9 +34,9 @@ MAIN
 * Clear the document status register
        CLR  R0
        MOV  R0,@DOCSTS
-* Clear the "Paragraph Enter" index
-       CLR  @WRAP_START
-       CLR  @WRAP_END
+* Reset the range of paragraphs that should be wrapped.
+       SETO @WRAP_START
+       SETO @WRAP_END
 * If in menu mode, leave document loop
        MOV  @CURMNU,R1
        JEQ  MAIN1
@@ -150,16 +150,15 @@ MYWRAP
        JNE  WRAP1
 * Let R3 = first paragraph to wrap
 * Let R4 = last paragraph to wrap
-* If WRAP_START != 0, then it contains the first new paragraph from pressing enter.
+* If WRAP_START >= 0, then it contains the first new paragraph from pressing enter.
        MOV  @WRAP_START,R3
-       JEQ  WRAP1
+       JLT  WRAP1
        MOV  @WRAP_END,R4
-*
 	JMP  WRAP2
 * If the user typed something,
 * wrap the current paragraph.
 WRAP1  COC  @STSTYP,R2
-       JNE  WRAP3
+       JNE  WRAPRT
 * Let R3 = first paragraph to wrap
 * Let R4 = last paragraph to wrap
        MOV  @PARINX,R3
@@ -171,7 +170,7 @@ WRAP2  MOV  R3,R0
        C    R3,R4
        JLE  WRAP2
 *
-WRAP3  RT
+WRAPRT RT
 
 *
 * Draw the cursor on screen

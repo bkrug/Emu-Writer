@@ -159,6 +159,10 @@ SP1    MOV  @WINPAR,R9
 * The user pressed enter, so start from
 * a previous paragraph.
 SP2    MOV  @WRAP_START,R9
+       C    @WINPAR,R9
+       JLT  !
+       MOV  @WINPAR,R9
+!
        RT
        
 *

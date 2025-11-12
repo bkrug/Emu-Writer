@@ -502,15 +502,13 @@ ISENTR DECT R10
        CLR  @CHRPAX
 * Set document-status bit
        SOC  @STSENT,*R13
-* WRAP_START may already be set if someone presses enter twice in a row
-* Otherwise, set it here
-       MOV  @WRAP_START,R0
-       JNE  !
-       MOV  @PARINX,@WRAP_START
-       DEC  @WRAP_START
+* Re-wrap the previous and current paragraph
+       MOV  @PARINX,R4
+       MOV  R4,R3
+       DEC  R3
+       JLT  !
+       BL   @SET_WRAP_PARAGRAPHS
 !
-* Specify that the current paragraph is the last one to re-wrap
-       MOV  @PARINX,@WRAP_END
 * Record inserted character
        LI   R0,1
        BL   @RESERVE_UNDO_SPACE
@@ -1135,6 +1133,10 @@ TEXT_REDELETE_DONE
 * Set document status bit. We have to assume that the window moved because
 * the redo action can move the user to a different part of the document.
        SOC  @STSWIN,*R13
+* Set the paragraphs to re-wrap
+       MOV  @UNDO_ANY_PARA_AFTER(R7),R3
+       MOV  R3,R4
+       BL   @SET_WRAP_PARAGRAPHS
 *
        MOV  *R10+,R11
        RT
@@ -1190,19 +1192,9 @@ RESTORE_CR
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
        SOC  @STSENT,*R13
-* Set the first paragraph to rewrap
-       MOV  @WRAP_START,R0
-       JNE  !
-       MOV  R3,@WRAP_START
-!
 * Update insert position
        INC  R3
        CLR  R4
-* Set the last paragraph to rewrap
-       C    @WRAP_END,R3
-       JH   !
-       MOV  R3,@WRAP_END
-!
 *
        JMP  TEXT_RESTORE_LOOP
 RESTORE_CR_BACKWARDS
@@ -1213,25 +1205,48 @@ RESTORE_CR_BACKWARDS
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
        SOC  @STSENT,*R13
-* Set the first paragraph to rewrap
-       MOV  @WRAP_START,R0
-       JNE  !
-       MOV  @UNDO_ANY_PARA_AFTER(R7),@WRAP_START
-!
-* Set the last paragraph to rewrap
-       MOV  @UNDO_ANY_PARA(R7),@WRAP_END
 *
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
 * Set document status bit, as this is necessary regardless of what we are undoing
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
+* Set paragraphs to re-wrap
+* Let R3 = earlier paragraph
+* Let R4 = later paragraph
+       MOV  @UNDO_ANY_PARA(R7),R3
+       MOV  @UNDO_ANY_PARA_AFTER(R7),R4
+       C    R3,R4
+       JLE  !
+       MOV  R3,R0
+       MOV  R4,R3
+       MOV  R0,R4
+!
+       BL   @SET_WRAP_PARAGRAPHS
 *
        MOV  *R10+,R11
        RT
 
 RESTORE_BACKWARDS   DATA UNDO_BCK
 INSERT_ACTION       DATA UNDO_INS
+
+*
+* Input;
+*   R3 & R4 = paragraphs to rewrap
+*
+SET_WRAP_PARAGRAPHS
+* If @WRAP_START < 0 or R3 < @WRAP_START, edit it.
+       C    R3,@WRAP_START
+       JHE  !
+       MOV  R3,@WRAP_START
+!
+* If @WRAP_END < 0 or R4 > @WRAP_END, edit it.
+       C    R4,@WRAP_END
+       JLT  !
+       MOV  R4,@WRAP_END
+!
+*
+       RT
 
 *
 * Record position of cursor after action complete
