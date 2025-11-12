@@ -1154,6 +1154,15 @@ RESTORE_TEXT_IN_UNDO_ACTION
 * Let R9 = end of undo text
        MOV  R8,R9
        A    @UNDO_ANY_LEN(R7),R9
+* Wrap the earliest paragraph of the undo action
+* See RESTORE_CR for mutli-paragraph actions
+       MOV  @UNDO_ANY_PARA(R7),R3
+       MOV  @UNDO_ANY_PARA_AFTER(R7),R4
+       C    R3,R4
+       JLE  !
+       MOV  R4,R3
+!      MOV  R3,R4
+       BL   @SET_WRAP_PARAGRAPHS
 * Set @INSERT_CHARACTER_IN_PARA parameters
 * Let R3 = paragraph index
 * Let R4 = character insertion point with paragraph
@@ -1190,6 +1199,8 @@ RESTORE_CR
        BL   @SPLIT_PARAGRAPH
 * Set document-status bit
        SOC  @STSENT,*R13
+* Specify that one more paragraph must be wrapped
+       INC  @WRAP_END
 *
        C    *R7,@RESTORE_BACKWARDS
        JEQ  TEXT_RESTORE_LOOP
@@ -1202,18 +1213,6 @@ TEXT_RESTORE_DONE
 * Set document status bit, as this is necessary regardless of what we are undoing
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
-* Set paragraphs to re-wrap
-* Let R3 = earlier paragraph
-* Let R4 = later paragraph
-       MOV  @UNDO_ANY_PARA(R7),R3
-       MOV  @UNDO_ANY_PARA_AFTER(R7),R4
-       C    R3,R4
-       JLE  !
-       MOV  R3,R0
-       MOV  R4,R3
-       MOV  R0,R4
-!
-       BL   @SET_WRAP_PARAGRAPHS
 *
        MOV  *R10+,R11
        RT
