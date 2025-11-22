@@ -198,7 +198,7 @@ KYEXIT MOV  *R10+,R11
 * If yes, make one.
 *
 * Input:
-*   R0 - Double-index of Undo Action
+*   R0 - Double-index of detected key
 *
 TEST_UNDO_ACTION
        DECT R10
@@ -394,7 +394,7 @@ ROUTIN DATA INSERT_TEXT,OVERWRITE_TEXT
        DATA NXTWIN,PGUP,LINBEG,LINEND
        DATA UNDO_OP,REDO_OP
 UNDO_ACTIONS
-       DATA UNDO_INS,0
+       DATA UNDO_INS,UNDO_OVR
        DATA UNDO_DEL,0,0,0
        DATA 0,0,UNDO_INS,UNDO_BCK
        DATA 0,0,0,0
@@ -588,19 +588,28 @@ OVERWRITE_TEXT
        MOV  @PARLST,R0
        MOV  @PARINX,R1
        BLWP @ARYADR
-* Let R0 = address of paragraph.
-       MOV  *R1,R0
-* Let R0 = address to overwrite text at
-       AI   R0,PARAGRAPH_TEXT_OFFSET
-       A    @CHRPAX,R0
-* put keystroke in new space
+* Let R5 = address to overwrite text at
+       MOV  *R1,R5
+       AI   R5,PARAGRAPH_TEXT_OFFSET
+       A    @CHRPAX,R5
+* Let R2 = address of new character
        MOV  @KEYRD,R2
-       MOVB *R2,*R0
+* Record overwritten character and new character in undo action
+       LI   R0,2
+       BL   @RESERVE_UNDO_SPACE
+       MOVB *R2,*R0+
+       MOVB *R5,*R0+
+* Overwrite character
+       MOVB *R2,*R5
 * Increase character index.
        INC  @CHRPAX
+* Record position of cursor after action complete
+       BL   @RECORD_CURSOR_AFTER_ACTION
 *
        MOV  *R10+,R11
        RT
+
+THING  RT
 
 *
 * Insert text in paragraph
@@ -736,7 +745,7 @@ UNDO_COMPLETE
 
 UNDO_SUB_ROUTINES
        DATA REMOVE_TEXT_IN_UNDO_ACTION
-       DATA REMOVE_TEXT_IN_UNDO_ACTION
+       DATA RESTORE_OVERWRITTEN_TEXT_IN_UNDO_ACTION
        DATA RESTORE_TEXT_IN_UNDO_ACTION
        DATA RESTORE_TEXT_IN_UNDO_ACTION
 
@@ -1210,7 +1219,7 @@ RESTORE_CR
 *
        JMP  TEXT_RESTORE_LOOP
 TEXT_RESTORE_DONE
-* Set document status bit, as this is necessary regardless of what we are undoing
+* Set document status bits
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
 *
@@ -1219,6 +1228,50 @@ TEXT_RESTORE_DONE
 
 RESTORE_BACKWARDS   DATA UNDO_BCK
 INSERT_ACTION       DATA UNDO_INS
+
+*
+*
+* Input:
+*   R7 = address of undo action
+RESTORE_OVERWRITTEN_TEXT_IN_UNDO_ACTION
+       DECT R10
+       MOV  R11,*R10
+* Let R8 = address of text to restore
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+* Let R9 = end of undo text
+       MOV  R8,R9
+       A    @UNDO_ANY_LEN(R7),R9
+* Rewrap paragraph after we are done.
+* This can never be more than one paragraph,
+* because we don't allow overwrites of Carriage Returns.
+       MOV  @UNDO_ANY_PARA(R7),R3
+       MOV  R3,R4
+       BL   @SET_WRAP_PARAGRAPHS
+* Let R1 = address of paragraph's entry in the paragraph list
+       MOV  @PARLST,R0
+       MOV  @UNDO_ANY_PARA(R7),R1
+       BLWP @ARYADR
+* Let R0 = address to overwrite text at
+       MOV  *R1,R0
+       AI   R0,PARAGRAPH_TEXT_OFFSET
+       A    @UNDO_ANY_CHAR(R7),R0
+* Are there more characters to restore?
+RESTORE_OVERWRITE_LOOP
+*       C    R8,R9
+*       JHE  RESTORE_OVERWRITE_DONE
+* Yes, copy the ovewritten character
+*       MOVB *R8,*R0+
+* Pick the next character position to restore from
+*       INCT R8
+*       JMP  RESTORE_OVERWRITE_LOOP
+RESTORE_OVERWRITE_DONE
+* Set document status bits
+*       SOC  @STSTYP,*R13
+*       SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
+       RT
 
 *
 * Input;
