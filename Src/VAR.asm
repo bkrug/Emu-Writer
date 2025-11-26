@@ -237,7 +237,7 @@ VAREND
 * Buffer for text
 *
 MEMBEG EQU  >A000
-MEMEND EQU  >FFD8
+MEMEND EQU  >F780
        END
 
 * Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 

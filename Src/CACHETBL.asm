@@ -12,13 +12,11 @@
        DEF  CCHNEW,CCHQIT
        DEF  CCHMGN
        DEF  CCHMHM
-       DEF  CCHIPT
 *
        REF  PRINT,LOAD,SAVE                        From IO.asm
        REF  MYBNEW,MYBQIT                          "
        REF  EDTMGN                                 From EDTMGN.asm
        REF  MNUHOM                                 From MENU.asm
-       REF  INPUT                                  From INPUT.asm
 
 *
 * Cache Table
@@ -38,7 +36,6 @@ CCHSAV DATA 0,SAVE
 CCHNEW DATA 1,MYBNEW
 CCHQIT DATA 1,MYBQIT
 CCHMGN DATA 2,EDTMGN
-CCHIPT DATA 3,INPUT
 * Menus
 CCHMHM DATA 4,MNUHOM
        DATA -1

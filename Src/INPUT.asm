@@ -1,5 +1,4 @@
        DEF  INPUT
-       DEF  INPTS,INPTE
 *
        REF  PARLST,FMTLST,MGNLST
        REF  UNDLST
@@ -41,10 +40,6 @@
 
        COPY 'EQUKEY.asm'
        COPY 'CPUADR.asm'
-
-       AORG >F000
-INPTS
-       XORG LOADED
 
 *
 * Process the new keystrokes
@@ -1306,5 +1301,4 @@ RECORD_CURSOR_AFTER_ACTION
 *
        RT
 
-INPTE  AORG
        END
