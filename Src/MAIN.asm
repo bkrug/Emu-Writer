@@ -81,20 +81,17 @@ INTDOC
        MOVB R0,@PGWDTH
 * Initialize buffer.
 * Hack the buffer by setting initial headers for allocated and unallocated space.
-       LI   R0,>3FFE->2000
-       MOV  R0,@MEMBEG
-*
-       LI   R0,>A000->3FFE+>8000
-       MOV  R0,@>3FFE
-*
-       LI   R0,PRGEND
-       AI   R0,->A000+>8000
-       MOV  R0,@>A000
-*
-       LI   R0,MEMEND
-       LI   R1,PRGEND
-       S    R1,R0
-       MOV  R0,@PRGEND
+* In a sense, the text buffer exceeds 32KB,
+* but only because it overlaps places it can't write to.
+       LI   R0,BUFFER_ADDRESSES
+       LI   R1,MEMBEG
+!
+       MOV  *R0+,*R1
+       A    *R0,*R1
+       S    R1,*R1
+       MOV  *R0+,R1
+       CI   R0,BUFFER_ADDRESSES_END
+       JL   -!
 * Reserve space for margin and format
 * and paragraph list.
        LI   R0,3
@@ -147,6 +144,16 @@ INTPAR LI   R0,EMPPAR
 BUFADR DATA MEMBEG
 * holds first address after the buffer
 BUFEND DATA MEMEND
+
+EMPTY_BLOCK     EQU >8000
+FILLED_BLOCK    EQU >8000
+
+BUFFER_ADDRESSES
+       DATA EMPTY_BLOCK,>3FFE
+       DATA FILLED_BLOCK,>A000
+       DATA FILLED_BLOCK,PRGEND
+       DATA EMPTY_BLOCK,MEMEND
+BUFFER_ADDRESSES_END
 
 
 * Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
