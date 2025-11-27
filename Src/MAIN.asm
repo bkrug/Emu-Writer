@@ -1,9 +1,10 @@
        DEF  DRWCUR,INTDOC,INTPAR
        DEF  MAIN,INTRPT,DRWCR2
+* Memory Chunk Buffer
+       DEF  BUFADR,BUFEND
 *
        REF  INIT,PRGEND
        REF  KEYINT
-       REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
        REF  WRAP_START,WRAP_END
        REF  PARINX,CHRPAX
@@ -21,7 +22,6 @@
        REF  CURMNU
        REF  ENTMNU
        REF  ADJHDR
-       REF  BUFADR,BUFEND
 *
 
        COPY 'CPUADR.asm'
@@ -80,11 +80,7 @@ INTDOC
        LI   R0,DFLTPG*>100
        MOVB R0,@PGWDTH
 * Initialize buffer.
-* Set values of BUFADR and BUFEND.
 * Hack the buffer by setting initial headers for allocated and unallocated space.
-       LI   R0,MEMBEG
-       MOV  R0,@BUFADR
-*
        LI   R0,>3FFE->2000
        MOV  R0,@MEMBEG
 *
@@ -99,9 +95,6 @@ INTDOC
        LI   R1,PRGEND
        S    R1,R0
        MOV  R0,@PRGEND
-*
-       LI   R0,MEMEND
-       MOV  R0,@BUFEND
 * Reserve space for margin and format
 * and paragraph list.
        LI   R0,3
@@ -145,6 +138,19 @@ INTPAR LI   R0,EMPPAR
        CLR  R0
 *
        RT
+
+*
+* Buffer for text
+*
+* Required for MEMBUF.noheader.obj
+* holds address of buffer
+BUFADR DATA MEMBEG
+* holds first address after the buffer
+BUFEND DATA MEMEND
+
+
+* Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
+* --- E/A manual 24.2.1.1 (page 400)
 
 *
 * An interrupt routine to scan for keys

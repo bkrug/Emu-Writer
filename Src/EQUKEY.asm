@@ -129,3 +129,8 @@ UNDO_PAYLOAD        EQU  >000C      * Location in undo-action of deleted text
 *
 MAX_UNDO_LIST_LENGTH   EQU  16
 MAX_UNDO_PAYLOAD       EQU  255
+
+* First address of text buffer
+MEMBEG EQU  >2000
+* Address following text buffer
+MEMEND EQU  >F780

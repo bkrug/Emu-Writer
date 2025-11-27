@@ -1,4 +1,4 @@
- Areas of memory that absolutely have
+* Areas of memory that absolutely have
 * to be in RAM and could never be part
 * of a cartridge ROM should go here.
 *
@@ -16,8 +16,6 @@
 *
        DEF  VARBEG,VAREND
        DEF  FASTRT
-* Memory Chunk Buffer
-       DEF  BUFADR,BUFEND
 * Arrays
        DEF  PARLST,FMTLST,MGNLST
        DEF  UNDLST
@@ -56,8 +54,6 @@
        DEF  FLDVAL,FLDVE
 * HEADER.asm
        DEF  TWODIG
-* End of Program
-       DEF  MEMBEG,MEMEND
 
 *
 * Areas for workspace registers
@@ -92,13 +88,6 @@ UNDLST BSS  2
 * Page height and width in lines and characters
 PGHGHT BSS  1
 PGWDTH BSS  1
-
-* MEMBUF.O
-* holds block size
-* holds address of buffer
-BUFADR BSS  >2
-* holds first address after the buffer
-BUFEND BSS  >2
 
 * If something happens equivalent to throwing an exception,
 * at the point that is like a catch-block,
@@ -232,15 +221,5 @@ TWODIG BSS  2
 
 VAREND
        TEXT 'ENDOFPRG'
-
-*
-* Buffer for text
-*
-MEMBEG EQU  >2000
-MEMEND EQU  >F780
-       END
-
-* Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
-* --- E/A manual 24.2.1.1 (page 400)
 
        END
