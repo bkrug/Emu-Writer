@@ -17,7 +17,6 @@
        REF  WRTHDR
        REF  IOSTRT,IOEND                    * From IO.asm
        REF  FRSHST,FRSHED                   "
-       REF  MGNSRT,MGNEND
        REF  MNUSTR,MNUEND
        REF  FRMSRT,FRMEND
        REF  CACHES,CCHMHM
@@ -172,7 +171,6 @@ STOR3  MOVB *R1+,*R2
        RT
 TOCACH DATA IOSTRT,IOEND
        DATA FRSHST,FRSHED
-       DATA MGNSRT,MGNEND
        DATA MNUSTR,MNUEND
 TOCEND
 

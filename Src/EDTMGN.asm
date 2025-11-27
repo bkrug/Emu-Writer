@@ -1,5 +1,4 @@
        DEF  EDTMGN
-       DEF  MGNSRT,MGNEND
 *
        REF  PARINX,MGNLST,PARLST          From VAR.asm
        REF  FLDVAL,PGWDTH,PGHGHT          "
@@ -10,10 +9,6 @@
 
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
-
-       AORG >E000
-MGNSRT
-       XORG LOADED
 
 EDTMGN
        DECT R10
@@ -355,5 +350,3 @@ DUP2   DEC  R2
        JEQ  DUP1
 DUP3
        RT
-
-MGNEND AORG

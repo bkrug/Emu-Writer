@@ -10,12 +10,10 @@
        DEF  CACHES
        DEF  CCHPRT,CCHLOD,CCHSAV
        DEF  CCHNEW,CCHQIT
-       DEF  CCHMGN
        DEF  CCHMHM
 *
        REF  PRINT,LOAD,SAVE                        From IO.asm
        REF  MYBNEW,MYBQIT                          "
-       REF  EDTMGN                                 From EDTMGN.asm
        REF  MNUHOM                                 From MENU.asm
 
 *
@@ -35,7 +33,6 @@ CCHLOD DATA 0,LOAD
 CCHSAV DATA 0,SAVE
 CCHNEW DATA 1,MYBNEW
 CCHQIT DATA 1,MYBQIT
-CCHMGN DATA 2,EDTMGN
 * Menus
 CCHMHM DATA 4,MNUHOM
        DATA -1
