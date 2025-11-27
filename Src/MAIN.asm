@@ -1,7 +1,7 @@
        DEF  DRWCUR,INTDOC,INTPAR
        DEF  MAIN,INTRPT,DRWCR2
 *
-       REF  INIT
+       REF  INIT,PRGEND
        REF  KEYINT
        REF  MEMBEG,MEMEND
        REF  INPUT,WRAP,POSUPD,DISP
@@ -21,6 +21,7 @@
        REF  CURMNU
        REF  ENTMNU
        REF  ADJHDR
+       REF  BUFADR,BUFEND
 *
 
        COPY 'CPUADR.asm'
@@ -79,10 +80,28 @@ INTDOC
        LI   R0,DFLTPG*>100
        MOVB R0,@PGWDTH
 * Initialize buffer.
+* Set values of BUFADR and BUFEND.
+* Hack the buffer by setting initial headers for allocated and unallocated space.
        LI   R0,MEMBEG
-       LI   R1,MEMEND
-       S    R0,R1
-       BLWP @BUFINT
+       MOV  R0,@BUFADR
+*
+       LI   R0,>3FFE->2000
+       MOV  R0,@MEMBEG
+*
+       LI   R0,>A000->3FFE+>8000
+       MOV  R0,@>3FFE
+*
+       LI   R0,PRGEND
+       AI   R0,->A000+>8000
+       MOV  R0,@>A000
+*
+       LI   R0,MEMEND
+       LI   R1,PRGEND
+       S    R1,R0
+       MOV  R0,@PRGEND
+*
+       LI   R0,MEMEND
+       MOV  R0,@BUFEND
 * Reserve space for margin and format
 * and paragraph list.
        LI   R0,3

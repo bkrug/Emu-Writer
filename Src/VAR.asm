@@ -1,4 +1,4 @@
-* Areas of memory that absolutely have
+ Areas of memory that absolutely have
 * to be in RAM and could never be part
 * of a cartridge ROM should go here.
 *
@@ -236,7 +236,7 @@ VAREND
 *
 * Buffer for text
 *
-MEMBEG EQU  >D000
+MEMBEG EQU  >2000
 MEMEND EQU  >F780
        END
 

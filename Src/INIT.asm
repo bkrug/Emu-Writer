@@ -1,4 +1,4 @@
-       DEF  INIT
+       DEF  INIT,PRGEND
 *
        REF  MAIN,INTDOC,INTRPT,DRWCR2
        REF  VARBEG,VAREND
@@ -206,5 +206,6 @@ PATEND
 
        TEXT 'ENDOFINIT'
        EVEN
+PRGEND
 
        END
