@@ -11,7 +11,7 @@
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 
-       AORG >B000
+       AORG >E000
 MGNSRT
        XORG LOADED
 

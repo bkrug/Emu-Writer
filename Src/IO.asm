@@ -20,7 +20,7 @@
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
 *
-       AORG >A000
+       AORG >D000
 IOSTRT
        XORG LOADED
 *
