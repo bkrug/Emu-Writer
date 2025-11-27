@@ -236,7 +236,7 @@ VAREND
 *
 * Buffer for text
 *
-MEMBEG EQU  >C800
+MEMBEG EQU  >D000
 MEMEND EQU  >F780
        END
 

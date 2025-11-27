@@ -15,8 +15,6 @@
        REF  CURMNU,STACK
        REF  MNUTTL
        REF  WRTHDR
-       REF  IOSTRT,IOEND                    * From IO.asm
-       REF  FRSHST,FRSHED                   "
        REF  MNUSTR,MNUEND
        REF  FRMSRT,FRMEND
        REF  CACHES,CCHMHM
@@ -169,9 +167,7 @@ STOR3  MOVB *R1+,*R2
 * Yes
        MOV  *R10+,R11
        RT
-TOCACH DATA IOSTRT,IOEND
-       DATA FRSHST,FRSHED
-       DATA MNUSTR,MNUEND
+TOCACH DATA MNUSTR,MNUEND
 TOCEND
 
 *

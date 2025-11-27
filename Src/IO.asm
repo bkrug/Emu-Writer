@@ -1,5 +1,3 @@
-       DEF  IOSTRT,IOEND
-       DEF  FRSHST,FRSHED
        DEF  SAVE,LOAD,PRINT,MYBNEW
        DEF  MYBQIT
 *
@@ -19,10 +17,7 @@
 *
        COPY 'CPUADR.asm'
        COPY 'EQUKEY.asm'
-*
-       AORG >D000
-IOSTRT
-       XORG LOADED
+
 *
 FIXED  EQU  >00
 VARIAB EQU  >10
@@ -876,14 +871,9 @@ WERR   MOV  R2,R1
        MOV  *R10+,R11
        RT
 
-IOEND  AORG
-
 *
 * Not really IO routines, but they are on the same menu.
 *
-
-FRSHST
-       XORG LOADED
 
 YES    TEXT 'Y'
 NO     TEXT 'N'
@@ -924,4 +914,4 @@ MYBNN  CLR  R0
 MYBNRT MOV  *R10+,R11
        RT
 
-FRSHED AORG
+       END
