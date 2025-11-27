@@ -29,6 +29,8 @@ def link_test_files(linked_file, include_membuf, object_files):
     link_command_2 = link_command_1.format(source = unlinked_files_string, output = get_work_file(linked_file))
     os.system(link_command_2)
 
+# We load the program at address >A002 so that we can put a buffer allocation header at >A000.
+# See BUFFER_ALLOCATION_LOOP, where we mark the program as belonging to a 
 def link_main_files(linked_file, include_membuf, object_files):
     unlinked_files_string = get_unlinked_string(include_membuf, object_files)
     link_command_1 = "xas99.py -i -a \">A002\" -l {source} -o {output}"

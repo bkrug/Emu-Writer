@@ -35,9 +35,9 @@ INIT
        BL   @INVCHR
        BL   @INTMEM
        BL   @INTDOC
+       BL   @FRMFLD
        BL   @INTKEY
        BL   @WRTHDR
-       BL   @FRMFLD
 * Set default values
        SETO @WINMOD
 * Don't let user use FCTN+= to restart computer
@@ -48,6 +48,12 @@ INIT
 *
        LIMI 2
        B    @MAIN
+
+*
+* Code after this label will be OVERWRITTEN
+* by the INTDOC method.
+*
+PRGEND
 
 *
 * Initialize Memory to zero
@@ -205,6 +211,5 @@ PATEND
 
        TEXT 'ENDOFINIT'
        EVEN
-PRGEND
 
        END

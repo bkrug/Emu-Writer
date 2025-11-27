@@ -220,6 +220,6 @@ FLDVE
 TWODIG BSS  2
 
 VAREND
-       TEXT 'ENDOFPRG'
+       TEXT 'VAREND'
 
        END

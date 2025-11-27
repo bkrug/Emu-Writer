@@ -133,4 +133,7 @@ MAX_UNDO_PAYLOAD       EQU  255
 * First address of text buffer
 MEMBEG EQU  >2000
 * Address following text buffer
-MEMEND EQU  >F780
+MEMEND EQU  >F7D8
+
+* Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
+* --- E/A manual 24.2.1.1 (page 400)

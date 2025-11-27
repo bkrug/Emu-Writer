@@ -67,6 +67,7 @@ MAIN1
 
 *
 * Initialize Document values
+* (Overwrite anything following INIT.asm's PRGEND label)
 *
 * Output:
 *  R0 - zero - to imply no error
@@ -155,9 +156,6 @@ BUFFER_ADDRESSES_END
 BUFADR EQU  BUFFER_ALLOCATION_LOOP-2
 * holds first address after the buffer (MEMEND)
 BUFEND EQU  BUFFER_ADDRESSES_END-2
-
-* Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
-* --- E/A manual 24.2.1.1 (page 400)
 
 *
 * An interrupt routine to scan for keys
