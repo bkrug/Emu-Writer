@@ -92,12 +92,12 @@ temp_files = [
     "DSRLNK",
     "MENULOGIC",
     "UTIL",
-    "EDTMGN",
     "HEADER",
     "VAR",
     "CACHETBL",
     "INIT",
     "IO",
+    "EDTMGN",
     "MENU"
 ]
 link_main_files("EMUWRITER", True, temp_files)

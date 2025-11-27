@@ -7,6 +7,7 @@
        REF  EDTMGN                                From EDTMGN.asm
        REF  CCHPRT,CCHLOD,CCHSAV                  From CACHETBL.asm
        REF  CCHNEW,CCHQIT                         "
+       REF  CCHMGN                                "
        REF  PARINX,FLDVAL                         From VAR.asm
        REF  PGWDTH,PGHGHT                         "
        REF  GETMGN,BYTSTR                         From UTIL.asm
@@ -448,8 +449,8 @@ TXTMG1 EVEN
 KEYMG  DATA KEYMG1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA EDTMGN
+       BYTE NXTCCH
+       DATA CCHMGN
 *
        BYTE ESCKEY
        BYTE NXTMNU
