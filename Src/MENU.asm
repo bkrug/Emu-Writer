@@ -5,6 +5,8 @@
 *
        REF  SAVE,LOAD,PRINT,MYBNEW,MYBQIT         From IO.asm
        REF  EDTMGN                                From EDTMGN.asm
+       REF  CCHPRT,CCHLOD,CCHSAV                  From CACHETBL.asm
+       REF  CCHNEW,CCHQIT                         "
        REF  PARINX,FLDVAL                         From VAR.asm
        REF  PGWDTH,PGHGHT                         "
        REF  GETMGN,BYTSTR                         From UTIL.asm
@@ -244,8 +246,8 @@ TXTSV1 EVEN
 KEYSV  DATA KEYSV1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA SAVE
+       BYTE NXTCCH
+       DATA CCHSAV
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -277,8 +279,8 @@ TXTLD1 EVEN
 KEYLD  DATA KEYLD1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA LOAD
+       BYTE NXTCCH
+       DATA CCHLOD
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -314,8 +316,8 @@ TXTPR1 EVEN
 KEYPR  DATA KEYPR1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA PRINT
+       BYTE NXTCCH
+       DATA CCHPRT
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -350,8 +352,8 @@ TXTNW1 EVEN
 KEYNW  DATA KEYNW1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA MYBNEW
+       BYTE NXTCCH
+       DATA CCHNEW
 *
        BYTE ESCKEY
        BYTE NXTMNU
@@ -384,8 +386,8 @@ TXTQT1 EVEN
 KEYQT  DATA KEYQT1
 *
        BYTE ENTER
-       BYTE NXTRTN
-       DATA MYBQIT
+       BYTE NXTCCH
+       DATA CCHQIT
 *
        BYTE ESCKEY
        BYTE NXTMNU

@@ -8,6 +8,8 @@
 *
 
        DEF  CACHES
+       DEF  CCHPRT,CCHLOD,CCHSAV
+       DEF  CCHNEW,CCHQIT
        DEF  CCHMHM
 *
        REF  PRINT,LOAD,SAVE                        From IO.asm
@@ -26,6 +28,11 @@
 * the same (meaningless) number.
 *
 CACHES
+CCHPRT DATA 0,PRINT
+CCHLOD DATA 0,LOAD
+CCHSAV DATA 0,SAVE
+CCHNEW DATA 1,MYBNEW
+CCHQIT DATA 1,MYBQIT
 * Menus
 CCHMHM DATA 4,MNUHOM
        DATA -1

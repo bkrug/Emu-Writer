@@ -94,10 +94,10 @@ temp_files = [
     "UTIL",
     "EDTMGN",
     "HEADER",
-    "IO",
-    "CACHETBL",
     "VAR",
+    "CACHETBL",
     "INIT",
+    "IO",
     "MENU"
 ]
 link_main_files("EMUWRITER", True, temp_files)
