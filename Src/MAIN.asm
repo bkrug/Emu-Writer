@@ -85,13 +85,13 @@ INTDOC
 * but only because it overlaps places it can't write to.
        LI   R0,BUFFER_ADDRESSES
        LI   R1,MEMBEG
-!
+BUFFER_ALLOCATION_LOOP
        MOV  *R0+,*R1
        A    *R0,*R1
        S    R1,*R1
        MOV  *R0+,R1
        CI   R0,BUFFER_ADDRESSES_END
-       JL   -!
+       JL   BUFFER_ALLOCATION_LOOP
 * Reserve space for margin and format
 * and paragraph list.
        LI   R0,3
@@ -139,13 +139,7 @@ INTPAR LI   R0,EMPPAR
 *
 * Buffer for text
 *
-* Required for MEMBUF.noheader.obj
-* holds address of buffer
-BUFADR DATA MEMBEG
-* holds first address after the buffer
-BUFEND DATA MEMEND
-
-EMPTY_BLOCK     EQU >8000
+EMPTY_BLOCK     EQU >0000
 FILLED_BLOCK    EQU >8000
 
 BUFFER_ADDRESSES
@@ -155,6 +149,12 @@ BUFFER_ADDRESSES
        DATA EMPTY_BLOCK,MEMEND
 BUFFER_ADDRESSES_END
 
+* Required for MEMBUF.noheader.obj
+*
+* holds address of buffer (MEMBEG)
+BUFADR EQU  BUFFER_ALLOCATION_LOOP-2
+* holds first address after the buffer (MEMEND)
+BUFEND EQU  BUFFER_ADDRESSES_END-2
 
 * Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
 * --- E/A manual 24.2.1.1 (page 400)
