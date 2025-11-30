@@ -113,7 +113,7 @@ EMU-WRITER -- You didn't think you needed it, but now you know.
 * When the memeory is full, do the following and confirm that there are no graphical problems:
   * When the system cannot let you split paragraphs using the enter key, the document should not change.
   * When the system cannot let you merge paragraphs using the delete key, the document should not change.
-  * When the system cannot let you insert new characters in an existing paragrahp, the document should stop changing.
+  * When the system cannot let you insert new characters in an existing paragraph, the document should stop changing.
 * Load the file "BIG". Press enter many times from the end of the document.
 When the memory is full, the cursor stops blinking. Scroll up to the non-blank line, and it blinks again.
 Scroll back down to the last empty line and it stops blinking again.

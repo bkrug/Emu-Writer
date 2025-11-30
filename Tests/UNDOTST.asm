@@ -2361,7 +2361,7 @@ VDPWRT RT
 
 ****************************************
 
-SPACE  BSS  >1000
-SPCEND
+SPACE  EQU  >2800
+SPCEND EQU  SPACE+>1000
 
        END
