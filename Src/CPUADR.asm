@@ -1,4 +1,12 @@
-LOADED EQU  >F780          Address to load executable code from cache
+* First address of text buffer
+MEMBEG EQU  >2000
+* Address following text buffer
+MEMEND EQU  >F7D8
+
+* Addresses >FFD8 through >FFFF are used for XOP 1 on the TI-99/4A. 
+* --- E/A manual 24.2.1.1 (page 400)
+
+LOADED EQU  MEMEND         Address to load executable code from cache
 VDPWA  EQU  >8C02          VDP RAM write address
 VDPRD  EQU  >8800          VDP RAM read data
 VDPWD  EQU  >8C00          VDP RAM write data

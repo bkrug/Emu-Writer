@@ -604,8 +604,6 @@ OVERWRITE_TEXT
        MOV  *R10+,R11
        RT
 
-THING  RT
-
 *
 * Insert text in paragraph
 *
