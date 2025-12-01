@@ -4,11 +4,10 @@
 *
        REF  PARLST                               From VAR.asm
        REF  PARINX,CHRPAX                        "
-       REF  STSARW,STSDSH                        "
        REF  WINPAR,WINLIN,WINMGN,WINMOD          "
        REF  PRFHRZ,WINOFF                        "
-       REF  STSWIN                               From CONST.asm
-       REF  GETIDT,GETMGN                        From UTIL.asm
+       REF  STSWIN,STSDSH,STSARW                 From CONST.asm
+       REF  GETMGN,GETIDT                        From UTIL.asm
        REF  PARADR,GETLIN,LOOKUP,LOOKDW          "
        REF  ARYADR                               From ARRAY
 

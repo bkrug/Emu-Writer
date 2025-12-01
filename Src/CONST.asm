@@ -11,12 +11,6 @@
 * may need to be shared by different
 * modules
 
-* The left-most bit of a memory header
-* indicates if the memory chunk is in
-* use or not.
-* It is defined in MEMBUF.O
-* BLKUSE DATA >8000
-
        COPY 'EQUKEY.asm'
 
 FORTY  DATA 40

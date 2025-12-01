@@ -53,25 +53,25 @@ for file_obj in files:
     os.system(assemble_command_2)
 
 print("Linking Unit Test Runners")
-temp_files = [ "TESTFRAM", "ACTTST", "ACT", "UTIL", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "ACTTST", "ACT", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("ACTRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "DISPTST", "DISP", "UTIL", "POSUPD", "HEADER", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "DISPTST", "DISP", "UTIL", "POSUPD", "HEADER", "TESTVAR", "VAR", "CONST" ]
 link_test_files("DISPRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "UTIL", "POSUPD", "HEADER", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "UTIL", "POSUPD", "HEADER", "TESTVAR", "VAR", "CONST" ]
 link_test_files("DISPARUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "ACT", "WRAP", "UTIL", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "ACT", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("INPTRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "UNDOTST", "INPUT", "ACT", "WRAP", "UTIL", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "UNDOTST", "INPUT", "ACT", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("UNDORUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("POSRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "UTIL", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("WRAPRUN.obj", True, temp_files)
 
 print("Linking Key Buffer Test Program")

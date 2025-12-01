@@ -6,7 +6,7 @@
        REF  ARYADD
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
        REF  BUFSRK
-       REF  VDPADR,VDPWRT
+       REF  VDPADR,VDPWRT                            * VDP.asm
        REF  WINMOD,WINOFF,PRFHRZ
        REF  DOCSTS,FASTRT
 
@@ -24,7 +24,6 @@
        REF  UNDOIDX,UNDO_ADDRESS,PREV_ACTION
 
 * constants
-       REF  BLKUSE
        REF  ENDINP
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSDCR
@@ -33,8 +32,8 @@
        REF  CURINS,CUROVR
 
 *
-       REF  MNUHK
-       REF  CURMNU
+       REF  MNUHK                        From MENU.asm
+       REF  CURMNU                       From VAR.asm
        REF  INCKRD                       From UTIL.asm
        REF  WRAP,WRAPDC                  From WRAP.asm
 
