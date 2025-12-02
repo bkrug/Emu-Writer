@@ -591,8 +591,8 @@ OVERWRITE_TEXT
 * Record overwritten character and new character in undo action
        LI   R0,2
        BL   @RESERVE_UNDO_SPACE
-       MOVB *R2,*R0+
        MOVB *R5,*R0+
+       MOVB *R2,*R0+
 * Overwrite character
        MOVB *R2,*R5
 * Increase character index.
@@ -1250,17 +1250,17 @@ RESTORE_OVERWRITTEN_TEXT_IN_UNDO_ACTION
        A    @UNDO_ANY_CHAR(R7),R0
 * Are there more characters to restore?
 RESTORE_OVERWRITE_LOOP
-*       C    R8,R9
-*       JHE  RESTORE_OVERWRITE_DONE
+       C    R8,R9
+       JHE  RESTORE_OVERWRITE_DONE
 * Yes, copy the ovewritten character
-*       MOVB *R8,*R0+
+       MOVB *R8,*R0+
 * Pick the next character position to restore from
-*       INCT R8
-*       JMP  RESTORE_OVERWRITE_LOOP
+       INCT R8
+       JMP  RESTORE_OVERWRITE_LOOP
 RESTORE_OVERWRITE_DONE
 * Set document status bits
-*       SOC  @STSTYP,*R13
-*       SOC  @STSWIN,*R13
+       SOC  @STSTYP,*R13
+       SOC  @STSWIN,*R13
 *
        MOV  *R10+,R11
        RT
