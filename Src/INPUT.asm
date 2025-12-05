@@ -783,7 +783,6 @@ REDO_SUB_ROUTINES
 *
 * Key is not recognized
 *
-AGAIN_OVERWRITE_TEXT_IN_UNDO_ACTION
 DO_NOTHING
        RT
 
@@ -1222,15 +1221,27 @@ TEXT_RESTORE_DONE
 RESTORE_BACKWARDS   DATA UNDO_BCK
 INSERT_ACTION       DATA UNDO_INS
 
+RESTORE_OVERWRITTEN_TEXT_IN_UNDO_ACTION
+       CLR  R8
+       JMP  OVERWRITE_BASED_ON_UNDO_ACTION
+
+AGAIN_OVERWRITE_TEXT_IN_UNDO_ACTION
+       LI   R8,1
+       JMP  OVERWRITE_BASED_ON_UNDO_ACTION
+
 *
 *
 * Input:
 *   R7 = address of undo action
-RESTORE_OVERWRITTEN_TEXT_IN_UNDO_ACTION
+*   R8 = 0 to undo an overwrite action
+*        1 to redo an overwrite action
+OVERWRITE_BASED_ON_UNDO_ACTION
        DECT R10
        MOV  R11,*R10
 * Let R8 = address of text to restore
-       MOV  R7,R8
+* If R8 initially contained 0, then we are restoring the text that was overwritten.
+* If R8 initially contained 1, then we are re-overwriting text.
+       A    R7,R8
        AI   R8,UNDO_PAYLOAD
 * Let R9 = end of undo text
        MOV  R8,R9
