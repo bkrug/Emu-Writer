@@ -102,8 +102,8 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
        DATA OVER1
        TEXT 'OVER1 '
 * Assert that overwritten text is again replaced when undo and redo are pressed.
-*       DATA OVER2
-*       TEXT 'OVER2 '
+       DATA OVER2
+       TEXT 'OVER2 '
 * Assert that pressing the undo button with an empty undo list doesn't hurt anything.
        DATA EMPTY1
        TEXT 'EMPTY1'
@@ -2036,6 +2036,79 @@ OVER1_EXPECTED_TEXT
 OVER1_FAIL
        DATA 44
        TEXT 'The text "modern" should have been restored.'
+
+* Overwrite 2
+* -----------
+* Assert that overwritten text is again replaced when undo and redo are pressed.
+OVER2  DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set to overwrite mode
+       SETO @INSTMD
+* Set position values
+       LI   R0,0
+       MOV  R0,@PARINX
+       LI   R0,10
+       MOV  R0,@CHRPAX
+* Copy test keypresses to stream
+       LI   R0,KEY_OVER2
+       LI   R1,KEY_OVER2E
+       CLR  R2
+       BL   @CPYKEY
+* Act
+* Run the input routine 3 times.
+* because it will exit when switching between delete and arrow keys.
+       BL   @INPUT
+       BL   @INPUT
+       BL   @INPUT
+* Assert
+* Assert that expected letters are deleted
+* Let R1 = address of text in the first paragraph
+       MOV  @PARLST,R0
+       CLR  R1
+       BLWP @ARYADR
+       MOV  *R1,R1
+       AI   R1,PARAGRAPH_TEXT_OFFSET
+*
+       LI   R0,OVER2_EXPECTED_TEXT+2
+       MOV  @OVER2_EXPECTED_TEXT,R2
+       LI   R3,OVER2_FAIL+2
+       MOV  @OVER2_FAIL,R4
+       BLWP @ASTR
+*
+       CLR  R0
+       MOV  @PARINX,R1
+       LI   R2,PARA_IDX_FAIL+2
+       MOV  @PARA_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       LI   R0,16
+       MOV  @CHRPAX,R1
+       LI   R2,CHAR_IDX_FAIL+2
+       MOV  @CHAR_IDX_FAIL,R3
+       BLWP @AEQ
+*
+       MOV  *R10+,R11
+       RT
+
+* input from the keyboard.
+KEY_OVER2
+       TEXT 'SNOOPY'
+       BYTE UNDKEY,RDOKEY
+KEY_OVER2E
+       EVEN
+
+* First 80 characters of the paragraph after delting
+OVER2_EXPECTED_TEXT
+       DATA 78
+       TEXT 'Madison"s SNOOPY origins begin in 1829, '
+       TEXT 'when former federal judge James Duane '
+       EVEN
+OVER2_FAIL
+       DATA 47
+       TEXT 'The text "modern" should have been re-replaced.'
+       EVEN
 
 * Empty 1
 * -------
