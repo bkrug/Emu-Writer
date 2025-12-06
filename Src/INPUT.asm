@@ -416,7 +416,7 @@ MODMNU EQU  3
 INSSWP DECT R10
        MOV  R11,*R10
 *
-       LI   R0,>7F*8+>801
+       LI   R0,CURSOR_PATTERN_ADR
        BL   @VDPADR
 * Toggle insert/overwrite mode.
        INV  @INSTMD

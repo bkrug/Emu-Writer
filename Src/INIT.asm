@@ -35,6 +35,7 @@ INIT
        BL   @VDPTXT
        BL   @INTSCN
        BL   @STORCH
+* TODO: Copy char patterns out of GROM just to be safe
        BL   @INVCHR
        BL   @INTMEM
        BL   @INTDOC
@@ -90,12 +91,12 @@ INTKEY
 INTSCN DECT R10
        MOV  R11,*R10
 * Clear screen
-       CLR  R0
+       LI   R0,SCRTBL
        BL   @VDPADR
        LI   R1,24*40
        BL   @VDPSPC
 * Define cursor pattern
-       LI   R0,>7F*8+1+PATTBL
+       LI   R0,CURSOR_PATTERN_ADR
        BL   @VDPADR
        LI   R0,CURINS
        LI   R1,7
