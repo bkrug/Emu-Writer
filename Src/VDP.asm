@@ -45,7 +45,7 @@ REGLST
 * Text Mode
        DATA >01F0
 * Screen Image table address
-       DATA >0300+REG_SCRTBL
+       DATA >0200+REG_SCRTBL
 * White foreground, purple background
        DATA >07FD
 REGEND
