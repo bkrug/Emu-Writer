@@ -210,7 +210,8 @@ INITF1 SB   *R1,*R1+
 * Let R9 = memory address within FLDVAL
 * If no fields exist for this menu, set R9 to 0
        CLR  R9
-       CLR  @CURSCN
+       LI   R0,SCRTBL
+       MOV  R0,@CURSCN
        MOV  @CURMNU,R2
        MOV  @FIELDS(R2),R1
        JEQ  INITF2
@@ -383,7 +384,7 @@ CALCUR DECT R10
 * Recalculate cursor position
        MOV  *R3,R3
        A    R4,R3
-       AI   R3,2*SCRNWD
+       AI   R3,SCRTBL+2*SCRNWD
        MOV  R3,@CURSCN
 *
        MOV  *R10+,R4

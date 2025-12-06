@@ -32,6 +32,7 @@ POSUPD DATA POSUWS,POSUPD+4
        RTWP
       
        COPY 'EQUKEY.asm'
+       COPY 'CPUADR.asm'
 
 *
 * Update LININX and CHRLIX
@@ -189,12 +190,15 @@ UPCR1  INC  R4
 UPCR2
 * Let R4 = screen row that the cursor sits on
        A    @LININX,R4
-* Let R5 = screen position based on lines in R4
+* Let R5 = screen position of the beginning of the line in R4
        LI   R0,SCRNWD
 	MPY  R0,R4
-* Add screen positions for current line
+* Given the position of the cursor within a paragraph,
+* let R5 = a screen position within a the previously mentioned row
        A    @CHRLIX,R5
        S    @WINOFF,R5
+* In R5, account for the address of the screen image table in VDP RAM
+       AI   R5,SCRTBL
 * Save result
        MOV  R5,@CURSCN
 *
