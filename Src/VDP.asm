@@ -13,6 +13,8 @@
 BIT0   DATA >8000
 BIT1   DATA >4000
 
+* TODO: Only called by initialization code.
+* Consider moving this to INIT.asm so that it can be overwritten at run time.
 *
 * Set Text Mode and Colors
 *
@@ -39,7 +41,13 @@ VDPT2
        JL   VDPT2
 *
        RT
-REGLST DATA >01F0,>07FD
+REGLST
+* Text Mode
+       DATA >01F0
+* Screen Image table address
+       DATA >0300+REG_SCRTBL
+* White foreground, purple background
+       DATA >07FD
 REGEND
 
 *

@@ -26,6 +26,11 @@ VDPCCH EQU  >1000          address for storing executable code
 PABBUF EQU  PATTBL+>400    location to store the contents of a file record for read/write
 PAB    EQU  SCRTBL+>3C0    Peripheral Access Block
 
+*
+* VDP Register Values
+*
+REG_SCRTBL   EQU  SCRTBL/>400
+
 PATLOW EQU  PATTBL
 PATHGH EQU  PATTBL+>400
 
