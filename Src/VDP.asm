@@ -87,6 +87,7 @@ VDPAD1 SWPB R0
 *
        RT       
 
+* TODO: If this routine is not used by 1.0, delete it.
 *
 * Read multiple bytes from VDP
 *

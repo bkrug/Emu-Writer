@@ -7,7 +7,7 @@
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPRAD                 From VDP.asm
        REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   "
-       REF  VDPREA,VDPWRT                 "
+       REF  VDPWRT                        "
        REF  CCHMHM,CCHFSV                 From CACHETBL.asm
        REF  STSWIN,STSTYP,STSARW
        REF  DRWCUR
@@ -217,7 +217,7 @@ INITF1 SB   *R1,*R1+
        JEQ  INITF2
        LI   R9,FLDVAL
 * Set cursor position on screen
-       LI   R0,SCRTBL+2*SCRNWD
+       LI   R0,2*SCRNWD+SCRTBL
        A    @2(R1),R0
        MOV  R0,@CURSCN
 *
@@ -384,7 +384,7 @@ CALCUR DECT R10
 * Recalculate cursor position
        MOV  *R3,R3
        A    R4,R3
-       AI   R3,SCRTBL+2*SCRNWD
+       AI   R3,2*SCRNWD+SCRTBL
        MOV  R3,@CURSCN
 *
        MOV  *R10+,R4
@@ -418,7 +418,7 @@ DSPVAL
        LI   R7,FLDVAL
 * Let R3 = screen address of first field
 * Let R4 = length of field
-DSPV1  LI   R3,SCRTBL+2*SCRNWD
+DSPV1  LI   R3,2*SCRNWD+SCRTBL
        A    *R5+,R3
        MOV  *R5+,R4
 * Write field value to VDP
