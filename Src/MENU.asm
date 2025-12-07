@@ -13,8 +13,8 @@
        REF  GETMGN,BYTSTR                         From UTIL.asm
        REF  BUFCPY                                From MEMBUF
 
-       COPY 'CPUADR.asm'
-       COPY 'EQUKEY.asm'
+       COPY 'EQUADDR.asm'
+       COPY 'EQUVAL.asm'
 
        AORG >F000
 MNUSTR

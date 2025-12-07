@@ -24,8 +24,8 @@
        REF  ADJHDR
 *
 
-       COPY 'CPUADR.asm'
-       COPY 'EQUKEY.asm'
+       COPY 'EQUADDR.asm'
+       COPY 'EQUVAL.asm'
 
 BEGIN  B    @INIT
 *

@@ -8,7 +8,7 @@
 *
        REF  SPACE,ISPACE
 
-       COPY 'CPUADR.asm'
+       COPY 'EQUADDR.asm'
 
 BIT0   DATA >8000
 BIT1   DATA >4000

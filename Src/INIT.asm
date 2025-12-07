@@ -22,8 +22,8 @@
        REF  CACHES,CCHMHM
 *
 
-       COPY 'CPUADR.asm'
-       COPY 'EQUKEY.asm'
+       COPY 'EQUADDR.asm'
+       COPY 'EQUVAL.asm'
 
 *
 * Initialize Program

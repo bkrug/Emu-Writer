@@ -24,8 +24,8 @@
        REF  ERRMEM
        REF  FORTY
 
-       COPY 'EQUKEY.asm'
-       COPY 'CPUADR.asm'
+       COPY 'EQUVAL.asm'
+       COPY 'EQUADDR.asm'
 
        TEXT 'DISP'
 DISP   DATA DISPWS,DISP+4

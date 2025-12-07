@@ -18,7 +18,7 @@
 * This data is a work around for the "first DATA word is 0 bug"
        DATA >1234
 
-       COPY 'EQUKEY.asm'
+       COPY 'EQUVAL.asm'
 
 *
 * Wrap

@@ -11,7 +11,7 @@
 * may need to be shared by different
 * modules
 
-       COPY 'EQUKEY.asm'
+       COPY 'EQUVAL.asm'
 
 FORTY  DATA 40
 

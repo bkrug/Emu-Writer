@@ -6,7 +6,7 @@
 	REF  KEYINT
 	REF  KEYSTR,KEYEND,KEYWRT,KEYRD
 
-       COPY '..\Src\CPUADR.asm'
+       COPY '..\Src\EQUADDR.asm'
 
 RUNTST
 * Define the buffer locations

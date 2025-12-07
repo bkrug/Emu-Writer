@@ -12,7 +12,7 @@
        REF  WINOFF,WINPAR,WINLIN,WINMGN
        REF  CURSCN,WINMOD
 
-       COPY '../Src/EQUKEY.asm'
+       COPY '../Src/EQUVAL.asm'
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * SUSPECT: LININX and CHRLIX are just implementation details now.

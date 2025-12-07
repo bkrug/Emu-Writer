@@ -17,8 +17,8 @@
        REF  GETMGN                                From UTIL.asm
 
 *
-       COPY 'CPUADR.asm'
-       COPY 'EQUKEY.asm'
+       COPY 'EQUADDR.asm'
+       COPY 'EQUVAL.asm'
 *
        AORG >D000
 IOSTRT

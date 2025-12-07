@@ -15,8 +15,8 @@
        REF  CURSCN
        REF  BUFALC,BUFREE
 
-       COPY 'CPUADR.asm'
-       COPY 'EQUKEY.asm'
+       COPY 'EQUADDR.asm'
+       COPY 'EQUVAL.asm'
 
 MINCTL BYTE TABKEY
 DELLFT BYTE ERSKEY

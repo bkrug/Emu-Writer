@@ -29,8 +29,8 @@
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN,STSARW
 
-       COPY '../Src/CPUADR.asm'
-       COPY '../Src/EQUKEY.asm'
+       COPY '../Src/EQUADDR.asm'
+       COPY '../Src/EQUVAL.asm'
 
 TSTLST DATA (TSTEND-TSTLST-2)/8
 *

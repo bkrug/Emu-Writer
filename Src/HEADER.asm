@@ -9,8 +9,8 @@
        REF  TWODIG
        REF  WINMOD
 
-       COPY 'EQUKEY.asm'
-       COPY 'CPUADR.asm'
+       COPY 'EQUVAL.asm'
+       COPY 'EQUADDR.asm'
 
 ADJHDR
        LI   R2,MEMFUL

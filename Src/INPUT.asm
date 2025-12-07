@@ -37,8 +37,8 @@
        REF  INCKRD                       From UTIL.asm
        REF  WRAP,WRAPDC                  From WRAP.asm
 
-       COPY 'EQUKEY.asm'
-       COPY 'CPUADR.asm'
+       COPY 'EQUVAL.asm'
+       COPY 'EQUADDR.asm'
 
 *
 * Process the new keystrokes

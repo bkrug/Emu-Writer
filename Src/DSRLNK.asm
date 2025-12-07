@@ -9,7 +9,7 @@
        REF  DSRLWS
        REF  VDPRAD                 Ref from VDP
 
-       COPY 'CPUADR.asm'
+       COPY 'EQUADDR.asm'
 
 *
 * As far as I can tell,

@@ -14,7 +14,7 @@
        REF  ARYADR                        From ARRAY
        REF  WRAP                          From WRAP.asm
 
-       COPY 'EQUKEY.asm'
+       COPY 'EQUVAL.asm'
 
 *
 * Move position in key stream forwards

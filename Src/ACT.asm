@@ -11,7 +11,7 @@
        REF  PARADR,GETLIN,LOOKUP,LOOKDW          "
        REF  ARYADR                               From ARRAY
 
-       COPY 'EQUKEY.asm'
+       COPY 'EQUVAL.asm'
 
 *
 * Beginning of Line

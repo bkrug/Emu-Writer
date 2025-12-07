@@ -31,8 +31,8 @@ POSUPD DATA POSUWS,POSUPD+4
 	BL   @UPCURS
        RTWP
       
-       COPY 'EQUKEY.asm'
-       COPY 'CPUADR.asm'
+       COPY 'EQUVAL.asm'
+       COPY 'EQUADDR.asm'
 
 *
 * Update LININX and CHRLIX

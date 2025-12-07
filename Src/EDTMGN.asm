@@ -8,8 +8,8 @@
        REF  WRAP                          From WRAP.asm
        REF  WRAPDw                        From UTIL.asm
 
-       COPY 'CPUADR.asm'
-       COPY 'EQUKEY.asm'
+       COPY 'EQUADDR.asm'
+       COPY 'EQUVAL.asm'
 
        AORG >E000
 MGNSRT

@@ -28,7 +28,7 @@
        REF  STSTYP,STSENT,STSDCR
        REF  STSPAR,STSWIN,STSARW
 
-       COPY '../Src/CPUADR.asm'
+       COPY '../Src/EQUADDR.asm'
 *
 INSKEY EQU  >04
 DELKEY EQU  >03
