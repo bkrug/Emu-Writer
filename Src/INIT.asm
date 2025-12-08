@@ -35,12 +35,12 @@ INIT
        BL   @VDPTXT
        BL   @INTSCN
        BL   @STORCH
-* TODO: Copy char patterns out of GROM just to be safe
+       BL   @COPY_PATTERNS_FROM_GROM
        BL   @INVCHR
        BL   @INTMEM
-       BL   @INTDOC
-       BL   @FRMFLD
+       BL   @SET_FORM_FIELD_CHAR
        BL   @INTKEY
+       BL   @INTDOC
        BL   @WRTHDR
 * Set default values
        SETO @WINMOD
@@ -93,7 +93,7 @@ INTSCN DECT R10
 * Clear screen
        LI   R0,SCRTBL
        BL   @VDPADR
-       LI   R1,24*40
+       LI   R1,24*SCRNWD
        BL   @VDPSPC
 * Define cursor pattern
        LI   R0,CURSOR_PATTERN_ADR
@@ -185,7 +185,7 @@ TOCEND
 *
 * Define char 0 as a dotted line
 *
-FRMFLD
+SET_FORM_FIELD_CHAR
        DECT R10
        MOV  R11,*R10
 *
@@ -215,6 +215,75 @@ PATLP  MOVB *R0+,*R1
 CHRPAT DATA >FFEF,>EFEF,>EF83,>C7EF
        DATA >9FA7,>BBBB,>BBCB,>F3FF
 PATEND
+
+WRZERO DATA 7
+LEAVE_TOP_PIXELS_BLANK   EQU  1
+
+*
+* Get Char Patterns from GROM
+*
+* 7-bytes of each character's pattern definition
+* is stored in GROM.
+* The 8th byte is omitted and always equals 0.
+*
+* Most TI programs choose to leave the top row
+* of each letter's char pattern blank.
+* This code will shift the character up 1-pixel
+* and leave the bottom row blank.
+* This is in case I ever decide to redefine the
+* lower-case chars and want letters like "y" and
+* "g" to look okay.
+*
+COPY_PATTERNS_FROM_GROM
+       DECT R10
+       MOV  R11,*R10
+* Set GROM address
+       LI   R3,GROM_CHAR_PAT
+       MOVB R3,@GRMWA
+       SWPB R3
+       MOVB R3,@GRMWA
+* Set VDP Write Address
+       LI   R0,8*SPCBAR+LEAVE_TOP_PIXELS_BLANK+PATTBL
+       BL   @VDPADR
+* Let R0 = 0
+* Let R1 = remaining bytes to write to VDP RAM
+* Let R2 = source to read from
+* Let R3 = destination to write to
+       CLR  R0
+       LI   R1,92*8-1
+       LI   R2,GRMRD
+       LI   R3,VDPWD
+* Copy a byte from GROM to VDP RAM
+GROM1  MOVB *R2,*R3
+       DEC  R1
+       JEQ  GROMRT
+* Every 8th byte is excluded from the GROM
+* Write 0 to the VDP RAM
+       CZC  @WRZERO,R1
+       JNE  GROM1
+       MOVB R0,*R3
+       DEC  R1
+       JMP  GROM1
+*
+GROMRT MOV  *R10+,R11
+       RT
+
+* Useful data is stored at these GROM addresses:
+* (Source: https://www.unige.ch/medecine/nouspikel/ti99/groms.htm)
+*
+* >0451 	Default values of the 8 VDP registers.
+* >0459 	Content of the color table, for title screen.
+* >04B4 	Characters 32 to 95 patterns, for title screen.
+* >06B4 	Regular upper case character patterns.
+* >0874 	Lower case character patterns.
+* >16E0 	Joysticks codes returned by SCAN.
+* >1700 	Key codes returned by SCAN.
+* >1730 	Ditto with SHIFT.
+* >1760 	Ditto with FCTN.
+* >1790 	Ditto with CTRL.
+* >17C0 	Key codes in keyboard modes 1 et 2 (half-keyboards).
+* >2022 	Error messages (with Basic bias of >60, and lenght byte).
+* >285C 	Reserved words in Basic, and corresponding tokens.
 
        TEXT 'ENDOFINIT'
        EVEN
