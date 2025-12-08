@@ -234,10 +234,12 @@ INITF2
 *
 GETKEY DECT R10
        MOV  R11,*R10
-* Process cursor
 KEYLP
+* Get Cursor Position
        MOV  @CURSCN,R0
+       CI   R0,SCRTBL
        JEQ  GETK1
+* Flash cursor
        MOV  R7,R0
        BL   @DRWCUR
        CLR  R7
