@@ -2,7 +2,7 @@
 * A set of routines for communicating
 * with VDP RAM
 *
-       DEF  VDPTXT,VDPRAD,VDPADR
+       DEF  VDPRAD,VDPADR
        DEF  VDPREA,VDPWRT
        DEF  VDPSTR,VDPINV,VDPSPC,VDPSPI
 *
@@ -12,45 +12,6 @@
 
 BIT0   DATA >8000
 BIT1   DATA >4000
-
-* TODO: Only called by initialization code.
-* Consider moving this to INIT.asm so that it can be overwritten at run time.
-*
-* Set Text Mode and Colors
-*
-* Output:
-* R0
-VDPTXT
-       MOVB @REGLST+1,@REG1CP
-       LI   R1,REGLST
-VDPT2
-* VDP Reg 1, needs to be set to >F0
-       MOV  *R1+,R0
-* Specify that we are changing a registers
-       SOC  @BIT0,R0
-       SZC  @BIT1,R0
-* Write new value to copy byte
-       SWPB R0
-* Write new value to VDP register
-       MOVB R0,@VDPWA
-* Specify VDP register to change
-       SWPB R0
-       MOVB R0,@VDPWA
-* Loop
-       CI   R1,REGEND
-       JL   VDPT2
-*
-       RT
-REGLST
-* Text Mode
-       DATA >01F0
-* Screen Image table address
-       BYTE >02,REG_SCRTBL
-* Pattern Table address
-       BYTE >04,REG_PATTBL
-* White foreground, purple background
-       DATA >07FD
-REGEND
 
 *
 * Set VDP read address 
@@ -87,7 +48,8 @@ VDPAD1 SWPB R0
 *
        RT       
 
-* TODO: If this routine is not used by 1.0, delete it.
+* This routine is not used by anything right now.
+* Uncomment it, if you need it later.
 *
 * Read multiple bytes from VDP
 *
@@ -97,16 +59,16 @@ VDPAD1 SWPB R0
 * Output:
 * R0 - original value + R1's value
 * R1 - 0
-VDPREA
+* VDPREA
 * Don't read if R1 = 0
-       MOV  R1,R1
-       JEQ  VRD2
+*       MOV  R1,R1
+*       JEQ  VRD2
 * Read as many bytes as R1 specifies
-VRD1   MOVB @VDPRD,*R0+
-       DEC  R1
-       JNE  VRD1
+* VRD1   MOVB @VDPRD,*R0+
+*       DEC  R1
+*       JNE  VRD1
 *
-VRD2   RT
+* VRD2   RT
 
 *
 * Write multiple bytes to VDP

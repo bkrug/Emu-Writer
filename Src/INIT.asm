@@ -7,15 +7,15 @@
        REF  MAINWS
        REF  DOCSTS
        REF  POSUPD
-       REF  VDPTXT,VDPSPC
-       REF  VDPADR,VDPRAD,VDPWRT
+       REF  VDPSPC                          * From VDP.asm
+       REF  VDPADR,VDPRAD,VDPWRT            * "
        REF  STSTYP
        REF  CURINS,CURMOD,WINMOD
        REF  CURMNU,STACK
        REF  MNUTTL
        REF  WRTHDR
        REF  IOSTRT,IOEND                    * From IO.asm
-       REF  FRSHST,FRSHED                   "
+       REF  FRSHST,FRSHED                   * "
        REF  MGNSRT,MGNEND
        REF  MNUSTR,MNUEND
        REF  FRMSRT,FRMEND
@@ -32,7 +32,7 @@ INIT
        LWPI MAINWS
        LI   R10,STACK
 *
-       BL   @VDPTXT
+       BL   @SET_VDP_REGISTERS_FOR_TEXT_MODE
        BL   @INTSCN
        BL   @STORCH
        BL   @COPY_PATTERNS_FROM_GROM
@@ -276,6 +276,47 @@ GROMRT MOV  *R10+,R11
 * >17C0 	Key codes in keyboard modes 1 et 2 (half-keyboards).
 * >2022 	Error messages (with Basic bias of >60, and lenght byte).
 * >285C 	Reserved words in Basic, and corresponding tokens.
+
+BIT0   DATA >8000
+BIT1   DATA >4000
+
+*
+* Set Text Mode and Colors
+*
+* Output:
+* R0
+SET_VDP_REGISTERS_FOR_TEXT_MODE
+       MOVB @REGLST+1,@REG1CP
+       LI   R1,REGLST
+VDPT2
+* VDP Reg 1, needs to be set to >F0
+       MOV  *R1+,R0
+* Specify that we are changing a registers
+       SOC  @BIT0,R0
+       SZC  @BIT1,R0
+* Write new value to copy byte
+       SWPB R0
+* Write new value to VDP register
+       MOVB R0,@VDPWA
+* Specify VDP register to change
+       SWPB R0
+       MOVB R0,@VDPWA
+* Loop
+       CI   R1,REGEND
+       JL   VDPT2
+*
+       RT
+*
+REGLST
+* Text Mode
+       BYTE >01,>F0
+* Screen Image table address
+       BYTE >02,REG_SCRTBL
+* Pattern Table address
+       BYTE >04,REG_PATTBL
+* White foreground, purple background
+       BYTE >07,>FD
+REGEND
 
        TEXT 'ENDOFINIT'
        EVEN
