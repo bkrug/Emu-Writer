@@ -12,6 +12,8 @@
        REF  STSPAR,STSWIN
        REF  ERRMEM
 
+       COPY '../Src/EQUADDR.asm'
+
 *
 * Simulated screen
 *
@@ -1446,6 +1448,7 @@ SAVER2 DATA 0
 * Input:
 * R0 - VDP address
 VDPADR MOV  R0,@SAVER0
+       AI   R0,-SCRTBL
        AI   R0,MKSCRN
        MOV  R0,@VADR
        MOV  @SAVER0,R0
