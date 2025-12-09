@@ -28,9 +28,9 @@ GROM_CHAR_PAT   EQU  >06B4
 *
 * VDP addresses
 *
-SCRTBL EQU  >0             Screen Image Table
-PATTBL EQU  >800           Pattern table
-VDPCCH EQU  >1000          address for storing executable code
+PATTBL EQU  >0             Pattern table
+SCRTBL EQU  >800           Screen Image Table
+VDPCCH EQU  >C00           address for storing executable code
 PABBUF EQU  PATTBL+>400    location to store the contents of a file record for read/write
 PAB    EQU  SCRTBL+>3C0    Peripheral Access Block
 

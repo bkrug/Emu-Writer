@@ -217,22 +217,13 @@ CHRPAT DATA >FFEF,>EFEF,>EF83,>C7EF
 PATEND
 
 WRZERO DATA 7
-LEAVE_TOP_PIXELS_BLANK   EQU  1
 
 *
 * Get Char Patterns from GROM
 *
 * 7-bytes of each character's pattern definition
 * is stored in GROM.
-* The 8th byte is omitted and always equals 0.
-*
-* Most TI programs choose to leave the top row
-* of each letter's char pattern blank.
-* This code will shift the character up 1-pixel
-* and leave the bottom row blank.
-* This is in case I ever decide to redefine the
-* lower-case chars and want letters like "y" and
-* "g" to look okay.
+* The 1st byte is omitted and always equals 0.
 *
 COPY_PATTERNS_FROM_GROM
        DECT R10
@@ -243,27 +234,28 @@ COPY_PATTERNS_FROM_GROM
        SWPB R3
        MOVB R3,@GRMWA
 * Set VDP Write Address
-       LI   R0,8*SPCBAR+LEAVE_TOP_PIXELS_BLANK+PATTBL
+       LI   R0,8*SPCBAR+PATTBL
        BL   @VDPADR
-* Let R0 = 0
+* Let R0 = 0 (the empty pixel-row)
 * Let R1 = remaining bytes to write to VDP RAM
 * Let R2 = source to read from
 * Let R3 = destination to write to
        CLR  R0
-       LI   R1,92*8-1
+       LI   R1,92*8
        LI   R2,GRMRD
        LI   R3,VDPWD
-* Copy a byte from GROM to VDP RAM
-GROM1  MOVB *R2,*R3
-       DEC  R1
-       JEQ  GROMRT
+GROM1
 * Every 8th byte is excluded from the GROM
 * Write 0 to the VDP RAM
        CZC  @WRZERO,R1
-       JNE  GROM1
+       JNE  !
        MOVB R0,*R3
        DEC  R1
-       JMP  GROM1
+!
+* Copy a byte from GROM to VDP RAM
+       MOVB *R2,*R3
+       DEC  R1
+       JNE  GROM1
 *
 GROMRT MOV  *R10+,R11
        RT
