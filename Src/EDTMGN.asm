@@ -15,6 +15,20 @@
 MGNSRT
        XORG LOADED
 
+* Notes on undo action:
+* EDTMGN always results in one of these:
+*    - Nothing changed. The user tried to insert an entry that would have duplicated an earlier entry
+*    - Insert a new margin entry at a given index, leaving other entries unchanged
+*    - Edit an existing margin entry at a given index, leaving other entries unchanged
+*    - Delete a margin entry from a given index, leaving other entries unchanged
+*    - Edit an existing margin entry at a given index, and delete the next entry because it would otherwise be a duplicate
+* So we can get by with these undo actions:
+*    - INSERT_MGN (record the index and the data inserted)
+*    - EDIT_MGN (record the index and the old and new data)
+*    - DELETE_MGN (record the index and the data deleted)
+*    - MERGE_MGN (record the index, the old data for two entries, and the data for the new entry)
+*
+
 EDTMGN
        DECT R10
        MOV  R11,*R10
