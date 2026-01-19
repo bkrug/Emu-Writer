@@ -27,6 +27,15 @@ MGNSRT
 *    - EDIT_MGN (record the index and the old and new data)
 *    - DELETE_MGN (record the index and the data deleted)
 *    - MERGE_MGN (record the index, the old data for two entries, and the data for the new entry)
+* Identified by:
+*    - margin list grew
+*    - margin list size did not change
+*    - margin list shrunk,
+*         -- entry at original index is identical to what used to be at next index
+*         -- user input is identical to what is one entry earlier
+*    - margin list shrunk,
+*         -- entry at original index is not identical to what used to be at next index
+*         -- user input is identical to what is at the current index
 *
 
 EDTMGN
