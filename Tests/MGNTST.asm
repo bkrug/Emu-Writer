@@ -124,6 +124,9 @@ MGN2
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
+* Copy user input
+       LI   R0,@default_field_values
+       BL   @mock_user_input
 * Set up initial margin list
        MOV  @MGNLST,R0
        BLWP @ARYADD
@@ -144,7 +147,8 @@ MGN2
 * User-typed field values
 *
 * (see FPHGHT to FBOT in EQUVAL)
-FLD2   TEST '104'   * Page width
+default_field_values:
+       TEST '104'   * Page width
        TEXT '72 '   * Page height
        TEXT '11 '   * Left margin
        TEXT '7  '   * Right margin
