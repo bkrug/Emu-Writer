@@ -74,6 +74,9 @@ link_test_files("POSRUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("WRAPRUN.obj", True, temp_files)
 
+temp_files = [ "TESTFRAM", "MGNTST", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST", "EDTMGN" ]
+link_test_files("MGNRUN.obj", True, temp_files)
+
 print("Linking Key Buffer Test Program")
 temp_files = [ "KEYTST", "KEY", "VAR", "CONST" ]
 link_test_files("KEYRUN.obj", False, temp_files)
@@ -159,7 +162,7 @@ add_command_1 = "xdm99.py {disk_image} -a ./Fiad/EDIT1 -n EDIT1"
 add_command_2 = add_command_1.format(disk_image = disk_image)
 os.system(add_command_2)
 #
-object_files = ["UNDORUN.obj"]
+object_files = ["UNDORUN.obj", "MGNRUN.obj"]
 for object_file in object_files:
     # Add the program files to disk
     add_command_1 = "xdm99.py {disk_image} -a {object_file} -n{file_name} -f DIS/FIX80"

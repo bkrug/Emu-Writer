@@ -1,3 +1,8 @@
+* TODO: The test that I've written will not run yet
+* Part of the problem is the AORG statement in EDTMGN.
+* But even if I remove that, the test is ending up in an infinite loop.
+
+
 * Insert a margin in an empty margin list
 * Insert a margin-entry at the end of a non-empty list
 * Insert a margin-entry at the beginning of a non-empty list
@@ -14,10 +19,6 @@
 * Undo a margin entry edit that resulted in mergin (deleting) that entry into an earlier entry.    (delete the current entry)
 
        DEF  TSTLST,RSLTFL
-* Mocks
-       DEF  VDPADR,VDPWRT
-       DEF  MNUHK
-       DEF  MNUINT,PRINT
 
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
@@ -33,7 +34,8 @@
        REF  PARINX
        REF  FLDVAL,PGWDTH,PGHGHT
 
-       COPY '../Src/EQUADDR.asm'       
+       COPY '../Src/EQUADDR.asm'
+       COPY '../Src/EQUVAL.asm'
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * Insert a margin-entry at the end of a non-empty list
@@ -107,8 +109,10 @@ TSTIN1
 * Mock user input in form
        LI   R0,default_field_values
        LI   R1,FLDVAL
-       LI   R2,default_field_values_end-default_field_values
-       BL   @BUFCPY
+       LI   R2,default_field_values_end
+       LI   R3,default_field_values
+       S    R3,R2
+       BLWP @BUFCPY
 *
        RT
 
@@ -122,7 +126,7 @@ INTADE
 *
 * (see FPHGHT to FBOT in EQUVAL)
 default_field_values:
-       TEST '104'   * Page width
+       TEXT '104'   * Page width
        TEXT '72 '   * Page height
        TEXT '11 '   * Left margin
        TEXT '7  '   * Right margin
@@ -130,7 +134,7 @@ default_field_values:
        TEXT 'F'     * First line/hanging
        TEXT '14 '   * Top margin
        TEXT '21 '   * Bottom margin
-default_field_values_end:
+default_field_values_end
 
 *
 * Populate the margin list with the
@@ -147,11 +151,13 @@ setup_initial_margin_list:
 * Let R1 = number of margin entires
        S    R0,R1
        SRL  R1,3
+       MOV  R1,R2
 * Add margin list entries
        MOV  @MGNLST,R0
 setup_margin_list_loop:
        BLWP @ARYADD
-       DEC  R1
+       MOV  R0,@MGNLST
+       DEC  R2
        JNE  setup_margin_list_loop
 * Copy margin contents
        MOV  R4,R0
@@ -186,6 +192,13 @@ MGN2
 * Act
        BL   @EDTMGN
 * Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,mgn2_larger_margin_list_msg
+       LI   R3,mgn2_larger_margin_list_msg_end-mgn2_larger_margin_list_msg
+       BLWP @AEQ
+*
 *       LI   R0,MGN20N+20
 *       MOV  @MGNLST,R1
 *       LI   R2,MGN20N
@@ -198,7 +211,11 @@ MGN2
 mgn2_existing_margin_entries:
        DATA 10,>0006,>0C0C,>0808
        DATA 20,>00FA,>0A0C,>0606
-mgn2_existing_margin_entries_end:
+mgn2_existing_margin_entries_end
+
+mgn2_larger_margin_list_msg:
+       TEXT 'Margin list should now be larger'
+mgn2_larger_margin_list_msg_end
 
 SPACE  BSS  >1000
 SPCEND
