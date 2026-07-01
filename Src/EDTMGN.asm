@@ -23,6 +23,7 @@ MGNSRT
 *    - Delete a margin entry from a given index, leaving other entries unchanged
 *    - Edit an existing margin entry at a given index, and delete the next entry because it would otherwise be a duplicate
 * So we can get by with these undo actions:
+*    - NOCHANGE_MGN (so the user would press CTRL-Z and nothing would happen except a change to our place in the undo list)
 *    - INSERT_MGN (record the index and the data inserted)
 *    - EDIT_MGN (record the index and the old and new data)
 *    - DELETE_MGN (record the index and the data deleted)
@@ -129,7 +130,7 @@ EXIT   DECT R10
        RT
 
 *
-* An out-of-memeory error occurred
+* An out-of-memory error occurred
 *
 EMERR
 * Deallocate temp workspace
@@ -244,7 +245,7 @@ VALIDT
        MOV  *R6,R1
        ABS  R1
 * Let R0 = paragraph width
-       MOV  15,R0
+       MOV  15,R0                 * Huh? We mean R15?
        S    @2(R6),R0
        S    @4(R6),R0
        S    R1,R0
@@ -314,6 +315,8 @@ RV2    MOV  @MGNLST,R0
        JEQ  MEMERR
        MOV  R0,@MGNLST
        MOV  R1,R3
+* If we reached here without jumping to RV2,
+* then we are editing an existing element.
 RV3
 * Is indent hanging?
        LI   R0,FLDVAL
@@ -339,7 +342,7 @@ RV4
        MOVB R14,@PGHGHT
 * No error       
        RT
-* Memeory Error
+* Memory Error
 MEMERR S    R0,R0
        RT
 
