@@ -133,6 +133,37 @@ default_field_values:
 default_field_values_end:
 
 *
+* Populate the margin list with the
+* margin entries provided by the caller.
+*
+* Input:
+*   R0 - address of source data
+*   R1 - address directly following
+*        the source data
+*
+setup_initial_margin_list:
+       MOV  R0,R4
+       MOV  R1,R5
+* Let R1 = number of margin entires
+       S    R0,R1
+       SRL  R1,3
+* Add margin list entries
+       MOV  @MGNLST,R0
+setup_margin_list_loop:
+       BLWP @ARYADD
+       DEC  R1
+       JNE  setup_margin_list_loop
+* Copy margin contents
+       MOV  R4,R0
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       MOV  R5,R2
+       S    R4,R2
+       BLWP @BUFCPY
+*
+       RT
+
+*
 * Insert a margin-entry at the end of a non-empty list
 *
 MGN2
@@ -149,7 +180,11 @@ MGN2
        LI   R0,mgn2_existing_margin_entries
        LI   R1,mgn2_existing_margin_entries_end
        BL   @setup_initial_margin_list
+*
+       LI   R0,30
+       MOV  R0,@PARINX
 * Act
+       BL   @EDTMGN
 * Assert
 *       LI   R0,MGN20N+20
 *       MOV  @MGNLST,R1
