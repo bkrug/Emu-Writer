@@ -104,44 +104,18 @@ TSTIN1
 * Loop
        CI   R6,INTADE
        JL   TSTIN1
+* Mock user input in form
+       LI   R0,default_field_values
+       LI   R1,FLDVAL
+       LI   R2,default_field_values_end-default_field_values
+       BL   @BUFCPY
+*
        RT
 
 * paragraph size, paragraph address,
 * wrap list size, wrap list address
 INTADR DATA 0,0,0,0
 INTADE
-
-*
-* Insert a margin-entry at the end of a non-empty list
-*
-MGN2
-* -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
-       DECT R10
-       MOV  R11,*R10
-* Initialize Test Data
-       BL   @TSTINT
-* Copy user input
-       LI   R0,@default_field_values
-       BL   @mock_user_input
-* Set up initial margin list
-       MOV  @MGNLST,R0
-       BLWP @ARYADD
-       BLWP @ARYADD
-       MOV  R0,@MGNLST
-* Act
-* Assert
-*       LI   R0,MGN20N+20
-*       MOV  @MGNLST,R1
-*       LI   R2,MGN20N
-*       LI   R3,20
-*       BL   @STRCMP
-*
-       MOV  *R10+,R11
-       RT
 
 *
 * User-typed field values
@@ -156,7 +130,40 @@ default_field_values:
        TEXT 'F'     * First line/hanging
        TEXT '14 '   * Top margin
        TEXT '21 '   * Bottom margin
+default_field_values_end:
 
+*
+* Insert a margin-entry at the end of a non-empty list
+*
+MGN2
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set up initial margin list
+       LI   R0,mgn2_existing_margin_entries
+       LI   R1,mgn2_existing_margin_entries_end
+       BL   @setup_initial_margin_list
+* Act
+* Assert
+*       LI   R0,MGN20N+20
+*       MOV  @MGNLST,R1
+*       LI   R2,MGN20N
+*       LI   R3,20
+*       BL   @STRCMP
+*
+       MOV  *R10+,R11
+       RT
+
+mgn2_existing_margin_entries:
+       DATA 10,>0006,>0C0C,>0808
+       DATA 20,>00FA,>0A0C,>0606
+mgn2_existing_margin_entries_end:
 
 SPACE  BSS  >1000
 SPCEND
