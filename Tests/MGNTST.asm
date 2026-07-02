@@ -594,9 +594,9 @@ EDIT1
        LI   R1,edit1_existing_margin_entries_end
        BL   @setup_initial_margin_list
 * Set initial page width and height
-       LI   R0,50*>100
+       LI   R0,70*>100
        MOVB R0,@PGWDTH
-       LI   R0,40*>100
+       LI   R0,55*>100
        MOVB R0,@PGHGHT
 *
        LI   R0,20
@@ -622,7 +622,7 @@ EDIT1
        CLR  R1
        MOVB @PGWDTH,R1
        SRL  R1,8
-       LI   R0,96
+       LI   R0,70
        LI   R2,edit1_page_width_msg
        LI   R3,edit1_page_width_msg_end-edit1_page_width_msg
        BLWP @AEQ
@@ -630,7 +630,7 @@ EDIT1
        CLR  R1
        MOVB @PGHGHT,R1
        SRL  R1,8
-       LI   R0,66
+       LI   R0,55
        LI   R2,edit1_page_height_msg
        LI   R3,edit1_page_height_msg_end-edit1_page_height_msg
        BLWP @AEQ
@@ -643,8 +643,8 @@ EDIT1
 *
 * (note that these values differ from every entry already in the margin list)
 edit1_user_input:
-       TEXT '96 '   * Page width
-       TEXT '66 '   * Page height
+       TEXT '70 '   * Page width
+       TEXT '55 '   * Page height
        TEXT '15 '   * Left margin
        TEXT '17 '   * Right margin
        TEXT '4  '   * indent
