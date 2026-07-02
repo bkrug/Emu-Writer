@@ -594,9 +594,9 @@ EDIT1
        LI   R1,edit1_existing_margin_entries_end
        BL   @setup_initial_margin_list
 * Set initial page width and height
-       LI   R0,70*>100
+       LI   R0,96*>100
        MOVB R0,@PGWDTH
-       LI   R0,55*>100
+       LI   R0,66*>100
        MOVB R0,@PGHGHT
 *
        LI   R0,20
