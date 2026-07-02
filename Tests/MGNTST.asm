@@ -52,9 +52,14 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Insert a margin-entry in between two entries, where this will not create a duplicate
        DATA MGN4
        TEXT 'MGN4  '
-* Attempt to insert a margin-entry that would be identical to the one directly after it. The result is to edit the later entry, leaving the list size unchanged.
+* Attempt to insert a margin-entry that would be identical to the one directly after it.
+* The result is to edit the later entry, leaving the list size unchanged.
        DATA MGN5
        TEXT 'MGN5  '
+* Attempt to insert a margin-entry that would be identical to the one directly before it.
+* The result is to edit the earlier entry, leaving the list size unchanged.
+       DATA MGN6
+       TEXT 'MGN6  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -83,6 +88,13 @@ TSTINT
        LI   R1,LOADED
        LI   R2,>800
        BLWP @BUFCPY
+* Set the buffer contents to zero
+       LI   R0,SPACE
+       LI   R1,SPCEND
+clear_space
+       CLR  *R0+
+       C    R0,R1
+       JL   clear_space
 * Initialize buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
@@ -378,7 +390,8 @@ mgn4_expected_margin_entries:
 mgn4_expected_margin_entries_end
 
 *
-* Attempt to insert a margin-entry that would be identical to the one directly after it. The result is to edit the later entry, leaving the list size unchanged.
+* Attempt to insert a margin-entry that would be identical to the one directly after it.
+* The result is to edit the later entry, leaving the list size unchanged.
 *
 MGN5
 * -------
@@ -453,6 +466,84 @@ mgn5_expected_margin_entries:
        DATA 15,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
 mgn5_expected_margin_entries_end
+
+*
+* Attempt to insert a margin-entry that would be identical to the one directly before it.
+* The result is to edit the earlier entry, leaving the list size unchanged.
+*
+MGN6
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,mgn6_user_input
+       LI   R1,FLDVAL
+       LI   R2,mgn6_user_input_end-mgn6_user_input
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,mgn6_existing_margin_entries
+       LI   R1,mgn6_existing_margin_entries_end
+       BL   @setup_initial_margin_list
+*
+       LI   R0,25
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,mgn6_unchanged_margin_list_msg
+       LI   R3,mgn6_unchanged_margin_list_msg_end-mgn6_unchanged_margin_list_msg
+       BLWP @AEQ
+*
+       LI   R0,mgn6_expected_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,mgn6_expected_margin_entries_end-mgn6_expected_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values are identical to what is specified for the paragraph at index 20)
+mgn6_user_input:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '11 '   * Left margin
+       TEXT '13 '   * Right margin
+       TEXT '6  '   * indent
+       TEXT 'H'     * First line/hanging
+       TEXT '8  '   * Top margin
+       TEXT '8  '   * Bottom margin
+mgn6_user_input_end
+
+mgn6_existing_margin_entries:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00FA,>0B0D,>0808
+       DATA 30,>00F1,>0F0F,>0709
+mgn6_existing_margin_entries_end
+
+mgn6_unchanged_margin_list_msg:
+       TEXT 'Margin list should remain unchanged'
+mgn6_unchanged_margin_list_msg_end
+
+mgn6_expected_margin_entries:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00FA,>0B0D,>0808
+       DATA 30,>00F1,>0F0F,>0709
+mgn6_expected_margin_entries_end
 
 *****************************
 
