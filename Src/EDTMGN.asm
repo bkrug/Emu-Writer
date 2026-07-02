@@ -19,6 +19,8 @@
 MGNSRT
        XORG LOADED
 
+ONE    DATA 1
+
 * Notes on undo action:
 * EDTMGN always results in one of these:
 *    - Nothing changed. The user tried to insert an entry that would have duplicated an earlier entry
@@ -118,10 +120,7 @@ EDTMGN
 * Search any duplicate entries and delete them.
        BL   @DELDUP
 * Record an undo-operation
-       LI   R2,UNDO_MGN_INS
-       BL   @START_FRESH_UNDO_ENTRY
-       LI   R0,10
-       BL   @RESERVE_UNDO_SPACE
+       BL   @RECORD_UNDO
 * Re-wrap, this and lower paragraphs
        MOV  @PARINX,R0
        BL   @WRAPDW
@@ -392,6 +391,37 @@ DUP2   DEC  R2
        JGT  DUP1
        JEQ  DUP1
 DUP3
+       RT
+
+*
+* Record an undo-operation
+*
+RECORD_UNDO
+       DECT R10
+       MOV  R11,*R10
+*
+       LI   R2,UNDO_MGN_INS
+       BL   @START_FRESH_UNDO_ENTRY
+       LI   R0,16
+       BL   @RESERVE_UNDO_SPACE
+* Zero entries were deleted at the given index
+       CLR  *R0+
+       MOV  @MGN_EDITED_INDEX,*R0+
+* One entry was inserted at the given index
+       MOV  @ONE,*R0+
+       MOV  @MGN_EDITED_INDEX,*R0+
+* Let R3 = next address to store undo data
+       MOV  R0,R3
+* Store a copy of what was just inserted
+       MOV  @MGNLST,R0
+       MOV  @MGN_EDITED_INDEX,R1
+       BLWP @ARYADR
+       MOV  R1,R0
+       MOV  R3,R1
+       LI   R2,8
+       BLWP @BUFCPY
+*
+       MOV  *R10+,R11
        RT
 
 *
