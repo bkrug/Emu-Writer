@@ -885,6 +885,11 @@ UNDO1
        LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 * Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
        BL   @UNDO_MARGIN
 * Assert
        LI   R0,2

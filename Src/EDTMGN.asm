@@ -425,9 +425,42 @@ RECORD_UNDO
        RT
 
 *
-* Stub method
+* Undo a margin change
+* Input:
+*   R7 = address of undo action
 *
 UNDO_MARGIN
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R1,*R10
+       DECT R10
+       MOV  R0,*R10
+* Let R8 = address of margin entires that were previously deleted
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+* We currently assume nothing was deleted.
+* Let R8 = address of margin entires that were previously inserted
+       C    *R8+,*R8+
+* Let R2 = number of entries to delete
+       MOV  *R8+,R2
+UNDO_MARGIN_DELETE_INSERTED
+* Let R0 = address of margin list
+* Let R1 = index of margin list entry
+       MOV  @MGNLST,R0
+       MOV  *R8+,R1
+       BLWP @ARYDEL
+* Do we have more previously-inserted entries to delete?
+       DEC  R2
+       JNE  UNDO_MARGIN_DELETE_INSERTED
+* No, return
+       MOV  *R10+,R0
+       MOV  *R10+,R1
+       MOV  *R10+,R2
+       MOV  *R10+,R11
+*
        RT
 
 MGNEND AORG
