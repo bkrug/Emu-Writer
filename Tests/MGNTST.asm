@@ -245,6 +245,11 @@ MGN2
        LI   R0,mgn2_existing_margin_entries
        LI   R1,mgn2_existing_margin_entries_end
        BL   @setup_initial_margin_list
+* Set initial page width and height
+       LI   R0,50*>100
+       MOVB R0,@PGWDTH
+       LI   R0,40*>100
+       MOVB R0,@PGHGHT
 *
        LI   R0,30
        MOV  R0,@PARINX
@@ -266,6 +271,22 @@ MGN2
        LI   R4,list_contents_msg_end-list_contents_msg
        BLWP @ABLCK
 *
+       CLR  R1
+       MOVB @PGWDTH,R1
+       SRL  R1,8
+       LI   R0,96
+       LI   R2,mgn2_page_width_msg
+       LI   R3,mgn2_page_width_msg_end-mgn2_page_width_msg
+       BLWP @AEQ
+*
+       CLR  R1
+       MOVB @PGHGHT,R1
+       SRL  R1,8
+       LI   R0,66
+       LI   R2,mgn2_page_height_msg
+       LI   R3,mgn2_page_height_msg_end-mgn2_page_height_msg
+       BLWP @AEQ
+*
        MOV  *R10+,R11
        RT
 
@@ -273,6 +294,14 @@ mgn2_existing_margin_entries:
        DATA 10,>0006,>0C0C,>0808
        DATA 20,>00FA,>0A0C,>0606
 mgn2_existing_margin_entries_end
+
+mgn2_page_width_msg:
+       TEXT 'Page width should be updated from user input'
+mgn2_page_width_msg_end
+
+mgn2_page_height_msg:
+       TEXT 'Page height should be updated from user input'
+mgn2_page_height_msg_end
 
 mgn2_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
@@ -564,6 +593,11 @@ EDIT1
        LI   R0,edit1_existing_margin_entries
        LI   R1,edit1_existing_margin_entries_end
        BL   @setup_initial_margin_list
+* Set initial page width and height
+       LI   R0,50*>100
+       MOVB R0,@PGWDTH
+       LI   R0,40*>100
+       MOVB R0,@PGHGHT
 *
        LI   R0,20
        MOV  R0,@PARINX
@@ -584,6 +618,22 @@ EDIT1
        LI   R3,list_contents_msg
        LI   R4,list_contents_msg_end-list_contents_msg
        BLWP @ABLCK
+*
+       CLR  R1
+       MOVB @PGWDTH,R1
+       SRL  R1,8
+       LI   R0,96
+       LI   R2,edit1_page_width_msg
+       LI   R3,edit1_page_width_msg_end-edit1_page_width_msg
+       BLWP @AEQ
+*
+       CLR  R1
+       MOVB @PGHGHT,R1
+       SRL  R1,8
+       LI   R0,66
+       LI   R2,edit1_page_height_msg
+       LI   R3,edit1_page_height_msg_end-edit1_page_height_msg
+       BLWP @AEQ
 *
        MOV  *R10+,R11
        RT
@@ -608,6 +658,14 @@ edit1_existing_margin_entries:
        DATA 20,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
 edit1_existing_margin_entries_end
+
+edit1_page_width_msg:
+       TEXT 'Page width should be updated from user input'
+edit1_page_width_msg_end
+
+edit1_page_height_msg:
+       TEXT 'Page height should be updated from user input'
+edit1_page_height_msg_end
 
 edit1_unchanged_margin_list_msg:
        TEXT 'Margin list size should remain unchanged'
