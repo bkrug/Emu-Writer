@@ -46,6 +46,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Insert a margin-entry at the end of a non-empty list
        DATA MGN2
        TEXT 'MGN2  '
+* Insert a margin-entry at the beginning of a non-empty list
+       DATA MGN3
+       TEXT 'MGN3  '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -265,6 +268,57 @@ mgn2_expected_margin_entries:
        DATA 20,>00FA,>0A0C,>0606
        DATA 30,>0006,>0C0D,>0607
 mgn2_expected_margin_entries_end
+
+*
+* Insert a margin-entry at the beginning of a non-empty list
+*
+MGN3
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set up initial margin list
+       LI   R0,mgn2_existing_margin_entries
+       LI   R1,mgn2_existing_margin_entries_end
+       BL   @setup_initial_margin_list
+*
+       LI   R0,4
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,mgn3_larger_margin_list_msg
+       LI   R3,mgn3_larger_margin_list_msg_end-mgn3_larger_margin_list_msg
+       BLWP @AEQ
+*
+       LI   R0,mgn3_expected_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,mgn3_expected_margin_entries_end-mgn3_expected_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+mgn3_larger_margin_list_msg:
+       TEXT 'Margin list should now be larger'
+mgn3_larger_margin_list_msg_end
+
+mgn3_expected_margin_entries:
+       DATA 4,>0006,>0C0D,>0607
+       DATA 10,>0006,>0C0C,>0808
+       DATA 20,>00FA,>0A0C,>0606
+mgn3_expected_margin_entries_end
 
 *****************************
 
