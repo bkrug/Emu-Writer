@@ -1,6 +1,5 @@
 * Tests to add:
 *
-* Undo a margin entry insertion that grew the list size.  (create an entry)
 * Undo a margin entry insertion that really just edit a later entry to point to the current paragraph.  (edit previous entry)
 * Undo a margin entry edit.  (edit current entry)
 * Undo a margin entry edit that resulted in deleting a later margin entry.   (edit current entry, delete next entry)
@@ -12,7 +11,7 @@
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
 * From EDTMGN.asm
-       REF  EDTMGN
+       REF  EDTMGN,undo_margin
        REF  MGNSRT
 * From Buffer library
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -59,6 +58,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * The result will be to delete the later entry, shrinking the list size by one.
        DATA EDIT3
        TEXT 'EDIT3 '
+* Undo a margin entry insertion that grew the list size.
+       DATA UNDO1
+       TEXT 'UNDO1 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -830,6 +832,83 @@ edit3_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
        DATA 30,>00F1,>0F0F,>0709
 edit3_expected_margin_entries_end
+
+*
+* Undo a margin entry insertion that grew the list size.
+*
+UNDO1
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set up initial margin list
+       LI   R0,undo1_existing_margin_entries
+       LI   R1,undo1_existing_margin_entries_end
+       BL   @setup_initial_margin_list
+*
+       LI   R0,15
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,undo1_larger_margin_list_msg
+       LI   R3,undo1_larger_margin_list_msg_end-undo1_larger_margin_list_msg
+       BLWP @AEQ
+*
+       LI   R0,undo1_expected_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,undo1_expected_margin_entries_end-undo1_expected_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
+* Act
+       BL   @undo_margin
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,undo1_original_margin_list_msg
+       LI   R3,undo1_original_margin_list_msg_end-undo1_original_margin_list_msg
+       BLWP @AEQ
+*
+       LI   R0,undo1_existing_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,undo1_existing_margin_entries_end-undo1_existing_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+undo1_existing_margin_entries:
+       DATA 10,>0006,>0C0C,>0808
+       DATA 20,>00FA,>0A0C,>0606
+undo1_existing_margin_entries_end       
+
+undo1_larger_margin_list_msg:
+       TEXT 'Margin list should now be larger'
+undo1_larger_margin_list_msg_end
+
+undo1_expected_margin_entries:
+       DATA 10,>0006,>0C0C,>0808
+       DATA 15,>0006,>0C0D,>0607
+       DATA 20,>00FA,>0A0C,>0606
+undo1_expected_margin_entries_end
+
+undo1_original_margin_list_msg:
+       TEXT 'Margin list should return to its original size after undo'
+undo1_original_margin_list_msg_end
 
 *****************************
 

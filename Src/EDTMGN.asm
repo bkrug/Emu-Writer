@@ -1,4 +1,5 @@
        DEF  EDTMGN
+       DEF  undo_margin
        DEF  MGNSRT,MGNEND
 *
        REF  PARINX,MGNLST                 From VAR.asm
@@ -381,6 +382,12 @@ DUP2   DEC  R2
        JGT  DUP1
        JEQ  DUP1
 DUP3
+       RT
+
+*
+* Stub method
+*
+undo_margin
        RT
 
 MGNEND AORG
