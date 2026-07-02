@@ -19,6 +19,8 @@
 MGNSRT
        XORG LOADED
 
+MARGIN_ENTRY_SIZE           EQU  8
+EXPONENT_FOR_MARGIN_SIZE    EQU  3
 ONE    DATA 1
 
 * Notes on undo action:
@@ -313,7 +315,7 @@ RECVLD
 RV1    C    *R3,@PARINX
        JH   RV2
        JEQ  RV3
-       AI   R3,8
+       AI   R3,MARGIN_ENTRY_SIZE
        INC  R2
        C    R2,R4
        JL   RV1
@@ -399,9 +401,10 @@ DUP3
 RECORD_UNDO
        DECT R10
        MOV  R11,*R10
-*
+* Create an undo entry for this action
        LI   R2,UNDO_MGN_INS
        BL   @START_FRESH_UNDO_ENTRY
+* Reserve space for the undo payload
        LI   R0,16
        BL   @RESERVE_UNDO_SPACE
 * Zero entries were deleted at the given index
@@ -418,7 +421,7 @@ RECORD_UNDO
        BLWP @ARYADR
        MOV  R1,R0
        MOV  R3,R1
-       LI   R2,8
+       LI   R2,MARGIN_ENTRY_SIZE
        BLWP @BUFCPY
 *
        MOV  *R10+,R11
@@ -438,29 +441,80 @@ UNDO_MARGIN
        MOV  R1,*R10
        DECT R10
        MOV  R0,*R10
+* Let R8 = address of margin entires that were previously inserted
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+       MOV  *R8,R1
+       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
+       C    *R8+,*R8+
+       A    R1,R8
+* remove the entries that were inserted
+       BL   @UNDO_MARGIN_INSERTS
 * Let R8 = address of margin entires that were previously deleted
        MOV  R7,R8
        AI   R8,UNDO_PAYLOAD
-* We currently assume nothing was deleted.
-* Let R8 = address of margin entires that were previously inserted
-       C    *R8+,*R8+
-* Let R2 = number of entries to delete
-       MOV  *R8+,R2
-UNDO_MARGIN_DELETE_INSERTED
-* Let R0 = address of margin list
-* Let R1 = index of margin list entry
-       MOV  @MGNLST,R0
-       MOV  *R8+,R1
-       BLWP @ARYDEL
-* Do we have more previously-inserted entries to delete?
-       DEC  R2
-       JNE  UNDO_MARGIN_DELETE_INSERTED
-* No, return
+* restore the entries that were deleted
+       BL   @UNDO_MARGIN_DELETES
+*
        MOV  *R10+,R0
        MOV  *R10+,R1
        MOV  *R10+,R2
        MOV  *R10+,R11
 *
+       RT       
+
+*
+* Undo margin entry deletes
+* Input:
+*   R8 = address of data on margin entries that were previously deleted
+*
+UNDO_MARGIN_DELETES
+* Let R2 = number of entries to insert
+       MOV  *R8,R2
+       JEQ  UNDO_MARGIN_DELETE_DONE
+UNDO_MARGIN_DELETES_LOOP
+* Let R0 = address of margin list
+* Let R1 = index of margin list entry
+       MOV  @MGNLST,R0
+       MOV  @2(R8),R1
+* Let R1 = address of new margin list entry
+       BLWP @ARYINS
+       MOV  R0,@MGNLST
+* TODO: Handle out of memory errors
+* Prepare for next iteration
+       DEC  R2
+       JNE  UNDO_MARGIN_DELETES_LOOP
+* Copy contents of entry
+* R1 already contains address of new margin list entry
+       MOV  *R8,R2
+       SLA  R2,EXPONENT_FOR_MARGIN_SIZE
+       MOV  R8,R0
+       AI   R0,4
+       BLWP @BUFCPY
+*
+UNDO_MARGIN_DELETE_DONE
+       RT
+
+*
+* Undo margin entry inserts
+* Input:
+*   R8 = address of data on margin entries that were previously inserted
+*
+UNDO_MARGIN_INSERTS
+* Let R2 = number of entries to delete
+       MOV  *R8+,R2
+       JEQ  UNDO_MARGIN_INSERTS_DONE
+UNDO_MARGIN_INSERTS_LOOP
+* Let R0 = address of margin list
+* Let R1 = index of margin list entry
+       MOV  @MGNLST,R0
+       MOV  *R8,R1
+       BLWP @ARYDEL
+* Do we have more previously-inserted entries to delete?
+       DEC  R2
+       JNE  UNDO_MARGIN_INSERTS_LOOP
+* No, return
+UNDO_MARGIN_INSERTS_DONE
        RT
 
 MGNEND AORG
