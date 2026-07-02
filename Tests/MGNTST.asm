@@ -66,6 +66,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Edit an existing margin-entry such that it will be identical to the following entry. The result will be to delete the following entry, shrinking the list size by one.
        DATA EDIT2
        TEXT 'EDIT2 '
+* Edit an existing margin-entry such that it will be identical to the preceding entry. The result will be to delete the later entry, shrinking the list size by one.
+       DATA EDIT3
+       TEXT 'EDIT3 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -702,6 +705,83 @@ edit2_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>00F1,>0F0F,>0709
 edit2_expected_margin_entries_end
+
+*
+* Edit an existing margin-entry such that it will be identical to the preceding entry.
+* The result will be to delete the later entry, shrinking the list size by one.
+*
+EDIT3
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,edit3_user_input
+       LI   R1,FLDVAL
+       LI   R2,edit3_user_input_end-edit3_user_input
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,edit3_existing_margin_entries
+       LI   R1,edit3_existing_margin_entries_end
+       BL   @setup_initial_margin_list
+*
+       LI   R0,20
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,edit3_smaller_margin_list_msg
+       LI   R3,edit3_smaller_margin_list_msg_end-edit3_smaller_margin_list_msg
+       BLWP @AEQ
+*
+       LI   R0,edit3_expected_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,edit3_expected_margin_entries_end-edit3_expected_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values match the entry at paragraph index 10)
+edit3_user_input:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '10 '   * Left margin
+       TEXT '10 '   * Right margin
+       TEXT '5  '   * indent
+       TEXT 'F'     * First line/hanging
+       TEXT '6  '   * Top margin
+       TEXT '6  '   * Bottom margin
+edit3_user_input_end
+
+edit3_existing_margin_entries:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+edit3_existing_margin_entries_end
+
+edit3_smaller_margin_list_msg:
+       TEXT 'Margin list should shrink by one entry'
+edit3_smaller_margin_list_msg_end
+
+edit3_expected_margin_entries:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 30,>00F1,>0F0F,>0709
+edit3_expected_margin_entries_end
 
 *****************************
 
