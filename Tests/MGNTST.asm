@@ -225,6 +225,7 @@ mgn1_existing_margin_entries_end
 mgn1_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
 mgn1_larger_margin_list_msg_end
+       EVEN
 
 mgn1_expected_margin_entries:
        DATA 5,>0006,>0C0D,>0607
@@ -308,6 +309,7 @@ mgn2_page_height_msg_end
 mgn2_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
 mgn2_larger_margin_list_msg_end
+       EVEN
 
 mgn2_expected_margin_entries:
        DATA 10,>0006,>0C0C,>0808
@@ -359,6 +361,7 @@ MGN3
 mgn3_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
 mgn3_larger_margin_list_msg_end
+       EVEN
 
 mgn3_expected_margin_entries:
        DATA 4,>0006,>0C0D,>0607
@@ -410,6 +413,7 @@ MGN4
 mgn4_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
 mgn4_larger_margin_list_msg_end
+       EVEN
 
 mgn4_expected_margin_entries:
        DATA 10,>0006,>0C0C,>0808
@@ -478,6 +482,7 @@ mgn5_user_input:
        TEXT '8  '   * Top margin
        TEXT '8  '   * Bottom margin
 mgn5_user_input_end
+       EVEN
 
 mgn5_existing_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -488,6 +493,7 @@ mgn5_existing_margin_entries_end
 mgn5_unchanged_margin_list_msg:
        TEXT 'Margin list size should remain unchanged'
 mgn5_unchanged_margin_list_msg_end
+       EVEN
 
 mgn5_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -556,6 +562,7 @@ mgn6_user_input:
        TEXT '8  '   * Top margin
        TEXT '8  '   * Bottom margin
 mgn6_user_input_end
+       EVEN
 
 mgn6_existing_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -566,6 +573,7 @@ mgn6_existing_margin_entries_end
 mgn6_unchanged_margin_list_msg:
        TEXT 'Margin list should remain unchanged'
 mgn6_unchanged_margin_list_msg_end
+       EVEN
 
 mgn6_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -654,6 +662,7 @@ edit1_user_input:
        TEXT '9  '   * Top margin
        TEXT '11 '   * Bottom margin
 edit1_user_input_end
+       EVEN
 
 edit1_existing_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -672,6 +681,7 @@ edit1_page_height_msg_end
 edit1_unchanged_margin_list_msg:
        TEXT 'Margin list size should remain unchanged'
 edit1_unchanged_margin_list_msg_end
+       EVEN
 
 edit1_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -740,6 +750,7 @@ edit2_user_input:
        TEXT '7  '   * Top margin
        TEXT '9  '   * Bottom margin
 edit2_user_input_end
+       EVEN
 
 edit2_existing_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -750,6 +761,7 @@ edit2_existing_margin_entries_end
 edit2_smaller_margin_list_msg:
        TEXT 'Margin list should shrink by one entry'
 edit2_smaller_margin_list_msg_end
+       EVEN
 
 edit2_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -817,6 +829,7 @@ edit3_user_input:
        TEXT '6  '   * Top margin
        TEXT '6  '   * Bottom margin
 edit3_user_input_end
+       EVEN
 
 edit3_existing_margin_entries:
        DATA 10,>0005,>0A0A,>0606
@@ -827,6 +840,7 @@ edit3_existing_margin_entries_end
 edit3_smaller_margin_list_msg:
        TEXT 'Margin list should shrink by one entry'
 edit3_smaller_margin_list_msg_end
+       EVEN
 
 edit3_expected_margin_entries:
        DATA 10,>0005,>0A0A,>0606
