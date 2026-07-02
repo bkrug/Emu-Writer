@@ -11,7 +11,7 @@
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
 * From EDTMGN.asm
-       REF  EDTMGN,undo_margin
+       REF  EDTMGN,UNDO_MARGIN
        REF  MGNSRT
 * From Buffer library
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -90,10 +90,10 @@ TSTINT
 * Set the buffer contents to zero
        LI   R0,SPACE
        LI   R1,SPCEND
-clear_space
+CLEAR_SPACE
        CLR  *R0+
        C    R0,R1
-       JL   clear_space
+       JL   CLEAR_SPACE
 * Initialize buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
@@ -109,10 +109,10 @@ clear_space
        MOV  R0,@UNDLST
        SETO @UNDOIDX
 * Mock user input in form
-       LI   R0,default_field_values
+       LI   R0,DEFAULT_FIELD_VALUES
        LI   R1,FLDVAL
-       LI   R2,default_field_values_end
-       LI   R3,default_field_values
+       LI   R2,DEFAULT_FIELD_VALUES_END
+       LI   R3,DEFAULT_FIELD_VALUES
        S    R3,R2
        BLWP @BUFCPY
 *
@@ -124,7 +124,7 @@ clear_space
 *
 * We are assuming the tests and code-under-test don't need to read any paragraph contents.
 *
-test_para_list:
+TEST_PARA_LIST:
        DATA 1000
        DATA 2
 
@@ -132,7 +132,7 @@ test_para_list:
 * User-typed field values
 *
 * (see FPHGHT to FBOT in EQUVAL)
-default_field_values:
+DEFAULT_FIELD_VALUES:
        TEXT '96 '   * Page width
        TEXT '66 '   * Page height
        TEXT '12 '   * Left margin
@@ -141,11 +141,11 @@ default_field_values:
        TEXT 'F'     * First line/hanging
        TEXT '6  '   * Top margin
        TEXT '7  '   * Bottom margin
-default_field_values_end
+DEFAULT_FIELD_VALUES_END
 
-list_contents_msg:
+LIST_CONTENTS_MSG:
        TEXT 'Expected a particular set of margin list contents.'
-list_contents_msg_end
+LIST_CONTENTS_MSG_END
 
 *
 * Populate the margin list with the
@@ -156,7 +156,7 @@ list_contents_msg_end
 *   R1 - address directly following
 *        the source data
 *
-setup_initial_margin_list:
+SETUP_INITIAL_MARGIN_LIST:
        MOV  R0,R4
        MOV  R1,R5
 * Let R1 = number of margin entires
@@ -165,11 +165,11 @@ setup_initial_margin_list:
        MOV  R1,R2
 * Add margin list entries
        MOV  @MGNLST,R0
-setup_margin_list_loop:
+SETUP_MARGIN_LIST_LOOP:
        BLWP @ARYADD
        MOV  R0,@MGNLST
        DEC  R2
-       JNE  setup_margin_list_loop
+       JNE  SETUP_MARGIN_LIST_LOOP
 * Copy margin contents
        MOV  R4,R0
        MOV  @MGNLST,R1
@@ -204,32 +204,32 @@ MGN1
        LI   R0,1
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,mgn1_larger_margin_list_msg
-       LI   R3,mgn1_larger_margin_list_msg_end-mgn1_larger_margin_list_msg
+       LI   R2,MGN1_LARGER_MARGIN_LIST_MSG
+       LI   R3,MGN1_LARGER_MARGIN_LIST_MSG_END-MGN1_LARGER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,mgn1_expected_margin_entries
+       LI   R0,MGN1_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,mgn1_expected_margin_entries_end-mgn1_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,MGN1_EXPECTED_MARGIN_ENTRIES_END-MGN1_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
        RT
 
-mgn1_existing_margin_entries
-mgn1_existing_margin_entries_end
+MGN1_EXISTING_MARGIN_ENTRIES
+MGN1_EXISTING_MARGIN_ENTRIES_END
 
-mgn1_larger_margin_list_msg:
+MGN1_LARGER_MARGIN_LIST_MSG:
        TEXT 'Margin list should now be larger'
-mgn1_larger_margin_list_msg_end
+MGN1_LARGER_MARGIN_LIST_MSG_END
        EVEN
 
-mgn1_expected_margin_entries:
+MGN1_EXPECTED_MARGIN_ENTRIES:
        DATA 5,>0006,>0C0D,>0607
-mgn1_expected_margin_entries_end
+MGN1_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Insert a margin-entry at the end of a non-empty list
@@ -245,9 +245,9 @@ MGN2
 * Initialize Test Data
        BL   @TSTINT
 * Set up initial margin list
-       LI   R0,mgn2_existing_margin_entries
-       LI   R1,mgn2_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,MGN2_EXISTING_MARGIN_ENTRIES
+       LI   R1,MGN2_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 * Set initial page width and height
        LI   R0,50*>100
        MOVB R0,@PGWDTH
@@ -262,60 +262,60 @@ MGN2
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,mgn2_larger_margin_list_msg
-       LI   R3,mgn2_larger_margin_list_msg_end-mgn2_larger_margin_list_msg
+       LI   R2,MGN2_LARGER_MARGIN_LIST_MSG
+       LI   R3,MGN2_LARGER_MARGIN_LIST_MSG_END-MGN2_LARGER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,mgn2_expected_margin_entries
+       LI   R0,MGN2_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,mgn2_expected_margin_entries_end-mgn2_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,MGN2_EXPECTED_MARGIN_ENTRIES_END-MGN2_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        CLR  R1
        MOVB @PGWDTH,R1
        SRL  R1,8
        LI   R0,96
-       LI   R2,mgn2_page_width_msg
-       LI   R3,mgn2_page_width_msg_end-mgn2_page_width_msg
+       LI   R2,MGN2_PAGE_WIDTH_MSG
+       LI   R3,MGN2_PAGE_WIDTH_MSG_END-MGN2_PAGE_WIDTH_MSG
        BLWP @AEQ
 *
        CLR  R1
        MOVB @PGHGHT,R1
        SRL  R1,8
        LI   R0,66
-       LI   R2,mgn2_page_height_msg
-       LI   R3,mgn2_page_height_msg_end-mgn2_page_height_msg
+       LI   R2,MGN2_PAGE_HEIGHT_MSG
+       LI   R3,MGN2_PAGE_HEIGHT_MSG_END-MGN2_PAGE_HEIGHT_MSG
        BLWP @AEQ
 *
        MOV  *R10+,R11
        RT
 
-mgn2_existing_margin_entries:
+MGN2_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0006,>0C0C,>0808
        DATA 20,>00FA,>0A0C,>0606
-mgn2_existing_margin_entries_end
+MGN2_EXISTING_MARGIN_ENTRIES_END
 
-mgn2_page_width_msg:
+MGN2_PAGE_WIDTH_MSG:
        TEXT 'Page width should be updated from user input'
-mgn2_page_width_msg_end
+MGN2_PAGE_WIDTH_MSG_END
 
-mgn2_page_height_msg:
+MGN2_PAGE_HEIGHT_MSG:
        TEXT 'Page height should be updated from user input'
-mgn2_page_height_msg_end
+MGN2_PAGE_HEIGHT_MSG_END
 
-mgn2_larger_margin_list_msg:
+MGN2_LARGER_MARGIN_LIST_MSG:
        TEXT 'Margin list should now be larger'
-mgn2_larger_margin_list_msg_end
+MGN2_LARGER_MARGIN_LIST_MSG_END
        EVEN
 
-mgn2_expected_margin_entries:
+MGN2_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0006,>0C0C,>0808
        DATA 20,>00FA,>0A0C,>0606
        DATA 30,>0006,>0C0D,>0607
-mgn2_expected_margin_entries_end
+MGN2_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Insert a margin-entry at the beginning of a non-empty list
@@ -331,9 +331,9 @@ MGN3
 * Initialize Test Data
        BL   @TSTINT
 * Set up initial margin list
-       LI   R0,mgn2_existing_margin_entries
-       LI   R1,mgn2_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,MGN2_EXISTING_MARGIN_ENTRIES
+       LI   R1,MGN2_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 *
        LI   R0,4
        MOV  R0,@PARINX
@@ -343,31 +343,31 @@ MGN3
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,mgn3_larger_margin_list_msg
-       LI   R3,mgn3_larger_margin_list_msg_end-mgn3_larger_margin_list_msg
+       LI   R2,MGN3_LARGER_MARGIN_LIST_MSG
+       LI   R3,MGN3_LARGER_MARGIN_LIST_MSG_END-MGN3_LARGER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,mgn3_expected_margin_entries
+       LI   R0,MGN3_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,mgn3_expected_margin_entries_end-mgn3_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,MGN3_EXPECTED_MARGIN_ENTRIES_END-MGN3_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
        RT
 
-mgn3_larger_margin_list_msg:
+MGN3_LARGER_MARGIN_LIST_MSG:
        TEXT 'Margin list should now be larger'
-mgn3_larger_margin_list_msg_end
+MGN3_LARGER_MARGIN_LIST_MSG_END
        EVEN
 
-mgn3_expected_margin_entries:
+MGN3_EXPECTED_MARGIN_ENTRIES:
        DATA 4,>0006,>0C0D,>0607
        DATA 10,>0006,>0C0C,>0808
        DATA 20,>00FA,>0A0C,>0606
-mgn3_expected_margin_entries_end
+MGN3_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Insert a margin-entry in between two entries, where this will not create a duplicate
@@ -383,9 +383,9 @@ MGN4
 * Initialize Test Data
        BL   @TSTINT
 * Set up initial margin list
-       LI   R0,mgn2_existing_margin_entries
-       LI   R1,mgn2_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,MGN2_EXISTING_MARGIN_ENTRIES
+       LI   R1,MGN2_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 *
        LI   R0,15
        MOV  R0,@PARINX
@@ -395,31 +395,31 @@ MGN4
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,mgn4_larger_margin_list_msg
-       LI   R3,mgn4_larger_margin_list_msg_end-mgn4_larger_margin_list_msg
+       LI   R2,MGN4_LARGER_MARGIN_LIST_MSG
+       LI   R3,MGN4_LARGER_MARGIN_LIST_MSG_END-MGN4_LARGER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,mgn4_expected_margin_entries
+       LI   R0,MGN4_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,mgn4_expected_margin_entries_end-mgn4_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,MGN4_EXPECTED_MARGIN_ENTRIES_END-MGN4_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
        RT
 
-mgn4_larger_margin_list_msg:
+MGN4_LARGER_MARGIN_LIST_MSG:
        TEXT 'Margin list should now be larger'
-mgn4_larger_margin_list_msg_end
+MGN4_LARGER_MARGIN_LIST_MSG_END
        EVEN
 
-mgn4_expected_margin_entries:
+MGN4_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0006,>0C0C,>0808
        DATA 15,>0006,>0C0D,>0607
        DATA 20,>00FA,>0A0C,>0606
-mgn4_expected_margin_entries_end
+MGN4_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Attempt to insert a margin-entry that would be identical to the one directly after it.
@@ -436,14 +436,14 @@ MGN5
 * Initialize Test Data
        BL   @TSTINT
 * Setup user input in form
-       LI   R0,mgn5_user_input
+       LI   R0,MGN5_USER_INPUT
        LI   R1,FLDVAL
-       LI   R2,mgn5_user_input_end-mgn5_user_input
+       LI   R2,MGN5_USER_INPUT_END-MGN5_USER_INPUT
        BLWP @BUFCPY
 * Set up initial margin list
-       LI   R0,mgn5_existing_margin_entries
-       LI   R1,mgn5_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,MGN5_EXISTING_MARGIN_ENTRIES
+       LI   R1,MGN5_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 *
        LI   R0,15
        MOV  R0,@PARINX
@@ -453,16 +453,16 @@ MGN5
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,mgn5_unchanged_margin_list_msg
-       LI   R3,mgn5_unchanged_margin_list_msg_end-mgn5_unchanged_margin_list_msg
+       LI   R2,MGN5_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,MGN5_UNCHANGED_MARGIN_LIST_MSG_END-MGN5_UNCHANGED_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,mgn5_expected_margin_entries
+       LI   R0,MGN5_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,mgn5_expected_margin_entries_end-mgn5_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,MGN5_EXPECTED_MARGIN_ENTRIES_END-MGN5_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
@@ -472,7 +472,7 @@ MGN5
 * User-typed field values
 *
 * (note that these values are identical to what is specified for the paragraph at index 20)
-mgn5_user_input:
+MGN5_USER_INPUT:
        TEXT '96 '   * Page width
        TEXT '66 '   * Page height
        TEXT '12 '   * Left margin
@@ -481,25 +481,25 @@ mgn5_user_input:
        TEXT 'F'     * First line/hanging
        TEXT '8  '   * Top margin
        TEXT '8  '   * Bottom margin
-mgn5_user_input_end
+MGN5_USER_INPUT_END
        EVEN
 
-mgn5_existing_margin_entries:
+MGN5_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
-mgn5_existing_margin_entries_end
+MGN5_EXISTING_MARGIN_ENTRIES_END
 
-mgn5_unchanged_margin_list_msg:
+MGN5_UNCHANGED_MARGIN_LIST_MSG:
        TEXT 'Margin list size should remain unchanged'
-mgn5_unchanged_margin_list_msg_end
+MGN5_UNCHANGED_MARGIN_LIST_MSG_END
        EVEN
 
-mgn5_expected_margin_entries:
+MGN5_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 15,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
-mgn5_expected_margin_entries_end
+MGN5_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Attempt to insert a margin-entry that would be identical to the one directly before it.
@@ -516,14 +516,14 @@ MGN6
 * Initialize Test Data
        BL   @TSTINT
 * Setup user input in form
-       LI   R0,mgn6_user_input
+       LI   R0,MGN6_USER_INPUT
        LI   R1,FLDVAL
-       LI   R2,mgn6_user_input_end-mgn6_user_input
+       LI   R2,MGN6_USER_INPUT_END-MGN6_USER_INPUT
        BLWP @BUFCPY
 * Set up initial margin list
-       LI   R0,mgn6_existing_margin_entries
-       LI   R1,mgn6_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,MGN6_EXISTING_MARGIN_ENTRIES
+       LI   R1,MGN6_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 *
        LI   R0,25
        MOV  R0,@PARINX
@@ -533,16 +533,16 @@ MGN6
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,mgn6_unchanged_margin_list_msg
-       LI   R3,mgn6_unchanged_margin_list_msg_end-mgn6_unchanged_margin_list_msg
+       LI   R2,MGN6_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,MGN6_UNCHANGED_MARGIN_LIST_MSG_END-MGN6_UNCHANGED_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,mgn6_expected_margin_entries
+       LI   R0,MGN6_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,mgn6_expected_margin_entries_end-mgn6_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,MGN6_EXPECTED_MARGIN_ENTRIES_END-MGN6_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
@@ -552,7 +552,7 @@ MGN6
 * User-typed field values
 *
 * (note that these values are identical to what is specified for the paragraph at index 20)
-mgn6_user_input:
+MGN6_USER_INPUT:
        TEXT '96 '   * Page width
        TEXT '66 '   * Page height
        TEXT '11 '   * Left margin
@@ -561,25 +561,25 @@ mgn6_user_input:
        TEXT 'H'     * First line/hanging
        TEXT '8  '   * Top margin
        TEXT '8  '   * Bottom margin
-mgn6_user_input_end
+MGN6_USER_INPUT_END
        EVEN
 
-mgn6_existing_margin_entries:
+MGN6_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>00FA,>0B0D,>0808
        DATA 30,>00F1,>0F0F,>0709
-mgn6_existing_margin_entries_end
+MGN6_EXISTING_MARGIN_ENTRIES_END
 
-mgn6_unchanged_margin_list_msg:
+MGN6_UNCHANGED_MARGIN_LIST_MSG:
        TEXT 'Margin list should remain unchanged'
-mgn6_unchanged_margin_list_msg_end
+MGN6_UNCHANGED_MARGIN_LIST_MSG_END
        EVEN
 
-mgn6_expected_margin_entries:
+MGN6_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>00FA,>0B0D,>0808
        DATA 30,>00F1,>0F0F,>0709
-mgn6_expected_margin_entries_end
+MGN6_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Edit an existing margin-entry (same paragraph index).
@@ -595,14 +595,14 @@ EDIT1
 * Initialize Test Data
        BL   @TSTINT
 * Setup user input in form
-       LI   R0,edit1_user_input
+       LI   R0,EDIT1_USER_INPUT
        LI   R1,FLDVAL
-       LI   R2,edit1_user_input_end-edit1_user_input
+       LI   R2,EDIT1_USER_INPUT_END-EDIT1_USER_INPUT
        BLWP @BUFCPY
 * Set up initial margin list
-       LI   R0,edit1_existing_margin_entries
-       LI   R1,edit1_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,EDIT1_EXISTING_MARGIN_ENTRIES
+       LI   R1,EDIT1_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 * Set initial page width and height
        LI   R0,96*>100
        MOVB R0,@PGWDTH
@@ -617,32 +617,32 @@ EDIT1
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,edit1_unchanged_margin_list_msg
-       LI   R3,edit1_unchanged_margin_list_msg_end-edit1_unchanged_margin_list_msg
+       LI   R2,EDIT1_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,EDIT1_UNCHANGED_MARGIN_LIST_MSG_END-EDIT1_UNCHANGED_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,edit1_expected_margin_entries
+       LI   R0,EDIT1_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,edit1_expected_margin_entries_end-edit1_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,EDIT1_EXPECTED_MARGIN_ENTRIES_END-EDIT1_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        CLR  R1
        MOVB @PGWDTH,R1
        SRL  R1,8
        LI   R0,70
-       LI   R2,edit1_page_width_msg
-       LI   R3,edit1_page_width_msg_end-edit1_page_width_msg
+       LI   R2,EDIT1_PAGE_WIDTH_MSG
+       LI   R3,EDIT1_PAGE_WIDTH_MSG_END-EDIT1_PAGE_WIDTH_MSG
        BLWP @AEQ
 *
        CLR  R1
        MOVB @PGHGHT,R1
        SRL  R1,8
        LI   R0,55
-       LI   R2,edit1_page_height_msg
-       LI   R3,edit1_page_height_msg_end-edit1_page_height_msg
+       LI   R2,EDIT1_PAGE_HEIGHT_MSG
+       LI   R3,EDIT1_PAGE_HEIGHT_MSG_END-EDIT1_PAGE_HEIGHT_MSG
        BLWP @AEQ
 *
        MOV  *R10+,R11
@@ -652,7 +652,7 @@ EDIT1
 * User-typed field values
 *
 * (note that these values differ from every entry already in the margin list)
-edit1_user_input:
+EDIT1_USER_INPUT:
        TEXT '70 '   * Page width
        TEXT '55 '   * Page height
        TEXT '15 '   * Left margin
@@ -661,33 +661,33 @@ edit1_user_input:
        TEXT 'H'     * First line/hanging
        TEXT '9  '   * Top margin
        TEXT '11 '   * Bottom margin
-edit1_user_input_end
+EDIT1_USER_INPUT_END
        EVEN
 
-edit1_existing_margin_entries:
+EDIT1_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
-edit1_existing_margin_entries_end
+EDIT1_EXISTING_MARGIN_ENTRIES_END
 
-edit1_page_width_msg:
+EDIT1_PAGE_WIDTH_MSG:
        TEXT 'Page width should be updated from user input'
-edit1_page_width_msg_end
+EDIT1_PAGE_WIDTH_MSG_END
 
-edit1_page_height_msg:
+EDIT1_PAGE_HEIGHT_MSG:
        TEXT 'Page height should be updated from user input'
-edit1_page_height_msg_end
+EDIT1_PAGE_HEIGHT_MSG_END
 
-edit1_unchanged_margin_list_msg:
+EDIT1_UNCHANGED_MARGIN_LIST_MSG:
        TEXT 'Margin list size should remain unchanged'
-edit1_unchanged_margin_list_msg_end
+EDIT1_UNCHANGED_MARGIN_LIST_MSG_END
        EVEN
 
-edit1_expected_margin_entries:
+EDIT1_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>00FC,>0F11,>090B
        DATA 30,>00F1,>0F0F,>0709
-edit1_expected_margin_entries_end
+EDIT1_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Edit an existing margin-entry such that it will be identical to the following entry.
@@ -704,14 +704,14 @@ EDIT2
 * Initialize Test Data
        BL   @TSTINT
 * Setup user input in form
-       LI   R0,edit2_user_input
+       LI   R0,EDIT2_USER_INPUT
        LI   R1,FLDVAL
-       LI   R2,edit2_user_input_end-edit2_user_input
+       LI   R2,EDIT2_USER_INPUT_END-EDIT2_USER_INPUT
        BLWP @BUFCPY
 * Set up initial margin list
-       LI   R0,edit2_existing_margin_entries
-       LI   R1,edit2_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,EDIT2_EXISTING_MARGIN_ENTRIES
+       LI   R1,EDIT2_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 *
        LI   R0,20
        MOV  R0,@PARINX
@@ -721,16 +721,16 @@ EDIT2
        LI   R0,2
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,edit2_smaller_margin_list_msg
-       LI   R3,edit2_smaller_margin_list_msg_end-edit2_smaller_margin_list_msg
+       LI   R2,EDIT2_SMALLER_MARGIN_LIST_MSG
+       LI   R3,EDIT2_SMALLER_MARGIN_LIST_MSG_END-EDIT2_SMALLER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,edit2_expected_margin_entries
+       LI   R0,EDIT2_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,edit2_expected_margin_entries_end-edit2_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,EDIT2_EXPECTED_MARGIN_ENTRIES_END-EDIT2_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
@@ -740,7 +740,7 @@ EDIT2
 * User-typed field values
 *
 * (note that these values match the entry at paragraph index 30)
-edit2_user_input:
+EDIT2_USER_INPUT:
        TEXT '96 '   * Page width
        TEXT '66 '   * Page height
        TEXT '15 '   * Left margin
@@ -749,24 +749,24 @@ edit2_user_input:
        TEXT 'H'     * First line/hanging
        TEXT '7  '   * Top margin
        TEXT '9  '   * Bottom margin
-edit2_user_input_end
+EDIT2_USER_INPUT_END
        EVEN
 
-edit2_existing_margin_entries:
+EDIT2_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
-edit2_existing_margin_entries_end
+EDIT2_EXISTING_MARGIN_ENTRIES_END
 
-edit2_smaller_margin_list_msg:
+EDIT2_SMALLER_MARGIN_LIST_MSG:
        TEXT 'Margin list should shrink by one entry'
-edit2_smaller_margin_list_msg_end
+EDIT2_SMALLER_MARGIN_LIST_MSG_END
        EVEN
 
-edit2_expected_margin_entries:
+EDIT2_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>00F1,>0F0F,>0709
-edit2_expected_margin_entries_end
+EDIT2_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Edit an existing margin-entry such that it will be identical to the preceding entry.
@@ -783,14 +783,14 @@ EDIT3
 * Initialize Test Data
        BL   @TSTINT
 * Setup user input in form
-       LI   R0,edit3_user_input
+       LI   R0,EDIT3_USER_INPUT
        LI   R1,FLDVAL
-       LI   R2,edit3_user_input_end-edit3_user_input
+       LI   R2,EDIT3_USER_INPUT_END-EDIT3_USER_INPUT
        BLWP @BUFCPY
 * Set up initial margin list
-       LI   R0,edit3_existing_margin_entries
-       LI   R1,edit3_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,EDIT3_EXISTING_MARGIN_ENTRIES
+       LI   R1,EDIT3_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 *
        LI   R0,20
        MOV  R0,@PARINX
@@ -800,16 +800,16 @@ EDIT3
        LI   R0,2
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,edit3_smaller_margin_list_msg
-       LI   R3,edit3_smaller_margin_list_msg_end-edit3_smaller_margin_list_msg
+       LI   R2,EDIT3_SMALLER_MARGIN_LIST_MSG
+       LI   R3,EDIT3_SMALLER_MARGIN_LIST_MSG_END-EDIT3_SMALLER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,edit3_expected_margin_entries
+       LI   R0,EDIT3_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,edit3_expected_margin_entries_end-edit3_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,EDIT3_EXPECTED_MARGIN_ENTRIES_END-EDIT3_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
@@ -819,7 +819,7 @@ EDIT3
 * User-typed field values
 *
 * (note that these values match the entry at paragraph index 10)
-edit3_user_input:
+EDIT3_USER_INPUT:
        TEXT '96 '   * Page width
        TEXT '66 '   * Page height
        TEXT '10 '   * Left margin
@@ -828,24 +828,24 @@ edit3_user_input:
        TEXT 'F'     * First line/hanging
        TEXT '6  '   * Top margin
        TEXT '6  '   * Bottom margin
-edit3_user_input_end
+EDIT3_USER_INPUT_END
        EVEN
 
-edit3_existing_margin_entries:
+EDIT3_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 20,>0006,>0C0C,>0808
        DATA 30,>00F1,>0F0F,>0709
-edit3_existing_margin_entries_end
+EDIT3_EXISTING_MARGIN_ENTRIES_END
 
-edit3_smaller_margin_list_msg:
+EDIT3_SMALLER_MARGIN_LIST_MSG:
        TEXT 'Margin list should shrink by one entry'
-edit3_smaller_margin_list_msg_end
+EDIT3_SMALLER_MARGIN_LIST_MSG_END
        EVEN
 
-edit3_expected_margin_entries:
+EDIT3_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0005,>0A0A,>0606
        DATA 30,>00F1,>0F0F,>0709
-edit3_expected_margin_entries_end
+EDIT3_EXPECTED_MARGIN_ENTRIES_END
 
 *
 * Undo a margin entry insertion that grew the list size.
@@ -861,9 +861,9 @@ UNDO1
 * Initialize Test Data
        BL   @TSTINT
 * Set up initial margin list
-       LI   R0,undo1_existing_margin_entries
-       LI   R1,undo1_existing_margin_entries_end
-       BL   @setup_initial_margin_list
+       LI   R0,UNDO1_EXISTING_MARGIN_ENTRIES
+       LI   R1,UNDO1_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
 * Set the cursor's paragraph in the document
        LI   R0,15
        MOV  R0,@PARINX
@@ -873,57 +873,57 @@ UNDO1
        LI   R0,3
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,undo1_larger_margin_list_msg
-       LI   R3,undo1_larger_margin_list_msg_end-undo1_larger_margin_list_msg
+       LI   R2,UNDO1_LARGER_MARGIN_LIST_MSG
+       LI   R3,UNDO1_LARGER_MARGIN_LIST_MSG_END-UNDO1_LARGER_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,undo1_expected_margin_entries
+       LI   R0,UNDO1_EXPECTED_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,undo1_expected_margin_entries_end-undo1_expected_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,UNDO1_EXPECTED_MARGIN_ENTRIES_END-UNDO1_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 * Act
-       BL   @undo_margin
+       BL   @UNDO_MARGIN
 * Assert
        LI   R0,2
        MOV  @MGNLST,R1
        MOV  *R1,R1
-       LI   R2,undo1_original_margin_list_msg
-       LI   R3,undo1_original_margin_list_msg_end-undo1_original_margin_list_msg
+       LI   R2,UNDO1_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,UNDO1_ORIGINAL_MARGIN_LIST_MSG_END-UNDO1_ORIGINAL_MARGIN_LIST_MSG
        BLWP @AEQ
 *
-       LI   R0,undo1_existing_margin_entries
+       LI   R0,UNDO1_EXISTING_MARGIN_ENTRIES
        MOV  @MGNLST,R1
        C    *R1+,*R1+
-       LI   R2,undo1_existing_margin_entries_end-undo1_existing_margin_entries
-       LI   R3,list_contents_msg
-       LI   R4,list_contents_msg_end-list_contents_msg
+       LI   R2,UNDO1_EXISTING_MARGIN_ENTRIES_END-UNDO1_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
        BLWP @ABLCK
 *
        MOV  *R10+,R11
        RT
 
-undo1_existing_margin_entries:
+UNDO1_EXISTING_MARGIN_ENTRIES:
        DATA 10,>0006,>0C0C,>0808
        DATA 20,>00FA,>0A0C,>0606
-undo1_existing_margin_entries_end       
+UNDO1_EXISTING_MARGIN_ENTRIES_END       
 
-undo1_larger_margin_list_msg:
+UNDO1_LARGER_MARGIN_LIST_MSG:
        TEXT 'Margin list should now be larger'
-undo1_larger_margin_list_msg_end
+UNDO1_LARGER_MARGIN_LIST_MSG_END
        EVEN
 
-undo1_expected_margin_entries:
+UNDO1_EXPECTED_MARGIN_ENTRIES:
        DATA 10,>0006,>0C0C,>0808
        DATA 15,>0006,>0C0D,>0607
        DATA 20,>00FA,>0A0C,>0606
-undo1_expected_margin_entries_end
+UNDO1_EXPECTED_MARGIN_ENTRIES_END
 
-undo1_original_margin_list_msg:
+UNDO1_ORIGINAL_MARGIN_LIST_MSG:
        TEXT 'Margin list should return to its original size after undo'
-undo1_original_margin_list_msg_end
+UNDO1_ORIGINAL_MARGIN_LIST_MSG_END
        EVEN
 
 *****************************
