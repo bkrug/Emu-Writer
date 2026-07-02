@@ -6,8 +6,7 @@
        REF  EXPLNT                        From CONST.asm
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
-       REF  WRAP                          From WRAP.asm
-       REF  WRAPDw                        From UTIL.asm
+       REF  WRAPDW                        From WRAP.asm
 
        COPY 'EQUADDR.asm'
        COPY 'EQUVAL.asm'

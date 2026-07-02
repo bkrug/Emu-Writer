@@ -19,7 +19,7 @@
 * Undo a margin entry edit that resulted in mergin (deleting) that entry into an earlier entry.    (delete the current entry)
 
        DEF  TSTLST,RSLTFL
-       DEF  WRAP,WRAPDW
+       DEF  WRAPDW
 
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
@@ -71,9 +71,7 @@ RSLTFE
 * -----
 * We don't need to actually wrap the paragraphs
 ********
-WRAP
-WRAPDW
-       RT
+WRAPDW RT
 
 ****************************************
 *
