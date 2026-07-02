@@ -382,12 +382,13 @@ DUP2   DEC  R2
        JGT  DUP1
        JEQ  DUP1
 DUP3
+undo_margin
        RT
 
 *
 * Stub method
 *
-undo_margin
-       RT
+* undo_margin
+*       RT
 
 MGNEND AORG

@@ -850,7 +850,7 @@ UNDO1
        LI   R0,undo1_existing_margin_entries
        LI   R1,undo1_existing_margin_entries_end
        BL   @setup_initial_margin_list
-*
+* Set the cursor's paragraph in the document
        LI   R0,15
        MOV  R0,@PARINX
 * Act
@@ -899,6 +899,7 @@ undo1_existing_margin_entries_end
 undo1_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
 undo1_larger_margin_list_msg_end
+       EVEN
 
 undo1_expected_margin_entries:
        DATA 10,>0006,>0C0C,>0808
@@ -909,6 +910,7 @@ undo1_expected_margin_entries_end
 undo1_original_margin_list_msg:
        TEXT 'Margin list should return to its original size after undo'
 undo1_original_margin_list_msg_end
+       EVEN
 
 *****************************
 
