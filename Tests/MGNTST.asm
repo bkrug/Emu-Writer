@@ -60,6 +60,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * The result is to edit the earlier entry, leaving the list size unchanged.
        DATA MGN6
        TEXT 'MGN6  '
+* Edit an existing margin-entry (same paragraph index).
+       DATA EDIT1
+       TEXT 'EDIT1 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -542,6 +545,83 @@ mgn6_expected_margin_entries:
        DATA 20,>00FA,>0B0D,>0808
        DATA 30,>00F1,>0F0F,>0709
 mgn6_expected_margin_entries_end
+
+*
+* Edit an existing margin-entry (same paragraph index).
+*
+EDIT1
+* -------
+* User presses enter to split a
+* paragraph.
+* The original paragraph is earlier
+* than any entry in the margin list.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,edit1_user_input
+       LI   R1,FLDVAL
+       LI   R2,edit1_user_input_end-edit1_user_input
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,edit1_existing_margin_entries
+       LI   R1,edit1_existing_margin_entries_end
+       BL   @setup_initial_margin_list
+*
+       LI   R0,20
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,edit1_unchanged_margin_list_msg
+       LI   R3,edit1_unchanged_margin_list_msg_end-edit1_unchanged_margin_list_msg
+       BLWP @AEQ
+*
+       LI   R0,edit1_expected_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,edit1_expected_margin_entries_end-edit1_expected_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values differ from every entry already in the margin list)
+edit1_user_input:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '15 '   * Left margin
+       TEXT '17 '   * Right margin
+       TEXT '4  '   * indent
+       TEXT 'H'     * First line/hanging
+       TEXT '9  '   * Top margin
+       TEXT '11 '   * Bottom margin
+edit1_user_input_end
+
+edit1_existing_margin_entries:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+edit1_existing_margin_entries_end
+
+edit1_unchanged_margin_list_msg:
+       TEXT 'Margin list size should remain unchanged'
+edit1_unchanged_margin_list_msg_end
+
+edit1_expected_margin_entries:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00FC,>0F11,>090B
+       DATA 30,>00F1,>0F0F,>0709
+edit1_expected_margin_entries_end
 
 *****************************
 
