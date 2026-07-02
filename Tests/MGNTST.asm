@@ -23,9 +23,10 @@
 
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
-*
+* From EDTMGN.asm
        REF  EDTMGN
-*
+       REF  MGNSRT
+* From Buffer library
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
        REF  BUFALC,BUFINT,BUFCPY
@@ -64,6 +65,12 @@ WRAPDW
 ****************************************
 
 TSTINT
+* EDTMGN is code that we cache in the VDP RAM.
+* Copy EDTMGN to the LOADED address so it can be run.
+       LI   R0,MGNSRT
+       LI   R1,LOADED
+       LI   R2,>800
+       BLWP @BUFCPY
 * Initialize buffer.
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
