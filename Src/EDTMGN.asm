@@ -1,8 +1,9 @@
        DEF  EDTMGN
        DEF  MGNSRT,MGNEND
 *
-       REF  PARINX,MGNLST,PARLST          From VAR.asm
+       REF  PARINX,MGNLST                 From VAR.asm
        REF  FLDVAL,PGWDTH,PGHGHT          "
+       REF  EXPLNT                        From CONST.asm
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
        REF  WRAP                          From WRAP.asm
@@ -157,10 +158,11 @@ PRSINT
 * Let R3 = number of remaining char
        CLR  R1
        LI   R3,3
-* Is next digit empty?
+* Is next char a non-visible char?
 PI1    MOVB *R0+,R4
-       JEQ  PI2
-* Is next char a digit?
+       CB   R4,@EXPLNT
+       JLT  PI2
+* No, is next char a digit?
        CB   R4,@ZERO
        JL   PTERR
        CB   R4,@NINE

@@ -13,12 +13,13 @@
 * Edit an existing margin-entry such that it will be identical to the following entry. The result will be to delete the following entry, shrinking the list size by one.
 * Edit an existing margin-entry such that it will be identical to the preceding entry. The result will be to delete the later entry, shrinking the list size by one.
 * Undo a margin entry insertion that grew the list size.  (create an entry)
-* Undo a margin entry insertion that really just edit a later entry to point to the current paragraph.  (edit an entry)
+* Undo a margin entry insertion that really just edit a later entry to point to the current paragraph.  (edit previous entry)
 * Undo a margin entry edit.  (edit current entry)
-* Undo a margin entry edit resulted in deleting a later margin entry.   (edit current entry, delete next entry)
+* Undo a margin entry edit that resulted in deleting a later margin entry.   (edit current entry, delete next entry)
 * Undo a margin entry edit that resulted in mergin (deleting) that entry into an earlier entry.    (delete the current entry)
 
        DEF  TSTLST,RSLTFL
+       DEF  WRAP,WRAPDW
 
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
@@ -47,6 +48,15 @@ RSLTFL BYTE RSLTFE-RSLTFL-1
 RSLTFE
        EVEN
 
+********
+* Mocks
+* -----
+* We don't need to actually wrap the paragraphs
+********
+WRAP
+WRAPDW
+       RT
+
 ****************************************
 *
 * Initialization for individual test.
@@ -62,50 +72,12 @@ TSTINT
 * and paragraph list.
        LI   R0,3
        BLWP @ARYALC
-       MOV  R0,@FMTLST
-       LI   R0,3
-       BLWP @ARYALC
        MOV  R0,@MGNLST
-       LI   R0,1
-       BLWP @ARYALC
-       MOV  R0,@PARLST
 * Initialize undo/redo list
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@UNDLST
        SETO @UNDOIDX
-*
-       LI   R6,INTADR
-* Copy a paragraph into buffer
-TSTIN1
-       MOV  *R6+,R0
-       MOV  R0,R2
-       BLWP @BUFALC
-       MOV  R0,R1
-       MOV  *R6+,R0
-       BLWP @BUFCPY
-       MOV  R1,R4
-* and a wrap list
-       MOV  *R6+,R0
-       MOV  R0,R2
-       BLWP @BUFALC
-       MOV  R0,R1
-       MOV  *R6+,R0
-       BLWP @BUFCPY
-       MOV  R1,R5
-* Put the paragraph into the
-* paragraph list
-       MOV  @PARLST,R0
-       BLWP @ARYADD
-       MOV  R0,@PARLST
-       MOV  R4,*R1
-* Put the wrap list in the paragraph
-* header
-       INCT R4
-       MOV  R5,*R4
-* Loop
-       CI   R6,INTADE
-       JL   TSTIN1
 * Mock user input in form
        LI   R0,default_field_values
        LI   R1,FLDVAL
@@ -116,24 +88,29 @@ TSTIN1
 *
        RT
 
-* paragraph size, paragraph address,
-* wrap list size, wrap list address
-INTADR DATA 0,0,0,0
-INTADE
+*
+* A mock paragraph list that pretends to have 1,000 paragraphs,
+* even though it is really empty.
+*
+* We are assuming the tests and code-under-test don't need to read any paragraph contents.
+*
+test_para_list:
+       DATA 1000
+       DATA 2
 
 *
 * User-typed field values
 *
 * (see FPHGHT to FBOT in EQUVAL)
 default_field_values:
-       TEXT '104'   * Page width
-       TEXT '72 '   * Page height
-       TEXT '11 '   * Left margin
-       TEXT '7  '   * Right margin
-       TEXT '3  '   * indent
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '12 '   * Left margin
+       TEXT '13 '   * Right margin
+       TEXT '6  '   * indent
        TEXT 'F'     * First line/hanging
-       TEXT '14 '   * Top margin
-       TEXT '21 '   * Bottom margin
+       TEXT '6  '   * Top margin
+       TEXT '7  '   * Bottom margin
 default_field_values_end
 
 *
@@ -199,11 +176,13 @@ MGN2
        LI   R3,mgn2_larger_margin_list_msg_end-mgn2_larger_margin_list_msg
        BLWP @AEQ
 *
-*       LI   R0,MGN20N+20
-*       MOV  @MGNLST,R1
-*       LI   R2,MGN20N
-*       LI   R3,20
-*       BL   @STRCMP
+       LI   R0,mgn2_expected_margin_entries
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,mgn2_expected_margin_entries_end-mgn2_expected_margin_entries
+       LI   R3,list_contents_msg
+       LI   R4,list_contents_msg_end-list_contents_msg
+       BLWP @ABLCK
 *
        MOV  *R10+,R11
        RT
@@ -216,6 +195,16 @@ mgn2_existing_margin_entries_end
 mgn2_larger_margin_list_msg:
        TEXT 'Margin list should now be larger'
 mgn2_larger_margin_list_msg_end
+
+mgn2_expected_margin_entries:
+       DATA 10,>0006,>0C0C,>0808
+       DATA 20,>00FA,>0A0C,>0606
+       DATA 30,>0006,>0C0D,>0607
+mgn2_expected_margin_entries_end
+
+list_contents_msg:
+       TEXT 'Expected a particular set of margin list contents.'
+list_contents_msg_end
 
 SPACE  BSS  >1000
 SPCEND
