@@ -62,10 +62,10 @@ link_test_files("DISPRUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "DISPTSTA", "DISP", "UTIL", "POSUPD", "HEADER", "TESTVAR", "VAR", "CONST" ]
 link_test_files("DISPARUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "ACT", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "INPTTST", "INPUT", "UNDO", "ACT", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("INPTRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "UNDOTST", "INPUT", "ACT", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
+temp_files = [ "TESTFRAM", "UNDOTST", "INPUT", "UNDO", "ACT", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("UNDORUN.obj", True, temp_files)
 
 temp_files = [ "TESTFRAM", "POSUTST", "POSUPD", "UTIL", "TESTVAR", "VAR", "CONST" ]
@@ -74,7 +74,7 @@ link_test_files("POSRUN.obj", True, temp_files)
 temp_files = [ "TESTFRAM", "WRAPTST", "WRAP", "UTIL", "TESTVAR", "VAR", "CONST" ]
 link_test_files("WRAPRUN.obj", True, temp_files)
 
-temp_files = [ "TESTFRAM", "MGNTST", "TESTVAR", "VAR", "CONST", "EDTMGN" ]
+temp_files = [ "TESTFRAM", "MGNTST", "TESTVAR", "VAR", "CONST", "UNDO", "EDTMGN" ]
 link_test_files("MGNRUN.obj", True, temp_files)
 
 print("Linking Key Buffer Test Program")
@@ -86,6 +86,7 @@ temp_files = [
     "MAIN",
     "CONST",
     "INPUT",
+    "UNDO",
     "WRAP",
     "POSUPD",
     "DISP",

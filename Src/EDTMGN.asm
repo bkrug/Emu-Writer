@@ -4,10 +4,13 @@
 *
        REF  PARINX,MGNLST                 From VAR.asm
        REF  FLDVAL,PGWDTH,PGHGHT          "
+       REF  MGN_EDITED_INDEX              "
        REF  EXPLNT                        From CONST.asm
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
        REF  WRAPDW                        From WRAP.asm
+       REF  START_FRESH_UNDO_ENTRY        From UNDO.asm
+       REF  RESERVE_UNDO_SPACE            "
 
        COPY 'EQUADDR.asm'
        COPY 'EQUVAL.asm'
@@ -114,6 +117,11 @@ EDTMGN
        JEQ  EMERR
 * Search any duplicate entries and delete them.
        BL   @DELDUP
+* Record an undo-operation
+       LI   R2,UNDO_MGN_INS
+       BL   @START_FRESH_UNDO_ENTRY
+       LI   R0,10
+       BL   @RESERVE_UNDO_SPACE
 * Re-wrap, this and lower paragraphs
        MOV  @PARINX,R0
        BL   @WRAPDW
@@ -320,6 +328,8 @@ RV2    MOV  @MGNLST,R0
 * If we reached here without jumping to RV2,
 * then we are editing an existing element.
 RV3
+* Store the margin-list index
+       MOV  R2,@MGN_EDITED_INDEX
 * Is indent hanging?
        LI   R0,FLDVAL
        AI   R0,FHANG

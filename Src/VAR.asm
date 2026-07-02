@@ -54,6 +54,8 @@
        DEF  FLDVAL,FLDVE
 * HEADER.asm
        DEF  TWODIG
+* EDTMGN.asm
+       DEF  MGN_EDITED_INDEX
 
 *
 * Areas for workspace registers
@@ -218,6 +220,10 @@ FLDVE
 * HEADER.asm
 * Space for ASCII for two-digit number
 TWODIG BSS  2
+
+* EDTMGN.asm
+MGN_EDITED_INDEX
+       BSS  2
 
 VAREND
        TEXT 'VAREND'

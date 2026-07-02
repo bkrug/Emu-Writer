@@ -113,10 +113,11 @@ PARAGRAPH_WRAPLIST_OFFSET   EQU  >0002
 PARAGRAPH_TEXT_OFFSET       EQU  >0004
 
 * Undo Types
-UNDO_INS    EQU  >0002      * Insert text
-UNDO_OVR    EQU  >0004      * Overwrite text
-UNDO_DEL    EQU  >0006      * Delete right-of-cursor
-UNDO_BCK    EQU  >0008      * Delete left-of-cursor
+UNDO_INS         EQU  >0002      * Insert text
+UNDO_OVR         EQU  >0004      * Overwrite text
+UNDO_DEL         EQU  >0006      * Delete right-of-cursor
+UNDO_BCK         EQU  >0008      * Delete left-of-cursor
+UNDO_MGN_INS     EQU  >000A      * Undo margin-list-entry insert
 
 *
 UNDO_ANY_PARA       EQU  >0002      * paragraph index before action
