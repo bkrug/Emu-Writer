@@ -120,6 +120,10 @@ default_field_values:
        TEXT '7  '   * Bottom margin
 default_field_values_end
 
+list_contents_msg:
+       TEXT 'Expected a particular set of margin list contents.'
+list_contents_msg_end
+
 *
 * Populate the margin list with the
 * margin entries provided by the caller.
@@ -208,10 +212,6 @@ mgn2_expected_margin_entries:
        DATA 20,>00FA,>0A0C,>0606
        DATA 30,>0006,>0C0D,>0607
 mgn2_expected_margin_entries_end
-
-list_contents_msg:
-       TEXT 'Expected a particular set of margin list contents.'
-list_contents_msg_end
 
 SPACE  BSS  >1000
 SPCEND
