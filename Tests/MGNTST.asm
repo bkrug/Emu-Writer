@@ -64,6 +64,9 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * Undo an attempt to insert a margin entry that actually merged two entries.
        DATA UNDO2
        TEXT 'UNDO2 '
+* Undo an attempt to insert a margin entry that would merely have duplicated an earlier entry.
+       DATA UNDO3
+       TEXT 'UNDO3 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -1038,6 +1041,114 @@ UNDO2_EXPECTED_MARGIN_ENTRIES_END
 UNDO2_ORIGINAL_MARGIN_LIST_MSG:
        TEXT 'Margin list contents should return to original after undo'
 UNDO2_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Undo an attempt to insert a margin entry that would merely have duplicated an earlier entry.
+*
+UNDO3
+* -------
+* User presses enter to split a
+* paragraph.
+* The new entry would be identical
+* to the margin entry directly
+* before it, so no new entry is
+* actually created.
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,UNDO3_USER_INPUT
+       LI   R1,FLDVAL
+       LI   R2,UNDO3_USER_INPUT_END-UNDO3_USER_INPUT
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,UNDO3_EXISTING_MARGIN_ENTRIES
+       LI   R1,UNDO3_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+*
+       LI   R0,25
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDO3_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,UNDO3_UNCHANGED_MARGIN_LIST_MSG_END-UNDO3_UNCHANGED_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,UNDO3_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,UNDO3_EXPECTED_MARGIN_ENTRIES_END-UNDO3_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDO3_STILL_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,UNDO3_STILL_UNCHANGED_MARGIN_LIST_MSG_END-UNDO3_STILL_UNCHANGED_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,UNDO3_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,UNDO3_EXISTING_MARGIN_ENTRIES_END-UNDO3_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values are identical to what is specified for the paragraph at index 20)
+UNDO3_USER_INPUT:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '11 '   * Left margin
+       TEXT '13 '   * Right margin
+       TEXT '6  '   * indent
+       TEXT 'H'     * First line/hanging
+       TEXT '8  '   * Top margin
+       TEXT '8  '   * Bottom margin
+UNDO3_USER_INPUT_END
+       EVEN
+
+UNDO3_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00FA,>0B0D,>0808
+       DATA 30,>00F1,>0F0F,>0709
+UNDO3_EXISTING_MARGIN_ENTRIES_END
+
+UNDO3_UNCHANGED_MARGIN_LIST_MSG:
+       TEXT 'Margin list size should remain unchanged'
+UNDO3_UNCHANGED_MARGIN_LIST_MSG_END
+       EVEN
+
+UNDO3_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00FA,>0B0D,>0808
+       DATA 30,>00F1,>0F0F,>0709
+UNDO3_EXPECTED_MARGIN_ENTRIES_END
+
+UNDO3_STILL_UNCHANGED_MARGIN_LIST_MSG:
+       TEXT 'Margin list should still be unchanged after undo'
+UNDO3_STILL_UNCHANGED_MARGIN_LIST_MSG_END
        EVEN
 
 *****************************
