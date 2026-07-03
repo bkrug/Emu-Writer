@@ -198,10 +198,6 @@ SETUP_MARGIN_LIST_LOOP:
 *
 MGN1
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -249,10 +245,6 @@ MGN1_EXPECTED_MARGIN_ENTRIES_END
 *
 MGN2
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -335,10 +327,6 @@ MGN2_EXPECTED_MARGIN_ENTRIES_END
 *
 MGN3
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -387,10 +375,6 @@ MGN3_EXPECTED_MARGIN_ENTRIES_END
 *
 MGN4
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -440,10 +424,6 @@ MGN4_EXPECTED_MARGIN_ENTRIES_END
 *
 MGN5
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -520,10 +500,6 @@ MGN5_EXPECTED_MARGIN_ENTRIES_END
 *
 MGN6
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -599,10 +575,6 @@ MGN6_EXPECTED_MARGIN_ENTRIES_END
 *
 EDIT1
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -708,10 +680,6 @@ EDIT1_EXPECTED_MARGIN_ENTRIES_END
 *
 EDIT2
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -787,10 +755,6 @@ EDIT2_EXPECTED_MARGIN_ENTRIES_END
 *
 EDIT3
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -865,10 +829,6 @@ EDIT3_EXPECTED_MARGIN_ENTRIES_END
 *
 UNDO1
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -949,10 +909,6 @@ UNDO1_ORIGINAL_MARGIN_LIST_MSG_END
 *
 UNDO2
 * -------
-* User presses enter to split a
-* paragraph.
-* The original paragraph is earlier
-* than any entry in the margin list.
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
@@ -1055,8 +1011,6 @@ UNDO2_ORIGINAL_MARGIN_LIST_MSG_END
 *
 UNDO3
 * -------
-* User presses enter to split a
-* paragraph.
 * The new entry would be identical
 * to the margin entry directly
 * before it, so no new entry is
@@ -1162,12 +1116,10 @@ UNDO3_STILL_UNCHANGED_MARGIN_LIST_MSG_END
 * Undo a margin entry edit.
 *
 UNDO4
-* -------
-* User presses enter to split a
-* paragraph.
 * The original paragraph is the
 * same as an existing entry, so
 * that entry is edited in place.
+* -------
        DECT R10
        MOV  R11,*R10
 * Initialize Test Data
