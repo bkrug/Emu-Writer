@@ -421,13 +421,13 @@ RECORD_ORIGINAL_ENTRIES_END
        RT
 
 *
-*
+* Create a margin-edit undo action
 *
 RECORD_UNDO
        DECT R10
        MOV  R11,*R10
 * Create an undo entry for this action
-       LI   R2,UNDO_MGN_INS
+       LI   R2,UNDO_MGN
        BL   @START_FRESH_UNDO_ENTRY
 * Let R3 = number of delete entries to store in undo-payload
 * Formula: 1 - (new margin list size - old margin list size)
