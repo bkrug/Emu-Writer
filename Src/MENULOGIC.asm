@@ -1,4 +1,5 @@
        DEF  MNUINT,ENTMNU
+       DEF  LOADCH
 *
        REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "

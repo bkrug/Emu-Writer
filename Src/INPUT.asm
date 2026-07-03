@@ -27,6 +27,15 @@
        REF  START_FRESH_UNDO_ENTRY
        REF  RESERVE_UNDO_SPACE
 
+* MENULOGIC.asm
+       REF  LOADCH
+
+* CACHETBL.asm
+       REF  CCHMGN
+
+* EDTMGN.asm
+       REF  UNDO_MARGIN
+
 * constants
        REF  ENDINP
        REF  CHRMIN,CHRMAX
@@ -615,6 +624,7 @@ UNDO_SUB_ROUTINES
        DATA RESTORE_OVERWRITTEN_TEXT_IN_UNDO_ACTION
        DATA RESTORE_TEXT_IN_UNDO_ACTION
        DATA RESTORE_TEXT_IN_UNDO_ACTION
+       DATA RESTORE_OLD_MARGIN_ENTRIES
 
 *
 * Redo operation
@@ -1145,6 +1155,25 @@ RESTORE_OVERWRITE_LOOP
        INCT R8
        JMP  RESTORE_OVERWRITE_LOOP
 RESTORE_OVERWRITE_DONE
+* Set document status bits
+       SOC  @STSTYP,*R13
+       SOC  @STSWIN,*R13
+*
+       MOV  *R10+,R11
+       RT
+
+*
+*
+* Input:
+*   R7 = address of undo action
+RESTORE_OLD_MARGIN_ENTRIES
+       DECT R10
+       MOV  R11,*R10
+* Load EDTMGN code from cache
+       MOV  @CCHMGN,R0
+       BL   @LOADCH
+* Undo a margin change
+       BL   @UNDO_MARGIN
 * Set document status bits
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13

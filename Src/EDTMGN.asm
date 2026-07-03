@@ -25,30 +25,10 @@ MARGIN_ENTRY_SIZE           EQU  8
 EXPONENT_FOR_MARGIN_SIZE    EQU  3
 ONE    DATA 1
 
-* Notes on undo action:
-* EDTMGN always results in one of these:
-*    - Nothing changed. The user tried to insert an entry that would have duplicated an earlier entry
-*    - Insert a new margin entry at a given index, leaving other entries unchanged
-*    - Edit an existing margin entry at a given index, leaving other entries unchanged
-*    - Delete a margin entry from a given index, leaving other entries unchanged
-*    - Edit an existing margin entry at a given index, and delete the next entry because it would otherwise be a duplicate
-* So we can get by with these undo actions:
-*    - NOCHANGE_MGN (so the user would press CTRL-Z and nothing would happen except a change to our place in the undo list)
-*    - INSERT_MGN (record the index and the data inserted)
-*    - EDIT_MGN (record the index and the old and new data)
-*    - DELETE_MGN (record the index and the data deleted)
-*    - MERGE_MGN (record the index, the old data for two entries, and the data for the new entry)
-* Identified by:
-*    - margin list grew
-*    - margin list size did not change
-*    - margin list shrunk,
-*         -- entry at original index is identical to what used to be at next index
-*         -- user input is identical to what is one entry earlier
-*    - margin list shrunk,
-*         -- entry at original index is not identical to what used to be at next index
-*         -- user input is identical to what is at the current index
 *
-
+* Read user input from FLDVAL.
+* Insert or Update a margin list entry based on those values.
+*
 EDTMGN
        DECT R10
        MOV  R11,*R10
