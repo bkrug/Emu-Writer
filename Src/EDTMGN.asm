@@ -468,9 +468,19 @@ RECORD_UNDO
        BLWP @BUFCPY
 * Update the next write-position
        A    R2,R5
+* Let R0 = number of newly inserted entries to record
+       LI   R0,1
+       MOV  @MGNlST,R1
+       C    @MGN_EDITED_INDEX,*R1
+       JL   !
+       CLR  R0
+!
 * Record that one entry was inserted at a particular index
-       MOV  @ONE,*R5+
+       MOV  R0,*R5+
        MOV  @MGN_EDITED_INDEX,*R5+
+* If there are no new values to record, skip copying them.
+       MOV  R0,R0
+       JEQ  RECORD_NEW_VALUE_DONE
 * Let R1 = read address for the new margin values
        MOV  @MGNLST,R0
        MOV  @MGN_EDITED_INDEX,R1
@@ -480,6 +490,7 @@ RECORD_UNDO
        MOV  R5,R1
        LI   R2,MARGIN_ENTRY_SIZE
        BLWP @BUFCPY
+RECORD_NEW_VALUE_DONE
 *
        MOV  *R10+,R11
        RT
@@ -514,7 +525,7 @@ UNDO_MARGIN
        BL   @UNDO_MARGIN_DELETES
 * Re-wrap, this and lower paragraphs
 * Let R0 = paragraph index
-       MOV  @UNDO_PAYLOAD(R7),R0
+       MOV  @UNDO_ANY_PARA(R7),R0
        BL   @WRAPDW
 *
        MOV  *R10+,R0
