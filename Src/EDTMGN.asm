@@ -24,7 +24,6 @@ MGNSRT
 
 MARGIN_ENTRY_SIZE           EQU  8
 EXPONENT_FOR_MARGIN_SIZE    EQU  3
-ONE    DATA 1
 
 *
 * Read user input from FLDVAL.
