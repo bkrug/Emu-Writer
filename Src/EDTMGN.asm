@@ -511,17 +511,11 @@ UNDO_MARGIN
        DECT R10
        MOV  R0,*R10
 * Let R8 = address of margin entries that were inserted as part of the user action
-       MOV  R7,R8
-       AI   R8,UNDO_PAYLOAD
-       MOV  *R8,R1
-       C    *R8+,*R8+
-       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
-       A    R1,R8
+       BL   @GET_INSERTED_ENTRIES
 * remove the entries that were inserted
        BL   @DELETE_ENTRIES_LISTED_IN_UNDO
 * Let R8 = address of margin entries that were removed as part of the user action
-       MOV  R7,R8
-       AI   R8,UNDO_PAYLOAD
+       BL   @GET_DELETED_ENTRIES
 * restore the entries that were deleted
        BL   @RESTORE_ENTRIES_LISTED_IN_UNDO
 * Re-wrap, this and lower paragraphs
@@ -551,17 +545,11 @@ REDO_MARGIN
        DECT R10
        MOV  R0,*R10
 * Let R8 = address of margin entries that were removed as part of the user action
-       MOV  R7,R8
-       AI   R8,UNDO_PAYLOAD
+       BL   @GET_DELETED_ENTRIES
 * remove the entries once again
        BL   @DELETE_ENTRIES_LISTED_IN_UNDO
 * Let R8 = address of margin entries that were inserted as part of the user action
-       MOV  R7,R8
-       AI   R8,UNDO_PAYLOAD
-       MOV  *R8,R1
-       C    *R8+,*R8+
-       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
-       A    R1,R8
+       BL   @GET_INSERTED_ENTRIES
 * insert the entries once again
        BL   @RESTORE_ENTRIES_LISTED_IN_UNDO
 * Re-wrap, this and lower paragraphs
@@ -573,6 +561,30 @@ REDO_MARGIN
        MOV  *R10+,R1
        MOV  *R10+,R2
        MOV  *R10+,R11
+       RT
+
+*
+* Input:
+*   R7 = address of undo action
+* Output:
+*   R8 = address of margin entries that were inserted as part of the user action
+GET_INSERTED_ENTRIES
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+       MOV  *R8,R1
+       C    *R8+,*R8+
+       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
+       A    R1,R8
+       RT
+
+*
+* Input:
+*   R7 = address of undo action
+* Output:
+*   R8 = address of margin entries that were removed as part of the user action
+GET_DELETED_ENTRIES
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
        RT
 
 *
