@@ -510,16 +510,16 @@ UNDO_MARGIN
        MOV  R1,*R10
        DECT R10
        MOV  R0,*R10
-* Let R8 = address of margin entires that were previously inserted
+* Let R8 = address of margin entries that were inserted as part of the user action
        MOV  R7,R8
        AI   R8,UNDO_PAYLOAD
        MOV  *R8,R1
-       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
        C    *R8+,*R8+
+       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
        A    R1,R8
 * remove the entries that were inserted
        BL   @DELETE_ENTRIES_LISTED_IN_UNDO
-* Let R8 = address of margin entires that were previously deleted
+* Let R8 = address of margin entries that were removed as part of the user action
        MOV  R7,R8
        AI   R8,UNDO_PAYLOAD
 * restore the entries that were deleted
@@ -534,7 +534,46 @@ UNDO_MARGIN
        MOV  *R10+,R2
        MOV  *R10+,R11
 *
-       RT       
+       RT
+
+*
+* Redo a margin change
+* Input:
+*   R7 = address of undo action
+*
+REDO_MARGIN
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R1,*R10
+       DECT R10
+       MOV  R0,*R10
+* Let R8 = address of margin entries that were removed as part of the user action
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+* remove the entries once again
+       BL   @DELETE_ENTRIES_LISTED_IN_UNDO
+* Let R8 = address of margin entries that were inserted as part of the user action
+       MOV  R7,R8
+       AI   R8,UNDO_PAYLOAD
+       MOV  *R8,R1
+       C    *R8+,*R8+
+       SLA  R1,EXPONENT_FOR_MARGIN_SIZE
+       A    R1,R8
+* insert the entries once again
+       BL   @RESTORE_ENTRIES_LISTED_IN_UNDO
+* Re-wrap, this and lower paragraphs
+* Let R0 = paragraph index
+       MOV  @UNDO_ANY_PARA(R7),R0
+       BL   @WRAPDW
+*
+       MOV  *R10+,R0
+       MOV  *R10+,R1
+       MOV  *R10+,R2
+       MOV  *R10+,R11
+       RT
 
 *
 * Undo margin entry deletes
@@ -588,18 +627,6 @@ DELETE_ENTRIES_LISTED_IN_UNDO_LOOP
        JNE  DELETE_ENTRIES_LISTED_IN_UNDO_LOOP
 * No, return
 DELETE_ENTRIES_LISTED_IN_UNDO_DONE
-       RT
-
-*
-* Redo a margin change
-* Input:
-*   R7 = address of undo action
-*
-REDO_MARGIN
-       DECT R10
-       MOV  R11,*R10
-*
-       MOV  *R10+,R11
        RT
 
 MGNEND AORG
