@@ -513,6 +513,8 @@ UNDO_MARGIN
 * restore the entries that were deleted
        BL   @UNDO_MARGIN_DELETES
 *
+* TODO: word-wrap       
+*
        MOV  *R10+,R0
        MOV  *R10+,R1
        MOV  *R10+,R2
