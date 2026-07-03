@@ -5,6 +5,8 @@
        REF  PARINX,MGNLST                 From VAR.asm
        REF  FLDVAL,PGWDTH,PGHGHT          "
        REF  MGN_EDITED_INDEX              "
+       REF  MGN_VALUES_OLD                "
+       REF  MGN_OLD_LEN                   "
        REF  EXPLNT                        From CONST.asm
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
@@ -50,6 +52,9 @@ ONE    DATA 1
 EDTMGN
        DECT R10
        MOV  R11,*R10
+* Record original margin length
+       MOV  @MGNLST,R0
+       MOV  *R0,@MGN_OLD_LEN
 * Let R15 = Page Width
        LI   R0,FLDVAL
        BL   @PRSINT
@@ -300,6 +305,8 @@ VLDERR SETO R0
 * Output:
 *   If Status EQ = true, indicates error
 RECVLD
+       DECT R10
+       MOV  R11,*R10
 * Create or Edit Margin List entry
 * Let R2 = index of MGNLST element
 * Let R3 = address of MGNLST element
@@ -319,18 +326,19 @@ RV1    C    *R3,@PARINX
        INC  R2
        C    R2,R4
        JL   RV1
+RV2
 * We need to insert a new element
-RV2    MOV  @MGNLST,R0
+       MOV  @MGNLST,R0
        MOV  R2,R1
        BLWP @ARYINS
        JEQ  MEMERR
        MOV  R0,@MGNLST
        MOV  R1,R3
-* If we reached here without jumping to RV2,
-* then we are editing an existing element.
 RV3
-* Store the margin-list index
+* Store the margin-list index of the element we are editing or inserting
        MOV  R2,@MGN_EDITED_INDEX
+* Store the top two elements that existed before we made our changes
+       BL   @RECORD_ORIGINAL_ENTRIES
 * Is indent hanging?
        LI   R0,FLDVAL
        AI   R0,FHANG
@@ -354,9 +362,11 @@ RV4
        SLA  R14,8
        MOVB R14,@PGHGHT
 * No error       
+       MOV  *R10+,R11
        RT
 * Memory Error
-MEMERR S    R0,R0
+MEMERR MOV  *R10+,R11
+       S    R0,R0
        RT
 
 *
@@ -396,7 +406,42 @@ DUP3
        RT
 
 *
-* Record an undo-operation
+* Record the old values of two margin entries
+*
+RECORD_ORIGINAL_ENTRIES
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R2,*R10
+       DECT R10
+       MOV  R1,*R10
+* Reserve enough space to store two margin entries
+       LI   R2,MARGIN_ENTRY_SIZE*2
+       MOV  R2,R0
+       BLWP @BUFALC
+* TODO: handle out-of-memory
+* Store address of space
+       MOV  R0,@MGN_VALUES_OLD
+* Let R1 = address to copy from
+       MOV  @MGNLST,R0
+       MOV  @MGN_EDITED_INDEX,R1
+       BLWP @ARYADR
+       CI   R1,>FFFE
+       JEQ  RECORD_ORIGINAL_ENTRIES_END
+* Store old values
+* R2 already contains length to copy
+       MOV  R1,R0
+       MOV  @MGN_VALUES_OLD,R1
+       BLWP @BUFCPY
+*
+RECORD_ORIGINAL_ENTRIES_END
+       MOV  *R10+,R1
+       MOV  *R10+,R2
+       MOV  *R10+,R11
+       RT
+
+*
+*
 *
 RECORD_UNDO
        DECT R10
@@ -404,23 +449,55 @@ RECORD_UNDO
 * Create an undo entry for this action
        LI   R2,UNDO_MGN_INS
        BL   @START_FRESH_UNDO_ENTRY
+* Let R3 = number of delete entries to store in undo-payload
+* Formula: 1 - (new margin list size - old margin list size)
+       LI   R3,1
+       MOV  @MGNLST,R0
+       S    *R0,R3
+       A    @MGN_OLD_LEN,R3
+* Does R3 point to a number of entries that went past the old end of this list?
+       MOV  @MGN_OLD_LEN,R5
+       S    @MGN_EDITED_INDEX,R5
+       C    R3,R5
+       JLE  !
+* Yes, reduce number of delete entires to store
+       MOV  R5,R3
+!
+* Let R4 = space to reserve for payload
+* We will store different numbers of "delete/old values" entries,
+* but we will always store one "insert/new values" entry.
+* We also need to store 4 words to store the quantity and index of delete/insert entries.
+* Thus, the formula is: ((R3 + 1) * 8) + 8
+       MOV  R3,R4
+       INC  R4
+       SLA  R4,EXPONENT_FOR_MARGIN_SIZE
+       AI   R4,8
 * Reserve space for the undo payload
-       LI   R0,16
+       MOV  R4,R0
        BL   @RESERVE_UNDO_SPACE
-* Zero entries were deleted at the given index
-       CLR  *R0+
-       MOV  @MGN_EDITED_INDEX,*R0+
-* One entry was inserted at the given index
-       MOV  @ONE,*R0+
-       MOV  @MGN_EDITED_INDEX,*R0+
-* Let R3 = next address to store undo data
-       MOV  R0,R3
-* Store a copy of what was just inserted
+* Let R5 = write address
+       MOV  R0,R5
+* Record the number of entries deleted at a particular index
+       MOV  R3,*R5+
+       MOV  @MGN_EDITED_INDEX,*R5+
+* Store a copy of the old margin values
+       MOV  @MGN_VALUES_OLD,R0
+       MOV  R5,R1
+       MOV  R3,R2
+       SLA  R2,EXPONENT_FOR_MARGIN_SIZE
+       BLWP @BUFCPY
+* Update the next write-position
+       A    R2,R5
+* Record that one entry was inserted at a particular index
+       MOV  @ONE,*R5+
+       MOV  @MGN_EDITED_INDEX,*R5+
+* Let R1 = read address for the new margin values
        MOV  @MGNLST,R0
        MOV  @MGN_EDITED_INDEX,R1
        BLWP @ARYADR
+* Store a copy of the new values
        MOV  R1,R0
-       MOV  R3,R1
+       MOV  R5,R1
        LI   R2,MARGIN_ENTRY_SIZE
        BLWP @BUFCPY
 *

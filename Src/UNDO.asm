@@ -101,6 +101,8 @@ RESERVE_UNDO_SPACE
        DECT R10
        MOV  R11,*R10
        DECT R10
+       MOV  R3,*R10
+       DECT R10
        MOV  R2,*R10
        DECT R10
        MOV  R0,*R10
@@ -149,6 +151,7 @@ INCREASE_ACTION_LENGTH
        A    *R10+,@UNDO_ANY_LEN(R4)
 *
        MOV  *R10+,R2
+       MOV  *R10+,R3
        MOV  *R10+,R11
        RT
 

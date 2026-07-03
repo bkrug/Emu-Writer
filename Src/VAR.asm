@@ -56,6 +56,8 @@
        DEF  TWODIG
 * EDTMGN.asm
        DEF  MGN_EDITED_INDEX
+       DEF  MGN_VALUES_OLD
+       DEF  MGN_OLD_LEN
 
 *
 * Areas for workspace registers
@@ -222,8 +224,9 @@ FLDVE
 TWODIG BSS  2
 
 * EDTMGN.asm
-MGN_EDITED_INDEX
-       BSS  2
+MGN_EDITED_INDEX     BSS  2
+MGN_VALUES_OLD       BSS  2
+MGN_OLD_LEN          BSS  2
 
 VAREND
        TEXT 'VAREND'
