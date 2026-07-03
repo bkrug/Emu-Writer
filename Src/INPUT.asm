@@ -34,7 +34,7 @@
        REF  CCHMGN
 
 * EDTMGN.asm
-       REF  UNDO_MARGIN
+       REF  UNDO_MARGIN,REDO_MARGIN
 
 * constants
        REF  ENDINP
@@ -664,6 +664,7 @@ REDO_SUB_ROUTINES
        DATA AGAIN_OVERWRITE_TEXT_IN_UNDO_ACTION
        DATA REMOVE_TEXT_IN_UNDO_ACTION
        DATA REMOVE_TEXT_IN_UNDO_ACTION
+       DATA AGAIN_EDIT_MARGIN_ENTRIES
 
 *
 * Key is not recognized
@@ -1167,13 +1168,25 @@ RESTORE_OVERWRITE_DONE
 * Input:
 *   R7 = address of undo action
 RESTORE_OLD_MARGIN_ENTRIES
+       LI   R8,UNDO_MARGIN
+       JMP  REDO_UNDO_MARGINS
+
+AGAIN_EDIT_MARGIN_ENTRIES
+       LI   R8,REDO_MARGIN
+
+*
+*
+* Input:
+*   R7 = address of undo action
+*   R8 = address of undo or redo action
+REDO_UNDO_MARGINS
        DECT R10
        MOV  R11,*R10
 * Load EDTMGN code from cache
        MOV  @CCHMGN,R0
        BL   @LOADCH
 * Undo a margin change
-       BL   @UNDO_MARGIN
+       BL   *R8
 * Set document status bits
        SOC  @STSTYP,*R13
        SOC  @STSWIN,*R13
