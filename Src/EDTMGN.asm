@@ -512,8 +512,10 @@ UNDO_MARGIN
        AI   R8,UNDO_PAYLOAD
 * restore the entries that were deleted
        BL   @UNDO_MARGIN_DELETES
-*
-* TODO: word-wrap       
+* Re-wrap, this and lower paragraphs
+* Let R0 = paragraph index
+       MOV  @UNDO_PAYLOAD(R7),R0
+       BL   @WRAPDW
 *
        MOV  *R10+,R0
        MOV  *R10+,R1
