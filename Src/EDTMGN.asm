@@ -501,41 +501,33 @@ RECORD_NEW_VALUE_DONE
 * Input:
 *   R7 = address of undo action
 *
+UNDO_MARGIN_ROUTINES
+       DATA GET_INSERTED_ENTRIES
+       DATA GET_DELETED_ENTRIES
+
 UNDO_MARGIN
-       DECT R10
-       MOV  R11,*R10
-       DECT R10
-       MOV  R2,*R10
-       DECT R10
-       MOV  R1,*R10
-       DECT R10
-       MOV  R0,*R10
-* Let R8 = address of margin entries that were inserted as part of the user action
-       BL   @GET_INSERTED_ENTRIES
-* remove the entries that were inserted
-       BL   @DELETE_ENTRIES_LISTED_IN_UNDO
-* Let R8 = address of margin entries that were removed as part of the user action
-       BL   @GET_DELETED_ENTRIES
-* restore the entries that were deleted
-       BL   @RESTORE_ENTRIES_LISTED_IN_UNDO
-* Re-wrap, this and lower paragraphs
-* Let R0 = paragraph index
-       MOV  @UNDO_ANY_PARA(R7),R0
-       BL   @WRAPDW
-*
-       MOV  *R10+,R0
-       MOV  *R10+,R1
-       MOV  *R10+,R2
-       MOV  *R10+,R11
-*
-       RT
+       LI   R9,UNDO_MARGIN_ROUTINES
+       JMP  UNDO_REDO_MARGIN
 
 *
 * Redo a margin change
 * Input:
 *   R7 = address of undo action
 *
+REDO_MARGIN_ROUTINES
+       DATA GET_DELETED_ENTRIES
+       DATA GET_INSERTED_ENTRIES
+
 REDO_MARGIN
+       LI   R9,REDO_MARGIN_ROUTINES
+
+*
+* Redo a margin change
+* Input:
+*   R7 = address of undo action
+*   R9 = address of routines for getting input in R8
+*
+UNDO_REDO_MARGIN
        DECT R10
        MOV  R11,*R10
        DECT R10
@@ -544,12 +536,20 @@ REDO_MARGIN
        MOV  R1,*R10
        DECT R10
        MOV  R0,*R10
+* If this is an undo action,
+* Let R8 = address of margin entries that were inserted as part of the user action
+* else,
 * Let R8 = address of margin entries that were removed as part of the user action
-       BL   @GET_DELETED_ENTRIES
+       MOV  *R9+,R1
+       BL   *R1
 * remove the entries once again
        BL   @DELETE_ENTRIES_LISTED_IN_UNDO
+* If this is an undo action,
+* Let R8 = address of margin entries that were removed as part of the user action
+* else,
 * Let R8 = address of margin entries that were inserted as part of the user action
-       BL   @GET_INSERTED_ENTRIES
+       MOV  *R9+,R1
+       BL   *R1
 * insert the entries once again
        BL   @RESTORE_ENTRIES_LISTED_IN_UNDO
 * Re-wrap, this and lower paragraphs
