@@ -1,5 +1,6 @@
        DEF  EDTMGN
        DEF  UNDO_MARGIN
+       DEF  REDO_MARGIN
        DEF  MGNSRT,MGNEND
 *
        REF  PARINX,MGNLST                 From VAR.asm
@@ -587,6 +588,18 @@ UNDO_MARGIN_INSERTS_LOOP
        JNE  UNDO_MARGIN_INSERTS_LOOP
 * No, return
 UNDO_MARGIN_INSERTS_DONE
+       RT
+
+*
+* Redo a margin change
+* Input:
+*   R7 = address of undo action
+*
+REDO_MARGIN
+       DECT R10
+       MOV  R11,*R10
+*
+       MOV  *R10+,R11
        RT
 
 MGNEND AORG
