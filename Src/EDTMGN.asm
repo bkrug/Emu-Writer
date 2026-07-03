@@ -154,6 +154,7 @@ PRSINT
        CLR  R1
        LI   R3,3
 * Is next char a non-visible char?
+* EXPLNT contains ASCII code for "!" which is right after " ".
 PI1    MOVB *R0+,R4
        CB   R4,@EXPLNT
        JLT  PI2
