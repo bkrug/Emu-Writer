@@ -78,6 +78,13 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * merging with an earlier margin entry, to avoid duplicates.
        DATA UNDO6
        TEXT 'UNDO6 '
+* Undo a margin entry edit on the last entry in the list.
+       DATA UNDO7
+       TEXT 'UNDO7 '
+* Undo a margin entry edit on the last entry that merges it
+* into the preceding entry.
+       DATA UNDO8
+       TEXT 'UNDO8 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -1423,6 +1430,216 @@ UNDO6_EXPECTED_MARGIN_ENTRIES_END
 UNDO6_ORIGINAL_MARGIN_LIST_MSG:
        TEXT 'Margin list should return to its original size after undo'
 UNDO6_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Undo a margin entry edit on the last entry in the list.
+* There are fewer than two old entries from the edited
+* index onward, so this confirms the undo logic isn't
+* confused by that.
+*
+UNDO7
+* -------
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,UNDO7_USER_INPUT
+       LI   R1,FLDVAL
+       LI   R2,UNDO7_USER_INPUT_END-UNDO7_USER_INPUT
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,UNDO7_EXISTING_MARGIN_ENTRIES
+       LI   R1,UNDO7_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+*
+       LI   R0,30
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDO7_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,UNDO7_UNCHANGED_MARGIN_LIST_MSG_END-UNDO7_UNCHANGED_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,UNDO7_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,UNDO7_EXPECTED_MARGIN_ENTRIES_END-UNDO7_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDO7_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,UNDO7_ORIGINAL_MARGIN_LIST_MSG_END-UNDO7_ORIGINAL_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,UNDO7_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,UNDO7_EXISTING_MARGIN_ENTRIES_END-UNDO7_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values differ from every entry already in the margin list)
+UNDO7_USER_INPUT:
+       TEXT '70 '   * Page width
+       TEXT '55 '   * Page height
+       TEXT '15 '   * Left margin
+       TEXT '17 '   * Right margin
+       TEXT '4  '   * indent
+       TEXT 'H'     * First line/hanging
+       TEXT '9  '   * Top margin
+       TEXT '11 '   * Bottom margin
+UNDO7_USER_INPUT_END
+       EVEN
+
+UNDO7_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+UNDO7_EXISTING_MARGIN_ENTRIES_END
+
+UNDO7_UNCHANGED_MARGIN_LIST_MSG:
+       TEXT 'Margin list size should remain unchanged after edit'
+UNDO7_UNCHANGED_MARGIN_LIST_MSG_END
+       EVEN
+
+UNDO7_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00FC,>0F11,>090B
+UNDO7_EXPECTED_MARGIN_ENTRIES_END
+
+UNDO7_ORIGINAL_MARGIN_LIST_MSG:
+       TEXT 'Margin list size should remain unchanged after undo'
+UNDO7_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Undo a margin entry edit on the last entry in the list,
+* where the edit merges it into the preceding entry.
+* There are fewer than two old entries from the edited
+* index onward, so this confirms the undo logic isn't
+* confused by that.
+*
+UNDO8
+* -------
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,UNDO8_USER_INPUT
+       LI   R1,FLDVAL
+       LI   R2,UNDO8_USER_INPUT_END-UNDO8_USER_INPUT
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,UNDO8_EXISTING_MARGIN_ENTRIES
+       LI   R1,UNDO8_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+*
+       LI   R0,30
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDO8_SMALLER_MARGIN_LIST_MSG
+       LI   R3,UNDO8_SMALLER_MARGIN_LIST_MSG_END-UNDO8_SMALLER_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,UNDO8_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,UNDO8_EXPECTED_MARGIN_ENTRIES_END-UNDO8_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,UNDO8_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,UNDO8_ORIGINAL_MARGIN_LIST_MSG_END-UNDO8_ORIGINAL_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,UNDO8_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,UNDO8_EXISTING_MARGIN_ENTRIES_END-UNDO8_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values match the entry at paragraph index 20)
+UNDO8_USER_INPUT:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '12 '   * Left margin
+       TEXT '12 '   * Right margin
+       TEXT '6  '   * indent
+       TEXT 'F'     * First line/hanging
+       TEXT '8  '   * Top margin
+       TEXT '8  '   * Bottom margin
+UNDO8_USER_INPUT_END
+       EVEN
+
+UNDO8_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+UNDO8_EXISTING_MARGIN_ENTRIES_END
+
+UNDO8_SMALLER_MARGIN_LIST_MSG:
+       TEXT 'Margin list should shrink by one entry'
+UNDO8_SMALLER_MARGIN_LIST_MSG_END
+       EVEN
+
+UNDO8_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+UNDO8_EXPECTED_MARGIN_ENTRIES_END
+
+UNDO8_ORIGINAL_MARGIN_LIST_MSG:
+       TEXT 'Margin list should return to its original size after undo'
+UNDO8_ORIGINAL_MARGIN_LIST_MSG_END
        EVEN
 
 *****************************
