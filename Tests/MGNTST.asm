@@ -11,7 +11,7 @@
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
 * From EDTMGN.asm
-       REF  EDTMGN,UNDO_MARGIN
+       REF  EDTMGN,UNDO_MARGIN,REDO_MARGIN
        REF  MGNSRT
 * From Buffer library
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -85,6 +85,20 @@ TSTLST DATA TSTEND-TSTLST-2/8
 * into the preceding entry.
        DATA UNDO8
        TEXT 'UNDO8 '
+* Redo a margin entry insertion that grew the list size.
+       DATA REDO1
+       TEXT 'REDO1 '
+* Redo a margin entry edit.
+       DATA REDO4
+       TEXT 'REDO4 '
+* Redo a margin entry edit that resulted in
+* merging with a later margin entry, to avoid duplicates.
+       DATA REDO5
+       TEXT 'REDO5 '
+* Redo a margin entry edit on the last entry that merges it
+* into the preceding entry.
+       DATA REDO8
+       TEXT 'REDO8 '
 TSTEND
 RSLTFL BYTE RSLTFE-RSLTFL-1
        TEXT 'DSK.EMUTEST.TESTRESULT'
@@ -1640,6 +1654,503 @@ UNDO8_EXPECTED_MARGIN_ENTRIES_END
 UNDO8_ORIGINAL_MARGIN_LIST_MSG:
        TEXT 'Margin list should return to its original size after undo'
 UNDO8_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Redo a margin entry insertion that grew the list size.
+*
+REDO1
+* -------
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Set up initial margin list
+       LI   R0,REDO1_EXISTING_MARGIN_ENTRIES
+       LI   R1,REDO1_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+* Set the cursor's paragraph in the document
+       LI   R0,15
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO1_LARGER_MARGIN_LIST_MSG
+       LI   R3,REDO1_LARGER_MARGIN_LIST_MSG_END-REDO1_LARGER_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO1_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO1_EXPECTED_MARGIN_ENTRIES_END-REDO1_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO1_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,REDO1_ORIGINAL_MARGIN_LIST_MSG_END-REDO1_ORIGINAL_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO1_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO1_EXISTING_MARGIN_ENTRIES_END-REDO1_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the redo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @REDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO1_REDONE_MARGIN_LIST_MSG
+       LI   R3,REDO1_REDONE_MARGIN_LIST_MSG_END-REDO1_REDONE_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO1_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO1_EXPECTED_MARGIN_ENTRIES_END-REDO1_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+REDO1_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0006,>0C0C,>0808
+       DATA 20,>00FA,>0A0C,>0606
+REDO1_EXISTING_MARGIN_ENTRIES_END
+
+REDO1_LARGER_MARGIN_LIST_MSG:
+       TEXT 'Margin list should now be larger'
+REDO1_LARGER_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO1_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0006,>0C0C,>0808
+       DATA 15,>0006,>0C0D,>0607
+       DATA 20,>00FA,>0A0C,>0606
+REDO1_EXPECTED_MARGIN_ENTRIES_END
+
+REDO1_ORIGINAL_MARGIN_LIST_MSG:
+       TEXT 'Margin list should return to its original size after undo'
+REDO1_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO1_REDONE_MARGIN_LIST_MSG:
+       TEXT 'Margin list should grow again after redo'
+REDO1_REDONE_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Redo a margin entry edit.
+*
+REDO4
+* -------
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,REDO4_USER_INPUT
+       LI   R1,FLDVAL
+       LI   R2,REDO4_USER_INPUT_END-REDO4_USER_INPUT
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,REDO4_EXISTING_MARGIN_ENTRIES
+       LI   R1,REDO4_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+*
+       LI   R0,20
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO4_UNCHANGED_MARGIN_LIST_MSG
+       LI   R3,REDO4_UNCHANGED_MARGIN_LIST_MSG_END-REDO4_UNCHANGED_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO4_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO4_EXPECTED_MARGIN_ENTRIES_END-REDO4_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO4_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,REDO4_ORIGINAL_MARGIN_LIST_MSG_END-REDO4_ORIGINAL_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO4_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO4_EXISTING_MARGIN_ENTRIES_END-REDO4_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the redo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @REDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO4_REDONE_MARGIN_LIST_MSG
+       LI   R3,REDO4_REDONE_MARGIN_LIST_MSG_END-REDO4_REDONE_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO4_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO4_EXPECTED_MARGIN_ENTRIES_END-REDO4_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values differ from every entry already in the margin list)
+REDO4_USER_INPUT:
+       TEXT '70 '   * Page width
+       TEXT '55 '   * Page height
+       TEXT '15 '   * Left margin
+       TEXT '17 '   * Right margin
+       TEXT '4  '   * indent
+       TEXT 'H'     * First line/hanging
+       TEXT '9  '   * Top margin
+       TEXT '11 '   * Bottom margin
+REDO4_USER_INPUT_END
+       EVEN
+
+REDO4_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+REDO4_EXISTING_MARGIN_ENTRIES_END
+
+REDO4_UNCHANGED_MARGIN_LIST_MSG:
+       TEXT 'Margin list size should remain unchanged after edit'
+REDO4_UNCHANGED_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO4_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00FC,>0F11,>090B
+       DATA 30,>00F1,>0F0F,>0709
+REDO4_EXPECTED_MARGIN_ENTRIES_END
+
+REDO4_ORIGINAL_MARGIN_LIST_MSG:
+       TEXT 'Margin list size should remain unchanged after undo'
+REDO4_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO4_REDONE_MARGIN_LIST_MSG:
+       TEXT 'Margin list size should remain unchanged after redo'
+REDO4_REDONE_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Redo a margin entry edit that resulted in
+* merging with a later margin entry, to avoid duplicates.
+*
+REDO5
+* -------
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,REDO5_USER_INPUT
+       LI   R1,FLDVAL
+       LI   R2,REDO5_USER_INPUT_END-REDO5_USER_INPUT
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,REDO5_EXISTING_MARGIN_ENTRIES
+       LI   R1,REDO5_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+*
+       LI   R0,20
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO5_SMALLER_MARGIN_LIST_MSG
+       LI   R3,REDO5_SMALLER_MARGIN_LIST_MSG_END-REDO5_SMALLER_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO5_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO5_EXPECTED_MARGIN_ENTRIES_END-REDO5_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO5_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,REDO5_ORIGINAL_MARGIN_LIST_MSG_END-REDO5_ORIGINAL_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO5_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO5_EXISTING_MARGIN_ENTRIES_END-REDO5_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the redo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @REDO_MARGIN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO5_REDONE_MARGIN_LIST_MSG
+       LI   R3,REDO5_REDONE_MARGIN_LIST_MSG_END-REDO5_REDONE_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO5_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO5_EXPECTED_MARGIN_ENTRIES_END-REDO5_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values match the entry at paragraph index 30)
+REDO5_USER_INPUT:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '15 '   * Left margin
+       TEXT '15 '   * Right margin
+       TEXT '15 '   * indent
+       TEXT 'H'     * First line/hanging
+       TEXT '7  '   * Top margin
+       TEXT '9  '   * Bottom margin
+REDO5_USER_INPUT_END
+       EVEN
+
+REDO5_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+REDO5_EXISTING_MARGIN_ENTRIES_END
+
+REDO5_SMALLER_MARGIN_LIST_MSG:
+       TEXT 'Margin list should shrink by one entry'
+REDO5_SMALLER_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO5_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>00F1,>0F0F,>0709
+REDO5_EXPECTED_MARGIN_ENTRIES_END
+
+REDO5_ORIGINAL_MARGIN_LIST_MSG:
+       TEXT 'Margin list should return to its original size after undo'
+REDO5_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO5_REDONE_MARGIN_LIST_MSG:
+       TEXT 'Margin list should shrink again after redo'
+REDO5_REDONE_MARGIN_LIST_MSG_END
+       EVEN
+
+*
+* Redo a margin entry edit on the last entry that merges it
+* into the preceding entry.
+* There are fewer than two old entries from the edited
+* index onward, so this confirms the redo logic isn't
+* confused by that.
+*
+REDO8
+* -------
+       DECT R10
+       MOV  R11,*R10
+* Initialize Test Data
+       BL   @TSTINT
+* Setup user input in form
+       LI   R0,REDO8_USER_INPUT
+       LI   R1,FLDVAL
+       LI   R2,REDO8_USER_INPUT_END-REDO8_USER_INPUT
+       BLWP @BUFCPY
+* Set up initial margin list
+       LI   R0,REDO8_EXISTING_MARGIN_ENTRIES
+       LI   R1,REDO8_EXISTING_MARGIN_ENTRIES_END
+       BL   @SETUP_INITIAL_MARGIN_LIST
+*
+       LI   R0,30
+       MOV  R0,@PARINX
+* Act
+       BL   @EDTMGN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO8_SMALLER_MARGIN_LIST_MSG
+       LI   R3,REDO8_SMALLER_MARGIN_LIST_MSG_END-REDO8_SMALLER_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO8_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO8_EXPECTED_MARGIN_ENTRIES_END-REDO8_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the undo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @UNDO_MARGIN
+* Assert
+       LI   R0,3
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO8_ORIGINAL_MARGIN_LIST_MSG
+       LI   R3,REDO8_ORIGINAL_MARGIN_LIST_MSG_END-REDO8_ORIGINAL_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO8_EXISTING_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO8_EXISTING_MARGIN_ENTRIES_END-REDO8_EXISTING_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+* Act
+* Let R7 = address of the redo action.
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  *R1,R7
+       BL   @REDO_MARGIN
+* Assert
+       LI   R0,2
+       MOV  @MGNLST,R1
+       MOV  *R1,R1
+       LI   R2,REDO8_REDONE_MARGIN_LIST_MSG
+       LI   R3,REDO8_REDONE_MARGIN_LIST_MSG_END-REDO8_REDONE_MARGIN_LIST_MSG
+       BLWP @AEQ
+*
+       LI   R0,REDO8_EXPECTED_MARGIN_ENTRIES
+       MOV  @MGNLST,R1
+       C    *R1+,*R1+
+       LI   R2,REDO8_EXPECTED_MARGIN_ENTRIES_END-REDO8_EXPECTED_MARGIN_ENTRIES
+       LI   R3,LIST_CONTENTS_MSG
+       LI   R4,LIST_CONTENTS_MSG_END-LIST_CONTENTS_MSG
+       BLWP @ABLCK
+*
+       MOV  *R10+,R11
+       RT
+
+*
+* User-typed field values
+*
+* (note that these values match the entry at paragraph index 20)
+REDO8_USER_INPUT:
+       TEXT '96 '   * Page width
+       TEXT '66 '   * Page height
+       TEXT '12 '   * Left margin
+       TEXT '12 '   * Right margin
+       TEXT '6  '   * indent
+       TEXT 'F'     * First line/hanging
+       TEXT '8  '   * Top margin
+       TEXT '8  '   * Bottom margin
+REDO8_USER_INPUT_END
+       EVEN
+
+REDO8_EXISTING_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+       DATA 30,>00F1,>0F0F,>0709
+REDO8_EXISTING_MARGIN_ENTRIES_END
+
+REDO8_SMALLER_MARGIN_LIST_MSG:
+       TEXT 'Margin list should shrink by one entry'
+REDO8_SMALLER_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO8_EXPECTED_MARGIN_ENTRIES:
+       DATA 10,>0005,>0A0A,>0606
+       DATA 20,>0006,>0C0C,>0808
+REDO8_EXPECTED_MARGIN_ENTRIES_END
+
+REDO8_ORIGINAL_MARGIN_LIST_MSG:
+       TEXT 'Margin list should return to its original size after undo'
+REDO8_ORIGINAL_MARGIN_LIST_MSG_END
+       EVEN
+
+REDO8_REDONE_MARGIN_LIST_MSG:
+       TEXT 'Margin list should shrink again after redo'
+REDO8_REDONE_MARGIN_LIST_MSG_END
        EVEN
 
 *****************************
