@@ -8,6 +8,7 @@
        REF  MGN_EDITED_INDEX              "
        REF  MGN_VALUES_OLD                "
        REF  MGN_OLD_LEN                   "
+       REF  UNDLST,UNDOIDX                "
        REF  EXPLNT                        From CONST.asm
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
@@ -57,7 +58,7 @@ EDTMGN
        CLR  R6
        LI   R0,10
        BLWP @BUFALC
-       JEQ  EMERR
+       JEQ  ON_MEMORY_ERROR
        MOV  R0,R6
 * indent
        LI   R0,FLDVAL
@@ -103,7 +104,7 @@ EDTMGN
 * Record Validated data
 *
        BL   @RECVLD
-       JEQ  EMERR
+       JEQ  ON_MEMORY_ERROR
 * Search any duplicate entries and delete them.
        BL   @DELDUP
 * Record an undo-operation
@@ -127,13 +128,13 @@ EXIT   DECT R10
 *
 * An out-of-memory error occurred
 *
-EMERR
+ON_MEMORY_ERROR
 * Deallocate temp workspace
        MOV  R6,R0
-       JEQ  EMERR1
+       JEQ  ON_MEMORY_ERROR1
        BLWP @BUFREE
 *
-EMERR1 SETO R0
+ON_MEMORY_ERROR1 SETO R0
        RT
 
 *
@@ -312,7 +313,7 @@ RV2
        MOV  @MGNLST,R0
        MOV  R2,R1
        BLWP @ARYINS
-       JEQ  MEMERR
+       JEQ  MEMORY_ERROR_WHEN_RECORDING
        MOV  R0,@MGNLST
        MOV  R1,R3
 RV3
@@ -320,6 +321,7 @@ RV3
        MOV  R2,@MGN_EDITED_INDEX
 * Store the top two elements that existed before we made our changes
        BL   @RECORD_ORIGINAL_ENTRIES
+       JEQ  MEMORY_ERROR_WHEN_RECORDING
 * Is indent hanging?
        LI   R0,FLDVAL
        AI   R0,FHANG
@@ -346,7 +348,8 @@ RV4
        MOV  *R10+,R11
        RT
 * Memory Error
-MEMERR MOV  *R10+,R11
+MEMORY_ERROR_WHEN_RECORDING
+       MOV  *R10+,R11
        S    R0,R0
        RT
 
@@ -400,7 +403,7 @@ RECORD_ORIGINAL_ENTRIES
        LI   R2,MARGIN_ENTRY_SIZE*2
        MOV  R2,R0
        BLWP @BUFALC
-* TODO: handle out-of-memory
+       JEQ  MEMORY_ERROR_WITH_ORIGINAL_ENTITIES
 * Store address of space
        MOV  R0,@MGN_VALUES_OLD
 * Let R1 = address to copy from
@@ -420,6 +423,13 @@ RECORD_ORIGINAL_ENTRIES_END
        MOV  *R10+,R2
        MOV  *R10+,R11
        RT
+* Memory Error
+MEMORY_ERROR_WITH_ORIGINAL_ENTITIES
+       MOV  *R10+,R1
+       MOV  *R10+,R2
+       MOV  *R10+,R11
+       S    R0,R0
+       RT
 
 *
 * Create a margin-edit undo action
@@ -430,6 +440,7 @@ RECORD_UNDO
 * Create an undo entry for this action
        LI   R2,UNDO_MGN
        BL   @START_FRESH_UNDO_ENTRY
+       JEQ  RECORD_NEW_VALUE_DONE
 * Let R3 = number of delete entries to store in undo-payload
 * Formula: 1 - (new margin list size - old margin list size)
        LI   R3,1
@@ -456,6 +467,7 @@ RECORD_UNDO
 * Reserve space for the undo payload
        MOV  R4,R0
        BL   @RESERVE_UNDO_SPACE
+       JEQ  MEMORY_ERROR_RESERVING_UNDO
 * Let R5 = write address
        MOV  R0,R5
 * Record the number of entries deleted at a particular index
@@ -494,6 +506,13 @@ RECORD_UNDO
 RECORD_NEW_VALUE_DONE
 *
        MOV  *R10+,R11
+       RT
+*
+* The new undo entry is invalid. Delete it.
+MEMORY_ERROR_RESERVING_UNDO
+       MOV   @UNDLST,R0
+       MOV   @UNDOIDX,R1
+       BLWP  @ARYDEL
        RT
 
 *
@@ -603,8 +622,8 @@ RESTORE_ENTRIES_LISTED_IN_UNDO_LOOP
        MOV  @2(R8),R1
 * Let R1 = address of new margin list entry
        BLWP @ARYINS
+       JEQ  MEMORY_ERROR_WHEN_RESTORING
        MOV  R0,@MGNLST
-* TODO: Handle out of memory errors
 * Prepare for next iteration
        DEC  R2
        JNE  RESTORE_ENTRIES_LISTED_IN_UNDO_LOOP
@@ -617,6 +636,12 @@ RESTORE_ENTRIES_LISTED_IN_UNDO_LOOP
        BLWP @BUFCPY
 *
 RESTORE_ENTRIES_LISTED_IN_UNDO_DONE
+       RT
+*
+* Something when wrong trying to insert stuff into the array.
+* Theoretically, this could result in an inconsistent undo/redo action.
+* I don't know what to do, since there is no obvious way to "rollback a transaction".
+MEMORY_ERROR_WHEN_RESTORING
        RT
 
 *
