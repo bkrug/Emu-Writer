@@ -12,7 +12,6 @@
        REF  WINMOD                        "
        REF  PARINX,CHRPAX                 "
        REF  ARYADR                        From ARRAY
-       REF  WRAP                          From WRAP.asm
 
        COPY 'EQUVAL.asm'
 
