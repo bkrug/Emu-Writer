@@ -354,6 +354,8 @@ POS2
        MOV  R0,@CHRPAX
        LI   R0,EMPLST
        MOV  R0,@MGNLST
+       LI   R0,0
+       MOV  R0,@WINOFF
 * Act
        CLR  R0
        BLWP @POSUPD
