@@ -194,6 +194,20 @@ You may use "CLIP" as the printer name.
 When the print operation is complete, leave your emulator and open a generic text editor.
 Paste the contents of your clipboard into the text editor, in order to see the document formated for paper.
 
+### New document
+
+The new-document function will erase the document in memory and restore Emu-writer to the state it was in at load time.
+From the editor screen, press FCTN+9, then press "F", then press "N".
+The screen will ask you to confirm that you are willing to erase the document.
+If you say "Y" for yes, it will return you to the editor screen with a blank document.
+Otherwise, it will return you to the editor screen and you can continue to edit the existing document.
+
+### Quit
+
+From the editor screen, press FCTN+9, then press "F", then press "N".
+If you confirm that you want to quit, the TI-99/4a will restart.
+Otherwise, the program will return you to the document you were editing.
+
 ### Margins Screen
 
 To edit paragraph margins or page settings, from the editor screen press FCTN+9, then "M".
