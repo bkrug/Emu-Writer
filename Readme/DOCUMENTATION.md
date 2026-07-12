@@ -2,7 +2,7 @@ Unlike the main README file,
 this documentation is pretending to target a 1980s audience.
 So it might say some things that seem a little bit obvious to a user in the 21st century.
 
-## Loading Emu-Writer
+# Loading Emu-Writer
 
 Emu-Writer requires at least one floppy drive and the TI-99/4a 32K memory expansion.
 A printer is recommended.
@@ -19,7 +19,7 @@ When loading is complete, you will see a title screen with the program's name.
 Press ENTER or SPACE from the title screen, and you will enter the word-processor's "editor".
 From here you can begin typing a document, but there is additional functionality described below.
 
-## Writing, inserting, and ovewriting text
+# Writing, inserting, and ovewriting text
 
 When you first load Emu-Writer, the editor is empty.
 Pressing keys for any visible character of text, will result in adding characters to the screen and to the document's first paragraph.
@@ -59,7 +59,7 @@ So as you delete characters or insert new characters from the beginning or middl
 new space will become available or be taken away from some lines of text.
 So the word processor will often move some of the words to different lines, but the order of the words within a paragraph will never change.
 
-## Movement keys and "hot keys"
+# Movement keys and "hot keys"
 
 When you wish to move the cursor, you can use arrow keys that you may be familiar with from TI Basic, or other TI-99/4a programs.
 Hold down the FCTN key and press S to move the cursor one space to the left.
@@ -90,7 +90,7 @@ See the section "Operations Menu", to learn how to quit the program.
 Other hot keys are described in other sections of this documentation,
 but you can keep coming back to the hot key screen using FCTN+8, for a reminder of the available hot keys.
 
-## Handling 80+ columnn text on a 40-column screen
+# Handling 80+ columnn text on a 40-column screen
 
 The TI-99/4a can only display 40 characters of text on a single line on the screen.
 Most users have printers which can fit at least 80 characters on one line of the page.
@@ -142,7 +142,7 @@ The user will need to press FCTN+5 to move through seven different windows to se
 
 Windowed Mode is useful when you want to see where the lines of text within a paragraph will end before you print the document.
 
-### Switching Mopdes
+### Switching Modes
 
 You can swtich between modes using the FCTN+0 hot key.
 At the right edge of the second line of the editor, there is an icon which indicates which mode you are in.
@@ -152,7 +152,7 @@ The windows mode icon looks like a parallelagram or a window tilted sideways.
 To experiment with these different modes, load the sample documents from the Emu-writer program disk.
 These documents are called THREELANG and HANSEL.
 
-### Operations Menu
+# Operations Menu
 
 From the editor, you can press FCTN+9 (hold down the FCTN key while pressing 9) to see the operations menu.
 You can press FCTN+9 again to return to the editor.
@@ -257,7 +257,7 @@ If you have multiple margin descriptors in your document.
 Changing the page size for one margin descriptor will change the page size for any other margin descriptor.
 You can only see the page size from the Margin screen; you cannot see it form the editor.
 
-## Undo/Redo
+# Undo/Redo
 
 If you make a mistake you can press the "undo" button, CTRL+Z.
 For example, perhaps you press FCTN+1 five times to delete five consecutive characters.
