@@ -13,6 +13,7 @@
        REF  CURSCN,WINMOD
 
        COPY '../Src/EQUVAL.asm'
+       COPY '../Src/EQUADDR.asm'
 
 TSTLST DATA TSTEND-TSTLST-2/8
 * SUSPECT: LININX and CHRLIX are just implementation details now.
@@ -2342,7 +2343,7 @@ CUR1
        BLWP @AEQ
 * Cursor should be in row 17, column 5 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(17*40)+5
+       LI   R0,SCRTBL+(HDRHGT*40)+(17*40)+5
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
@@ -2401,7 +2402,7 @@ CUR2
        BLWP @AEQ
 * Cursor should be in row 12, column 12 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(12*40)+12
+       LI   R0,SCRTBL+(HDRHGT*40)+(12*40)+12
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
@@ -2462,7 +2463,7 @@ CUR3
        BLWP @AEQ
 * Cursor should be in row 14, column 29 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(14*40)+49-20
+       LI   R0,SCRTBL+(HDRHGT*40)+(14*40)+49-20
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
@@ -2522,7 +2523,7 @@ CUR4
        BLWP @AEQ
 * Cursor should be in row 17, column 5 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(6*40)+25
+       LI   R0,SCRTBL+(HDRHGT*40)+(6*40)+25
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
@@ -2582,7 +2583,7 @@ CUR5
        BLWP @AEQ
 * Cursor should be in row 11, column 25 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(11*40)+25
+       LI   R0,SCRTBL+(HDRHGT*40)+(11*40)+25
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
@@ -2642,7 +2643,7 @@ CUR6
        BLWP @AEQ
 * Cursor should be in row 18, column 28 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(18*40)+12
+       LI   R0,SCRTBL+(HDRHGT*40)+(18*40)+12
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
@@ -2702,7 +2703,7 @@ CUR7
        BLWP @AEQ
 * Cursor should be in row 2, column 14 of text area
 * add two more rows for the screen header
-       LI   R0,(HDRHGT*40)+(2*40)+14
+       LI   R0,SCRTBL+(HDRHGT*40)+(2*40)+14
        MOV  @CURSCN,R1
        LI   R2,WCURM
        LI   R3,WCURME-WCURM
