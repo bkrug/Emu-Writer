@@ -6,7 +6,6 @@
 *
        REF  GETMGN,GETIDT,LSTIDX             From UTIL.asm
        REF  GETLIN,LOOKUP,MGNADR             "
-       REF  ARYADR                           From ARRAY.obj
 *
        REF  MGNLST
        REF  FORTY
