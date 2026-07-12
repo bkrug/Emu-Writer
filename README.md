@@ -24,73 +24,16 @@ The print algorithm automatically wraps the paragraphs for 80-columns.
   * I realize that this is possible in TI-Writer, but that program makes it less intuitive.
 The user has to know how to wield the Editor's margin-and-tab configuration in a way that is complemented by the Formater program.
 
-### External Dependencies
+## Documentation
 
-MEMBUF.noheader.obj and ARRAY.noheader.obj - Source code can be found at the repo: https://github.com/bkrug/TI-string-buffer.
-These contain routines for allocating and de-allocating space for variable-length objects like strings and arrays.
+See documentation [here](./Readme/DOCUMENTATION.md)
 
-### Assembling
+## Build Notes
 
-* Python is required.
-* XDT99 is required. (https://endlos99.github.io/xdt99/)
-* Run the script "assm.py" and it will assemble the main program and the test programs.
-  * Have Python and XDT99 included in your system's Path. The script is setup assuming that you can type "xas99.py" from a command line without specifying a folder.
- 
-*Finding the path to Python*
+If you would like to build this software from your own machine, you can probably figure out how to do so from my [notes](./Readme/BUILD.md).
+Over time, I'll try to to clarify them.
 
-In your Python interpreter, type the following commands:
-
-```
-import os
-import sys
-os.path.dirname(sys.executable)
-```
-
-*Running Python Scripts from Powershell*
-
-First, add the xas99 folder to your System PATH variables.
-
-Then, associate *.py files with python.
-Run the following commands at a shell prompt:
-
-```
-assoc .py=PythonScript
-ftype PythonScript=C:\bin\python.exe "%1" %*
-```
-
-*Running Python Scripts from Linux*
-
-Edit the path
-```
-kwrite .bashrc
-```
-add this code
-```
-if ! [[ "$PATH" =~ "$HOME/Python/xdt99:" ]]; then
-    PATH="$HOME/Python/xdt99:$PATH"
-fi
-```
-
-Make the scripts executable:
-```
-chmod +x /home/bkrug/Python/xdt99/*.py
-```
-
-*Assembly Results*
-
-* Assembled code is placed in two places:
-  * "Fiad" folder. You will be able to see each individual program as a file with the TIFILES header. 
-  * "EmuWriter.dsk" image in the root folder
-* the EMUWRITER program is run as an E/A 5 program
-* the unit test programs (which have the suffix RUN.obj) are run as E/A 3 programs.
-  * Use the program name "RUNTST".
-  * Someday it would be nice to be able to run all unit tests as a single program, but for now you need to run each group of tests individualy.
-* You might wonder why the EMUWRITER program is followed by so many other E/A 5 programs like EMUWRITES. This has to do with how the program is stored in RAM after loading it from a disk.
-  * EMUWRITER is stored at address >2000 and occupies 6 KB.
-  * The other EMUWRITE* programs are intially loaded into VDP RAM. Each of them can be pulled into the 2KB space at address >3800, when there is a need to execute them.
-  * This design is meant to reserve the upper 24 KB of the TI-99's expansion RAM for the user's document. The executable code is starting to grow beyond the lower 8 KB of the expansion RAM.
-
-### Taglines
+## Taglines
 
 EMU-WRITER -- A semi-modern word processor for a semi-modern world.
 
@@ -99,25 +42,3 @@ EMU-WRITER -- Be a little late to the party.
 EMU-WRITER -- WYSIWhaaaaaat?
 
 EMU-WRITER -- You didn't think you needed it, but now you know.
-
-### TODO
-
-* BUG: word wrap does not always happen after deleting a CR now.
-* When creating the disk image, write-protect the program files.
-* When splitting a paragraph, the "new" paragraph should always be the smaller of the two. This makes memory management easier.
-* Consider adding a defrag operation that runs every 64/60s seconds.
-* The save routine appears to ignore write-protection status. Use the PAB's STATUS op-code in order to fix that, or alternatively, simply refuse to overwrite any file that is not DSP/FIX 64.
-
-### Manual test cases
-
-* When the memeory is full, do the following and confirm that there are no graphical problems:
-  * When the system cannot let you split paragraphs using the enter key, the document should not change.
-  * When the system cannot let you merge paragraphs using the delete key, the document should not change.
-  * When the system cannot let you insert new characters in an existing paragraph, the document should stop changing.
-* Load the file "BIG". Press enter many times from the end of the document.
-When the memory is full, the cursor stops blinking. Scroll up to the non-blank line, and it blinks again.
-Scroll back down to the last empty line and it stops blinking again.
-
-### Personal Notes
-
-mame ti99_4a -ioport peb -ioport:peb:slot2 32kmem -ioport:peb:slot7 tirs232 -parl pio.txt -serl1 rs232.txt -ioport:peb:slot8 hfdc -window -cart "/home/bkrug/TI-99/carts-rpk/Programming/Editor-Assembler.rpk" -flop1 "./EmuWriter.Tests2.dsk" -flop2 "./EmuWriter.v0.4.dsk" 
