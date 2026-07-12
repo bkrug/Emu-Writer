@@ -3,6 +3,9 @@
        DEF  VDPADR,VDPWRT
        DEF  MNUHK
        DEF  MNUINT,PRINT
+       DEF  UNDO_MARGIN,REDO_MARGIN
+       DEF  LOADCH
+       DEF  CCHMGN
 
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK,ASTR
@@ -2428,9 +2431,14 @@ CPYRT
 MNUHK
 MNUINT
 PRINT
+UNDO_MARGIN
+REDO_MARGIN
+LOADCH
 * These VDP routines should do nothing
 VDPADR
 VDPWRT RT
+
+CCHMGN DATA 0
 
 ****************************************
 
