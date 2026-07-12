@@ -4,7 +4,7 @@
        REF  CURMNU,FLDVAL,FLDVE           From VAR.asm
        REF  KEYRD,KEYWRT                  "
        REF  DOCSTS                        "
-       REF  INCKRD                        From INPUT.asm
+       REF  INCKRD                        From UTIL.asm
        REF  MNUHOM                        From MENU.asm
        REF  VDPADR,VDPRAD                 From VDP.asm
        REF  VDPSTR,VDPINV,VDPSPC,VDPSPI   "
@@ -14,7 +14,7 @@
        REF  DRWCUR
        REF  CURMOD
        REF  CURSCN
-       REF  BUFALC,BUFREE
+       REF  BUFALC,BUFREE                 From Memory Buffer
 
        COPY 'EQUADDR.asm'
        COPY 'EQUVAL.asm'

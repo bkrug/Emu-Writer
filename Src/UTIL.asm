@@ -13,6 +13,11 @@
        REF  PARINX,CHRPAX                 "
        REF  ARYADR                        From ARRAY
 
+*
+* TODO: Split up this file
+* It is okay that WRAP.asm is dependent on a file with margin logic (GETMGN,GETIDT),
+* but WRAP.asm should not be dependent on a file that deals with user input (INCKRD).
+
        COPY 'EQUVAL.asm'
 
 *
