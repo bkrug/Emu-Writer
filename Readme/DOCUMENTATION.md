@@ -282,7 +282,8 @@ Deleting some characters, typing some characters, and deleting more characters c
 So, you would need to press CTRL+Z three times to restore all of the characters and remove the ones you inserted.
 
 Here is a list of all possible undo/redo events:
-- deleting up to 255 consecutive characters without pressing a key that moves the cursor
+- deleting up to 255 consecutive characters using FCTN+1 without pressing a key that moves the cursor
+- deleting up to 255 consecutive characters using FCTN+3 without pressing a key that moves the cursor
 - inserting up to 255 consecutive characters without pressing a key that moves the cursor
 - ovewriting up to 127 consecutive characters without pressing a key that moves the cursor
 - changing the margins for any one paragraph
