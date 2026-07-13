@@ -12,7 +12,8 @@
        DEF  WRAPWS
        DEF  POSUWS,DISPWS
        DEF  MAINWS
-       DEF  STACK
+       DEF  STACK                 * Address following the stack
+       DEF  STACKPOINTER          * Address of R10 in MAINWS, which is the stack pointer
 *
        DEF  VARBEG,VAREND
        DEF  FASTRT
@@ -74,7 +75,8 @@ DISPWS BSS  >20
 *
 * >40-byte stack (>8380-83BF)
 *
-STACK  EQU  >83C0
+STACK          EQU  >83C0
+STACKPOINTER   EQU  2*10+MAINWS
 
 *
 * Areas for changeable values

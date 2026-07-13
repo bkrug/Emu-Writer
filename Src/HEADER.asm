@@ -7,6 +7,7 @@
        REF  PGWDTH
        REF  GETMGN                   From UTIL.asm
        REF  PARINX,DOCSTS            From VAR.asm
+       REF  INTRP1                   From MAIN.asm
        REF  TWODIG
        REF  OLDDOCSTS
        REF  WINMOD
@@ -23,31 +24,29 @@ LINE_ONE_END
 
 *
 * Write the fist line of the header
-*   
+*
+HDRWS  BSS  >20
 HDR_1ST_LINE
-       DECT R10
-       MOV  R11,*R10
-       DECT R10
-       MOV  R0,*R10
+       DATA HDRWS,HDR_1ST_LINE+4
+* Let R0 = document status contents
 * Did the DOCSTS change?
-       MOV  @DOCSTS,R13
-       C    @OLDDOCSTS,R13
+       MOV  @DOCSTS,R0
+       C    @OLDDOCSTS,R0
        JEQ  HDR_1ST_LINE_RETURN
+* Store the new document status.
+       MOV  R0,@OLDDOCSTS
 * Yes, draw the header if we can find a matching status change.
        LI   R1,LINE_ONE_TABLE
 PICK_HDR_TEXT_LOOP
        MOV  *R1+,R2
-       COC  *R1+,R13
-       JEQ  !
+       COC  *R1+,R0
+       JEQ  MATCH_FOUND
        CI   R1,LINE_ONE_END
        JL   PICK_HDR_TEXT_LOOP
 * Couldn't find a match.
 * Return instead of writing the header
        JMP  HDR_1ST_LINE_RETURN
-!
-* Found a match
-* Write the first line of the header
-*
+MATCH_FOUND
 * Clear first line of header
        LI   R0,SCRTBL
        BL   @VDPADR
@@ -60,9 +59,7 @@ PICK_HDR_TEXT_LOOP
        BL   @VDPINV
 *
 HDR_1ST_LINE_RETURN
-       MOV  *R10+,R0
-       MOV  *R10+,R11
-       RT       
+       RTWP
 
 *
 * Write the second line of the header

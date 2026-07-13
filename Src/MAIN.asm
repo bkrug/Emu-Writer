@@ -2,6 +2,10 @@
        DEF  MAIN,INTRPT,DRWCR2
 * Memory Chunk Buffer
        DEF  BUFADR,BUFEND
+* VAR.asm
+       REF  DOCSTS
+       REF  OLDDOCSTS
+       REF  MAINWS
 *
        REF  INIT,PRGEND
        REF  KEYINT
@@ -16,11 +20,11 @@
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
        REF  STSTYP,STSENT,STSWIN,STSARW
-       REF  DOCSTS
        REF  CURTIM,CUROLD,CURRPL,CURSCN
        REF  CHRCUR,CURMOD
        REF  CURMNU
        REF  ENTMNU
+* HEADER.asm
        REF  HDR_1ST_LINE,HDR_2ND_LINE
 *
 
@@ -53,7 +57,6 @@ MAIN1
        MOV  R0,@DOCSTS
 * Redisplay the screen
        LIMI 0
-       BL   @HDR_1ST_LINE
        BL   @HDR_2ND_LINE
 *
        MOV  @DOCSTS,R0
@@ -164,7 +167,12 @@ BUFEND EQU  BUFFER_ADDRESSES_END-2
 *
 INTRPT
 * Decrease cursor time
-       DEC   @CURTIM
+       DEC  @CURTIM
+* Rewrite the first line of the header if needed.
+       C    @DOCSTS,@OLDDOCSTS
+       JEQ  !
+       BLWP @HDR_1ST_LINE
+!
 * Call key scanning interupt
 * (which is responsible for return)
        B     @KEYINT
