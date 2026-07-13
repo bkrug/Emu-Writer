@@ -8,6 +8,7 @@
        REF  GETMGN                   From UTIL.asm
        REF  PARINX,DOCSTS            From VAR.asm
        REF  TWODIG
+       REF  OLDDOCSTS
        REF  WINMOD
 
        COPY 'EQUVAL.asm'
@@ -28,8 +29,11 @@ HDR_1ST_LINE
        MOV  R11,*R10
        DECT R10
        MOV  R0,*R10
-*
+* Did the DOCSTS change?
        MOV  @DOCSTS,R13
+       C    @OLDDOCSTS,R13
+       JEQ  HDR_1ST_LINE_RETURN
+* Yes, draw the header if we can find a matching status change.
        LI   R1,LINE_ONE_TABLE
 PICK_HDR_TEXT_LOOP
        MOV  *R1+,R2

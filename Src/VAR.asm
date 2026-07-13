@@ -54,6 +54,7 @@
        DEF  FLDVAL,FLDVE
 * HEADER.asm
        DEF  TWODIG
+       DEF  OLDDOCSTS
 * EDTMGN.asm
        DEF  MGN_EDITED_INDEX
        DEF  MGN_VALUES_OLD
@@ -221,7 +222,9 @@ FLDVE
 
 * HEADER.asm
 * Space for ASCII for two-digit number
-TWODIG BSS  2
+TWODIG     BSS  2
+* Contents of DOCSTS the last time we drew the first line of the header.
+OLDDOCSTS  BSS 2
 
 * EDTMGN.asm
 MGN_EDITED_INDEX     BSS  2
