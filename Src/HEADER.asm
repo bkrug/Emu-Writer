@@ -18,20 +18,24 @@ LINE_ONE_TABLE
        DATA TEXT1,STADSH
 LINE_ONE_END
 
+*
+* Write the fist line of the header
+*   
 ADJHDR
        MOV  @DOCSTS,R13
        LI   R1,LINE_ONE_TABLE
 PICK_HDR_TEXT_LOOP
        MOV  *R1+,R2
        COC  *R1+,R13
-       JEQ  WRTHDR
+       JEQ  !
        CI   R1,LINE_ONE_END
        JL   PICK_HDR_TEXT_LOOP
 * Couldn't find a match.
 * Return instead of writing the header
        RT
-*
-WRTHDR
+!
+* Found a match
+* Write the first line of the header
        DECT R10
        MOV  R11,*R10
        DECT R10
@@ -46,6 +50,19 @@ WRTHDR
        BL   @VDPADR
        MOV  R2,R0
        BL   @VDPINV
+*
+       MOV  *R10+,R0
+       MOV  *R10+,R11
+       RT       
+
+*
+* Write the second line of the header
+*       
+WRTHDR
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R0,*R10       
 * Draw second line
        LI   R0,SCRTBL+SCRNWD
        BL   @VDPADR
