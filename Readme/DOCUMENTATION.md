@@ -124,6 +124,7 @@ An unlimited number of space-characters can appear following the 39th character.
 Therefore, it is possible to position your cursor on the 41st or later character of that line, and the word processor might hide the leftmost 20 characters of that line.
 If you begin typing, nothing bad will happen.
 The word processor will make sure that any new non-space word wraps to the next line.
+Alternatively, if you don't want to type anything, press FCTN+L or an arrow key to return the cursor to the beginning of the line.
 
 ### Windowed Mode
 
