@@ -40,7 +40,7 @@
        REF  ENDINP
        REF  CHRMIN,CHRMAX
        REF  STSTYP,STSENT,STSDCR
-       REF  STSPAR,STSWIN,STSARW
+       REF  STSPAR,STSWIN,STSARW,STSWRK
        REF  ERRMEM
        REF  CURINS,CUROVR
 
@@ -414,6 +414,7 @@ TERR0  DEC  @PARINX
 *
 RTERR  MOV  @KEYRD,@KEYWRT
        SOC  @ERRMEM,*R13
+       SZC  @STSWRK,*R13                  * The out-of-memory error probably interrupted another job.
        MOV  @FASTRT,R10
        MOV  *R10+,R11
        RT                  *RTWP
@@ -600,6 +601,9 @@ UNDO_OP
        MOV  @UNDOIDX,R1
 * Are there any undo operations remaining?
        JLT  UNDO_COMPLETE
+* We are about to do an undo operation,
+* display a "working..." message.
+       SOC  @STSWRK,*R13
 * Yes, Let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
@@ -615,6 +619,8 @@ UNDO_OP
        MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
 * Move undo position one location earlier
        DEC  @UNDOIDX
+* Turn off the "working..." message.
+       SZC  @STSWRK,*R13
 UNDO_COMPLETE
        MOV  *R10+,R11
        RT

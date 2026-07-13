@@ -99,13 +99,14 @@ FTOP   EQU 16
 FBOT   EQU 19
 
 * Document status codes
-STATYP EQU  >1              * Text Typed
-STAENT EQU  >2              * Enter Pressed
-STADCR EQU  >4              * Deleted Carriage Return
-STAPAR EQU  >8              * Paragraph Line Count Changed
-STAWIN EQU  >10             * Window Moved
-STADSH EQU  >20             * Redisplay dashboard line (margins, fonts)
-STAARW EQU  >40             * Arrow Key Pressed
+STATYP EQU  >0001           * Text Typed
+STAENT EQU  >0002           * Enter Pressed
+STADCR EQU  >0004           * Deleted Carriage Return
+STAPAR EQU  >0008           * Paragraph Line Count Changed
+STAWIN EQU  >0010           * Window Moved
+STADSH EQU  >0020           * Redisplay dashboard line (margins, fonts)
+STAARW EQU  >0040           * Arrow Key Pressed
+STAWRK EQU  >0080           * Working on longer job
 ERAMEM EQU  >8000           * Insufficient Memory Error
 
 * Paragraph Locations

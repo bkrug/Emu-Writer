@@ -1,6 +1,6 @@
        DEF  FORTY
        DEF  STSTYP,STSENT,STSDCR,STSPAR
-       DEF  STSWIN,STSDSH,STSARW
+       DEF  STSWIN,STSDSH,STSARW,STSWRK
        DEF  ERRMEM
        DEF  CHRMIN,CHRMAX
        DEF  SPACE,EXPLNT,DASH,CHRCUR,ENDINP,NOKEY
@@ -23,6 +23,7 @@ STSPAR DATA STAPAR        * Paragraph Line Count Changed
 STSWIN DATA STAWIN        * Window Moved
 STSDSH DATA STADSH        * Redisplay dashboard line (margins, fonts)
 STSARW DATA STAARW        * Arrow Key Pressed
+STSWRK DATA STAWRK        * Working on longer job
 ERRMEM DATA ERAMEM        * Insufficient Memory Error
 
 * ASCII codes

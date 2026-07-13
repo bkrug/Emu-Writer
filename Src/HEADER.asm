@@ -13,6 +13,7 @@
 
 LINE_ONE_TABLE
        DATA MEMFUL,ERAMEM
+       DATA WRKMSG,STAWRK
        DATA TEXT1,STAWIN
        DATA TEXT1,STADSH
 LINE_ONE_END
@@ -176,5 +177,7 @@ TXTTM  TEXT ' TM:'
 TXTBM  TEXT ' BM:'
        BYTE 0
 MEMFUL TEXT 'Memory Full'
+       BYTE 0
+WRKMSG TEXT 'Working...'
        BYTE 0
        EVEN
