@@ -13,12 +13,12 @@
        COPY 'EQUADDR.asm'
 
 ADJHDR
+       MOV  @DOCSTS,R13
        LI   R2,MEMFUL
-       COC  @ERRMEM,R0
+       COC  @ERRMEM,R13
        JEQ  WRTHDR
 *
        LI   R2,TEXT1
-       MOV  @DOCSTS,R13
        COC  @STSWIN,R13
        JEQ  WRTHDR
        COC  @STSDSH,R13
