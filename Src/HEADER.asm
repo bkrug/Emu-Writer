@@ -24,6 +24,11 @@ LINE_ONE_END
 * Write the fist line of the header
 *   
 HDR_1ST_LINE
+       DECT R10
+       MOV  R11,*R10
+       DECT R10
+       MOV  R0,*R10
+*
        MOV  @DOCSTS,R13
        LI   R1,LINE_ONE_TABLE
 PICK_HDR_TEXT_LOOP
@@ -34,14 +39,11 @@ PICK_HDR_TEXT_LOOP
        JL   PICK_HDR_TEXT_LOOP
 * Couldn't find a match.
 * Return instead of writing the header
-       RT
+       JMP  HDR_1ST_LINE_RETURN
 !
 * Found a match
 * Write the first line of the header
-       DECT R10
-       MOV  R11,*R10
-       DECT R10
-       MOV  R0,*R10
+*
 * Clear first line of header
        LI   R0,SCRTBL
        BL   @VDPADR
@@ -53,6 +55,7 @@ PICK_HDR_TEXT_LOOP
        MOV  R2,R0
        BL   @VDPINV
 *
+HDR_1ST_LINE_RETURN
        MOV  *R10+,R0
        MOV  *R10+,R11
        RT       
