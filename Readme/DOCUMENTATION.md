@@ -118,6 +118,13 @@ But vertical mode is designed to let the user do all of their edting on screen, 
 If you print a document while in vertical mode, the word wrap logic will print line endings that are logical on paper without chaning what you see on screen.
 Meaning that printing a document while in vertical mode, will NOT result in 40-character long lines on paper.
 
+The maximum length of a line of text in vertical mode is not 40 characters, despite what one might assume.
+Instead, the rightmost possible visible character can appear in the 39th position of a line.
+An unlimited number of space-characters can appear following the 39th character.
+Therefore, it is possible to position your cursor on the 41st or later character of that line, and the word processor might hide the leftmost 20 characters of that line.
+If you begin typing, nothing bad will happen.
+The word processor will make sure that any new non-space word wraps to the next line.
+
 ### Windowed Mode
 
 Another stragey is called "Windowed mode".
