@@ -619,9 +619,10 @@ UNDO_OP
        MOV  @UNDO_ANY_CHAR(R7),@CHRPAX
 * Move undo position one location earlier
        DEC  @UNDOIDX
+UNDO_COMPLETE
 * Turn off the "working..." message.
        SZC  @STSWRK,*R13
-UNDO_COMPLETE
+*
        MOV  *R10+,R11
        RT
 
@@ -646,6 +647,9 @@ REDO_OP
 * Are there any redo operations remaining?
        C    R1,*R0
        JHE  REDO_COMPLETE
+* We are about to do an undo operation,
+* display a "working..." message.
+       SOC  @STSWRK,*R13
 * Yes, let R7 = address of current undo operation in list
        BLWP @ARYADR
        MOV  *R1,R7
@@ -662,6 +666,9 @@ REDO_OP
 * Move undo position one location earlier
        INC  @UNDOIDX
 REDO_COMPLETE
+* Turn off the "working..." message.
+       SZC  @STSWRK,*R13
+*
        MOV  *R10+,R11
        RT
 
