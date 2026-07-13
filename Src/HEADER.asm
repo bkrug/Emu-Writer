@@ -7,7 +7,7 @@
        REF  PGWDTH
        REF  GETMGN                   From UTIL.asm
        REF  PARINX,DOCSTS            From VAR.asm
-       REF  INTRP1                   From MAIN.asm
+       REF  INTRWS
        REF  TWODIG
        REF  OLDDOCSTS
        REF  WINMOD
@@ -15,6 +15,9 @@
        COPY 'EQUVAL.asm'
        COPY 'EQUADDR.asm'
 
+* Each element in this list contains:
+*   1) The address of a message to display
+*   2) The bits in DOCSTS that need to be set in order for that message to be displayable
 LINE_ONE_TABLE
        DATA MEMFUL,ERAMEM
        DATA WRKMSG,STAWRK
@@ -25,9 +28,8 @@ LINE_ONE_END
 *
 * Write the fist line of the header
 *
-HDRWS  BSS  >20
 HDR_1ST_LINE
-       DATA HDRWS,HDR_1ST_LINE+4
+       DATA INTRWS,HDR_1ST_LINE+4
 * Let R0 = document status contents
 * Did the DOCSTS change?
        MOV  @DOCSTS,R0

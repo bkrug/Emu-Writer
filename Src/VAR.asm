@@ -12,6 +12,7 @@
        DEF  WRAPWS
        DEF  POSUWS,DISPWS
        DEF  MAINWS
+       DEF  INTRWS
        DEF  STACK                 * Address following the stack
        DEF  STACKPOINTER          * Address of R10 in MAINWS, which is the stack pointer
 *
@@ -71,6 +72,7 @@ STRWS  EQU  >8330
 WRAPWS BSS  >20
 POSUWS
 DISPWS BSS  >20
+INTRWS BSS  >20          * Workspace used by interrupt routines
 
 *
 * >40-byte stack (>8380-83BF)
