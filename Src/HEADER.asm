@@ -1,4 +1,6 @@
-       DEF  WRTHDR,ADJHDR,DRWMGN
+       DEF  HDR_1ST_LINE
+       DEF  HDR_2ND_LINE
+       DEF  DRWMGN
 *
        REF  VDPADR,VDPWRT            From VDP.asm
        REF  VDPINV,VDPSPI            "
@@ -21,7 +23,7 @@ LINE_ONE_END
 *
 * Write the fist line of the header
 *   
-ADJHDR
+HDR_1ST_LINE
        MOV  @DOCSTS,R13
        LI   R1,LINE_ONE_TABLE
 PICK_HDR_TEXT_LOOP
@@ -58,7 +60,7 @@ PICK_HDR_TEXT_LOOP
 *
 * Write the second line of the header
 *       
-WRTHDR
+HDR_2ND_LINE
        DECT R10
        MOV  R11,*R10
        DECT R10

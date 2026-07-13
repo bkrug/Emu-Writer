@@ -21,7 +21,7 @@
        REF  CHRCUR,CURMOD
        REF  CURMNU
        REF  ENTMNU
-       REF  ADJHDR,WRTHDR
+       REF  HDR_1ST_LINE,HDR_2ND_LINE
 *
 
        COPY 'EQUADDR.asm'
@@ -53,8 +53,8 @@ MAIN1
        MOV  R0,@DOCSTS
 * Redisplay the screen
        LIMI 0
-       BL   @ADJHDR
-       BL   @WRTHDR
+       BL   @HDR_1ST_LINE
+       BL   @HDR_2ND_LINE
 *
        MOV  @DOCSTS,R0
        BLWP @DISP

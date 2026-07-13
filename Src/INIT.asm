@@ -13,7 +13,7 @@
        REF  CURINS,CURMOD,WINMOD
        REF  CURMNU,STACK
        REF  MNUTTL
-       REF  WRTHDR
+       REF  HDR_2ND_LINE
        REF  IOSTRT,IOEND                    * From IO.asm
        REF  FRSHST,FRSHED                   * "
        REF  MGNSRT,MGNEND
@@ -41,7 +41,7 @@ INIT
        BL   @SET_FORM_FIELD_CHAR
        BL   @INTKEY
        BL   @INTDOC
-       BL   @WRTHDR
+       BL   @HDR_2ND_LINE
 * Set default values
        SETO @WINMOD
 * Don't let user use FCTN+= to restart computer
