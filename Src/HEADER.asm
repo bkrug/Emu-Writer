@@ -23,8 +23,7 @@ ADJHDR
        LI   R1,LINE_ONE_TABLE
 PICK_HDR_TEXT_LOOP
        MOV  *R1+,R2
-       MOV  *R1+,R3
-       COC  R3,R13
+       COC  *R1+,R13
        JEQ  WRTHDR
        CI   R1,LINE_ONE_END
        JL   PICK_HDR_TEXT_LOOP
