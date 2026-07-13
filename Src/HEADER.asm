@@ -2,7 +2,6 @@
 *
        REF  VDPADR,VDPWRT            From VDP.asm
        REF  VDPINV,VDPSPI            "
-       REF  STSWIN,STSDSH,ERRMEM
        REF  PGWDTH
        REF  GETMGN                   From UTIL.asm
        REF  PARINX,DOCSTS            From VAR.asm
@@ -12,17 +11,24 @@
        COPY 'EQUVAL.asm'
        COPY 'EQUADDR.asm'
 
+LINE_ONE_TABLE
+       DATA MEMFUL,ERAMEM
+       DATA TEXT1,STAWIN
+       DATA TEXT1,STADSH
+LINE_ONE_END
+
 ADJHDR
        MOV  @DOCSTS,R13
-       LI   R2,MEMFUL
-       COC  @ERRMEM,R13
+       LI   R1,LINE_ONE_TABLE
+PICK_HDR_TEXT_LOOP
+       MOV  *R1+,R2
+       MOV  *R1+,R3
+       COC  R3,R13
        JEQ  WRTHDR
-*
-       LI   R2,TEXT1
-       COC  @STSWIN,R13
-       JEQ  WRTHDR
-       COC  @STSDSH,R13
-       JEQ  WRTHDR
+       CI   R1,LINE_ONE_END
+       JL   PICK_HDR_TEXT_LOOP
+* Couldn't find a match.
+* Return instead of writing the header
        RT
 *
 WRTHDR
