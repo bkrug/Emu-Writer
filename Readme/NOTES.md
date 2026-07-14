@@ -1,6 +1,14 @@
 ### TODO
 
-* BUG: word wrap does not always happen after deleting a CR now.
+Before release:
+* Copy the documentation readme file into the Emu-writer program disk.
+* Try to do away with PREV_ACTION
+* Make all undo-actions a consistent length, right from the time they are initialized. Do away with the potential that we could have problems growing an undo action to insert a character.
+* Manually test more undo/redo with margins and DSK.BIG.BIG
+* CAN WE REPRODUCE THIS BUG: word wrap does not always happen after deleting a CR now.
+* Upon a memory error, if the item at the end of the undo list is empty, delete it.
+
+Could be after the release:
 * When creating the disk image, write-protect the program files.
 * When splitting a paragraph, the "new" paragraph should always be the smaller of the two. This makes memory management easier.
 * Consider adding a defrag operation that runs every 64/60s seconds.
