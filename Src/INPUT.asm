@@ -938,7 +938,7 @@ SPLIT_PARAGRAPH
        LI   R0,1
        BLWP @ARYALC
        JNE  !
-       MOV  @-2(10),R1
+       MOV  @2(10),R1
        B    @TERR1
 !
 * Let R8 = address of new wrap list
@@ -954,7 +954,7 @@ SPLIT_PARAGRAPH
        C    *R0+,*R0+
        BLWP @BUFALC
        JNE  !
-       MOV  @-2(10),R1
+       MOV  @2(10),R1
        B    @TERR2
 !
 * Let R6 = address of new paragraph
