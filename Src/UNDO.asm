@@ -28,38 +28,27 @@
 START_FRESH_UNDO_ENTRY
        DECT R10
        MOV  R11,*R10
+       DECT R10
+       MOV  R3,*R10
 * Increment undo index.
        INC  @UNDOIDX
 REMOVE_UNDO_ACTION_LOOP
 * Is there already an old undo action at current index?
        MOV  @UNDLST,R0
-       MOV  @UNDOIDX,R1
-       C    *R0,R1
+       MOV  @UNDOIDX,R3
+       C    *R0,R3
        JLE  ADD_UNDO_LIST_ELEM
 * Yes, deallocate old undo action from memory
-       BLWP @ARYADR
-       MOV  *R1,R0
-       BLWP @BUFREE
-* Delete element from undo list
-       MOV  @UNDLST,R0
-       MOV  @UNDOIDX,R1
-       BLWP @ARYDEL
-*
+       BL   @DELETE_ONE_UNDO_ELEMENT
        JMP  REMOVE_UNDO_ACTION_LOOP
 *
 ADD_UNDO_LIST_ELEM
 * Has undo list reached maximum length?
-       CI   R1,MAX_UNDO_LIST_LENGTH
+       CI   R3,MAX_UNDO_LIST_LENGTH
        JL   UNDO_LIST_LENGTH_OKAY
 * Yes, deallocate the oldest undo-object
-       CLR  R1
-       BLWP @ARYADR
-       MOV  *R1,R0
-       BLWP @BUFREE
-* Delete the oldest undo list element
-       MOV  @UNDLST,R0
-       CLR  R1
-       BLWP @ARYDEL
+       CLR  R3
+       BL   @DELETE_ONE_UNDO_ELEMENT
 * Decrease the undo index since the list is shorter
        DEC  @UNDOIDX
 UNDO_LIST_LENGTH_OKAY
@@ -87,7 +76,29 @@ UNDO_LIST_LENGTH_OKAY
 * Restore the value of R0 to point to address of undo object
        AI   R0,-UNDO_PAYLOAD
 *
+       MOV  *R10+,R3
        MOV  *R10+,R11
+       RT
+
+*
+* Delete one element from the undo list,
+* and deallocate the undo action it points to.
+*
+* Input:
+*   R3 = index of undo element to remove
+*
+DELETE_ONE_UNDO_ELEMENT
+* Deallocate undo action from memory
+       MOV  @UNDLST,R0
+       MOV  R3,R1
+       BLWP @ARYADR
+       MOV  *R1,R0
+       BLWP @BUFREE
+* Delete element from undo list
+       MOV  @UNDLST,R0
+       MOV  R3,R1
+       BLWP @ARYDEL
+*
        RT
 
 *
