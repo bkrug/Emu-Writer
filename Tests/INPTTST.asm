@@ -9,6 +9,7 @@
 
 * Assert Routine
        REF  AEQ,AZC,AOC,ABLCK
+       REF  ASTR
 
 *
        REF  INPUT
@@ -515,11 +516,12 @@ TST3   DECT R10
        BLWP @ARYADR
        MOV  *R1,R1
 * Test paragraph contents
+       LI   R0,EXP3A+4
        AI   R1,4
-       LI   R2,EXP3A+4
-       LI   R0,EXP3B
-       LI   R3,3
-       BL   @STRCMP
+       LI   R2,EXP3B-EXP3A-4
+       LI   R3,TST3_PARA_MSG
+       LI   R4,TST3_PARA_MSG_END-TST3_PARA_MSG
+       BLWP @ASTR
 * Test position values.
 * CHRPAX should have increasd, but
 * only due to text inserts.
@@ -539,7 +541,7 @@ TST3   DECT R10
        MOV  *R10+,R11
        RT
 
-KEYL3  TEXT ' :) '
+KEYL3  TEXT ' PQ '
        BYTE FWDKEY,FWDKEY
 KEYL3E EVEN
 
@@ -547,7 +549,7 @@ EXP3A  DATA 0,0
        TEXT 'With a history, Wuhan is one of the most '
        TEXT 'ancient and civilized '
        TEXT 'metropolitan cities in China. Panlong '
-       TEXT ':) cheng '
+       TEXT 'PQ cheng '
        TEXT 'is located in '
        TEXT 'modern-day Huangpi District. During the '
        TEXT 'Western Zhou, the E '
@@ -558,6 +560,11 @@ EXP3A  DATA 0,0
        TEXT 'Chu state for the rest of the Western Zhou '
        TEXT 'and Eastern Zhou periods.'
 EXP3B
+       EVEN
+
+TST3_PARA_MSG
+       TEXT 'Expected KEYL3 contents to be inserted'
+TST3_PARA_MSG_END
        EVEN
 
 
@@ -1861,7 +1868,7 @@ CCHMGN DATA 0
 
 ****************************************
 
-SPACE  BSS  >1000
+SPACE  BSS  >1800
 SPCEND
 
        END
