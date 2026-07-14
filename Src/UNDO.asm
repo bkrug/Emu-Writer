@@ -60,11 +60,11 @@ UNDO_LIST_LENGTH_OKAY
        JMP  ARRAY_GROWTH_SUCCESS
 * Delete old elements until we can add a new element.
 * Decrease the undo index since the list is shorter
-* TODO: What if we end up with an empty list?
        CLR  R3
        BL   @DELETE_ONE_UNDO_ELEMENT
        DEC  @UNDOIDX
-       JMP  UNDO_LIST_LENGTH_OKAY
+       JEQ  START_FRESH_MEM_ERROR
+       JNE  UNDO_LIST_LENGTH_OKAY
 * Array grew successfully. Record new address of array.
 ARRAY_GROWTH_SUCCESS
        MOV  R0,@UNDLST
@@ -75,11 +75,11 @@ ACTION_CREATION
        JMP  ALLOCATION_SUCCES
 * Delete old elements until we can add a new element.
 * Decrease the undo index since the list is shorter
-* TODO: What if we end up with an empty list?
        CLR  R3
        BL   @DELETE_ONE_UNDO_ELEMENT
        DEC  @UNDOIDX
-       JMP  ACTION_CREATION
+       JEQ  START_FRESH_MEM_ERROR
+       JNE  ACTION_CREATION
 * Allocation of the undo action was successful. Record new address in the array.
 ALLOCATION_SUCCES
        MOV  R0,R3
@@ -103,6 +103,21 @@ ALLOCATION_SUCCES
 *
        MOV  *R10+,R3
        MOV  *R10+,R11
+       RT
+
+*
+* Even after deleting all elements from the undo list,
+* we couldn't find memory to allocate a new element.
+*
+* Set the EQ bit to true, to indicate an error.
+* Set both R0 and R1 to 0, so that they point to addresses in ROM.
+*
+START_FRESH_MEM_ERROR
+       MOV  *R10+,R3
+       MOV  *R10+,R11
+*
+       S    R0,R0
+       S    R1,R1
        RT
 
 *
@@ -142,9 +157,13 @@ RESERVE_UNDO_SPACE
        MOV  R2,*R10
        DECT R10
        MOV  R0,*R10
+* Is the undo list empty?
+* If yes, report a memory allocation error.
+       MOV  @UNDLST,R0
+       MOV  *R0,*R0
+       JEQ  RESERVE_SPACE_MEM_ERROR
 * Let R3 = address in undo list
 * Let R4 = address of undo action
-       MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R4
@@ -171,12 +190,7 @@ INCREASE_ACTION_LENGTH
        A    @UNDO_ANY_LEN(R4),R1
        A    *R10,R1
        BLWP @BUFGRW
-       JNE  !
-* Memory error
-       MOV  *R10+,R2
-       MOV  *R10+,R11
-       JMP  MEMORY_ERROR_2
-!
+       JEQ  RESERVE_SPACE_MEM_ERROR
 * Store new address of undo-action in the undo list
        MOV  R0,R4
        MOV  R0,*R3
@@ -192,16 +206,17 @@ INCREASE_ACTION_LENGTH
        RT
 
 *
-* If either of the methods in this file results in a memory error.
-* Set the EQ status bit to true.
+* Could not increase the size of the undo payload.
+* Set the EQ bit to true, to indicate an error.
+* Set R0 to 0, so that it points to an address in ROM.
 *
-* Call MEMORY_ERROR when the only thing to remove from the stack is a return address.
-* Call MEMORY_ERROR_2 when you needed to remove more from the stack, and did that separately.
-*
-MEMORY_ERROR
+RESERVE_SPACE_MEM_ERROR
+       MOV  *R10+,R0
+       MOV  *R10+,R2
+       MOV  *R10+,R3
        MOV  *R10+,R11
-MEMORY_ERROR_2
-       SB   R0,R0
+*
+       S    R0,R0
        RT
 
        END

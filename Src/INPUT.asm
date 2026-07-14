@@ -386,10 +386,11 @@ ISENTR DECT R10
 * Record inserted character
        LI   R0,1
        BL   @RESERVE_UNDO_SPACE
-       JEQ  RTERR
+       JEQ  !
        MOVB @CRBYTE,*R0
 * Record position of cursor after action complete
        BL   @RECORD_CURSOR_AFTER_ACTION
+!
 *
        MOV  *R10+,R11
        RT
@@ -398,18 +399,17 @@ ISENTR DECT R10
 * An out-of-memory error occurred pressing enter
 *
 * Deallocate the wrap list that was allocated
-TERR2  MOV  R3,R0
+TERR2  MOV  R8,R0
        BLWP @BUFREE
 * Remove the paragraph list entry that
 * was just created, but cannot be used.
-TERR1  MOV  @PARLST,R0
-       MOV  @PARINX,R1
-       BLWP @ARYDEL
-* Decrement the PARINX to its previous value.
-TERR0  DEC  @PARINX
 *
-* Somehow let the user know that there
-* is no remaining buffer space.
+* Input:
+*   R1 = index to remove from PARLST
+TERR1  MOV  @PARLST,R0
+       BLWP @ARYDEL
+*
+* Some more generic memory error occurred.
 * Do not reprocess the key that cause the overflow.
 *
 RTERR  MOV  @KEYRD,@KEYWRT
@@ -921,7 +921,7 @@ SPLIT_PARAGRAPH
        INC  R1
        BLWP @ARYINS
        JNE  !
-       B    @TERR0
+       B    @RTERR
 !
 * Save (possibly new) addresses of paragraph list
        MOV  R0,@PARLST
@@ -934,6 +934,7 @@ SPLIT_PARAGRAPH
        LI   R0,1
        BLWP @ARYALC
        JNE  !
+       MOV  @-2(10),R1
        B    @TERR1
 !
 * Let R8 = address of new wrap list
@@ -949,6 +950,7 @@ SPLIT_PARAGRAPH
        C    *R0+,*R0+
        BLWP @BUFALC
        JNE  !
+       MOV  @-2(10),R1
        B    @TERR2
 !
 * Let R6 = address of new paragraph
