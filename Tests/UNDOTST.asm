@@ -23,6 +23,7 @@
        REF  BUFALC,BUFINT,BUFCPY
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD       
        REF  DOCSTS
+       REF  PREV_ACTION
 
 * variables just for INPUT
        REF  PARINX,CHRPAX
@@ -153,6 +154,7 @@ TSTINT
        LI   R0,1
        BLWP @ARYALC
        MOV  R0,@UNDLST
+       CLR  @PREV_ACTION
 * With an empty list, the current index is -1,
 * (no entry to point at).
        SETO @UNDOIDX
@@ -428,6 +430,7 @@ LIST3_POPULATE_LOOP
        JEQ  LIST3_DONE
        MOV  R0,@UNDLST
        MOV  R1,R4
+       CLR  @PREV_ACTION
 *
        LI   R0,UNDO_PAYLOAD+1
        BLWP @BUFALC
@@ -559,6 +562,7 @@ LIST4  DECT R10
        BLWP @ARYADD
        MOV  R0,@UNDLST
        MOV  R1,R4
+       CLR  @PREV_ACTION
 *
        LI   R0,UNDO_PAYLOAD+254
        BLWP @BUFALC

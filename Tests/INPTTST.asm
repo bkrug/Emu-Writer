@@ -23,6 +23,7 @@
        REF  BUFALC,BUFINT,BUFCPY
        REF  KEYSTR,KEYEND,KEYWRT,KEYRD       
        REF  DOCSTS
+       REF  PREV_ACTION
 
 * variables just for INPUT
        REF  PARINX,CHRPAX
@@ -166,6 +167,10 @@ TSTINT
        LI   R0,SPACE
        LI   R1,SPCEND-SPACE
        BLWP @BUFINT
+* TODO: Consider creating an initialization routine
+* that can be used by both the production code and the test code.
+* For example, it is easy to forget to type CLR @PREV_ACTION in a unit test.
+*
 * Reserve space for margin and format
 * and paragraph list.
        LI   R0,3
@@ -182,6 +187,7 @@ TSTINT
        BLWP @ARYALC
        MOV  R0,@UNDLST
        SETO @UNDOIDX
+       CLR  @PREV_ACTION
 *
        LI   R6,INTADR
 * Copy a paragraph into buffer
@@ -541,7 +547,7 @@ TST3   DECT R10
        MOV  *R10+,R11
        RT
 
-KEYL3  TEXT ' PQ '
+KEYL3  TEXT ' :) '
        BYTE FWDKEY,FWDKEY
 KEYL3E EVEN
 
@@ -549,7 +555,7 @@ EXP3A  DATA 0,0
        TEXT 'With a history, Wuhan is one of the most '
        TEXT 'ancient and civilized '
        TEXT 'metropolitan cities in China. Panlong '
-       TEXT 'PQ cheng '
+       TEXT ':) cheng '
        TEXT 'is located in '
        TEXT 'modern-day Huangpi District. During the '
        TEXT 'Western Zhou, the E '
@@ -1868,7 +1874,7 @@ CCHMGN DATA 0
 
 ****************************************
 
-SPACE  BSS  >1800
+SPACE  BSS  >1000
 SPCEND
 
        END

@@ -22,6 +22,7 @@
        REF  UNDLST,UNDOIDX
        REF  PARINX
        REF  FLDVAL,PGWDTH,PGHGHT
+       REF  PREV_ACTION
 
        COPY '../Src/EQUADDR.asm'
        COPY '../Src/EQUVAL.asm'
@@ -146,6 +147,7 @@ CLEAR_SPACE
        BLWP @ARYALC
        MOV  R0,@UNDLST
        SETO @UNDOIDX
+       CLR  @PREV_ACTION
 * Mock user input in form
        LI   R0,DEFAULT_FIELD_VALUES
        LI   R1,FLDVAL
