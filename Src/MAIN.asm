@@ -150,6 +150,9 @@ FILLED_BLOCK    EQU >8000
 * Mark the address MEMBEG as an empty block.
 * Then mark the other addresses in this list as filled or empty.
 * Do not mark MEMEND as empty or filled.
+*
+* See also link_main_files() in assm.py.
+* The method ensures that the program starts at address >A002 and does not get overwritten here.
 BUFFER_ADDRESSES
        DATA EMPTY_BLOCK
        DATA >3FFE,FILLED_BLOCK
