@@ -414,14 +414,20 @@ TERR1  MOV  @PARLST,R0
        BLWP @ARYDEL
 *
 * Some more generic memory error occurred.
-* Do not reprocess the key that cause the overflow.
 *
-RTERR  MOV  @KEYRD,@KEYWRT
+RTERR
+* Do not reprocess the key that cause the overflow.
+       MOV  @KEYRD,@KEYWRT
+* Display an out-of-memory error to the user.
        SOC  @ERRMEM,*R13
-       SZC  @STSWRK,*R13                  * The out-of-memory error probably interrupted another job.
+* The out-of-memory error probably interrupted another job.
+       SZC  @STSWRK,*R13
+* Effectively delete all items that have been added to the stack
+* as part of the INPUT routine.
        MOV  @FASTRT,R10
        MOV  *R10+,R11
-       RT                  *RTWP
+* Return to the main program loop in MAIN.asm
+       RT
 
 *
 * Delete key was pressed.
