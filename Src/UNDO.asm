@@ -47,9 +47,9 @@ ADD_UNDO_LIST_ELEM
        CI   R3,MAX_UNDO_LIST_LENGTH
        JL   UNDO_LIST_LENGTH_OKAY
 * Yes, deallocate the oldest undo-object
+* Decrease the undo index since the list is shorter
        CLR  R3
        BL   @DELETE_ONE_UNDO_ELEMENT
-* Decrease the undo index since the list is shorter
        DEC  @UNDOIDX
 UNDO_LIST_LENGTH_OKAY
 * Add new element at end of undo list
@@ -57,14 +57,39 @@ UNDO_LIST_LENGTH_OKAY
        MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADD
-       JEQ  MEMORY_ERROR
+       JMP  ARRAY_GROWTH_SUCCESS
+* Delete old elements until we can add a new element.
+* Decrease the undo index since the list is shorter
+* TODO: What if we end up with an empty list?
+       CLR  R3
+       BL   @DELETE_ONE_UNDO_ELEMENT
+       DEC  @UNDOIDX
+       JMP  UNDO_LIST_LENGTH_OKAY
+* Array grew successfully. Record new address of array.
+ARRAY_GROWTH_SUCCESS
        MOV  R0,@UNDLST
 * Create undo action and store its location in the undo list
+ACTION_CREATION
        LI   R0,UNDO_PAYLOAD
        BLWP @BUFALC
-       JEQ  MEMORY_ERROR
-!      MOV  R0,*R1
+       JMP  ALLOCATION_SUCCES
+* Delete old elements until we can add a new element.
+* Decrease the undo index since the list is shorter
+* TODO: What if we end up with an empty list?
+       CLR  R3
+       BL   @DELETE_ONE_UNDO_ELEMENT
+       DEC  @UNDOIDX
+       JMP  ACTION_CREATION
+* Allocation of the undo action was successful. Record new address in the array.
+ALLOCATION_SUCCES
+       MOV  R0,R3
+       MOV  @UNDLST,R0
+       MOV  @UNDOIDX,R1
+       BLWP @ARYADR
+       MOV  R3,R0
+       MOV  R0,*R1
 * Store address of undo action longer-term
+* TODO: This seems to be a dead variable
        MOV  R0,@UNDO_ADDRESS
 * Populate undo action
        MOV  R2,*R0+                * type of action
