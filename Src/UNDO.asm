@@ -9,7 +9,7 @@
        REF  BUFSRK
 
 * variables just for INPUT
-       REF  UNDOIDX,UNDO_ADDRESS,PREV_ACTION
+       REF  UNDOIDX,PREV_ACTION
        REF  CHRPAX,PARINX
 
        COPY 'EQUVAL.asm'
@@ -88,9 +88,6 @@ ALLOCATION_SUCCES
        BLWP @ARYADR
        MOV  R3,R0
        MOV  R0,*R1
-* Store address of undo action longer-term
-* TODO: This seems to be a dead variable
-       MOV  R0,@UNDO_ADDRESS
 * Populate undo action
        MOV  R2,*R0+                * type of action
        MOV  @PARINX,*R0+           * paragraph index before action

@@ -42,7 +42,7 @@
        DEF  WRAP_START,WRAP_END
        DEF  PARINX,CHRPAX
        DEF  INSTMD,INPTMD
-       DEF  UNDOIDX,UNDO_ADDRESS,PREV_ACTION
+       DEF  UNDOIDX,PREV_ACTION
 * POSUPD.asm
        DEF  LININX,CHRLIX
        DEF  WINOFF,WINPAR,WINLIN,WINMGN
@@ -174,8 +174,6 @@ INSTMD BSS  2
 INPTMD BSS  2
 * Address of the current undo action
 UNDOIDX           BSS  2
-* Address of the current undo action
-UNDO_ADDRESS      BSS  2
 * Previous action
 * Address of most recent input routine to be processed
 PREV_ACTION       BSS  2
