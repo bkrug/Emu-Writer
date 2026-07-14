@@ -401,12 +401,14 @@ ISENTR DECT R10
 * Deallocate the wrap list that was allocated
 TERR2  MOV  R8,R0
        BLWP @BUFREE
+*
 * Remove the paragraph list entry that
 * was just created, but cannot be used.
 *
 * Input:
-*   R1 = index to remove from PARLST
+*   R1 = index of the paragraph we were trying to split
 TERR1  MOV  @PARLST,R0
+       INC  R1
        BLWP @ARYDEL
 *
 * Some more generic memory error occurred.
