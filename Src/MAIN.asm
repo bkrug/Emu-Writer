@@ -147,11 +147,15 @@ INTPAR LI   R0,EMPPAR
 EMPTY_BLOCK     EQU >0000
 FILLED_BLOCK    EQU >8000
 
+* Mark the address MEMBEG as an empty block.
+* Then mark the other addresses in this list as filled or empty.
+* Do not mark MEMEND as empty or filled.
 BUFFER_ADDRESSES
-       DATA EMPTY_BLOCK,>3FFE
-       DATA FILLED_BLOCK,>A000
-       DATA FILLED_BLOCK,PRGEND
-       DATA EMPTY_BLOCK,MEMEND
+       DATA EMPTY_BLOCK
+       DATA >3FFE,FILLED_BLOCK
+       DATA >A000,FILLED_BLOCK
+       DATA PRGEND,EMPTY_BLOCK
+       DATA MEMEND
 BUFFER_ADDRESSES_END
 
 * Required for MEMBUF.noheader.obj
