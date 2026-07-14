@@ -228,6 +228,8 @@ TEST_UNDO_ACTION
        JEQ  NO_NEW_UNDO
 *
        BL   @START_FRESH_UNDO_ENTRY
+* If there is not enough memory to start the undo action,
+* there is not enough memory to do the thing that would otherwise be undone.
        JNE  !
        B    @RTERR
 !
