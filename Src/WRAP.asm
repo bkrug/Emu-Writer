@@ -34,6 +34,8 @@ WRAP   DATA WRAPWS,WRAP+4
 * Figure out available line width based
 * on left and right margins
 *
+* Get a copy of the stack pointer
+       MOV  @20(R13),R10
 * Let R8 = address of margin entry for this paragraph
        MOV  *R13,R0
        BL   @GETMGN

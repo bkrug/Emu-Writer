@@ -7,7 +7,7 @@
        REF  WINPAR,WINLIN,WINMGN,WINMOD          "
        REF  PRFHRZ,WINOFF                        "
        REF  STSWIN,STSDSH,STSARW                 From CONST.asm
-       REF  GETMGN,GETIDT                        From UTIL.asm
+       REF  GETIDT                               From UTIL.asm
        REF  PARADR,GETLIN,LOOKUP,LOOKDW          "
        REF  ARYADR                               From ARRAY
 
