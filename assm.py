@@ -116,7 +116,10 @@ for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj.temp")):
 # Create disk image
 print("Creating disk image")
 disk_image = os.path.join('EmuWriter.v0.4.dsk')
-os.system("xdm99.py -X sssd -n EMU " + disk_image)
+# Clone the sample documents disk, removing files that end users don't need
+os.system("xdm99.py SampleDocuments.dsk -d BIG ITCH NOTEMUDOC VERTOOHIGH -o " + disk_image)
+# Rename the disk as the Emu-writer program disk
+os.system("xdm99.py " + disk_image + " -n EMU")
 program_files = glob.glob(os.path.join(".", WORK_FOLDER, "EMUWRITE*"))
 for program_file in program_files:
     if not program_file.endswith(".dsk"):
@@ -128,17 +131,6 @@ for program_file in program_files:
         protect_command_1 = "xdm99.py {disk_image} -w {program_file}"
         protect_command_2 = protect_command_1.format(disk_image = disk_image, program_file = program_file.replace("./Fiad/", ""))
         os.system(protect_command_2)
-
-# Add example documents to disk image
-text_files = ["HANSEL", "THREELANG"]
-for text_file in text_files:
-    remove_header1 = "xdm99.py -F Fiad/{text_file} -o TEMPFILE"
-    remove_header2 = remove_header1.format(text_file = text_file)
-    os.system(remove_header2)
-    add_doc_1 = "xdm99.py {disk_image} -a TEMPFILE -n {text_file} -f DIS/FIX64"
-    add_doc_2 = add_doc_1.format(disk_image = disk_image, text_file = text_file)
-    os.system(add_doc_2)
-    os.remove("TEMPFILE")
 
 # Create test-runner disk image
 print("Creating test-runner disk images")
