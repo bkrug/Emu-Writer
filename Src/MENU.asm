@@ -54,7 +54,7 @@ TXTTTL DATA TXTTT1
        BYTE 0
        BYTE 0
        BYTE 0
-       TEXT '           Released ???'
+       TEXT '           Released July 2026'
        BYTE 0
        TEXT '    Press ENTER or SPACE to continue'
        BYTE 0
