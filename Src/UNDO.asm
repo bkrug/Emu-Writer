@@ -70,7 +70,7 @@ ARRAY_GROWTH_SUCCESS
        MOV  R0,@UNDLST
 * Create undo action and store its location in the undo list
 ACTION_CREATION
-       LI   R0,UNDO_PAYLOAD
+       LI   R0,UNDO_PAYLOAD+UNDO_PAYLOAD_SIZE
        BLWP @BUFALC
        JMP  ALLOCATION_SUCCES
 * Delete old elements until we can add a new element.
@@ -139,10 +139,11 @@ DELETE_ONE_UNDO_ELEMENT
        RT
 
 *
-* Reserve space for undo data
+* Returns the next writable location in the undo object.
+* Increaes the reported size of the undo payload
 *
 * Input:
-*   R0 - number of bytes to reserve
+*   R0 - number of bytes in undo payload we plan to use
 * Output:
 *   R0 - address of reserved bytes
 RESERVE_UNDO_SPACE
@@ -168,33 +169,28 @@ RESERVE_UNDO_SPACE
 * Will undo payload surpass max length?
        MOV  @UNDO_ANY_LEN(R4),R0
        A    *R10,R0
-       CI   R0,MAX_UNDO_PAYLOAD
-       JLE  INCREASE_ACTION_LENGTH
+       CI   R0,UNDO_PAYLOAD_SIZE
+       JLE  INCREASE_PAYLOAD_SIZE
 * Yes, create a new undo object
 * Let R2 = undo type
 * Let R3 = address of new element in undo list
 * Let R4 = address of new action
+* The caller of this routine, might have already moved the cursor,
+* so set the initial cursor position in this action to the final cursor position of the previous action.
        MOV  *R4,R2
        BL   @START_FRESH_UNDO_ENTRY
+       MOV  R0,R3
+       MOV  @UNDO_ANY_PARA_AFTER(R4),@UNDO_ANY_PARA(R3)
+       MOV  @UNDO_ANY_CHAR_AFTER(R4),@UNDO_ANY_CHAR(R3)
        MOV  R1,R3
        MOV  R0,R4
 *
-INCREASE_ACTION_LENGTH
-* Increase length of undo-action
-* Let R0 = new address of undo-action
+INCREASE_PAYLOAD_SIZE
+* Let R0 = address of next free byte
        MOV  R4,R0
-       LI   R1,UNDO_PAYLOAD
-       A    @UNDO_ANY_LEN(R4),R1
-       A    *R10,R1
-       BLWP @BUFGRW
-       JEQ  RESERVE_SPACE_MEM_ERROR
-* Store new address of undo-action in the undo list
-       MOV  R0,R4
-       MOV  R0,*R3
-* Let R0 = address of reserved space
        AI   R0,UNDO_PAYLOAD
        A    @UNDO_ANY_LEN(R4),R0
-* Update the length of the undo text
+* Update the length of the undo payload
        A    *R10+,@UNDO_ANY_LEN(R4)
 *
        MOV  *R10+,R2

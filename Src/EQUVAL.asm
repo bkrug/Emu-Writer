@@ -127,7 +127,7 @@ UNDO_ANY_PARA_AFTER EQU  >0006      * paragraph index after action
 UNDO_ANY_CHAR_AFTER EQU  >0008      * character index after action
 UNDO_ANY_LEN        EQU  >000A      * Location in undo-action of string-length
 UNDO_PAYLOAD        EQU  >000C      * Location in undo-action of deleted text
+UNDO_PAYLOAD_SIZE   EQU  >0080      * Size of data in most undo actions
 
 *
 MAX_UNDO_LIST_LENGTH   EQU  16
-MAX_UNDO_PAYLOAD       EQU  255

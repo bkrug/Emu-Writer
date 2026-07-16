@@ -48,7 +48,7 @@ TSTLST DATA (TSTEND-TSTLST-2)/8
 * Assert that the undo/redo list will not exceed 16
        DATA LIST3
        TEXT 'LIST3 '
-* Assert that an undo object larger than 255 bytes will split in two
+* Assert that an undo object larger than 128 bytes will split in two
        DATA LIST4
        TEXT 'LIST4 '
 * Assert that text is deleted when undo is not pressed.
@@ -552,19 +552,19 @@ LIST3_YOUNGEST_MSG
 
 * Undo List 4
 * -----------
-* Assert that an undo object larger than 255 bytes will split in two
+* Assert that an undo object larger than 128 bytes will split in two
 LIST4  DECT R10
        MOV  R11,*R10
 * Initialize Test Data
        BL   @TSTINT
-* Populate undo list with 1 item containing 254 characters
+* Populate undo list with 1 item containing 127 characters
        MOV  @UNDLST,R0
        BLWP @ARYADD
        MOV  R0,@UNDLST
        MOV  R1,R4
        CLR  @PREV_ACTION
 *
-       LI   R0,UNDO_PAYLOAD+254
+       LI   R0,UNDO_PAYLOAD+UNDO_PAYLOAD_SIZE-1
        BLWP @BUFALC
        MOV  R0,*R4
 *
@@ -607,7 +607,7 @@ LIST4  DECT R10
        MOV  *R1,R1
        MOV  @UNDO_ANY_LEN(R1),R1
 *
-       LI   R0,255
+       LI   R0,UNDO_PAYLOAD_SIZE
        LI   R2,LIST4_CHANGED_LEN_MSG+2
        MOV  @LIST4_CHANGED_LEN_MSG,R3
        BLWP @AEQ
@@ -633,11 +633,11 @@ KEY_LIST4E
        EVEN
 
 LIST4_OLD_UNDO_OBJ
-       DATA UNDO_DEL        * Undo Operation Type
-       DATA 0,45            * Paragraph index, character index (before action)
-       DATA 0,45            * Paragraph index, character index (ater action)
-       DATA 254             * String length
-       TEXT 'some text...'  * Deleted Bytes
+       DATA UNDO_DEL                 * Undo Operation Type
+       DATA 0,45                     * Paragraph index, character index (before action)
+       DATA 0,45                     * Paragraph index, character index (ater action)
+       DATA UNDO_PAYLOAD_SIZE-1      * String length
+       TEXT 'some text...'           * Deleted Bytes
        EVEN
 LIST4_OLD_UNDO_OBJ_END
 
