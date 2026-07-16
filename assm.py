@@ -38,7 +38,7 @@ def link_main_files(linked_file, include_membuf, object_files):
     link_command_2 = link_command_1.format(source = unlinked_files_string, output = get_work_file(linked_file))
     os.system(link_command_2)
 
-# Strip the 16-byte FIAD header and any trailer after the ASCII ETX (code 3) marker
+# Strip the 16-byte Emu-writer header and any Emu-writer formatting data after the ASCII ETX (code 3) marker
 def clean_manual_file(path):
     with open(path, "rb") as f:
         data = f.read()
