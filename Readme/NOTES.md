@@ -1,7 +1,6 @@
 # TODO
 
 Before release:
-* Copy the documentation readme file into the Emu-writer program disk.
 * Make all undo-actions a consistent length, right from the time they are initialized. Do away with the potential that we could have problems growing an undo action to insert a character.
 * Manually test more undo/redo with margins and DSK.BIG.BIG
 * Upon a memory error, if the item at the end of the undo list is empty, delete it.

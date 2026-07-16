@@ -135,8 +135,9 @@ clean_manual_file(manual2_path)
 
 # Merge the manuals into the documentation file, then remove the source manuals
 documentation_path = os.path.join("Readme", "DOCUMENTATION.md")
+source_list = (manual1_path, manual2_path)
 with open(documentation_path, "wb") as documentation_file:
-    for manual_path in (manual1_path, manual2_path):
+    for manual_path in source_list:
         with open(manual_path, "rb") as manual_file:
             documentation_file.write(manual_file.read())
 os.remove(manual1_path)
