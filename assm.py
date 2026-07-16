@@ -113,6 +113,10 @@ for file in glob.glob(os.path.join(WORK_FOLDER, "*.lst")):
 for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj.temp")):
     os.remove(file)
 
+# Extract MANUAL from floppy image to .MD file
+os.system("xdm99.py SampleDocuments.dsk -e MANUAL1 -o Readme/MANUAL1.md")
+os.system("xdm99.py SampleDocuments.dsk -e MANUAL2 -o Readme/MANUAL2.md")
+
 # Create disk image
 print("Creating disk image")
 disk_image = os.path.join('EmuWriter.v0.4.dsk')
