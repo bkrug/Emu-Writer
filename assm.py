@@ -38,6 +38,17 @@ def link_main_files(linked_file, include_membuf, object_files):
     link_command_2 = link_command_1.format(source = unlinked_files_string, output = get_work_file(linked_file))
     os.system(link_command_2)
 
+# Strip the 16-byte FIAD header and any trailer after the ASCII ETX (code 3) marker
+def clean_manual_file(path):
+    with open(path, "rb") as f:
+        data = f.read()
+    data = data[16:]
+    etx_index = data.find(3)
+    if etx_index != -1:
+        data = data[:etx_index]
+    with open(path, "wb") as f:
+        f.write(data)
+
 #Assemble Src and Tests
 srcPath = os.path.join("Src")
 testsPath = os.path.join("Tests")
@@ -114,22 +125,22 @@ for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj.temp")):
     os.remove(file)
 
 # Extract MANUAL from floppy image to .MD file
+print("Extract DOCUMENTATION.md from SampleDocuments.dsk")
 os.system("xdm99.py SampleDocuments.dsk -e MANUAL1 -o Readme/MANUAL1.md")
 os.system("xdm99.py SampleDocuments.dsk -e MANUAL2 -o Readme/MANUAL2.md")
+manual1_path = os.path.join("Readme", "MANUAL1.md")
+manual2_path = os.path.join("Readme", "MANUAL2.md")
+clean_manual_file(manual1_path)
+clean_manual_file(manual2_path)
 
-# Strip the 16-byte FIAD header and any trailer after the ASCII ETX (code 3) marker
-def clean_manual_file(path):
-    with open(path, "rb") as f:
-        data = f.read()
-    data = data[16:]
-    etx_index = data.find(3)
-    if etx_index != -1:
-        data = data[:etx_index]
-    with open(path, "wb") as f:
-        f.write(data)
-
-clean_manual_file("Readme/MANUAL1.md")
-clean_manual_file("Readme/MANUAL2.md")
+# Merge the manuals into the documentation file, then remove the source manuals
+documentation_path = os.path.join("Readme", "DOCUMENTATION.md")
+with open(documentation_path, "wb") as documentation_file:
+    for manual_path in (manual1_path, manual2_path):
+        with open(manual_path, "rb") as manual_file:
+            documentation_file.write(manual_file.read())
+os.remove(manual1_path)
+os.remove(manual2_path)
 
 # Create disk image
 print("Creating disk image")
