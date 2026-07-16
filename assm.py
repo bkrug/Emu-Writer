@@ -117,6 +117,20 @@ for file in glob.glob(os.path.join(WORK_FOLDER, "*.obj.temp")):
 os.system("xdm99.py SampleDocuments.dsk -e MANUAL1 -o Readme/MANUAL1.md")
 os.system("xdm99.py SampleDocuments.dsk -e MANUAL2 -o Readme/MANUAL2.md")
 
+# Strip the 16-byte FIAD header and any trailer after the ASCII ETX (code 3) marker
+def clean_manual_file(path):
+    with open(path, "rb") as f:
+        data = f.read()
+    data = data[16:]
+    etx_index = data.find(3)
+    if etx_index != -1:
+        data = data[:etx_index]
+    with open(path, "wb") as f:
+        f.write(data)
+
+clean_manual_file("Readme/MANUAL1.md")
+clean_manual_file("Readme/MANUAL2.md")
+
 # Create disk image
 print("Creating disk image")
 disk_image = os.path.join('EmuWriter.v0.4.dsk')
