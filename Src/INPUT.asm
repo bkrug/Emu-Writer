@@ -1211,8 +1211,11 @@ REDO_UNDO_MARGINS
        DECT R10
        MOV  R11,*R10
 * Load EDTMGN code from cache
+* UNDO_MARGIN and REDO_MARGIN are in the same cache as EDTMGN
        MOV  @CCHMGN,R0
+       LIMI 0
        BL   @LOADCH
+       LIMI 2
 * Undo a margin change
        BL   *R8
 * Set document status bits
