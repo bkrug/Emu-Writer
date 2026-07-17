@@ -76,7 +76,7 @@ ARRAY_GROWTH_SUCCESS
 ACTION_CREATION
        LI   R0,UNDO_PAYLOAD+UNDO_PAYLOAD_SIZE
        BLWP @BUFALC
-       JMP  ALLOCATION_SUCCES
+       JNE  ALLOCATION_SUCCES
 * Delete old elements until we can add a new element.
 * Decrease the undo index since the list is shorter
        CLR  R3
