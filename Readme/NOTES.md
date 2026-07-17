@@ -18,6 +18,12 @@ Could be after the release:
 * Load the file "BIG". Press enter many times from the end of the document.
 When the memory is full, the cursor stops blinking. Scroll up to the non-blank line, and it blinks again.
 Scroll back down to the last empty line and it stops blinking again.
+* Load the file "BIG". Go to the second character of the longest paragraph you can find.
+Press enter once. We expect a memory full error.
+Confirm that there are no empty elements in the undo list.
+* Load the file "BIG". Go to an empty paragraph and type several characters with an arrow key in between each character.
+  * We should NOT see undo list elements with the pointer >FFFF
+  * We are hoping that the memory is too full to hold 16 undo objects. If that is the case, the undo list should contain the most recent actions, not the earliest.
 
 # xdm99
 
