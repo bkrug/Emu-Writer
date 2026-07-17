@@ -57,14 +57,18 @@ UNDO_LIST_LENGTH_OKAY
        MOV  @UNDLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADD
-       JMP  ARRAY_GROWTH_SUCCESS
-* Delete old elements until we can add a new element.
+       JNE  ARRAY_GROWTH_SUCCESS
+* Could not add a new element to the list.       
+* Do elements remain that we can delete?
+       MOV  @UNDLST,R0
+       MOV  *R0,R0
+       JEQ  START_FRESH_MEM_ERROR
+* Yes, delete old elements until we can add a new element.
 * Decrease the undo index since the list is shorter
        CLR  R3
        BL   @DELETE_ONE_UNDO_ELEMENT
        DEC  @UNDOIDX
-       JEQ  START_FRESH_MEM_ERROR
-       JNE  UNDO_LIST_LENGTH_OKAY
+       JMP  UNDO_LIST_LENGTH_OKAY
 * Array grew successfully. Record new address of array.
 ARRAY_GROWTH_SUCCESS
        MOV  R0,@UNDLST
@@ -212,4 +216,5 @@ RESERVE_SPACE_MEM_ERROR
        S    R0,R0
        RT
 
+SOMEV  DATA >1234
        END

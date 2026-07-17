@@ -1,8 +1,8 @@
 # TODO
 
 Before release:
-* Manually test more undo/redo with margins and DSK.BIG.BIG
 * Upon a memory error, if the item at the end of the undo list is empty, delete it.
+* Manually test more undo/redo with margins and DSK.BIG.BIG
 
 Could be after the release:
 * When splitting a paragraph, the "new" paragraph should always be the smaller of the two. This makes memory management easier.
