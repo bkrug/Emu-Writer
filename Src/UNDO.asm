@@ -1,5 +1,6 @@
        DEF  START_FRESH_UNDO_ENTRY
        DEF  RESERVE_UNDO_SPACE
+       DEF  DELETE_EMPTY_UNDO
 *
        REF  UNDOLST
 * Mem Buffer library
@@ -9,7 +10,7 @@
        REF  BUFSRK
 
 * variables just for INPUT
-       REF  UNDOIDX,PREV_ACTION
+       REF  UNDOIDX
        REF  CHRPAX,PARINX
 
        COPY 'EQUVAL.asm'
@@ -216,5 +217,48 @@ RESERVE_SPACE_MEM_ERROR
        S    R0,R0
        RT
 
-SOMEV  DATA >1234
+*
+* If the most recent undo action is empty.
+* Delete it.
+*
+* Output:
+*   When a delete happens, EQ is set.
+*
+DELETE_EMPTY_UNDO
+* Is the most current object on the undo list empty?
+       MOV  @UNDOLST,R0
+       MOV  *R0,R1
+       DEC  R1
+       BLWP @ARYADR                      * Let R1 = address of array element
+       CI   R1,>FFFF
+       JEQ  DID_NOT_DELETE_UNDO
+       MOV  *R1,R1                       * Let R1 = address of undo object
+       MOV  @UNDO_ANY_LEN(R1),R2
+       JNE  DID_NOT_DELETE_UNDO
+* Yes, the current undo object is empty, delete the undo object.
+       MOV  R1,R0
+       BLWP @BUFREE
+* Delete the element from the undo list.
+       MOV  @UNDOLST,R0
+       MOV  *R0,R1
+       DEC  R1
+       BLWP @ARYDEL
+* Decrement @UNDOIDX if it points past the end of the array
+       MOV  @UNDOLST,R0
+       MOV  *R0,R1
+       C    @UNDOIDX,R1
+       JL   !
+       DEC  @UNDOIDX
+!
+* Deleted something. Set EQ status bit.
+       S    R1,R1
+       RT
+
+* Nothing deleted.
+* Set EQ bit to false
+DID_NOT_DELETE_UNDO
+       CLR  R1
+       INC  R1
+       RT
+
        END

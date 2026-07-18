@@ -26,6 +26,7 @@
 * UNDO.asm
        REF  START_FRESH_UNDO_ENTRY
        REF  RESERVE_UNDO_SPACE
+       REF  DELETE_EMPTY_UNDO
 
 * MENULOGIC.asm
        REF  LOADCH
@@ -424,28 +425,11 @@ RTERR
 * Don't display a "working..." message. The memory error interrupted it.
        SZC  @STSWRK,*R13
 * Is the most current object on the undo list empty?
-       MOV  @UNDOLST,R0
-       MOV  *R0,R1
-       DEC  R1
-       BLWP @ARYADR                      * Let R1 = address of array element
-       CI   R1,>FFFF
-       JEQ  !
-       MOV  *R1,R1                       * Let R1 = address of undo object
-       MOV  @UNDO_ANY_LEN(R1),R2
+       BL   @DELETE_EMPTY_UNDO
        JNE  !
-* Yes, the current undo object is empty, delete it.
-       MOV  @UNDOLST,R0
-       MOV  *R0,R1
-       DEC  R1
-       BLWP @ARYDEL
-* Force a new undo action to start
+* Yes, since we deleted the old action,
+* force a new undo object the next time the user does something.
        CLR  @PREV_ACTION
-* Decrement @UNDOIDX if it points past the end of the array
-       MOV  @UNDOLST,R0
-       MOV  *R0,R1
-       C    @UNDOIDX,R1
-       JL   !
-       DEC  @UNDOIDX
 !
 * Delete all items that have been added to the stack
 * as part of the INPUT routine.
