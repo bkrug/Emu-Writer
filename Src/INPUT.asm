@@ -223,8 +223,6 @@ TEST_UNDO_ACTION
        MOV  *R0,R2
 * If the undo action is 0 or the same as the old one,
 * do not create a new undo object.
-* TODO: Consider just looking up the action in the UNDLIST array.
-*       It would be less error prone incase the list is edited elsewhere.
        JEQ  NO_NEW_UNDO
        C    @PREV_ACTION,R2
        JEQ  NO_NEW_UNDO
