@@ -8,7 +8,7 @@
        REF  MGN_EDITED_INDEX              "
        REF  MGN_VALUES_OLD                "
        REF  MGN_OLD_LEN                   "
-       REF  UNDLST,UNDOIDX                "
+       REF  UNDOLST,UNDOIDX                "
        REF  EXPLNT                        From CONST.asm
        REF  BUFALC,BUFREE,BUFCPY          From MEMBUF
        REF  ARYINS,ARYDEL,ARYADR          From ARRAY
@@ -511,7 +511,7 @@ RECORD_NEW_VALUE_DONE
 *
 * The new undo entry is invalid. Delete it.
 MEMORY_ERROR_RESERVING_UNDO
-       MOV   @UNDLST,R0
+       MOV   @UNDOLST,R0
        MOV   @UNDOIDX,R1
        BLWP  @ARYDEL
        RT

@@ -16,7 +16,7 @@
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST,UNDOIDX
+       REF  UNDOLST,UNDOIDX
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
        REF  ARYADR
@@ -185,7 +185,7 @@ TSTINT
 * Initialize undo/redo list
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
        SETO @UNDOIDX
        CLR  @PREV_ACTION
 *

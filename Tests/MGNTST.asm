@@ -19,7 +19,7 @@
        REF  BUFALC,BUFINT,BUFCPY
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST,UNDOIDX
+       REF  UNDOLST,UNDOIDX
        REF  PARINX
        REF  FLDVAL,PGWDTH,PGHGHT
        REF  PREV_ACTION
@@ -145,7 +145,7 @@ CLEAR_SPACE
 * Initialize undo/redo list
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
        SETO @UNDOIDX
        CLR  @PREV_ACTION
 * Mock user input in form
@@ -886,7 +886,7 @@ UNDO1
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -971,7 +971,7 @@ UNDO2
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1077,7 +1077,7 @@ UNDO3
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1182,7 +1182,7 @@ UNDO4
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1285,7 +1285,7 @@ UNDO5
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1387,7 +1387,7 @@ UNDO6
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1491,7 +1491,7 @@ UNDO7
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1597,7 +1597,7 @@ UNDO8
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1693,7 +1693,7 @@ REDO1
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1715,7 +1715,7 @@ REDO1
        BLWP @ABLCK
 * Act
 * Let R7 = address of the redo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1805,7 +1805,7 @@ REDO4
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1827,7 +1827,7 @@ REDO4
        BLWP @ABLCK
 * Act
 * Let R7 = address of the redo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1935,7 +1935,7 @@ REDO5
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -1957,7 +1957,7 @@ REDO5
        BLWP @ABLCK
 * Act
 * Let R7 = address of the redo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -2067,7 +2067,7 @@ REDO8
        BLWP @ABLCK
 * Act
 * Let R7 = address of the undo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7
@@ -2089,7 +2089,7 @@ REDO8
        BLWP @ABLCK
 * Act
 * Let R7 = address of the redo action.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R7

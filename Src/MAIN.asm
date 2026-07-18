@@ -15,7 +15,7 @@
        REF  BUFINT,BUFALC,BUFCPY
        REF  ARYALC,ARYADD
        REF  PARLST,MGNLST,FMTLST
-       REF  UNDLST,UNDOIDX
+       REF  UNDOLST,UNDOIDX
        REF  PREV_ACTION
        REF  PGHGHT,PGWDTH
        REF  VDPADR,VDPRAD,VDPWRT
@@ -110,7 +110,7 @@ BUFFER_ALLOCATION_LOOP
        MOV  R0,@PARLST
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
        CLR  @PREV_ACTION
 * Set cursor position to document start
        CLR  @PARINX

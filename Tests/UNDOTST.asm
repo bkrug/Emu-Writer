@@ -15,7 +15,7 @@
 
 * from VAR.asm
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST,UNDOIDX
+       REF  UNDOLST,UNDOIDX
        REF  PREV_ACTION
        REF  MAKETX,PRINTL,OPENF,CLOSEF
        REF  ARYALC,ARYADD,ARYINS,ARYDEL
@@ -153,7 +153,7 @@ TSTINT
 * Initialize undo/redo list
        LI   R0,1
        BLWP @ARYALC
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
        CLR  @PREV_ACTION
 * With an empty list, the current index is -1,
 * (no entry to point at).
@@ -255,7 +255,7 @@ PAR4   DATA PAR4A-PAR4-4,WRAP4
        TEXT '3'
 PAR4A
 
-UNDLEN TEXT 'UNDLST length'
+UNDLEN TEXT 'UNDOLST length'
        EVEN
 
 ****************************************
@@ -291,13 +291,13 @@ LIST1  DECT R10
 * Assert
 * Expect two undo-operations in the list
        LI   R0,2
-       MOV  @UNDLST,R1
+       MOV  @UNDOLST,R1
        MOV  *R1,R1
        LI   R2,UNDLEN
        LI   R3,13
        BLWP @AEQ
 * Assert first undo operation records correct deleted letters
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        CLR  R1
        BLWP @ARYADR
        MOV  *R1,R1
@@ -308,7 +308,7 @@ LIST1  DECT R10
        MOV  @FAIL_UNDO1,R4
        BLWP @ABLCK
 * Assert second undo operation records correct deleted letters
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        LI   R1,1
        BLWP @ARYADR
        MOV  *R1,R1
@@ -379,7 +379,7 @@ LIST2  DECT R10
 * Assert
 * Expect zero undo-operations in the list
        CLR  R0
-       MOV  @UNDLST,R1
+       MOV  @UNDOLST,R1
        MOV  *R1,R1
        LI   R2,UNDLEN
        LI   R3,13
@@ -425,10 +425,10 @@ LIST3  DECT R10
 * Let R4 = address of most recent entry in undo-list
        CLR  R3
 LIST3_POPULATE_LOOP
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        BLWP @ARYADD
        JEQ  LIST3_DONE
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
        MOV  R1,R4
        CLR  @PREV_ACTION
 *
@@ -467,13 +467,13 @@ LIST3_POPULATE_LOOP
 * Assert
 * Expect number of undo operations to remain unchanged
        LI   R0,MAX_UNDO_LIST_LENGTH
-       MOV  @UNDLST,R1
+       MOV  @UNDOLST,R1
        MOV  *R1,R1
        LI   R2,LIST3_LENGTH_MSG+2
        MOV  @LIST3_LENGTH_MSG,R3
        BLWP @AEQ
 * Expect oldest undo-object to be what was previously the second oldest
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        CLR  R1
        BLWP @ARYADR
        MOV  *R1,R1
@@ -484,7 +484,7 @@ LIST3_POPULATE_LOOP
        MOV  @LIST3_OLDEST_MSG,R3
        BLWP @AEQ
 * Expect second youngest undo-object to be what previously the youngest
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        LI   R1,14
        BLWP @ARYADR
        MOV  *R1,R1
@@ -495,7 +495,7 @@ LIST3_POPULATE_LOOP
        MOV  @LIST3_SECOND_YOUNGEST_MSG,R3
        BLWP @AEQ
 * Assert that the most recent undo-object is the letter we just deleted
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        LI   R1,15
        BLWP @ARYADR
        MOV  *R1,R1
@@ -558,9 +558,9 @@ LIST4  DECT R10
 * Initialize Test Data
        BL   @TSTINT
 * Populate undo list with 1 item containing 127 characters
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        BLWP @ARYADD
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
        MOV  R1,R4
        CLR  @PREV_ACTION
 *
@@ -595,13 +595,13 @@ LIST4  DECT R10
 * Assert
 * Expect number of undo operations to increase
        LI   R0,2
-       MOV  @UNDLST,R1
+       MOV  @UNDOLST,R1
        MOV  *R1,R1
        LI   R2,LIST4_LIST_LENGTH_MSG+2
        MOV  @LIST4_LIST_LENGTH_MSG,R3
        BLWP @AEQ
 * Expect old undo-object to now have 128 characters
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        CLR  R1
        BLWP @ARYADR
        MOV  *R1,R1
@@ -612,7 +612,7 @@ LIST4  DECT R10
        MOV  @LIST4_CHANGED_LEN_MSG,R3
        BLWP @AEQ
 * Assert that the most new undo-object contains what we expect
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        LI   R1,1
        BLWP @ARYADR
        MOV  *R1,R1

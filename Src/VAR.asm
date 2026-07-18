@@ -20,7 +20,7 @@
        DEF  FASTRT
 * Arrays
        DEF  PARLST,FMTLST,MGNLST
-       DEF  UNDLST
+       DEF  UNDOLST
 *
        DEF  PGHGHT,PGWDTH
 * MAIN.asm
@@ -93,7 +93,7 @@ FMTLST BSS  2
 * Address of margin list
 MGNLST BSS  2
 * Address of list of undo/redo actions
-UNDLST BSS  2
+UNDOLST BSS  2
 * Page height and width in lines and characters
 PGHGHT BSS  1
 PGWDTH BSS  1

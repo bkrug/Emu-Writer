@@ -1,7 +1,7 @@
        DEF  INPUT
 *
        REF  PARLST,FMTLST,MGNLST
-       REF  UNDLST
+       REF  UNDOLST
        REF  ARYALC,ARYINS,ARYDEL,ARYADR
        REF  ARYADD
        REF  BUFALC,BUFREE,BUFCPY,BUFGRW
@@ -424,7 +424,7 @@ RTERR
 * Don't display a "working..." message. The memory error interrupted it.
        SZC  @STSWRK,*R13
 * Is the most current object on the undo list empty?
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  *R0,R1
        DEC  R1
        BLWP @ARYADR                      * Let R1 = address of array element
@@ -434,14 +434,14 @@ RTERR
        MOV  @UNDO_ANY_LEN(R1),R2
        JNE  !
 * Yes, the current undo object is empty, delete it.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  *R0,R1
        DEC  R1
        BLWP @ARYDEL
 * Force a new undo action to start
        CLR  @PREV_ACTION
 * Decrement @UNDOIDX if it points past the end of the array
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  *R0,R1
        C    @UNDOIDX,R1
        JL   !
@@ -632,7 +632,7 @@ UNDO_OP
        MOV  R11,*R10
 * Let R0 = address of undo list
 * Let R1 = index in undo operation list
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
 * Are there any undo operations remaining?
        JLT  UNDO_COMPLETE
@@ -676,7 +676,7 @@ REDO_OP
        MOV  R11,*R10
 * Let R0 = address of undo list
 * Let R1 = index of operation to redo
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        INC  R1
 * Are there any redo operations remaining?
@@ -1270,7 +1270,7 @@ SET_WRAP_PARAGRAPHS
 *
 RECORD_CURSOR_AFTER_ACTION
 * Let R1 = address of undo action
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  *R1,R1

@@ -1,7 +1,7 @@
        DEF  START_FRESH_UNDO_ENTRY
        DEF  RESERVE_UNDO_SPACE
 *
-       REF  UNDLST
+       REF  UNDOLST
 * Mem Buffer library
        REF  ARYALC,ARYINS,ARYDEL,ARYADR
        REF  ARYADD
@@ -34,7 +34,7 @@ START_FRESH_UNDO_ENTRY
        INC  @UNDOIDX
 REMOVE_UNDO_ACTION_LOOP
 * Is there already an old undo action at current index?
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R3
        C    *R0,R3
        JLE  ADD_UNDO_LIST_ELEM
@@ -54,13 +54,13 @@ ADD_UNDO_LIST_ELEM
 UNDO_LIST_LENGTH_OKAY
 * Add new element at end of undo list
 * Let R1 = address of element in undo list
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADD
        JNE  ARRAY_GROWTH_SUCCESS
 * Could not add a new element to the list.       
 * Do elements remain that we can delete?
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  *R0,R0
        JEQ  START_FRESH_MEM_ERROR
 * Yes, delete old elements until we can add a new element.
@@ -71,7 +71,7 @@ UNDO_LIST_LENGTH_OKAY
        JMP  UNDO_LIST_LENGTH_OKAY
 * Array grew successfully. Record new address of array.
 ARRAY_GROWTH_SUCCESS
-       MOV  R0,@UNDLST
+       MOV  R0,@UNDOLST
 * Create undo action and store its location in the undo list
 ACTION_CREATION
        LI   R0,UNDO_PAYLOAD+UNDO_PAYLOAD_SIZE
@@ -87,7 +87,7 @@ ACTION_CREATION
 * Allocation of the undo action was successful. Record new address in the array.
 ALLOCATION_SUCCES
        MOV  R0,R3
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  @UNDOIDX,R1
        BLWP @ARYADR
        MOV  R3,R0
@@ -130,13 +130,13 @@ START_FRESH_MEM_ERROR
 *
 DELETE_ONE_UNDO_ELEMENT
 * Deallocate undo action from memory
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  R3,R1
        BLWP @ARYADR
        MOV  *R1,R0
        BLWP @BUFREE
 * Delete element from undo list
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  R3,R1
        BLWP @ARYDEL
 *
@@ -161,7 +161,7 @@ RESERVE_UNDO_SPACE
        MOV  R0,*R10
 * Is the undo list empty?
 * If yes, report a memory allocation error.
-       MOV  @UNDLST,R0
+       MOV  @UNDOLST,R0
        MOV  *R0,*R0
        JEQ  RESERVE_SPACE_MEM_ERROR
 * Let R3 = address in undo list
