@@ -1,7 +1,6 @@
 # TODO
 
 Before release:
-* Upon a memory error, if the item at the end of the undo list is empty, delete it.
 * Manually test more undo/redo with margins and DSK.BIG.BIG
 
 Could be after the release:
