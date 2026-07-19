@@ -1,0 +1,1 @@
+rm /home/bkrug/.local/state/mame/sta/ti99_4a/*.sta
