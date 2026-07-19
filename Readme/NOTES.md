@@ -1,12 +1,11 @@
 # TODO
 
-Before release:
-* Manually test more undo/redo with margins and DSK.BIG.BIG
+Known Bugs:
+* The save routine appears to ignore write-protection status. Use the PAB's STATUS op-code in order to fix that, or alternatively, simply refuse to overwrite any file that is not DSP/FIX 64.
 
-Could be after the release:
+Nice to have in future versions:
 * When splitting a paragraph, the "new" paragraph should always be the smaller of the two. This makes memory management easier.
 * Consider adding a defrag operation that runs every 64/60s seconds.
-* The save routine appears to ignore write-protection status. Use the PAB's STATUS op-code in order to fix that, or alternatively, simply refuse to overwrite any file that is not DSP/FIX 64.
 
 # Manual test cases
 
