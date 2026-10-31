@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Run this script with XAS99 to assemble all files
 # See https://endlos99.github.io/xdt99/
 #
